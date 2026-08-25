@@ -7,10 +7,10 @@ import {
   DOC_MAX_BYTES,
   DOC_MAX_COUNT,
   docLabel,
-  filesToDocs,
   fmtBytes,
   revokeDoc,
 } from "@/lbm-bro/lib/docs";
+import { filesToDocs } from "@/lbm-bro/lib/docs-read";
 import type { OrderDoc } from "@/lbm-bro/lib/types";
 
 export function DocUploader({

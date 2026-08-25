@@ -1,5 +1,4 @@
 import type { OrderDoc, OrderDocKind } from "./types";
-import { MAX_PACK } from "./batch-hs";
 
 export const DOC_MAX_BYTES = 12 * 1024 * 1024;
 export const DOC_MAX_COUNT = 20;
@@ -33,46 +32,6 @@ export function fmtBytes(n: number) {
   if (n < 1024) return `${n} Б`;
   if (n < 1024 * 1024) return `${Math.round(n / 1024)} КБ`;
   return `${(n / (1024 * 1024)).toFixed(1)} МБ`;
-}
-
-export async function filesToDocs(
-  files: File[],
-  onStatus?: (message: string, pct?: number) => void,
-): Promise<OrderDoc[]> {
-  const { extractPackFromFile } = await import("./read-pack-file");
-  const out: OrderDoc[] = [];
-  for (let i = 0; i < files.length; i += 1) {
-    const file = files[i];
-    const mime = file.type || "application/octet-stream";
-    const kind = guessDocKind(file.name, mime);
-    const prefix = files.length > 1 ? `${i + 1}/${files.length}: ` : "";
-    onStatus?.(`${prefix}Читаем ${file.name}…`, 4);
-    let packLines: OrderDoc["packLines"];
-    let packSource: OrderDoc["packSource"];
-    let ocrText: string | undefined;
-    try {
-      const extracted = await extractPackFromFile(file, (msg, pct) => onStatus?.(`${prefix}${msg}`, pct));
-      if (extracted.rows.length && kind !== "photo") {
-        packLines = extracted.rows.slice(0, MAX_PACK);
-        packSource = extracted.source;
-      }
-      ocrText = extracted.ocrText;
-    } catch {
-      packLines = undefined;
-    }
-    out.push({
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      name: file.name,
-      mime,
-      size: file.size,
-      kind,
-      preview: kind === "photo" ? URL.createObjectURL(file) : undefined,
-      packLines,
-      packSource,
-      ocrText,
-    });
-  }
-  return out;
 }
 
 export function revokeDoc(doc: OrderDoc) {

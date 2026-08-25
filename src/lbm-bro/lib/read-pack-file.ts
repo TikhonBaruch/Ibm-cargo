@@ -39,6 +39,9 @@ function isImage(name: string, mime: string) {
 }
 
 export async function extractPackFromFile(file: File, onStatus?: StatusFn): Promise<PackExtract> {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return { rows: [] };
+  }
   const name = file.name;
   const mime = file.type || "";
 
