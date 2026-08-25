@@ -1,9 +1,0 @@
-{
-  "source": "tws-csv",
-  "fetchedAt": "2026-08-08T12:03:56.049Z",
-  "inputPath": "/home/andrey/llm/TWS_TNVED_2026-08-08.xlsx - ТНВЭД.csv",
-  "copiedTo": "/home/andrey/llm/data/tnved/raw/tws-tnved/2026-08-08/tnved.csv",
-  "rows": 13306,
-  "withDutyPct": 12622,
-  "note": "Third-party leaf dump (not EEC NSI). Used as fill until СТНВЭДСТ XML is available. Do not scrape web mirrors."
-}

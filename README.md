@@ -1,35 +1,38 @@
 # ibm-cargo
 
-Самостоятельный продукт (AI-платформа импорта / ВЭД).  
-Живёт **отдельно** от upstream `taurus` — свой remote, ветки, релизы и документация. Sync с исходным проектом не предполагается.
+AI-платформа импорта / ВЭД. Самостоятельный продукт (не зеркало upstream taurus).
 
-Публичный бренд UI пока: **LBM Брокер**. Внутренняя раскладка репозитория:
+Публичный бренд UI пока: **LBM Брокер**.
 
-| Каталог | Роль |
-|---------|------|
-| [`taurus/`](taurus/) | Оркестратор: Next.js UI, Prisma, FSM просчёта, кабинеты, Compose |
-| [`llm/`](llm/) | HTTP-матрица classify / OCR / … (без D8 FSM) |
+## Раскладка
 
-Workspace: [`ibm-cargo.code-workspace`](ibm-cargo.code-workspace).
+```text
+.                 # Next.js app (Vercel) + Prisma + Compose
+├── app/ src/ prisma/ containers/ docs/
+├── matrix/       # HTTP AI-матрица (classify / OCR / …)
+└── README.md
+```
 
-## Env (отдельные файлы)
+Имена папок `taurus/` и `llm/` **не используются**.
+
+## Env
 
 | Файл | Назначение |
 |------|------------|
-| [`taurus/.env`](taurus/.env) | Next / Prisma / Auth (локально, не в git) |
-| [`llm/.env`](llm/.env) | LLM-матрица ports / keys (локально, не в git) |
-| [`.env.example`](.env.example) | Карта переменных монорепо |
+| `.env` | Next / Prisma / Auth (локально, не в git) |
+| `matrix/.env` | матрица ports / keys (локально, не в git) |
+| `.env.example` | шаблон app |
+| `matrix/.env.example` | шаблон matrix |
 
 ```bash
-cp taurus/.env.example taurus/.env
-cp llm/.env.example llm/.env
+cp .env.example .env
+cp matrix/.env.example matrix/.env
 ```
 
 ## Быстрый старт (Mode A)
 
 ```bash
-# Postgres: пользователь/БД taurus:taurus@127.0.0.1:5432/taurus
-cd taurus
+# Postgres: taurus:taurus@127.0.0.1:5432/taurus  (имя роли БД историческое)
 npm install
 npx prisma db push
 npx prisma db seed     # client@ / broker@ / admin@ · demo1234
@@ -37,15 +40,10 @@ npm run dev            # http://localhost:3000
 ```
 
 Опционально AI stub: `node containers/ai/src/index.js` → `:4100`.  
-Подробнее: [`taurus/docs/development.md`](taurus/docs/development.md) · [`taurus/docs/knowledge/environments.md`](taurus/docs/knowledge/environments.md).
+Матрица: `cd matrix && npm install && PORT=4500 npm run start:classification`.
 
-## Что не в git
-
-- Секреты (`.env`)
-- Postgres volume / dump
-- Uploads / S3
-- `node_modules` / `.next`
+Документы: [`docs/development.md`](docs/development.md) · [`docs/knowledge/environments.md`](docs/knowledge/environments.md) · [`AGENTS.md`](AGENTS.md).
 
 ## Происхождение
 
-Изначально скопирован из кодовой базы taurus + llm (2026-08-25). Исторический манифест: [`FORK.md`](FORK.md). Дальнейшая эволюция — только в этом репозитории.
+Скопировано из кодовой базы taurus + llm (2026-08-25), затем пересобрано в эту раскладку. Архив: [`FORK.md`](FORK.md).

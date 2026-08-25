@@ -1,8 +1,7 @@
 {
   "folders": [
-    { "name": "ibm-cargo (root)", "path": "." },
-    { "name": "app (taurus)", "path": "taurus" },
-    { "name": "llm-matrix", "path": "llm" }
+    { "name": "ibm-cargo", "path": "." },
+    { "name": "matrix", "path": "matrix" }
   ],
   "settings": {}
 }
