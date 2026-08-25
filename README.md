@@ -12,12 +12,24 @@
 
 Workspace: [`ibm-cargo.code-workspace`](ibm-cargo.code-workspace).
 
+## Env (отдельные файлы)
+
+| Файл | Назначение |
+|------|------------|
+| [`taurus/.env`](taurus/.env) | Next / Prisma / Auth (локально, не в git) |
+| [`llm/.env`](llm/.env) | LLM-матрица ports / keys (локально, не в git) |
+| [`.env.example`](.env.example) | Карта переменных монорепо |
+
+```bash
+cp taurus/.env.example taurus/.env
+cp llm/.env.example llm/.env
+```
+
 ## Быстрый старт (Mode A)
 
 ```bash
 # Postgres: пользователь/БД taurus:taurus@127.0.0.1:5432/taurus
 cd taurus
-cp .env.example .env   # или готовый локальный .env
 npm install
 npx prisma db push
 npx prisma db seed     # client@ / broker@ / admin@ · demo1234
