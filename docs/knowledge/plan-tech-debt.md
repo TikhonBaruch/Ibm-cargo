@@ -31,7 +31,7 @@
 | **6** | PROTECTED_V1: adjust + imports preview | P2 | pending | middleware + unit `security`/`access` |
 | **7** | Нарезать `AdminVedCabinet` на panes | P2 | **done** | orchestrator ~816 LOC + `ved/admin/*` (14 panes + `types.ts`) · nav groups были prerequisite |
 | **8** | Track A ops keys (Resend / ЮKassa) | P2 | pending | `ops:track-a -- --vercel` без NEED (оператор) |
-| **9** | Hygiene: next-env ignore, Prisma 7 warn | P3 | **partial** — `package.json#prisma` → `prisma.config.ts` (остаёмся на Prisma **6.19**, не 7) | нет мусора в `git status` |
+| **9** | Hygiene: next-env ignore, Prisma 7 warn | P3 | **partial** — `package.json#prisma` → `prisma.config.ts` (Prisma **6.19**); `eslint.config.mjs` (без `"type":"module"` в package.json) | нет мусора в `git status` / нет MODULE_TYPELESS_PACKAGE_JSON на `npm run lint` |
 
 ## Шаг 1 — детали
 
