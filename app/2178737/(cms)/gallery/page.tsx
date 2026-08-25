@@ -251,7 +251,7 @@ export default function GalleryPage() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-100">Галерея работ</h1>
-          <p className="text-sm text-slate-400 mt-1">Управление фото "До/После" для лендинга</p>
+          <p className="text-sm text-slate-400 mt-1">Управление фото «До/После» для лендинга</p>
         </div>
         <div className="flex gap-3">
           <button onClick={addItem} className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
@@ -283,7 +283,7 @@ export default function GalleryPage() {
         <div className="text-center py-12 text-slate-500 border border-dashed border-slate-700 rounded-2xl">
           <ImageIcon className="h-12 w-12 mx-auto mb-4 text-slate-600" />
           <p>Нет фото в галерее</p>
-          <p className="text-sm mt-1">Нажмите "Добавить фото" чтобы начать</p>
+          <p className="text-sm mt-1">Нажмите «Добавить фото» чтобы начать</p>
         </div>
       ) : (
         <div className="space-y-4">

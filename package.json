@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint app src",
     "lint:logistics": "eslint --no-error-on-unmatched-pattern --max-warnings 0 \"src/lib/ved/logistics.ts\" \"src/lib/ved/shipping.ts\" \"src/lib/ved/graceful-shutdown.ts\" \"src/lib/ved/__tests__/logistics.test.ts\" \"src/lib/ved/__tests__/shipping.test.ts\" \"src/lib/ved/__tests__/api-sigterm.smoke.test.ts\" \"app/api/v1/shipping/**/*.{ts,tsx}\" \"containers/api/src/graceful-shutdown.js\"",
     "test:logistics": "vitest run src/lib/ved/__tests__/logistics.test.ts src/lib/ved/__tests__/shipping.test.ts src/lib/ved/__tests__/api-sigterm.smoke.test.ts",
     "prepare": "husky",

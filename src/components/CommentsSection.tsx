@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, Send, Trash2, Reply } from "lucide-react";
 
 interface Comment {
@@ -18,15 +18,17 @@ export function CommentsSection({ postSlug }: { postSlug: string }) {
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
   const [sending, setSending] = useState(false);
 
-  useEffect(() => { fetchComments(); }, [postSlug]);
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const res = await fetch(`/api/posts/${postSlug}/comments`);
       if (res.ok) setComments(await res.json());
     } catch {}
     setLoading(false);
-  };
+  }, [postSlug]);
+
+  useEffect(() => {
+    void fetchComments();
+  }, [fetchComments]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

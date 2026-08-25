@@ -12,7 +12,7 @@
 |----------|-----------|
 | `npm run test:ci` | **PASS** — 245 unit + structure + 15 contracts |
 | `npx tsc --noEmit` | **FAIL** — ~35 ошибок в 4 тестовых файлах (вне CI) |
-| `npm run lint` | **FAIL** — Next 16.1.6 без команды `next lint` |
+| `npm run lint` | **PASS** — `eslint app src` (Next 16 has no `next lint`) |
 | `prisma migrate status` (host `.env` → sweb) | pending: `verified_determinations`, `precedent_embeddings` |
 | `ops:track-a` | NEED Resend/SMTP + payments/ЮKassa; D27 holds OK |
 | Dirty tree | ~150 путей (~+3485/−713) на ветке |
@@ -24,7 +24,7 @@
 | # | Шаг | Sev | Статус | Критерий done |
 |---|-----|-----|--------|----------------|
 | **1** | Миграции БД-2 на целевых БД | P0 | **done** (2026-08-12 sweb) | `verified_determinations` есть; unit fail-open без `prisma:error`; sweb = lexical only (нет pgvector) |
-| **2** | Починить `npm run lint` под Next 16 | P0 | pending | `npm run lint` exit 0 (ESLint CLI / eslint.config) |
+| **2** | Починить `npm run lint` под Next 16 | P0 | **done** | `npm run lint` exit 0 (`eslint app src`) |
 | **3** | tsc в CI + починить 4 test-файла | P1 | pending | `npx tsc --noEmit` green или осознанный exclude тестов + gate |
 | **4** | Нарезать WIP на PR / Preview deploy | P1 | **done** Preview READY (2026-08-12) | [PR #1](https://github.com/TikhonBaruch/Ibm-cargo/pull/1) · Preview: Vercel Preview of Ibm-cargo · чеклист [`staging.md`](./staging.md) |
 | **5** | Dual-path docs + `customs-fees` канон | P1 | pending | `dual-path-parity.md` включает reclassify/imports; один канон fees |
@@ -78,7 +78,7 @@ npm run smoke:precedent-vector   # skip OK без OPENAI_API_KEY
 
 ## Шаг 2+ (кратко)
 
-2. **Lint:** заменить `"lint": "next lint"` на ESLint flat config / `eslint .` совместимый с Next 16.  
+2. **Lint:** **done** — `"lint": "eslint app src"` (Next 16 has no `next lint`; that treated `lint` as a directory).  
 3. **tsc:** починить mocks (`ProcessEnv`, orch `never`) и JS import types; добавить script в `test:ci` или document exclude.  
 4. **WIP split:** не один монолитный merge admin-ops+Growth.  
 5–7. Docs parity, PROTECTED, admin panes.  
