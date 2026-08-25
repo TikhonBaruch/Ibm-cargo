@@ -4,13 +4,13 @@
 |---|---|
 | Продукт | **LBM** |
 | GitHub | `TikhonBaruch/Ibm-cargo` |
-| Vercel | `ibm-cargo` · Root Directory **`app`** (см. корневой `vercel.json`) |
+| Vercel | `ibm-cargo` · Root Directory **`app`** |
 | S3 | bucket **`lbm`** (отдельное) |
 | Postgres | **отдельная** БД (`newlsu_lbm` на sweb) |
 
 ## Vercel checklist
 
-1. Root Directory = `app` (dashboard и/или `vercel.json`)
+1. Root Directory = `app` (**только dashboard** → Settings → General)
 2. Env: `DATABASE_URL`, `NEXTAUTH_*`, `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, `CRON_SECRET`
 3. Redeploy после env
 4. Smoke: `cd app && TEST_API_URL=https://<host> npm run smoke:mvp`

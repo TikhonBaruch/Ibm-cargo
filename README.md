@@ -14,7 +14,7 @@ Ibm-cargo/
   PLATFORMS.md
 ```
 
-Vercel **Root Directory = `app`** (также в корневом `vercel.json`: `"rootDirectory": "app"`).
+Vercel **Root Directory = `app`**.
 
 ## Vercel Env (минимум)
 
