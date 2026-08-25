@@ -258,6 +258,7 @@ app/client/**              # Next routes UI lab
 | **C3** | **Максимальный match макета:** live-nav клиента = 5 тайлов (Главная · Заявки · Справочник ТН ВЭД · Чат · Компания); шапка = поиск + колокол + CTA; главная = greet/quick/ЧЗ-expand + faq/guide + lookup + лента с covers/chips/progress + svc. Extra-роуты `/cabinet/{tnved,faq,guide,clearance}`. Balance/чат/компания/брокеры — chrome макета. Hold → `DesignerStub`. Иконки — `@/lbm-bro/components/icon`. Shipping/factory не в сайдбаре (плитки/deep-link). | Не брать `tnved.json` как правду (live = `/api/v1/tnved/search`); не копировать freemium/Код-Таможня-Под ключ/НДС 20%/сбор 15k/голос/ЧЗ/ТО как продукт; не сплющивать admin nav; WorkMapping не заменять |
 | **C4** | **Остатки внутренней вёрстки:** панели, которые после C3 всё ещё на VedShell-карточках (`rounded-[28px]`, `rounded-xl` инпуты, slate-чат). CSS-мост `.lbm-live-*` + markup `.stats` / `table.data` / `.field` / `.chat-box` / `.search-row` / `.filter-chips` / `.activity-list`. | Не менять D8/D10/D11; не сплющивать admin nav; WorkMapping не заменять; кабинет производителя (`VedShell`) вне скоупа |
 | **C5** | Бейдж hold скрыт: `DesignerStub` → `null` (title/intent остаются на call sites + комментарий restore). Hint `/login` = client / broker / admin | Не удалять call sites и seed-учётки |
+| **C6** | Chrome производителя скрыт в визуале: плитка «Производитель» на главной, admin nav, фильтр в «Клиентах». `designerManufacturerChromeEnabled()` = `false`. Код/роуты живые | Не выключать `FACTORY_UI`, не трогать attrs «производитель» в NewCalc, не удалять pane `/factory` |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -310,10 +311,15 @@ app/client/**              # Next routes UI lab
 | Фаза C3: 5-tile IA + шапка макета + extra-роуты + stub hold | **этот PR** |
 | Фаза C4: leftover inner panes → `.card` / `.stats` / `table.data` / `.field` / `.chat-box` | **этот PR** |
 | Фаза C5: бейдж hold скрыт (`DesignerStub` → `null`); hint `/login` = client / broker / admin | **этот PR** |
+| Фаза C6: chrome производителя скрыт в визуале (`designerManufacturerChromeEnabled` = false) | **этот PR** |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; внутренние панели — `.card` / таблицы / поля; брокер/админ = тёмный ops; hold-модули остаются в исходниках (`DesignerStub` не рисует бейдж). Domain D8/D10/D11/D15 и live ТН ВЭД (`/api/v1/tnved/search`) не менять.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; внутренние панели — `.card` / таблицы / поля; брокер/админ = тёмный ops; hold-модули остаются в исходниках (`DesignerStub` не рисует бейдж); chrome производителя временно скрыт. Domain D8/D10/D11/D15 и live ТН ВЭД (`/api/v1/tnved/search`) не менять.
+
+### C6 — chrome производителя скрыт в визуале
+
+Макет lbm-bro **не** рисовал кабинет/плитку производителя. Live extra (FACTORY_UI) светил её на суперприложении и в admin nav. Временно прячем chrome: `designerManufacturerChromeEnabled()` возвращает `false` (restore = `factoryUiEnabled`). Плитка на `ClientSuperappHome` закомментирована. Код `/cabinet/factory`, `/admin/manufacturers`, attrs «производитель» в NewCalc — без удаления.
 
 ### C5 — бейдж hold скрыт
 

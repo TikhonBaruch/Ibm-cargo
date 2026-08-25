@@ -41,6 +41,9 @@ export function ClientSuperappHome({
 }) {
   const [markOpen, setMarkOpen] = useState(false);
   const [feedFilter, setFeedFilter] = useState<LiveFeedFilter>("all");
+  // C6: manufacturer tile commented out below. Restore JSX and drop these voids.
+  void showFactory;
+  void factoryHref;
   const activeCount = calcs.filter((c) => !["DONE", "CANCELLED"].includes(c.status)).length;
   const feed = useMemo(
     () => calcs.filter((c) => liveFeedMatch(c, feedFilter)),
@@ -302,6 +305,7 @@ export function ClientSuperappHome({
               <div className="p2" />
             </div>
           </Link>
+          {/* C6 restore manufacturer tile (showFactory && factoryHref):
           {showFactory && factoryHref ? (
             <Link href={factoryHref} className="go-tile svc clear">
               <div className="gt-ico">
@@ -314,6 +318,7 @@ export function ClientSuperappHome({
               </div>
             </Link>
           ) : null}
+          */}
         </div>
       </div>
     </div>

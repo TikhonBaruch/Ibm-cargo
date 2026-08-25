@@ -32,6 +32,17 @@ describe("public surface hygiene", () => {
     expect(src).toContain("Restore visual");
   });
 
+  it("hides manufacturer tile on designer home while keeping restore markup", () => {
+    const src = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/ClientSuperappHome.tsx"),
+      "utf8",
+    );
+    const visible = src.replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
+    expect(src).toContain("C6 restore manufacturer tile");
+    expect(src).toContain('gt-title">Производитель');
+    expect(visible).not.toMatch(/gt-title">Производитель/);
+  });
+
   it("does not list obscure path in robots.txt", () => {
     const robots = fs.readFileSync(path.join(repoRoot, "public/robots.txt"), "utf8");
     expect(robots).toContain("Disallow: /admin/");

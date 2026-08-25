@@ -64,7 +64,7 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 | `PAYMENTS_SERVICE_URL` / `NOTIFY_SERVICE_URL` / `LOGISTICS_SERVICE_URL` | C4 opt-in |
 | `S3_*` | durable VED uploads on Vercel (`BUCKET`/`ENDPOINT`/`REGION`/`ACCESS_KEY`/`SECRET_KEY`); optional `S3_OBJECT_ACL=public-read` for cabinet `<img>` |
 | `NEXT_PUBLIC_SHIPPING_UI` / `SHIPPING_UI` | `1`/`true` = показать клиентский UI «Перевозка» (default **off**) |
-| `NEXT_PUBLIC_FACTORY_UI` / `FACTORY_UI` | `1`/`true` = показать клиентский UI «Завод», manufacturer `/pools`, manufacturer/SKU helpers и admin nav «Производители» (default off в коде; **на Vercel Pro Production/Preview = `1`**) |
+| `NEXT_PUBLIC_FACTORY_UI` / `FACTORY_UI` | `1`/`true` = код завода / SKU / manufacturer `/pools` (default off в коде; **на Vercel Pro Production/Preview = `1`**). **C6:** designer chrome (плитка главной, admin nav «Производители») дополнительно скрыт `designerManufacturerChromeEnabled` |
 | `WEB_SURFACE` | `full` \| `slim` (C5 scaffold, D22) |
 | `ALLOW_MOCK_TOPUP` | mock credit баланса (D13) |
 | `LLM_TIMEOUT_MS` / `AI_TIMEOUT_MS` | classify/enrich / draft HTTP; default **30s / 35s** (раньше 3–4s — DeepSeek не успевал → heuristic) |

@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { factoryUiEnabled, shippingUiEnabled } from "../cabinet-features";
+import {
+  designerManufacturerChromeEnabled,
+  factoryUiEnabled,
+  shippingUiEnabled,
+} from "../cabinet-features";
 import { getClientNav } from "@/components/ved/client/types";
+import { getAdminNav } from "@/components/ved/admin/types";
 import { getManufacturerNav } from "@/components/ved/manufacturer/types";
 
 describe("cabinet-features", () => {
@@ -26,6 +31,11 @@ describe("cabinet-features", () => {
 
   it("factory UI on with NEXT_PUBLIC_FACTORY_UI=1", () => {
     expect(factoryUiEnabled({ NEXT_PUBLIC_FACTORY_UI: "1" })).toBe(true);
+  });
+
+  it("hides designer manufacturer chrome even when factory UI is on (C6)", () => {
+    expect(designerManufacturerChromeEnabled()).toBe(false);
+    expect(designerManufacturerChromeEnabled({ NEXT_PUBLIC_FACTORY_UI: "1" })).toBe(false);
   });
 });
 
@@ -62,6 +72,20 @@ describe("getClientNav sidebar IA", () => {
       "Компания",
     ]);
     vi.unstubAllEnvs();
+  });
+});
+
+describe("getAdminNav manufacturer chrome", () => {
+  it("omits Производители when factory UI is off", () => {
+    const labels = getAdminNav("/admin", {}).map((i) => i.label);
+    expect(labels).not.toContain("Производители");
+  });
+
+  it("keeps Производители hidden while C6 visual hold is on", () => {
+    const labels = getAdminNav("/admin", { NEXT_PUBLIC_FACTORY_UI: "1" }).map((i) => i.label);
+    expect(labels).not.toContain("Производители");
+    expect(labels).toContain("Клиенты");
+    expect(labels).toContain("Брокеры");
   });
 });
 

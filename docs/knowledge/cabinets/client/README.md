@@ -9,7 +9,7 @@
 
 | Элемент | Route | Информирование | Взаимодействие |
 |---------|-------|----------------|----------------|
-| Главная | `/` · `/cabinet` | Superapp как у дизайнера: greet, consult/ЧЗ-stub, faq/guide, lookup, лента covers/chips, svc | Плитки → `/new` `/orders` `/support` `/faq` `/guide` `/tnved` `/brokers` `/clearance`; shipping/factory — плитки, не сайдбар |
+| Главная | `/` · `/cabinet` | Superapp как у дизайнера: greet, consult/ЧЗ-stub, faq/guide, lookup, лента covers/chips, svc | Плитки → `/new` `/orders` `/support` `/faq` `/guide` `/tnved` `/brokers` `/clearance`; shipping — плитка; factory-плитка скрыта (C6), deep-link `/factory` жив |
 | Заявки | `/orders` | Карточки (`.cl-order`): обложка, pill, «следующий шаг» D8 | Фильтры Все\|Готово\|У брокера\|Оплата; PDF при DONE; `onOpen` / pay без смены FSM |
 | Справочник ТН ВЭД | `/tnved` | Combobox live `GET /api/v1/tnved/search` + карточка кода | Не `tnved.json`; CTA → `/new` |
 | Чат | `/support` | IM-шелл: тикеты поддержки + ссылки на чат брокера по заявке | Голос → stub; FAQ → `/faq` |
@@ -23,7 +23,7 @@
 | Элемент | Где | Тип |
 |---------|-----|-----|
 | FAQ / гайд / ТО | `/faq` `/guide` `/clearance` | copy D10; hold-заметки в исходниках, без бейджа |
-| Баланс / брокеры / перевозка / производитель | `/balance` `/brokers` `/shipping` `/factory` | плитки главной или deep-link; shipping/factory live только при флаге, иначе stub; factory live = `.card` / `.field` / `table.data` |
+| Баланс / брокеры / перевозка / производитель | `/balance` `/brokers` `/shipping` `/factory` | плитки главной или deep-link; shipping live только при флаге, иначе stub; factory-плитка скрыта (C6), `/factory` по URL жив |
 | OrderDetail | dash/orders | HS, **смета без доставки**, attrs, preferred, timeline |
 | «Оплатить тариф» / «Пополнить до тарифа и оплатить» | OrderDetail | деньги |
 | OrderChat + 📎 + waitingOn | OrderDetail | `.chat-box` / `.bubble` / `.chat-row`; poll 12с |

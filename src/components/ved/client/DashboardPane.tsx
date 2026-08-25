@@ -227,7 +227,9 @@ export function DashboardPane({
           { v: active, k: "Активные заявки" },
           { v: atBroker, k: "На проверке у брокера" },
           ...(showShipping ? [{ v: inTransit, k: "Перевозки в пути" }] : []),
-          { v: factoryActiveCount, k: "Запросы производителю", href: factoryHref },
+          ...(factoryHref
+            ? [{ v: factoryActiveCount, k: "Запросы производителю", href: factoryHref }]
+            : []),
           { v: unreadCount, k: "Непрочитанных" },
         ].map((s) => (
           <div key={s.k} className="stat">

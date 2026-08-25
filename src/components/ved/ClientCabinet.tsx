@@ -7,7 +7,11 @@
 import { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { factoryUiEnabled, shippingUiEnabled } from "@/lib/ved/cabinet-features";
+import {
+  designerManufacturerChromeEnabled,
+  factoryUiEnabled,
+  shippingUiEnabled,
+} from "@/lib/ved/cabinet-features";
 import { formatShipmentInvoice, parseShipmentInvoice } from "@/lib/ved/landed-cost";
 import { isAiDrainPending, waitForAiEnrich } from "@/lib/ved/ai-drain-client";
 import { compressImageForUpload } from "@/lib/ved/compress-image-client";
@@ -84,6 +88,7 @@ function ClientCabinetInner() {
   const { toast } = useVedToast();
   const shippingOn = shippingUiEnabled();
   const factoryOn = factoryUiEnabled();
+  const factoryChromeOn = factoryOn && designerManufacturerChromeEnabled();
   const paneRaw = clientPane(pathname);
   const pane = paneRaw;
   const navBase = process.env.NEXT_PUBLIC_CLIENT_BASE ?? "/cabinet";
@@ -931,8 +936,8 @@ function ClientCabinetInner() {
               calcs={calcs}
               unreadCount={unreadCount}
               showShipping={shippingOn}
-              showFactory={factoryOn}
-              factoryHref={factoryOn ? path("/factory") : undefined}
+              showFactory={factoryChromeOn}
+              factoryHref={factoryChromeOn ? path("/factory") : undefined}
             />
           ) : (
           <DashboardPane
@@ -943,8 +948,8 @@ function ClientCabinetInner() {
             showShipping={shippingOn}
             busy={busy}
             unreadCount={unreadCount}
-            factoryActiveCount={factoryOn ? factoryBadge : 0}
-            factoryHref={factoryOn ? path("/factory") : undefined}
+            factoryActiveCount={factoryChromeOn ? factoryBadge : 0}
+            factoryHref={factoryChromeOn ? path("/factory") : undefined}
             selectedId={selected?.id}
             createHref={navBase.replace(/\/$/, "") ? `${navBase.replace(/\/$/, "")}/new` : "/new"}
             onOpen={openCalc}

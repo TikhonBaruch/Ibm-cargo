@@ -31,17 +31,20 @@ export function ClientsPane({
   selectedCompanyId,
   onOpenCompany,
   usersHref = "/admin/users",
+  showManufacturers = true,
 }: {
   clients: AdminClientRow[];
   selectedCompanyId: string;
   onOpenCompany: (id: string) => void;
   usersHref?: string;
+  showManufacturers?: boolean;
 }) {
   const [kind, setKind] = useState<KindFilter>("all");
   const [segment, setSegment] = useState<SegmentFilter>("all");
+  const kindFilter: KindFilter = showManufacturers ? kind : "CLIENT";
   const filtered = clients
-    .filter((c) => matchesKind(c, kind))
-    .filter((c) => (kind === "MANUFACTURER" ? true : matchesSegment(c, segment)));
+    .filter((c) => matchesKind(c, kindFilter))
+    .filter((c) => (kindFilter === "MANUFACTURER" ? true : matchesSegment(c, segment)));
 
   const importers = clients.filter((c) => c.kind !== "MANUFACTURER");
   const makers = clients.filter((c) => c.kind === "MANUFACTURER");
@@ -58,10 +61,12 @@ export function ClientsPane({
           <div className="v">{importers.length}</div>
           <div className="k">Импортёров</div>
         </div>
-        <div className="stat">
-          <div className="v">{makers.length}</div>
-          <div className="k">Производителей</div>
-        </div>
+        {showManufacturers ? (
+          <div className="stat">
+            <div className="v">{makers.length}</div>
+            <div className="k">Производителей</div>
+          </div>
+        ) : null}
         <div className="stat">
           <div className="v">{formatRub(avgBalance)}</div>
           <div className="k">Средний баланс</div>
@@ -74,11 +79,13 @@ export function ClientsPane({
       <div className="card">
         <div className="filter-chips">
           {(
-            [
-              ["all", "Все"],
-              ["CLIENT", "Импортёры"],
-              ["MANUFACTURER", "Производители"],
-            ] as const
+            (
+              [
+                ["all", "Все"],
+                ["CLIENT", "Импортёры"],
+                ["MANUFACTURER", "Производители"],
+              ] as const
+            ).filter(([id]) => showManufacturers || id !== "MANUFACTURER")
           ).map(([id, label]) => (
             <button
               key={id}
@@ -115,7 +122,7 @@ export function ClientsPane({
           </div>
         )}
         {filtered.length === 0 ? (
-          kind === "MANUFACTURER" ? (
+          kindFilter === "MANUFACTURER" ? (
             <VedEmptyState
               title="Нет компаний-производителей"
               hint="Производитель: инвайт ADMIN или утверждение предложения из клиента/брокера."

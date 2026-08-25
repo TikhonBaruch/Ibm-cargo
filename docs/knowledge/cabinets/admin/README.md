@@ -32,7 +32,7 @@
 | Операции | Дашборд | `/admin` | Счётчики; bar статусов; attention | Переходы · open calc |
 | Операции | Заявки | `/bookings` | `.card` + `.search-row` + `table.data`; badge QUEUED+SLA_RISK | Search, filter, **Открыть**, assign, escalate · `?id=` |
 | Операции | Клиенты | `/clients` | live `.stats` + `.filter-chips` + `table.data` | Drill-down · **PATCH реквизиты** · **ADJUSTMENT** · `?company=` · инвайт через Users |
-| Операции | Производители | `/manufacturers` | Очередь PENDING + постоянный каталог; badge | Approve / Reject · drawer компании · [`plan-manufacturer-proposals.md`](../../plan-manufacturer-proposals.md) |
+| Операции | Производители | `/manufacturers` | **C6:** пункт nav скрыт (`designerManufacturerChromeEnabled`); pane/route живы | Approve / Reject · drawer компании · [`plan-manufacturer-proposals.md`](../../plan-manufacturer-proposals.md) |
 | Операции | Брокеры | `/brokers` | `.person-card` сетка; модерация · acceptingJobs · профиль | Одобрить / Отклонить · пауза · **drawer: specialization/languages/about** |
 | Операции | Поддержка | `/support` | SUPPORT inbox (фильтры Нужен ответ / Ждёт клиента / Закрыто / Архив) · nav badge unread | **Ответить** (`SUPPORT_REPLY`) · Close / Archive / Reopen (`SUPPORT_STATUS`) |
 | Операции | Финансы | `/finance` | live `.stats` + `table.data` балансы/выплаты | фильтр статуса · **CSV** · **Отметить PAID** |

@@ -35,6 +35,7 @@ import {
   type PlatformSettings,
 } from "./admin/types";
 import type { TnvedImportItem } from "@/lib/ved/tnved";
+import { designerManufacturerChromeEnabled } from "@/lib/ved/cabinet-features";
 import { DashboardPane } from "./admin/DashboardPane";
 import { BookingsPane } from "./admin/BookingsPane";
 import { AdminCalcDetailDrawer } from "./admin/AdminCalcDetailDrawer";
@@ -906,6 +907,7 @@ export function AdminVedCabinet() {
           selectedCompanyId={selectedCompanyId}
           onOpenCompany={(id) => void openCompany(id)}
           usersHref={p("/users")}
+          showManufacturers={designerManufacturerChromeEnabled()}
         />
       )}
 
