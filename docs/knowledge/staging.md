@@ -56,6 +56,7 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 |------|-------|-----------|---------|
 | 2026-08-25 | `smoke:mvp` | **PASS** #47934 DONE | register → mock topup → **S3** upload → create → pay → **IN_REVIEW** (autoAssign) → approve; M0.1 mock+S3 OK |
 | 2026-08-25 | `smoke:payments` | **PASS** | mock +1500 (`provider=mock`) |
+| 2026-08-25 | **M0.2 visual C↔B↔A** (prod taurus) | **PASS** | client dash/new/brokers/balance/support/profile; broker dash/queue/work/chat; admin dash (группы nav) /bookings/support/settings; без 500; shipping UI off |
 | 2026-08-23 | deploy `b24b01c` + rich probe | **PASS** #47931 | ThinkPad X1 full attrs (CN, Lenovo, specs) → `8471 30 000 0` conf 0.95; `chain-log` + `chainRun` live; classify mesh ~1.3s |
 | 2026-08-23 | `probe:ai-chain` ×4 | **PASS** #47927–#47930 | laptop→8471 30; tee→6109 10; laptop+png→8471 30; shoes→6404 11; all `llm-openai-v1` ~8–22s; `chain-log` API after deploy |
 | 2026-08-23 | `smoke:mvp` | **PASS** #47924 DONE | 1-й прогон `terminated` после login; retry OK; S3 tiny upload OK |

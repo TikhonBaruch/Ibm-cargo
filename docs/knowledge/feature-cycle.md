@@ -102,7 +102,7 @@ Preview: SSO Vercel часто включён — открывать через 
 | # | Работа | Проверка |
 |---|--------|----------|
 | M0.1 | Mock topup + S3 остаются включены | `smoke:payments`, upload URL s3 · **PASS** 2026-08-25 `smoke:mvp` (S3 + mock topup) |
-| M0.2 | Визуальный C↔B↔A на prod | Чеклист staging · ops |
+| M0.2 | Визуальный C↔B↔A на prod | **PASS** 2026-08-25 · [`staging.md`](./staging.md) |
 | M0.3 | Empty states + копирайт D27 (не рерайт лендинга) | Паттерн `VedEmptyState` · **live**; client BrokersPane выровнен на канон |
 
 Порядок кабинетов (не в один PR): **клиент → брокер → админ → супер-админ**. Производитель v1 (**D31 live**) — стыки SKU, не отдельная волна. Канон волн: [`plan-cabinets-d32.md`](./plan-cabinets-d32.md). Command palette — hold.
