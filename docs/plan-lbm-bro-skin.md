@@ -1,7 +1,7 @@
 # Анализ lbm-bro → план визуала LBM (Ibm-cargo)
 
 **Площадка:** `TikhonBaruch/Ibm-cargo` (продукт **LBM**).  
-**Код приложения:** `app/` (Vercel Root Directory).  
+**Код приложения:** Next at repo root (`app/` = App Router routes only; Vercel Root Directory = `.`).  
 **Инфра:** отдельная Postgres + S3 bucket `lbm`.  
 **Источник UI:** lbm-bro prototype · [`PLATFORMS.md`](../PLATFORMS.md)
 
