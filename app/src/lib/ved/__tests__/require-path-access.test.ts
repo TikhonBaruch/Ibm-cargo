@@ -52,7 +52,7 @@ describe("resolveUiPathGate", () => {
   it("redirects CLIENT away from /broker", () => {
     expect(resolveUiPathGate("CLIENT", "/broker")).toEqual({
       type: "redirect",
-      to: "/cabinet",
+      to: "/client",
     });
   });
 
@@ -85,6 +85,6 @@ describe("requirePathAccess", () => {
 
   it("redirects wrong role", async () => {
     mockedSession.mockResolvedValue({ user: { role: "CLIENT" } });
-    await expect(requirePathAccess("/broker")).rejects.toThrow("REDIRECT:/cabinet");
+    await expect(requirePathAccess("/broker")).rejects.toThrow("REDIRECT:/client");
   });
 });

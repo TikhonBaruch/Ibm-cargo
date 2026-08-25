@@ -65,9 +65,10 @@ describe("ADR invariants — D15 preferred exclusive", () => {
 
 describe("ADR invariants — access RBAC", () => {
   it("CLIENT cannot stay on /broker; BROKER cannot stay on /cabinet", () => {
-    expect(resolvePathAccess("CLIENT", "/broker")).toEqual({ type: "redirect", to: "/cabinet" });
+    expect(resolvePathAccess("CLIENT", "/broker")).toEqual({ type: "redirect", to: "/client" });
     expect(resolvePathAccess("BROKER", "/cabinet")).toEqual({ type: "redirect", to: "/broker" });
     expect(resolvePathAccess("CLIENT", "/cabinet")).toEqual({ type: "allow" });
+    expect(resolvePathAccess("CLIENT", "/client")).toEqual({ type: "allow" });
     expect(resolvePathAccess("BROKER", "/broker/queue")).toEqual({ type: "allow" });
     expect(resolvePathAccess("MANUFACTURER", "/manufacturer")).toEqual({ type: "allow" });
     expect(resolvePathAccess("MANUFACTURER", "/cabinet")).toEqual({

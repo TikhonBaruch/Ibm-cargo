@@ -32,7 +32,7 @@ export const COLOR: ClarifyOption[] = [
 export const FOOTWEAR_UPPER: ClarifyOption[] = [
   { id: "textile", label: "Текстиль", value: "верх текстиль" },
   { id: "leather", label: "Нат. кожа", value: "верх натуральная кожа" },
-  { id: "synthetic", label: "Экокожа", value: "верх искусственная кожа" },
+  { id: "eco-leather", label: "Экокожа", value: "верх искусственная кожа" },
   { id: "mesh", label: "Сетка", value: "верх сетка mesh" },
 ];
 
@@ -71,7 +71,7 @@ export const MATERIAL: ClarifyOption[] = [
 
 export const BAG_MATERIAL: ClarifyOption[] = [
   { id: "leather", label: "Нат. кожа", value: "натуральная кожа" },
-  { id: "synthetic", label: "Экокожа", value: "искусственная кожа" },
+  { id: "eco-leather", label: "Экокожа", value: "искусственная кожа" },
   { id: "textile", label: "Текстиль", value: "текстиль" },
   { id: "nylon", label: "Нейлон", value: "нейлон" },
 ];
