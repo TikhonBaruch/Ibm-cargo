@@ -60,6 +60,7 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 |------|-------|-----------|---------|
 | 2026-08-25 | **go-live merge** M2+M0+D36 → `main` | **done** | [`plan-go-live-mvp.md`](./plan-go-live-mvp.md) |
 | 2026-08-25 | post-merge prod smoke | **PASS** | mvp #47937 · full #47938 · client · broker · payments |
+| 2026-08-25 | `smoke:standalone` (prod spine bundle) | **PASS** | mvp → payments → client #47932 → broker #47807 → full #47940 |
 | 2026-08-25 | **main merge** M2+M0+D36 | **done** | #6→#7→#8 → main; nested `llm/` removed · [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) |
 | 2026-08-25 | `smoke:mvp` (post full split) | **PASS** #47936 DONE | after `git rm -r llm/`; CI 508 PASS |
 | 2026-08-25 | `smoke:mvp` | **PASS** #47934 DONE | register → mock topup → **S3** upload → create → pay → **IN_REVIEW** (autoAssign) → approve; M0.1 mock+S3 OK |
