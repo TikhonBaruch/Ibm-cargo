@@ -1,3 +1,4 @@
+import type { EnvBag } from "../../env-bag";
 /**
  * Parallel AI chain profiles (1 nvidia · 2 qwen+deepseek · 3 deepseek-only).
  * Model ≠ Docker service (D35). See docs/knowledge/plan-ai-chains-1-2-3.md
@@ -42,7 +43,7 @@ export const AI_CHAINS: Record<AiChainId, AiChainMeta> = {
 };
 
 /** Resolve active chain. Default 2 (prod hybrid). */
-export function resolveAiChainId(env: NodeJS.ProcessEnv = process.env): AiChainId {
+export function resolveAiChainId(env: EnvBag = process.env): AiChainId {
   const raw = String(env.AI_CHAIN_ID || env.LLM_CHAIN_ID || "2").trim().toLowerCase();
   if (raw === "1" || raw === "nvidia") return 1;
   if (raw === "3" || raw === "deepseek") return 3;
@@ -62,8 +63,8 @@ export function aiChainMeta(id: AiChainId = resolveAiChainId()): AiChainMeta {
  */
 export function classifyEnvForChain(
   chainId: AiChainId,
-  env: NodeJS.ProcessEnv = process.env
-): NodeJS.ProcessEnv {
+  env: EnvBag = process.env
+): EnvBag {
   const meta = AI_CHAINS[chainId];
   if (chainId === 3) {
     return { ...env, LLM_CLASSIFY_CHAIN: "deepseek", LLM_PROVIDER: "deepseek" };

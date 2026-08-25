@@ -24,6 +24,12 @@ describe("Security — authorization boundaries", () => {
     expect(matchesProtectedMutation("POST", "/api/v1/calculations/../admin/pay")).toBe(false);
     expect(matchesProtectedMutation("POST", "/api/v1/calculations/cuid123/pay")).toBe(true);
   });
+
+  it("admin adjust and import preview are protected mutations", () => {
+    expect(matchesProtectedMutation("POST", "/api/v1/company/co_1/adjust")).toBe(true);
+    expect(matchesProtectedMutation("POST", "/api/v1/company/../adjust")).toBe(false);
+    expect(matchesProtectedMutation("POST", "/api/v1/imports/products/preview")).toBe(true);
+  });
 });
 
 describe("Security — status machine abuse", () => {

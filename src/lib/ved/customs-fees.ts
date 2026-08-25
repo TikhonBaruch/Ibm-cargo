@@ -27,3 +27,9 @@ export function customsOperationsFeeRub(customsValueRub: number): number {
   }
   return 73_860;
 }
+
+/** Estimate fee from USD shipment when RUB customs value unknown (demo rate 90). */
+export function customsOperationsFeeFromUsd(shipmentValueUsd: number, usdRate = 90): number {
+  const usd = Number(shipmentValueUsd) || 18_000;
+  return customsOperationsFeeRub(Math.round(usd * usdRate));
+}

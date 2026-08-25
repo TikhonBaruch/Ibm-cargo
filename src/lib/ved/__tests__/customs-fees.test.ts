@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { customsOperationsFeeRub, DEFAULT_IMPORT_VAT_PERCENT } from "../customs-fees";
+import {
+  customsOperationsFeeFromUsd,
+  customsOperationsFeeRub,
+  DEFAULT_IMPORT_VAT_PERCENT,
+} from "../customs-fees";
 
 describe("customs-fees (PP 1637/1638)", () => {
   it("exposes default VAT 22%", () => {
@@ -13,5 +17,10 @@ describe("customs-fees (PP 1637/1638)", () => {
     expect(customsOperationsFeeRub(1_620_000)).toBe(13_541);
     expect(customsOperationsFeeRub(10_000_000)).toBe(49_240);
     expect(customsOperationsFeeRub(10_000_001)).toBe(73_860);
+  });
+
+  it("estimates fee from USD at demo rate 90", () => {
+    // 18000 * 90 = 1_620_000 → bracket 13_541
+    expect(customsOperationsFeeFromUsd(18_000, 90)).toBe(13_541);
   });
 });

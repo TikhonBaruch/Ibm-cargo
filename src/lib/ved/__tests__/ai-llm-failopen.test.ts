@@ -10,6 +10,8 @@ vi.mock("../settings", () => ({
 }));
 
 import { requestAiDraft } from "../ai";
+// Container CJS mirror has no .d.ts — runtime import for dual-path parity.
+// @ts-expect-error JS module without declaration
 import { enrichWithLlm } from "../../../../containers/ai/src/enrich-llm.js";
 
 const baseDraft = {

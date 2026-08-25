@@ -2,22 +2,23 @@
  * Mode A = in-process mesh (Vercel). Mode B = HTTP to capability containers.
  * Service URLs win when set (Compose).
  */
+import type { EnvBag } from "../../env-bag";
 
 export type AiTransport = "service" | "mesh";
 
-export function ocrServiceBaseUrl(env: NodeJS.ProcessEnv = process.env): string {
+export function ocrServiceBaseUrl(env: EnvBag = process.env): string {
   return String(env.OCR_SERVICE_URL || "").replace(/\/$/, "");
 }
 
-export function llmServiceBaseUrl(env: NodeJS.ProcessEnv = process.env): string {
+export function llmServiceBaseUrl(env: EnvBag = process.env): string {
   return String(env.LLM_SERVICE_URL || "").replace(/\/$/, "");
 }
 
-export function visionTransport(env: NodeJS.ProcessEnv = process.env): AiTransport {
+export function visionTransport(env: EnvBag = process.env): AiTransport {
   return ocrServiceBaseUrl(env) ? "service" : "mesh";
 }
 
-export function classifyTransport(env: NodeJS.ProcessEnv = process.env): AiTransport {
+export function classifyTransport(env: EnvBag = process.env): AiTransport {
   return llmServiceBaseUrl(env) ? "service" : "mesh";
 }
 

@@ -1,14 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { mapTwsDutyKind, overlayTwsDuties } from "../tnved-tws";
+import { mapTwsDutyKind, overlayTwsDuties, type OverlayableNode } from "../tnved-tws";
 
 describe("TWS duty overlay", () => {
   it("maps MIXED to COMBINED and keeps FNS titles", () => {
     expect(mapTwsDutyKind("MIXED")).toBe("COMBINED");
+    type Node = OverlayableNode & { titleRu?: string };
     const { nodes, overlayed, withPct } = overlayTwsDuties(
       [
         { code: "0101210000", isLeaf: true, notes: null, titleRu: "официальное ФНС" },
         { code: "01", isLeaf: false, notes: "группа" },
-      ] as Array<{ code: string; isLeaf?: boolean; notes?: string | null; titleRu?: string }>,
+      ] as Node[],
       [
         {
           code: "0101210000",

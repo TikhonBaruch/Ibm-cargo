@@ -4,6 +4,7 @@
  */
 import { createHash } from "node:crypto";
 import type { PrismaClient } from "@prisma/client";
+import type { EnvBag } from "../env-bag";
 import {
   deepseekVisionConfigured,
   providerClassifyConfigured,
@@ -83,7 +84,7 @@ async function persistLlmSoftFails(db: Db, calculationId: string, codes: string[
 
 export function shouldEnqueueAiDrain(
   settings: PipelineSettings | null | undefined,
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): boolean {
   if (settings?.llmEnrichEnabled === false) return false;
   const ocr = String(env.OCR_SERVICE_URL || "").replace(/\/$/, "");

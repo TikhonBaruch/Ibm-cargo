@@ -98,14 +98,21 @@ async function main() {
     return body;
   });
 
-  if (!["DONE", "QUEUED"].includes(paid.status)) {
+  // EXPRESS high-conf → DONE; broker tariffs → QUEUED or IN_REVIEW (autoAssignBrokers)
+  if (!["DONE", "QUEUED", "IN_REVIEW"].includes(paid.status)) {
     throw new Error(`Unexpected status after pay: ${paid.status}`);
   }
   if (paid.status === "DONE" && !paid.pdfHtml) {
     throw new Error("DONE without pdfHtml");
   }
 
-  console.log("✅ Smoke OK:", paid.number, "→", paid.status);
+  console.log(
+    "✅ Smoke OK:",
+    paid.number,
+    "→",
+    paid.status,
+    paid.status === "IN_REVIEW" ? "(autoAssign)" : ""
+  );
 }
 
 main().catch((e) => {

@@ -4,6 +4,7 @@
  *
  * `ibm-cargo.vercel.app` is a different Vercel project (static IBM Cargo), never this app.
  */
+import type { EnvBag } from "./env-bag";
 export const FOREIGN_IBM_CARGO_HOST = "ibm-cargo.vercel.app";
 
 export function isForeignIbmCargoOrigin(raw: string): boolean {
@@ -24,7 +25,7 @@ function normalizeOrigin(raw: string): string {
   return `https://${t}`;
 }
 
-export function resolveSiteUrl(env: NodeJS.ProcessEnv = process.env): string {
+export function resolveSiteUrl(env: EnvBag = process.env): string {
   const candidates = [
     env.NEXTAUTH_URL,
     env.NEXT_PUBLIC_SITE_URL,
@@ -45,7 +46,7 @@ export function resolveSiteUrl(env: NodeJS.ProcessEnv = process.env): string {
 }
 
 /** Ensure NEXTAUTH_URL is a non-empty absolute URL before next-auth loads. */
-export function ensureNextAuthUrl(env: NodeJS.ProcessEnv = process.env): string {
+export function ensureNextAuthUrl(env: EnvBag = process.env): string {
   const resolved = resolveSiteUrl(env);
   const current = (env.NEXTAUTH_URL || "").trim().replace(/\/$/, "");
   if (!current || isForeignIbmCargoOrigin(current)) {

@@ -34,6 +34,7 @@ import {
   visionTransport,
   type AiTransport,
 } from "./transport";
+import type { EnvBag } from "../../env-bag";
 
 export type ChainVisionMode = "direct-qwen" | "direct-deepseek" | "ocr-service" | "none";
 
@@ -66,7 +67,7 @@ export type ChainClassifyResult =
 
 export function visionConfiguredForChain(
   chainId: AiChainId = resolveAiChainId(),
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): boolean {
   if (visionTransport(env) === "service") return true;
   const meta = aiChainMeta(chainId);
@@ -81,7 +82,7 @@ export function visionConfiguredForChain(
 
 export function classifyConfiguredForChain(
   chainId: AiChainId = resolveAiChainId(),
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): boolean {
   if (classifyTransport(env) === "service") return true;
   return providerClassifyConfigured(classifyEnvForChain(chainId, env));
@@ -89,7 +90,7 @@ export function classifyConfiguredForChain(
 
 export function visionModeForChain(
   chainId: AiChainId,
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): ChainVisionMode {
   if (visionTransport(env) === "service") return "ocr-service";
   const v = aiChainMeta(chainId).vision;
@@ -150,7 +151,7 @@ async function ocrDescribeBody(
 export async function describeForChain(
   chainId: AiChainId,
   opts: { mediaUrl: string; hint?: string; calculationId?: string },
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): Promise<ChainDescribeResult> {
   const mode = visionModeForChain(chainId, env);
   const ocrUrl = ocrServiceBaseUrl(env);
@@ -206,7 +207,7 @@ export async function describeForChain(
 
 /** Best-effort session reset after Mode B describe (Qwen cookie). Mesh = no-op. */
 export async function resetOcrSessionForChain(
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): Promise<{ ok: boolean; skipped?: boolean; status: number; data: Record<string, unknown> }> {
   const ocrUrl = ocrServiceBaseUrl(env);
   if (!ocrUrl) {
@@ -229,7 +230,7 @@ export async function classifyForChain(
   db: PrismaClient,
   chainId: AiChainId,
   body: ProviderClassifyInput,
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): Promise<ChainClassifyResult> {
   const llmUrl = llmServiceBaseUrl(env);
   if (llmUrl) {

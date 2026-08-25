@@ -7,6 +7,7 @@
  */
 import { readFile } from "fs/promises";
 import type { PrismaClient } from "@prisma/client";
+import type { EnvBag } from "../env-bag";
 import {
   deepseekVisionConfigured,
   providerClassifyConfigured,
@@ -304,7 +305,7 @@ async function loadLexical(db: Db, q: string, leafOnly: boolean, prefix?: string
 export async function classifyWithProvider(
   db: Db,
   body: ProviderClassifyInput,
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): Promise<ProviderClassifyResult | null> {
   return classifyWithProviderChain(db, body, env);
 }
@@ -316,7 +317,7 @@ export async function classifyWithProvider(
 export async function classifyWithProviderChain(
   db: Db,
   body: ProviderClassifyInput,
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): Promise<ProviderClassifyResult | null> {
   const chain = resolveClassifyChain(env);
   if (!chain.length) return null;
@@ -526,7 +527,7 @@ function mimeFromLocalName(name: string): string {
 export async function fetchMediaAsBase64(
   mediaUrl: string,
   timeoutMs: number,
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): Promise<MediaFetchResult> {
   if (!isAllowedMediaUrl(mediaUrl, env)) {
     return {
@@ -596,7 +597,7 @@ function fetchDiagOnly(r: MediaFetchResult): MediaFetchDiag {
 /** Qwen-VL describe from public mediaUrl (S3). Fail-open with structured diagnostics. */
 export async function describeWithProviderQwen(
   opts: { mediaUrl: string; hint?: string; calculationId?: string },
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): Promise<ProviderDescribeResult> {
   if (!qwenVisionConfigured(env)) {
     return {
@@ -761,7 +762,7 @@ export async function describeWithProviderQwen(
 /** DeepSeek vision describe (chain 3). OpenAI-compatible image_url; fail-open. */
 export async function describeWithProviderDeepseek(
   opts: { mediaUrl: string; hint?: string; calculationId?: string },
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): Promise<ProviderDescribeResult> {
   if (!deepseekVisionConfigured(env)) {
     return {

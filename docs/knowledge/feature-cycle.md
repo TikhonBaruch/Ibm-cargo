@@ -116,7 +116,7 @@ Preview: SSO Vercel часто включён — открывать через 
 | M1.c | Админ: секции сайдбара Операции / Каталог / Платформа | [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) §5 · **группы live**; panes — M2 |
 | M1.1 | Контент лендинга / подсказки статусов под D27 | Ручной `/` + кабинеты — **только по явному запросу** на копирайт лендинга |
 | M1.2 | UX кандидатов HS поверх **heuristic** (top-N + краткое «почему» из правил) — **не** LLM-CTA | Unit draft + ручной create · **done** C3 |
-| M1.3 | Починить `smoke:client` под autoAssign → `IN_REVIEW` | Скрипт PASS на prod |
+| M1.3 | Починить `smoke:client` под autoAssign → `IN_REVIEW` | Скрипт PASS — accepts `DONE`\|`QUEUED`\|`IN_REVIEW` |
 
 ### Этап M2 — Tech-debt (параллельно, не блокер CTA)
 
