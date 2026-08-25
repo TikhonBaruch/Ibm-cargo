@@ -255,6 +255,9 @@ try {
   if (exists("app/package.json")) {
     errors.push("app/package.json must not exist — Vercel Root Directory is repo root, not app/");
   }
+  if (exists("app/vercel.json")) {
+    errors.push("app/vercel.json must not exist on the root-Next layout (Vercel Root=app → no services declared)");
+  }
   const nextCfg = read("next.config.mjs");
   if (/output:\s*["']standalone["']/.test(nextCfg) && !nextCfg.includes("VERCEL")) {
     errors.push("next.config.mjs must gate output:standalone (omit when VERCEL is set; keep for Docker)");

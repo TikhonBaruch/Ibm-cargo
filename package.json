@@ -107,6 +107,7 @@
     "prisma": true,
     "prisma@6.19.3": true,
     "sharp": true,
+    "sharp@0.34.5": true,
     "sharp@0.35.3": true,
     "tesseract.js": true,
     "tesseract.js@7.0.0": true,

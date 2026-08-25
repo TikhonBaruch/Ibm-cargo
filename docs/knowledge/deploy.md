@@ -56,6 +56,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 - `npm warn allow-scripts … not yet covered by allowScripts` — advisory npm 11.16+ (скрипты всё ещё бегут). В корневом `package.json` поле `allowScripts` (имя + pin lockfile: Prisma 6.19.3, sharp **0.35.3** не 0.34.5, tesseract.js, unrs-resolver). Не `ignore-scripts`. На npm 10 предупреждения нет.
 - `The configuration property package.json#prisma is deprecated` — seed в `prisma.config.ts` (Prisma 6.19 `defineConfig` из `prisma/config`). Не Prisma 7. URL БД остаётся `env("DATABASE_URL")` в `prisma/schema.prisma`.
 - `WARNING! Build output contains no "functions" or "static" directory` — **фатально:** Framework = Other/Static, не **Services**. Next пишет `.next/`, не `functions/`/`static/`. Не путать с двумя warn выше. Клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §9.
+- `Project framework is set to "services", but no services are declared` — Preset **уже** Services, но прочитанный `vercel.json` без `services`. На этой ветке блок **есть** в корне. Типично: Redeploy **Production/`main`** (корневого json нет, он в `app/vercel.json`) или Root Directory = `app`. Не убирать `services`. Клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §10.
 - `Warning: Could not identify Next.js version` / `Error: No Next.js version detected` — Root Directory в Dashboard не `.` (часто `app`) или Framework Preset не **Services**. `"next"` уже в корневом `package.json`. См. [`plan-vercel-services.md`](./plan-vercel-services.md) §8.
 
 ## Vercel project settings
@@ -73,7 +74,9 @@ Dashboard (агент **не** может выставить эти поля). �
 
 **Ошибка** `No Next.js version detected` / `Could not identify Next.js version` = билдер смотрит не в корневой `package.json` (там уже `"next": "16.1.6"`). Почти всегда Dashboard Root Directory = `app` или Framework ≠ Services. Канон и клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §8.
 
-**Ошибка** `Build output contains no "functions" or "static" directory` = generic Static/Other builder. Канон: [`plan-vercel-services.md`](./plan-vercel-services.md) §9. BFF: `/api/*` на `frontend`; Docker через Node `ved/proxy`, не browser→container.
+**Ошибка** `Build output contains no "functions" or "static" directory` = generic Static/Other builder. Канон: [`plan-vercel-services.md`](./plan-vercel-services.md) §9.
+
+**Ошибка** `Project framework is set to "services", but no services are declared` = билдер не нашёл `services` в Root Directory. На PR-ветке json в **корне** уже с `services`; не Redeploy `main`/Production до merge. Канон: [`plan-vercel-services.md`](./plan-vercel-services.md) §10. BFF: `/api/*` на `frontend`; Docker через Node `ved/proxy`, не browser→container.
 
 ## Порядок ship
 
