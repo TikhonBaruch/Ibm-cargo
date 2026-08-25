@@ -444,6 +444,19 @@ async function enqueueOutboxRow(msg) {
   });
 }
 
+function assertCalcChatAccess(calc, user) {
+  if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") return;
+  if (user.role === "CLIENT") {
+    if (calc.clientUserId !== user.userId) throw new Error("Forbidden");
+    return;
+  }
+  if (user.role === "BROKER") {
+    if (calc.brokerUserId !== user.userId) throw new Error("Forbidden");
+    return;
+  }
+  throw new Error("Forbidden");
+}
+
 async function notifySend(msg) {
   let to = msg.to;
   if (to && !String(to).includes("@")) {
@@ -1600,6 +1613,15 @@ const server = http.createServer(async (req, res) => {
           });
           return { thread, message, waitingOn: "BROKER", ticketStatus: "OPEN" };
         });
+        void notifySend({
+          template: "chat.support_new",
+          to: process.env.NOTIFY_OPS_EMAIL || "ops@lbm.local",
+          payload: {
+            threadId: result.thread.id,
+            subject,
+            preview: text.slice(0, 200),
+          },
+        }).catch(() => undefined);
         return json(res, 201, result);
       }
       if (body.kind === "SUPPORT_REPLY") {
@@ -1636,6 +1658,17 @@ const server = http.createServer(async (req, res) => {
           where: { id: tid },
           data: patch,
         });
+        if (user.role !== "CLIENT" && existing.createdByUserId) {
+          void notifySend({
+            template: "chat.support_reply",
+            to: existing.createdByUserId,
+            payload: {
+              threadId: tid,
+              subject: existing.subject,
+              preview: text.slice(0, 200),
+            },
+          }).catch(() => undefined);
+        }
         return json(res, 201, { ...message, waitingOn: patch.waitingOn, ticketStatus: patch.ticketStatus });
       }
       if (body.kind === "SUPPORT_STATUS") {
@@ -1695,14 +1728,28 @@ const server = http.createServer(async (req, res) => {
       let thread = await prisma.chatThread.findFirst({
         where: { calculationId: body.calculationId, kind: "CALCULATION" },
       });
+      const calcRow = await prisma.calculation.findUnique({
+        where: { id: body.calculationId },
+        select: {
+          id: true,
+          number: true,
+          companyId: true,
+          clientUserId: true,
+          brokerUserId: true,
+        },
+      });
+      if (!calcRow) return json(res, 404, { error: "Not found" });
+      try {
+        assertCalcChatAccess(calcRow, user);
+      } catch {
+        return json(res, 403, { error: "Forbidden" });
+      }
       if (!thread) {
-        const calc = await prisma.calculation.findUnique({ where: { id: body.calculationId } });
-        if (!calc) return json(res, 404, { error: "Not found" });
         thread = await prisma.chatThread.create({
           data: {
             kind: "CALCULATION",
-            calculationId: calc.id,
-            subject: `Чат · ${calc.number}`,
+            calculationId: calcRow.id,
+            subject: `Чат · ${calcRow.number}`,
           },
         });
       }
@@ -1718,6 +1765,19 @@ const server = http.createServer(async (req, res) => {
       });
       if (waitingOn) {
         await prisma.chatThread.update({ where: { id: thread.id }, data: { waitingOn } });
+      }
+      const notifyTo =
+        user.role === "CLIENT" ? calcRow.brokerUserId : user.role === "BROKER" ? calcRow.clientUserId : null;
+      if (notifyTo) {
+        void notifySend({
+          template: "chat.message",
+          to: notifyTo,
+          payload: {
+            calculationId: calcRow.id,
+            number: calcRow.number,
+            preview: String(body.body || "").slice(0, 200),
+          },
+        }).catch(() => undefined);
       }
       return json(res, 201, { ...message, waitingOn });
     }

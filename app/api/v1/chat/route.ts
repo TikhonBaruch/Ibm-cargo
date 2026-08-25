@@ -15,6 +15,11 @@ import {
   replySupportThread,
   setSupportTicketStatus,
 } from "@/lib/ved/chat";
+import {
+  assertCalculationChatAccess,
+  notifyCalculationChatMessage,
+  notifySupportChatMessage,
+} from "@/lib/ved/chat-notify";
 import { supportStatusHttpCode } from "@/lib/ved/support-ticket";
 
 function isStaff(role: string | undefined) {
@@ -115,6 +120,23 @@ export async function GET(req: NextRequest) {
 
   if (!calculationId) return NextResponse.json({ error: "calculationId required" }, { status: 400 });
 
+  const calc = await prisma.calculation.findUnique({
+    where: { id: calculationId },
+    select: {
+      id: true,
+      number: true,
+      companyId: true,
+      clientUserId: true,
+      brokerUserId: true,
+    },
+  });
+  if (!calc) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  try {
+    assertCalculationChatAccess(calc, userId, role);
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const thread = await prisma.chatThread.findFirst({
     where: { calculationId, kind: "CALCULATION" },
     include: {
@@ -179,6 +201,18 @@ export async function POST(req: NextRequest) {
       subject: data.subject,
       body: data.body,
     });
+    try {
+      await notifySupportChatMessage(prisma, {
+        threadId: result.thread.id,
+        subject: result.thread.subject ?? "",
+        authorRole: role || "CLIENT",
+        clientUserId: userId,
+        bodyPreview: data.body,
+        isNewTicket: true,
+      });
+    } catch {
+      /* fail-open */
+    }
     return NextResponse.json(result, { status: 201 });
   }
 
@@ -199,6 +233,21 @@ export async function POST(req: NextRequest) {
         body: data.body,
         waitingOn: role === "CLIENT" ? "BROKER" : "CLIENT",
       });
+      try {
+        const thread = await getSupportThread(prisma, data.threadId);
+        if (thread) {
+          await notifySupportChatMessage(prisma, {
+            threadId: thread.id,
+            subject: thread.subject ?? "",
+            authorRole: role || "CLIENT",
+            clientUserId: thread.createdByUserId,
+            bodyPreview: data.body,
+            isNewTicket: false,
+          });
+        }
+      } catch {
+        /* fail-open */
+      }
       return NextResponse.json(result, { status: 201 });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Failed";
@@ -237,14 +286,28 @@ export async function POST(req: NextRequest) {
   let thread = await prisma.chatThread.findFirst({
     where: { calculationId: data.calculationId, kind: "CALCULATION" },
   });
+  const calcRow = await prisma.calculation.findUnique({
+    where: { id: data.calculationId },
+    select: {
+      id: true,
+      number: true,
+      companyId: true,
+      clientUserId: true,
+      brokerUserId: true,
+    },
+  });
+  if (!calcRow) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  try {
+    assertCalculationChatAccess(calcRow, userId, role || "");
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
   if (!thread) {
-    const calc = await prisma.calculation.findUnique({ where: { id: data.calculationId } });
-    if (!calc) return NextResponse.json({ error: "Not found" }, { status: 404 });
     thread = await prisma.chatThread.create({
       data: {
         kind: "CALCULATION",
-        calculationId: calc.id,
-        subject: `Чат · ${calc.number}`,
+        calculationId: calcRow.id,
+        subject: `Чат · ${calcRow.number}`,
       },
     });
   }
@@ -266,6 +329,16 @@ export async function POST(req: NextRequest) {
       where: { id: thread.id },
       data: { waitingOn },
     });
+  }
+
+  try {
+    await notifyCalculationChatMessage(prisma, {
+      calc: calcRow,
+      authorRole: role || "",
+      bodyPreview: data.body,
+    });
+  } catch {
+    /* fail-open */
   }
 
   return NextResponse.json({ ...message, waitingOn }, { status: 201 });

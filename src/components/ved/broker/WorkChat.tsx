@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Calc, ChatMsg } from "./types";
 import { compressImageForUpload } from "@/lib/ved/compress-image-client";
 
@@ -29,7 +29,13 @@ export function WorkChat({
   onUploadError?: (message: string) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    const el = listRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [chat.length, chat[chat.length - 1]?.id]);
 
   const upload = async (file: File) => {
     setUploading(true);
@@ -64,6 +70,7 @@ export function WorkChat({
         )}
       </div>
       <div
+        ref={listRef}
         className={`mb-2 space-y-1 overflow-y-auto rounded-2xl bg-slate-50 p-2 text-sm ${
           tall ? "max-h-[min(28rem,55vh)] min-h-[12rem]" : "max-h-40"
         }`}

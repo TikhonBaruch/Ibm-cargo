@@ -71,6 +71,7 @@ const knowledgeRequired = [
   "docs/knowledge/plan-full-split-ibm-cargo.md",
   "docs/knowledge/plan-zero-llm-coupling.md",
   "docs/knowledge/plan-taurus-backup-core.md",
+  "docs/knowledge/plan-chat-partial.md",
   "docs/knowledge/containerization.md",
   "docs/knowledge/web-slim.md",
   "docs/knowledge/cabinets/README.md",
