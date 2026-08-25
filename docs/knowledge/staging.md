@@ -28,6 +28,7 @@ TEST_API_URL=https://your-preview.vercel.app npm run smoke:full
 
 4. `NEXTAUTH_URL` на preview должен совпадать с origin preview-деплоя (не копировать prod URL вслепую).
 5. Если build: *No Next.js version detected* — Settings Root Directory = `.`, Framework = **Services**; `"next"` уже в корневом `package.json`. Не открывать `https://ibm-cargo.vercel.app`. Канон: [`plan-vercel-services.md`](./plan-vercel-services.md) §8.
+6. Если build: *Build output contains no "functions" or "static" directory* — тот же Dashboard: Framework **Services**, Root `.`, проект **ibm-cargo** (не alias `ibm-cargo.vercel.app`). Prisma/allow-scripts warn в том же логе не фатальны. Канон: [`plan-vercel-services.md`](./plan-vercel-services.md) §9.
 
 ## Prod smoke (после merge в `main`)
 

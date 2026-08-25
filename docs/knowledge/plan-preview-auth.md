@@ -23,6 +23,7 @@
 | После Configuration — «неверный пароль» при живой БД | Нет seed в `newlsu_lbm` **или** на `/login` сокращения `client@` (seed = `client@example.com`) |
 | Пустой env → `https://ibm-cargo.vercel.app` | Хардкод fallback в `site-url.ts` / sitemap / robots |
 | `No Next.js version detected` / `Could not identify Next.js version` | Dashboard Root Directory ≠ `.` (часто `app`) или Framework ≠ **Services**. `"next"` уже в корневом `package.json`. Не hostname `ibm-cargo.vercel.app`. Клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §8. |
+| `Build output contains no "functions" or "static"` | Framework = Other/Static (или чужой проект / Root ≠ `.`). Next не пишет эти папки. Prisma/allow-scripts warn не фатальны. Клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §9. |
 
 Не делать: коммитить секреты; fallback secret на **Production**; считать `ibm-cargo.vercel.app` продом LBM.
 

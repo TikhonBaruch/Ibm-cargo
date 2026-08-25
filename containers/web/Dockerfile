@@ -1,5 +1,5 @@
 # Next.js web — host `npm run build` then stage standalone into .export/
-#   npm run build && rm -rf containers/web/.export && mkdir -p containers/web/.export \
+#   DOCKER_BUILD=1 npm run build && rm -rf containers/web/.export && mkdir -p containers/web/.export \
 #     && cp -a .next/standalone/. containers/web/.export/ \
 #     && cp -a .next/static containers/web/.export/.next/static \
 #     && cp -a public containers/web/.export/public

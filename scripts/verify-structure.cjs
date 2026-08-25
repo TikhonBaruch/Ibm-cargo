@@ -240,8 +240,24 @@ try {
   if (!deps.next) {
     errors.push('root package.json must list "next" (Vercel: No Next.js version detected)');
   }
+  if (pkg.prisma) {
+    errors.push("package.json#prisma is deprecated on Prisma 6.19; seed lives in prisma.config.ts");
+  }
+  if (!exists("prisma.config.ts")) {
+    errors.push("prisma.config.ts required (Prisma 6.19 defineConfig; do not upgrade to Prisma 7)");
+  }
+  const allow = pkg.allowScripts || {};
+  for (const name of ["@prisma/client", "@prisma/engines", "prisma", "sharp", "tesseract.js", "unrs-resolver"]) {
+    if (allow[name] !== true) {
+      errors.push(`package.json allowScripts must allow ${name} (npm 11.16+ advisory; do not ignore-scripts)`);
+    }
+  }
   if (exists("app/package.json")) {
     errors.push("app/package.json must not exist — Vercel Root Directory is repo root, not app/");
+  }
+  const nextCfg = read("next.config.mjs");
+  if (/output:\s*["']standalone["']/.test(nextCfg) && !nextCfg.includes("VERCEL")) {
+    errors.push("next.config.mjs must gate output:standalone (omit when VERCEL is set; keep for Docker)");
   }
   const vercel = JSON.parse(read("vercel.json"));
   if (Object.prototype.hasOwnProperty.call(vercel, "rootDirectory")) {

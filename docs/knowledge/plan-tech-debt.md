@@ -31,7 +31,7 @@
 | **6** | PROTECTED_V1: adjust + imports preview | P2 | pending | middleware + unit `security`/`access` |
 | **7** | Нарезать `AdminVedCabinet` на panes | P2 | **done** | orchestrator ~816 LOC + `ved/admin/*` (14 panes + `types.ts`) · nav groups были prerequisite |
 | **8** | Track A ops keys (Resend / ЮKassa) | P2 | pending | `ops:track-a -- --vercel` без NEED (оператор) |
-| **9** | Hygiene: next-env ignore, Prisma 7 warn | P3 | pending | нет мусора в `git status` |
+| **9** | Hygiene: next-env ignore, Prisma 7 warn | P3 | **partial** — `package.json#prisma` → `prisma.config.ts` (остаёмся на Prisma **6.19**, не 7) | нет мусора в `git status` |
 
 ## Шаг 1 — детали
 
@@ -79,7 +79,7 @@ npm run smoke:precedent-vector   # skip OK без OPENAI_API_KEY
 ## Шаг 2+ (кратко)
 
 2. **Lint:** **done** — `"lint": "eslint app src"` (Next 16 has no `next lint`; that treated `lint` as a directory).  
-2b. **npm allowScripts:** **done** — Prisma / sharp / tesseract.js / unrs-resolver в `package.json` `allowScripts` (warning npm 11.16+; install behaviour unchanged).  
+2b. **npm allowScripts:** **done** — Prisma / sharp / tesseract.js / unrs-resolver в `package.json` `allowScripts` (имя + pin lockfile; warning npm 11.16+; install behaviour unchanged). Не `ignore-scripts`.  
 3. **tsc:** починить mocks (`ProcessEnv`, orch `never`) и JS import types; добавить script в `test:ci` или document exclude.  
 4. **WIP split:** не один монолитный merge admin-ops+Growth.  
 5–7. Docs parity, PROTECTED, admin panes.  

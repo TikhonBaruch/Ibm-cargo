@@ -105,6 +105,7 @@ Stay-on-Next: `auth/*`, `uploads`, `imports/*`, `internal/jobs-tick`.
 | E4 `vercel.services.bff.json` + runbook §7 | **done** |
 | Framework Services + activate json | **done** — этот репо: `vercel.json` = BFF services; Dashboard Root=`.` |
 | E5 «No Next.js version detected» | **done** — §8; гейт `vercel-root` / `test:structure` |
+| E6 empty `functions`/`static` | **done** — §9; prisma.config.ts + standalone gate; Dashboard Services |
 | Domain rewrite / JWT | hold |
 
 ## 5. Проверка (после cutover)
@@ -224,3 +225,55 @@ Dashboard **нельзя** выставить из агента / `vercel.json` 
 - Build log: нет *No Next.js version detected*; есть Next frontend + container `backend`.
 - Preview URL вида `ibm-cargo-git-…-tikhonbaruchs-projects.vercel.app`, не `https://ibm-cargo.vercel.app`.
 - `npm run test:ci` (гейт root/services).
+
+## 9. Диагностика: «Build output contains no functions or static» (D33)
+
+**Точная строка Vercel (это падение деплоя, не warning):**
+
+```text
+WARNING! Build output contains no "functions" or "static" directory; the build may not have produced any deployable output.
+```
+
+### Идея
+
+Билдер **Other / Static** (`@vercel/static-build`) ищет корневые папки `functions/` или `static/`. Корневой Next `npm run build` пишет `.next/` (на Docker ещё `.next/standalone`). **Не** пишет `functions/` и `static/`. Static builder тогда предупреждает и выкладывает пустоту.
+
+Это **не** чинится фейковыми пустыми `functions/` / `static/`, не `output: "export"` (сломает App Router / API / auth), не снятием блока `services` из `vercel.json`, не `"rootDirectory"` в json.
+
+Соседние строки в том же логе — **не фатальны**:
+
+| Строка | Смысл |
+|--------|--------|
+| `package.json#prisma is deprecated` | Prisma 6.19: seed перенесён в `prisma.config.ts` (`defineConfig` из `prisma/config`). Схему URL не трогаем (`env("DATABASE_URL")` в `prisma/schema.prisma`). Prisma 7 не поднимаем. |
+| `npm warn allow-scripts … not yet covered` | Advisory npm 11.16+. В `package.json` есть `allowScripts` (имя + pin из lockfile: Prisma 6.19.3, sharp **0.35.3**, tesseract.js 7.0.0, unrs-resolver 1.11.1). Лог с `sharp@0.34.5` = старый tree / другой деплой. Не `ignore-scripts`. |
+| нет `functions` / `static` | **Фатально:** Framework = Other/Static, Root Directory ≠ `.`, или **чужой Vercel-проект**. |
+
+### Анализ
+
+| Симптом | Причина | Что не делать |
+|---------|---------|----------------|
+| нет `functions`/`static` | Framework Preset = **Other** (generic static), не **Services** и не `@vercel/next` | Класть пустые `functions/` / `static/`; `output: "export"` |
+| Тот же текст при Root ≠ `.` | билдер смотрит не в корень (нет `vercel.json` `services`) | `"rootDirectory"` в `vercel.json` |
+| Тот же текст на `ibm-cargo.vercel.app` | Production alias **другого** проекта (статический Uganda IBM Cargo) | Деплоить LBM туда |
+| Prisma / allow-scripts warn + empty output | warn не убивают build; empty output — да | «чинить» warn снятием `services` |
+
+`next.config.mjs`: `output: "standalone"` **только** вне Vercel cloud (`VERCEL` unset) или при `DOCKER_BUILD=1` (root `Dockerfile`, host-export в `containers/web`). На Vercel Next builder standalone не нужен и **не** создаёт `functions/`/`static/` — гейт сам по себе Other не лечит.
+
+Агент **не** может выставить Dashboard Framework / Root Directory / env.
+
+### Клики в Vercel Dashboard (человек)
+
+Правильный проект: team **tikhonbaruchs-projects** / project **[ibm-cargo](https://vercel.com/tikhonbaruchs-projects/ibm-cargo)** (GitHub `TikhonBaruch/Ibm-cargo`). **Не** `https://ibm-cargo.vercel.app`.
+
+1. [vercel.com](https://vercel.com) → team **tikhonbaruchs-projects** → project **ibm-cargo**.
+2. **Settings** → **General** → **Framework Preset** → **Services** → **Save**.
+3. **Root Directory** → **`.`** (пустое поле или `.`). Не `app` / `lint` / вложенная папка.
+4. **Deployments** → коммит этой ветки → **Redeploy** (без stale cache).
+
+После этого билдер должен быть **Services**: frontend `@vercel/next` + backend `Dockerfile.vercel`. В логе — Next compile, не generic static.
+
+### Проверка
+
+- Build log: нет empty `functions`/`static`; есть Next frontend + container `backend`.
+- `npx prisma validate` / `npm run db:seed` читают `prisma.config.ts`, не `package.json#prisma`.
+- `npm run test:ci` (гейт prisma.config + allowScripts + services).

@@ -101,7 +101,7 @@ Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smo
 | Product focus D27 | частник: ТН ВЭД → брокер-QC → PDF; «под ключ» отложено | [`product.md`](./product.md) · ADR D27 · polish без logistics/LLM/acquiring |
 | Dual-path / notify runbook | F17/F19 checklist | [`dual-path-parity.md`](./dual-path-parity.md) · [`runbook.md`](./runbook.md) |
 
-Прод UI: hostname `ibm-cargo.vercel.app` — **чужой** проект. Этот репозиторий: Vercel Preview `ibm-cargo`. Живой LBM: https://taurus-liart.vercel.app · merge register: ветка `cursor/gap-providers-c5` → `main` (2026-08-05).
+Прод UI: hostname `ibm-cargo.vercel.app` — **чужой** проект. Этот репозиторий: Vercel Preview `ibm-cargo` (Dashboard: Root `.`, Framework **Services**). Лог *no "functions" or "static"* = Other/Static builder, не Services · [`plan-vercel-services.md`](./plan-vercel-services.md) §9. Живой LBM: https://taurus-liart.vercel.app · merge register: ветка `cursor/gap-providers-c5` → `main` (2026-08-05).
 
 ## В работе / не на `origin/main`
 

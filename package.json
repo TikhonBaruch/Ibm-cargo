@@ -99,15 +99,18 @@
     "typescript": "^5.0.0",
     "vitest": "^4.1.10"
   },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
-  },
   "allowScripts": {
     "@prisma/client": true,
+    "@prisma/client@6.19.3": true,
     "@prisma/engines": true,
+    "@prisma/engines@6.19.3": true,
     "prisma": true,
+    "prisma@6.19.3": true,
     "sharp": true,
+    "sharp@0.35.3": true,
     "tesseract.js": true,
-    "unrs-resolver": true
+    "tesseract.js@7.0.0": true,
+    "unrs-resolver": true,
+    "unrs-resolver@1.11.1": true
   }
 }

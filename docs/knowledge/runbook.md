@@ -77,7 +77,7 @@ TEST_API_URL=http://localhost:8080 NEXTAUTH_URL=http://localhost:8080 npm run sm
 > **Ребренд local slug (`lbm`):** после смены `POSTGRES_USER`/`POSTGRES_DB` с `lbm` на `lbm` нужен `docker compose down -v` и заново `db push` + `db seed` — старый volume хранит role `lbm`.
 
 Local **PASS 2026-08-07**. Prisma `binaryTargets` includes `linux-musl-openssl-3.0.x` for Alpine images.  
-If Docker Hub / npm-in-build timeouts: host-build Next standalone into `containers/*/.export/` (gitignored), then `docker compose build`. Optional: `docker-compose.build-host.yml` (`build.network: host`).
+If Docker Hub / npm-in-build timeouts: host-build Next standalone into `containers/*/.export/` (gitignored), then `docker compose build`. Root `next.config.mjs` emits standalone unless `VERCEL` is set; force with `DOCKER_BUILD=1 npm run build` (root `Dockerfile` sets this). Optional: `docker-compose.build-host.yml` (`build.network: host`).
 
 Without Docker CLI, skip and keep checklist in [`dual-path-parity.md`](./dual-path-parity.md). Rootless install also needs `uidmap` via sudo.
 
