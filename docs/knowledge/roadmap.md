@@ -108,7 +108,7 @@ Cutover slim web только после стабильного `smoke:gateway` 
 
 | Этап | Фокус | Статус |
 |------|-------|--------|
-| **M0** | Эксплуатация: mock+S3, визуальный C↔B↔A, empty states (клиент сначала) | **сейчас** · канон [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) |
+| **M0** | Эксплуатация: mock+S3, визуальный C↔B↔A, empty states (клиент сначала) | **M0.1+M0.2 PASS** (2026-08-25); empty states live · [`staging.md`](./staging.md) |
 | **M1** | Кабинеты: клиент empty → брокер queue/`acceptingJobs` → админ группы nav (**live**); HS heuristic; `smoke:client` | **live** · smoke:client accepts IN_REVIEW (autoAssign) |
 | **M2** | Tech-debt (lint/tsc/PROTECTED/docs) + нарезка Admin panes после групп nav | **done** (код) · Track A keys — ops · [`plan-tech-debt.md`](./plan-tech-debt.md) |
 | **M3** | Опц. Resend + накопление precedent-v1 | ops / approve |
