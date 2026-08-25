@@ -86,14 +86,15 @@
 
 При закрытии gap — обновить эту таблицу, не дублировать в `design-baseline.md`. Приоритеты фич polish: [`plan-mvp-polish.md`](./plan-mvp-polish.md) §Матрица.
 
-## UI lab lbm-bro (`/client`)
+## UI lab lbm-bro (три кабинета)
 
-Параллельная поверхность, не замена D14 `/cabinet`. Канон исследования: [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md).
+Параллельная поверхность, не замена D14. Канон: [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md).
 
-| Роль | Экран | Lab (route) | Domain (route) | Статус |
-|------|-------|-------------|----------------|--------|
+| Роль | Экран | Lab | Domain | Статус |
+|------|-------|-----|--------|--------|
 | Клиент | Superapp home | `/client` ✓ | `/cabinet` ✓ | визуал lab; данные demo |
 | Клиент | Заявки / карточка / wizard | `/client/orders` · `/new` ✓ | `/cabinet/orders` · `/new` ✓ | визуал lab |
-| Клиент | Справочник ТН ВЭД | `/client/tnved` ✓ | combobox в NewCalc | lab directory |
-| Брокер / админ | ops-шелл прототипа | компоненты есть, **нет lab-route** | `/broker` · `/admin` live | фаза C |
+| Клиент | Справочник ТН ВЭД | `/client/tnved` ✓ | combobox NewCalc | lab directory |
+| Брокер | Dash / queue / work / chat / SLA / pay / profile | компоненты `broker-*` | `/broker/*` live | **нет lab-route**; nav ≈ live; work demo тоньше WorkMapping |
+| Админ | Dash / orders / clients / brokers / tariffs / finance / AI / audit / settings | компоненты `admin-*` | `/admin/*` live, **14 panes + группы** | **нет lab-route**; lab = 9 плоских пунктов |
 | — | Proto-bar | `/client` layout | запрещён в prod (D14) | только lab |

@@ -145,7 +145,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | Интерактивный дизайн (веб/мобилка) | [`design-interactive.md`](./design-interactive.md) → [`../design/refs/`](../design/refs/) |
 | Сверка экрана с моком | [`design-parity.md`](./design-parity.md) → `cargo-broker-cabinets.html` |
 | Новый UI-экран / компонент | **D32** [`design-patterns.md`](./design-patterns.md) → существующий паттерн, не с нуля |
-| Новый визуал клиента (lbm-bro lab) | [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) → `/client` визуал, `/cabinet` функция |
+| Новый визуал клиента (lbm-bro lab) | [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) → `/client` визуал, `/cabinet` функция; брокер/админ — ops-шелл, не live overwrite |
 | Mapping / claim брокера | core-dialogues S3 → contracts D-MAP/D-QUEUE → [`cabinets/broker/`](./cabinets/broker/) → design-parity |
 | Новый статус / pay-правило | decisions D8/D11 → [`db-process.md`](./db-process.md) (D23) → unit invariants → testing-branches |
 | Товары / ТН ВЭД / история событий | [`data-model.md`](./data-model.md) (D24) → contracts D-PRODUCT/D-TNVED/D-HISTORY → dual writers Next+api |

@@ -9,7 +9,7 @@
 |----------|------------|
 | [`design-baseline.md`](./design-baseline.md) | ADR D14, live UI, токены, shell, навигация кабинетов |
 | [`design-patterns.md`](./design-patterns.md) | **D32:** сначала общепризнанные паттерны (NN / WCAG / SaaS) |
-| [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) | **Lab lbm-bro:** суперприложение клиента `/client` vs domain `/cabinet` |
+| [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) | **Lab lbm-bro:** суперприложение клиента `/client` + ops-шелл брокера/админа vs domain `/cabinet` `/broker` `/admin` |
 | [`design-interactive.md`](./design-interactive.md) | Статус интерактивного дизайна (веб + мобилка), как открыть рефы |
 | [`design-parity.md`](./design-parity.md) | Таблица экранов реф ↔ live, UI backlog |
 | [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) | Удобство, SaaS-аналоги, empty states, nav groups |

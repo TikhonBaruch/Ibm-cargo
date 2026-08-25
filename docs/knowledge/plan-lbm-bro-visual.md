@@ -1,6 +1,6 @@
 # Исследование: визуальный формат lbm-bro
 
-**D33.** Идея: принять (или отвергнуть по частям) новый клиентский визуал из прототипа lbm-bro, не ломая domain MVP (D27) и baseline D14.
+**D33.** Идея: принять (или отвергнуть по частям) предложенный визуал кабинетов **клиента, брокера и админа** из прототипа lbm-bro, не ломая domain MVP (D27) и baseline D14.
 
 **Площадка:** `TikhonBaruch/Ibm-cargo` (продукт **LBM**).  
 **Код прототипа:** `src/lbm-bro/` (~11.5k строк) + маршруты `app/client/*` + ассеты `public/lbm-bro/`.  
@@ -15,9 +15,7 @@
 
 ### 1.1 Что представил дизайнер
 
-Не «форма нового просчёта в том же шелле», а **суперприложение импорта**. Главная клиента — сетка модулей («Что сделаем?»), лента заявок и блок сопровождения груза. Кабинет клиента **не клон админки**: светлый glass-сайдбар, цветные nav-тайлы, поиск и баланс в шапке.
-
-Брокер и админ в том же прототипе остаются **ops-шеллом**: тёмный ink-сайдбар, таблицы, KPI-карточки — ближе к D14 `VedShell`.
+Не «форма нового просчёта в том же шелле», а **три кабинета с разным chrome**. Клиент — суперприложение (светлый product-shell). Брокер и админ — ops-шеллы одной семьи (тёмный ink; у админа фиолетовый mark). Live D14 сейчас сажает все три роли на один `VedShell`.
 
 ### 1.2 Канон визуала (токены = D14, язык = новый)
 
@@ -34,9 +32,31 @@
 
 CSS-канон клиента в прототипе явно подписан: *«Client cabinet: product shell, not admin clone»* (`src/lbm-bro/globals.css`).
 
-### 1.3 Экраны прототипа
+### 1.3 Три кабинета — предложенное визуальное решение
 
-**Клиент (уже на `/client/*`, фазы A–B done):**
+Дизайнер **развёл chrome по работе роли**. Общие токены; разные оболочки.
+
+| Роль | Job | Shell в прототипе | SaaS-аналог | Live сейчас |
+|------|-----|-------------------|-------------|-------------|
+| **Клиент** | Выбрать модуль → просчёт → PDF | Светлый glass, цветные nav-тайлы, поиск + колокол + CTA | Superapp / customer portal | Тёмный `VedShell`, дашборд KPI |
+| **Брокер** | Triage очереди → QC HS → чат → SLA | Тёмный ink, таблицы, KPI-stat, master-detail очереди | Linear triage | Тот же `VedShell`, очередь + WorkMapping |
+| **Админ** | Платформа: assign, выплаты, toggles | Тёмный ink + **фиолетовый** brand-mark (`pulseRing`) | Vercel / Stripe ops | `VedShell` `markVariant=admin` + **группы** nav |
+
+```text
+                    токены D14 (#2b72f4, Manrope/Nunito, radius 28)
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        │                     │                     │
+   Client product shell   Broker ops shell     Admin ops shell
+   .view-client .cl-*     .app .side           .app .side.admin
+   light glass tiles      dark ink + tables    dark + purple mark
+```
+
+**Правило, которое стоит сохранить:** клиент не выглядит как админка. Брокер и админ — два ops-кабинета одной семьи.
+
+### 1.4 Экраны прототипа — клиент
+
+**Уже на `/client/*`, фазы A–B done:**
 
 | Route | Компонент | Паттерн (D32) | Domain |
 |-------|-----------|---------------|--------|
@@ -52,10 +72,51 @@ CSS-канон клиента в прототипе явно подписан: *
 | `/client/faq` · `/guide` | extra | Content | Copy |
 | `/client/ship` · `/clearance` | extra | Service pages | **Hold D27** (shipping UI off; ТО нет) |
 
-**Брокер / админ (компоненты есть, маршрутов lab нет):**  
-`BrokerShell` / `BrokerDash|Queue|Work|Chat|Sla|Pay|Profile` и `AdminShell` / `AdminDash|Orders|Clients|Brokers|Tariffs|Finance|Ai|Audit|Settings` в `src/lbm-bro/components/`. Сейчас `href` смотрят на live `/broker` и `/admin` — **не монтировать поверх domain**. Фаза C: только `/lab/broker` и `/lab/admin`.
+Lab-nav клиента (5 тайлов): Главная · Заявки · Справочник ТН ВЭД · Чат · Компания.  
+Live-nav (`getClientNav`): Дашборд · Заявки · Производитель† · Брокеры · Перевозка† · Баланс · Поддержка · Профиль.
 
-### 1.4 Продуктовая модель дизайнера ≠ LBM
+Брокеры / баланс / FAQ / гайд / перевозка / ТО в прототипе — **плитки главной или extra-роуты**, не пункты сайдбара. Это сознательная IA суперприложения.
+
+### 1.5 Экраны прототипа — брокер
+
+Компоненты `BrokerShell` + `broker-pages.tsx`. **Lab-маршрутов нет** — `href` смотрят на live `/broker` (не монтировать). Nav почти 1:1 с `getBrokerNav`.
+
+| Lab экран | Компонент | Паттерн | Live `/broker` | Взять визуал? |
+|-----------|-----------|---------|----------------|---------------|
+| Дашборд | `BrokerDash` | 4× `.stat` + `alert-box` SLA + таблица «внимание» | KPI очередь/в работе/SLA + внимание | **да** (цифры — live) |
+| Очередь | `BrokerQueue` | Master-detail: таблица claim + карточка HS/платежи/approve | `QueuePane` + `VedDetailDrawer`; claim отдельно от approve | оболочку **да**; approve оставить на `/work` (D8) |
+| В работе | `BrokerWork` | Одна таблица №/клиент/SLA/статус | `WorkMapping`: позиции, attrs, HS autocomplete, dossier, extra fee, feedback | **нет** — demo слишком тонкий |
+| Чат | `BrokerChat` | Один тред в `.card` + bubbles (+ voice stub) | Threads + split + unread badge | chrome bubbles **да**; список тредов — live |
+| SLA | `BrokerSla` | Stats + bars «AI без правок / скорректировано» | Avg / % в срок / AI≠HS bars | **да** (уже близко) |
+| Выплаты | `BrokerPay` | Таблица период/сумма/pill | `/payouts` ACCRUED/PAID | **да**; путь live = `/payouts`, не `/pay` |
+| Профиль | `BrokerProfile` | Форма + `acceptingJobs` | то же + F21 pill | **да** |
+
+Очередь в прототипе смешивает **взять** и **утвердить** на одном экране. В domain: claim только `QUEUED`/`SLA_RISK`; approve только `IN_REVIEW` (D8/D11). Карточку QC натягивать на `/work`, не на очередь.
+
+Footer прототипа: «SLA ≤ 4 ч · рейтинг ★ · закрыто / нед» — совпадает с live F21.  
+Лишнее: ссылка «→ Админ-панель», голос в чате, выдуманные 3.1 ч / 96%.
+
+### 1.6 Экраны прототипа — админ
+
+Компоненты `AdminShell` + `admin-pages.tsx`. Lab-маршрутов нет; `href` → live `/admin`. Nav **плоский, 9 пунктов** vs live **14–15 в трёх группах** (D28 / [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) §5).
+
+| Lab экран | Компонент | Live | Взять визуал? |
+|-----------|-----------|------|---------------|
+| Дашборд | 4 KPI + bar chart 7 дней + «внимание» + таблица заявок | live-счётчики, bar статусов, attention, open calc | chrome **да**; цифры только live (D14 запрет fake GMV) |
+| Заявки | search + filter + таблица assign/escalate/PDF | `/bookings` + drawer `?id=` | таблица/фильтр **да** |
+| Клиенты | KPI + таблица компания/тариф/баланс | `/clients` drill-down + ADJUSTMENT `?company=` | список **да**; drawer — live |
+| Брокеры | `.person-card` сетка, approve/reject, SLA escalate | таблица + drawer + `acceptingJobs` | карточки **как доп. вид**; действия — live |
+| Тарифы | 3 `.tariff-mini` Код/Таможня/Под ключ | EXPRESS/STANDARD/PRO, `priceRub`, share, SLA | карточки **да**; имена/цены — D10 |
+| Финансы | GMV / комиссия / к выплате + очередь PAID | фильтр + CSV + mark PAID | layout **да**; GMV не выдумывать |
+| AI-качество | модули OCR/Risk/Logistics + слайдер порога | confidence / SLA / `llmEnrichEnabled` | слайдер **да**; таблица «модулей vision» — hold |
+| Audit | таблица актор/действие | read-only, без SUPER | **да** |
+| Настройки | marketplace / autoAssign / maintenance + «2FA/шифрование» | `platform-gates` | toggles **да** если = live gates; 2FA/at-rest — не в MVP |
+
+**Нет в прототипе, есть в live (не выкидывать):** Производители · Поддержка (staff inbox) · ТН ВЭД import · Пользователи · Интеграции · Оркестрация. Группы nav «Операции / Каталог / Платформа» — канон, lab их не рисует.
+
+Лишнее: badge «48», «1284 просчётов», «2.1 млн ₽», «98% точность», ссылка «→ Кабинет клиента», security-театр 2FA.
+
+### 1.7 Продуктовая модель дизайнера ≠ LBM
 
 #### Тарифы
 
@@ -88,7 +149,7 @@ CSS-канон клиента в прототипе явно подписан: *
 
 Цифры прототипа **не** показывать как смету продукта.
 
-### 1.5 Что есть только в дизайне (hold)
+### 1.8 Что есть только в дизайне (hold)
 
 | Модуль | Замысел | Domain |
 |--------|---------|--------|
@@ -135,22 +196,40 @@ app/client/**              # Next routes UI lab
 
 ## 3. Что брать в продукт (решение исследования)
 
-### Брать визуал (клиент)
+### Клиент — брать product-shell
 
-1. Superapp-главная: плитки модулей + лента заявок с filter chips.  
-2. Светлый product-shell клиента (не копировать тёмный admin).  
-3. Карточки заявок с обложкой товара, pill статуса, progress.  
-4. Wizard как UX-паттерн шагов (не как источник цифр/тарифов).  
-5. `DesignerStub` как честный маркер hold-модулей — сохранять, пока нет ADR.
+1. Superapp-главная: плитки модулей + лента с filter chips.  
+2. Светлый glass-сайдбар и цветные nav-тайлы (не тёмный admin).  
+3. Карточки заявок: обложка, pill, progress, «следующий шаг».  
+4. Wizard как UX шагов (не как источник цифр/тарифов D10).  
+5. `DesignerStub` на hold-модулях.
 
-### Не брать в MVP (D27)
+### Брокер — брать ops-polish, не выкидывать WorkMapping
+
+1. Тёмный ink-шелл (уже ≈ `VedShell`): `.stats`, `alert-box` SLA, `.pill`.  
+2. Карточка QC (HS + confidence + breakdown пошлина/НДС/сбор) — как визуал **work**, не очереди.  
+3. SLA-bars «принято без правок / скорректировано».  
+4. Профиль + `acceptingJobs`.
+
+Не заменять `/work` demo-таблицей: live mapping, attrs, dossier, extra fee, feedback, HS autocomplete — канон QC.
+
+### Админ — брать chrome, оставить 14 panes D28
+
+1. Фиолетовый brand-mark (уже `markVariant=admin`); опционально `pulseRing` только в lab.  
+2. Дашборд: 4 KPI + внимание + таблица (данные live).  
+3. Карточки тарифов и person-card брокеров — как вид, не как единственный layout.  
+4. Тoggles настроек **только** если они = `platform-gates`.
+
+Не сплющивать nav до 9 пунктов. Не переносить fake GMV / «98%». Не выкидывать support / tnved / users / integrations / orch / manufacturers.
+
+### Не брать в MVP (D27) — все роли
 
 1. Тарифы Код/Таможня/Под ключ и пакеты 20/100 — без ADR.  
 2. Freemium «1-й код бесплатно».  
 3. Честный знак, ТО, голос, shipping CTA на главной.  
 4. Браузерный classify и НДС 20% / сбор 15k как правда сметы.  
-5. Proto-bar и fake GMV в prod.  
-6. Перезапись `/broker` / `/admin` компонентами lab.
+5. Proto-bar, fake KPI, ссылки «переключить роль» в prod.  
+6. Перезапись live `/broker` / `/admin` компонентами lab.
 
 ### Сшивка (не визуал)
 
@@ -204,7 +283,13 @@ app/client/**              # Next routes UI lab
 | Фаза D | create/pay/PDF идут в `/api/v1`; статусы D8; НДС 22% / сбор 1637 |
 | Prod | нет proto-bar; нет fake KPI; `smoke:mvp` зелёный |
 
-Ручной чеклист клиента lab (сейчас): Главная → Заявки → карточка → Новый просчёт → Справочник → Чат (голос = stub) → `/cabinet` как функция.
+Ручной чеклист (исследование, код — следующая задача):
+
+| Роль | Что смотреть в прототипе | Не путать с live |
+|------|-------------------------|------------------|
+| Клиент | `/client` сетка, заявки-карточки, wizard, stubs ЧЗ/ТО | `/cabinet` — функция |
+| Брокер | `broker-pages`: dash stats, queue master-detail, тонкий work | WorkMapping / claim≠approve |
+| Админ | `admin-pages`: KPI, person-card, tariff-mini | 14 panes + группы nav; без fake GMV |
 
 ---
 
@@ -213,9 +298,9 @@ app/client/**              # Next routes UI lab
 | Шаг | Статус |
 |-----|--------|
 | Импорт `src/lbm-bro` + `/client` | done (as-is) |
-| Анализ в KB (этот файл) | **done (этот PR)** |
+| Анализ в KB (клиент + брокер + админ) | **done (этот PR)** |
 | Фаза C: broker/admin lab routes | next |
 | Фаза D: domain wire | later |
 | ADR cutover `/client` как prod-лицо | later, не молча |
 
-**Одной фразой:** новый визуал — суперприложение клиента на тех же токенах D14; domain и инварианты не менять; брокер/админ lab отдельно от live кабинетов; сшивка только через `/api/v1` и тарифы D10.
+**Одной фразой:** три кабинета на одних токенах D14: клиент = светлое суперприложение; брокер/админ = тёмный ops (админ — фиолетовый mark + группы nav live). Domain и инварианты не менять; lab брокера/админа отдельно от live; сшивка только через `/api/v1` и тарифы D10.

@@ -114,6 +114,8 @@ Persist `SiteSetting` → enforce `platform-gates.ts` + dual-path `containers/ap
 
 **Отличие админа от клиента:** клиент **платит и ждёт PDF**; админ **не создаёт просчёт** как основной flow и **не** показывает маркетинговый wizard. UI плотнее, группы nav обязательны.
 
+Предложенный визуал lbm-bro (клиент = светлый superapp; брокер/админ = тёмный ops): [`../plan-lbm-bro-visual.md`](../plan-lbm-bro-visual.md) §1.3–1.6.
+
 ---
 
 ## 5. Собранные решения (UI)
