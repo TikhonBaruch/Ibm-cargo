@@ -41,8 +41,11 @@ function tokenize(text) {
 function defaultCodesPath() {
   if (process.env.TNVED_CODES_PATH) return process.env.TNVED_CODES_PATH;
   const candidates = [
+    path.resolve(__dirname, "../../../../llm/data/tnved/normalized/codes.jsonl"),
     path.resolve(__dirname, "../../../../data/tnved/normalized/codes.jsonl"),
+    path.resolve(process.cwd(), "llm/data/tnved/normalized/codes.jsonl"),
     path.resolve(process.cwd(), "data/tnved/normalized/codes.jsonl"),
+    "/data/tnved/normalized/codes.jsonl",
     "/data/tnved/codes.jsonl",
   ];
   return candidates.find((p) => fs.existsSync(p)) || candidates[0];

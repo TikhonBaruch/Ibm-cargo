@@ -57,6 +57,8 @@
     "docker:web": "docker compose --profile web up --build",
     "docker:split": "docker compose --profile split up --build",
     "docker:scale": "docker compose --profile scale up --build",
+    "mesh:up": "node scripts/start-mesh.cjs",
+    "mesh:health": "node scripts/mesh-health.cjs",
     "docker:full": "docker compose --profile full up --build",
     "docker:down": "docker compose --profile full down",
     "sync:cursor-rules": "node scripts/sync-cursor-rules.cjs"
