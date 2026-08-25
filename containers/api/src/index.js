@@ -73,11 +73,7 @@ function hasRequiredCreateAttrs(attrs) {
   const origin = String(attrs.originCountry || "")
     .trim()
     .toUpperCase();
-  return (
-    origin.length === 2 &&
-    !isEmptyAttrValue(attrs.manufacturerName) &&
-    !isEmptyAttrValue(attrs.composition)
-  );
+  return origin.length === 2 && !isEmptyAttrValue(attrs.composition);
 }
 
 function missingRequiredCreateAttrs(attrs) {
@@ -86,9 +82,13 @@ function missingRequiredCreateAttrs(attrs) {
     .trim()
     .toUpperCase();
   if (origin.length !== 2) miss.push("originCountry");
-  if (isEmptyAttrValue(attrs?.manufacturerName)) miss.push("manufacturerName");
+  // C7 restore: if (isEmptyAttrValue(attrs?.manufacturerName)) miss.push("manufacturerName");
   if (isEmptyAttrValue(attrs?.composition)) miss.push("composition");
   return miss;
+}
+
+function requiredCreateAttrsError(miss) {
+  return `Обязательны страна происхождения (ISO-2) и состав (не хватает: ${miss.join(", ")})`;
 }
 
 /** Structured product attrs on CalculationItem (D24). */
@@ -1780,7 +1780,7 @@ const server = http.createServer(async (req, res) => {
         if (hasRequiredCreateAttrs(it.attrs)) continue;
         const miss = missingRequiredCreateAttrs(it.attrs);
         return json(res, 400, {
-          error: `Обязательны страна происхождения (ISO-2), производитель и состав (не хватает: ${miss.join(", ")})`,
+          error: requiredCreateAttrsError(miss),
         });
       }
       for (const it of itemsForCreate) {

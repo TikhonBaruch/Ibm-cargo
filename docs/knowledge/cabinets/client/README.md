@@ -14,7 +14,7 @@
 | Справочник ТН ВЭД | `/tnved` | Combobox live `GET /api/v1/tnved/search` + карточка кода | Не `tnved.json`; CTA → `/new` |
 | Чат | `/support` | IM-шелл: тикеты поддержки + ссылки на чат брокера по заявке | Голос → stub; FAQ → `/faq` |
 | Компания | `/profile` | `.field` реквизиты | Тумблеры уведомлений макета → stub |
-| Новый просчёт | `/new` (header CTA) | Wizard chrome (товар→тариф→запуск, поля не прячутся); лимит D10; heuristic top-N + **combobox ТН ВЭД** (`HsCodeAutocomplete`, `leafOnly`); **stage tip** + labels; **attr chips**; **FieldSuggest**; `tariff-mini` D10 | Форма + позиции + attrs + **строка производителя** + опц. SKU + **HS directory** + **upload** + **CSV** · [`plan-client-tnved-search.md`](../../plan-client-tnved-search.md) |
+| Новый просчёт | `/new` (header CTA) | Wizard chrome (товар→тариф→запуск, поля не прячутся); лимит D10; heuristic top-N + **combobox ТН ВЭД** (`HsCodeAutocomplete`, `leafOnly`); **stage tip** + labels; **attr chips**; **FieldSuggest**; `tariff-mini` D10 | Форма + позиции + attrs; производитель **необязателен** (C7); origin/состав R; опц. SKU + **HS directory** + **upload** + **CSV** · [`plan-client-tnved-search.md`](../../plan-client-tnved-search.md) |
 
 Шапка live: поиск заявки/товара/брокера + колокол (события D8) + CTA «Новый просчёт». Title скрыт на главной и wizard.
 

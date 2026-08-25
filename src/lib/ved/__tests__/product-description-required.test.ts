@@ -5,7 +5,29 @@ import {
 } from "../product-description";
 
 describe("required create attrs", () => {
-  it("accepts complete origin + manufacturer + composition", () => {
+  it("accepts origin + composition; manufacturer is optional (C7)", () => {
+    expect(
+      hasRequiredCreateAttrs({
+        originCountry: "CN",
+        composition: "aluminium, plastics, Li-ion battery",
+      })
+    ).toBe(true);
+    expect(
+      missingRequiredCreateAttrs({
+        originCountry: "CN",
+        composition: "Al",
+      })
+    ).toEqual([]);
+    expect(
+      missingRequiredCreateAttrs({
+        originCountry: "CN",
+        manufacturerName: "  ",
+        composition: "cotton 100%",
+      })
+    ).toEqual([]);
+  });
+
+  it("still accepts manufacturer when provided", () => {
     expect(
       hasRequiredCreateAttrs({
         originCountry: "CN",
@@ -13,16 +35,9 @@ describe("required create attrs", () => {
         composition: "aluminium, plastics, Li-ion battery",
       })
     ).toBe(true);
-    expect(
-      missingRequiredCreateAttrs({
-        originCountry: "CN",
-        manufacturerName: "Lenovo",
-        composition: "Al",
-      })
-    ).toEqual([]);
   });
 
-  it("rejects missing or short origin / empty manufacturer / composition", () => {
+  it("rejects missing or short origin / empty composition", () => {
     expect(hasRequiredCreateAttrs({})).toBe(false);
     expect(
       hasRequiredCreateAttrs({ originCountry: "C", manufacturerName: "A", composition: "B" })
@@ -30,15 +45,9 @@ describe("required create attrs", () => {
     expect(
       missingRequiredCreateAttrs({
         originCountry: "CN",
-        manufacturerName: "  ",
-        composition: "cotton 100%",
-      })
-    ).toEqual(["manufacturerName"]);
-    expect(
-      missingRequiredCreateAttrs({
-        originCountry: "CN",
         manufacturerName: "Nike",
       })
     ).toEqual(["composition"]);
+    expect(missingRequiredCreateAttrs({ composition: "cotton" })).toEqual(["originCountry"]);
   });
 });

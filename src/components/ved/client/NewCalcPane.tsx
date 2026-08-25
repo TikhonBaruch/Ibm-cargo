@@ -110,7 +110,7 @@ export function NewCalcPane({
     if (!requiredAttrsOk) {
       setShowRequiredErrors(true);
       toast(
-        "Заполните по каждой позиции: страну происхождения (ISO-2), производителя и состав — без этого заявка не создаётся.",
+        "Заполните по каждой позиции: страну происхождения (ISO-2) и состав — без этого заявка не создаётся.",
         { variant: "error" },
       );
       return;
@@ -418,15 +418,15 @@ export function NewCalcPane({
                         onItems(copy);
                       }}
                     />
-                    <p className="mt-1 text-[11px] text-amber-800">Обязательно · производитель</p>
+                    <p className="mt-1 text-[11px] text-[var(--kb-muted)]">Необязательно</p>
                   </div>
                 ) : (
                   <FieldLabel
-                    label="Производитель *"
-                    hint="Завод или бренд-изготовитель — нужен для точного кода ТН ВЭД."
+                    label="Производитель"
+                    hint="Необязательно · завод или бренд — помогает уточнить код ТН ВЭД."
                   >
                     <input
-                      className={`mb-2 ${fieldClass(highlightRequired && itemHasIdentity(it) && !String(it.attrs?.manufacturerName || "").trim())}`}
+                      className={`mb-2 ${inputClass}`}
                       placeholder="Lenovo PC HK Limited, Nike Vietnam…"
                       value={it.attrs?.manufacturerName ?? ""}
                       onChange={(e) => {
@@ -718,7 +718,7 @@ export function NewCalcPane({
         <div id="wiz-section-launch">
         {highlightRequired && (
           <p className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-            Не хватает обязательных полей по позиции: страна происхождения (ISO-2), производитель и состав.
+            Не хватает обязательных полей по позиции: страна происхождения (ISO-2) и состав.
             Заполните подсвеченные поля и нажмите ещё раз.
           </p>
         )}

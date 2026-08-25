@@ -381,7 +381,7 @@ function ClientCabinetInner() {
     mediaUrl?: string;
     attrs?: {
       originCountry: string;
-      manufacturerName: string;
+      manufacturerName?: string;
       composition: string;
     };
   }) => {

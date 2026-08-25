@@ -35,6 +35,7 @@ import {
   fillEmptyProductAttrs,
   hasRequiredCreateAttrs,
   missingRequiredCreateAttrs,
+  requiredCreateAttrsError,
   sanitizeProductAttrs,
   type ProductAttrs,
 } from "@/lib/ved/product-description";
@@ -128,9 +129,7 @@ export async function createAndDraftCalculation(opts: {
     if (!String(it.name || "").trim() && !it.manufacturerSkuId) continue;
     if (hasRequiredCreateAttrs(it.attrs)) continue;
     const miss = missingRequiredCreateAttrs(it.attrs);
-    throw new Error(
-      `Обязательны страна происхождения (ISO-2), производитель и состав (не хватает: ${miss.join(", ")})`
-    );
+    throw new Error(requiredCreateAttrsError(miss));
   }
 
   // Optional OCR enrich on items with mediaUrl (fail-open; client attrs win).

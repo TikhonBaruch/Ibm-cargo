@@ -65,7 +65,7 @@ export function DashboardPane({
     mediaUrl?: string;
     attrs?: {
       originCountry: string;
-      manufacturerName: string;
+      manufacturerName?: string;
       composition: string;
     };
   }) => void;
@@ -103,10 +103,10 @@ export function DashboardPane({
     const manufacturer = qManufacturer.trim();
     const composition = qComposition.trim();
     if (!desc) return;
-    if (origin.length !== 2 || !manufacturer || !composition) {
+    if (origin.length !== 2 || !composition) {
       setShowRequiredErrors(true);
       toast(
-        "Заполните страну происхождения (ISO-2), производителя и состав — без этого заявка не создаётся.",
+        "Заполните страну происхождения (ISO-2) и состав — без этого заявка не создаётся.",
         { variant: "error" },
       );
       return;
@@ -122,7 +122,7 @@ export function DashboardPane({
       mediaUrl: qMedia,
       attrs: {
         originCountry: origin,
-        manufacturerName: manufacturer,
+        manufacturerName: manufacturer || undefined,
         composition,
       },
     });
@@ -132,9 +132,9 @@ export function DashboardPane({
   const quickReady = Boolean(qDesc.trim());
   const highlightRequired = showRequiredErrors;
   const quickStageTip = !qDesc.trim()
-    ? "Опишите товар — затем страну происхождения (ISO-2), производителя и состав."
-    : qOrigin.trim().length !== 2 || !qManufacturer.trim() || !qComposition.trim()
-      ? "Осталось: страна (CN…), производитель и состав — без них заявка не создастся."
+    ? "Опишите товар — затем страну происхождения (ISO-2) и состав."
+    : qOrigin.trim().length !== 2 || !qComposition.trim()
+      ? "Осталось: страна (CN…) и состав — без них заявка не создастся."
       : "Можно запускать AI-расчёт. Детали и фото — в полном форме «Новый просчёт».";
 
 
@@ -270,7 +270,7 @@ export function DashboardPane({
             Быстрый просчёт
           </h2>
           <p className="mt-1 mb-3 text-[13px] text-[var(--kb-muted)]">
-            Опишите товар и обязательные поля (страна / производитель / состав) — AI подготовит
+            Опишите товар и обязательные поля (страна / состав) — AI подготовит
             черновик кода ТН ВЭД.
           </p>
           {quickStageTip ? <div className="mb-3"><StageTip text={quickStageTip} /></div> : null}
@@ -299,9 +299,9 @@ export function DashboardPane({
               />
             </div>
             <label className="block text-xs font-semibold text-slate-500 sm:col-span-2">
-              Производитель *
+              Производитель
               <input
-                className={`mt-1 w-full rounded-xl border px-3 py-2 text-sm font-normal text-[var(--kb-ink)] ${highlightRequired && !qManufacturer.trim() ? "border-amber-400 bg-amber-50/50" : "border-slate-200"}`}
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal text-[var(--kb-ink)]"
                 placeholder="Lenovo PC HK Limited"
                 value={qManufacturer}
                 onChange={(e) => setQManufacturer(e.target.value)}
@@ -383,7 +383,7 @@ export function DashboardPane({
           </div>
           {highlightRequired && (
             <p className="mb-2 text-xs text-amber-800">
-              Укажите страну происхождения (ISO-2), производителя и состав — затем нажмите ещё раз.
+              Укажите страну происхождения (ISO-2) и состав — затем нажмите ещё раз.
             </p>
           )}
           <button

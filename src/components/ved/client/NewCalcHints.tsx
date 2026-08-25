@@ -62,12 +62,11 @@ export function newCalcStageTip({
     const origin = String(a?.originCountry || "").trim();
     return (
       origin.length !== 2 ||
-      !String(a?.manufacturerName || "").trim() ||
       !String(a?.composition || "").trim()
     );
   });
   if (missingRequired) {
-    return "Обязательно по позиции: страна происхождения (CN…), производитель и состав — без этого заявка не уйдёт.";
+    return "Обязательно по позиции: страна происхождения (CN…) и состав — без этого заявка не уйдёт.";
   }
   if (!hasHs) {
     return "Найдите код в справочнике по названию товара. Финал подтвердит брокер.";

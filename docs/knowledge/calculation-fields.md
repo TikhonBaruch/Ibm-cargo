@@ -19,7 +19,7 @@ Legend: **R** = required · **O** = optional · **E** = edit · **V** = view · 
 | `description` | **R** | UI + API (min 5) |
 | `items[]` с ≥1 `name` | **R** | UI; API может fallback на title/desc |
 | item attrs `originCountry` (ISO-2) | **R** | Страна происхождения; UI + API hard-reject |
-| item attrs `manufacturerName` | **R** | Производитель; UI + API hard-reject |
+| item attrs `manufacturerName` | **O** | Производитель; временно не hard-reject (C7). Restore: R |
 | item attrs `composition` | **R** | Состав / материалы; UI + API hard-reject |
 | `tariffCode` | soft | default STANDARD |
 | `country`, `shipmentValue` | O | default country в форме «Китай»; валюта инвойса USD/CNY/EUR |
@@ -75,7 +75,7 @@ Broker **не** перезаписывает заполненные product attr
 
 | Тариф | Правило |
 |-------|---------|
-| **Все тарифы** | **R:** `originCountry` (ISO-2), `manufacturerName`, `composition` — UI disable CTA + Zod/`createAndDraft` hard-reject ([`plan-required-create-attrs.md`](./plan-required-create-attrs.md)) |
+| **Все тарифы** | **R:** `originCountry` (ISO-2), `composition`. `manufacturerName` временно **O** (C7). Zod/`createAndDraft` hard-reject без страны/состава ([`plan-required-create-attrs.md`](./plan-required-create-attrs.md)) |
 | **EXPRESS** | Прочие attrs **optional** (1 позиция, быстрый путь) |
 | **STANDARD** / **PRO** | Дополнительно рекомендуется ≥1 из: `brand`, `material`, `netWeightKg`, `hsHint`. Soft-warn в UI если пусто. |
 | Полный каталог attrs | `model`, `technicalSpecs`, `grossWeightKg` — schema only; **purpose / extra.color / extra.ageGroup** — на create UI + chips; брокер видит gaps в `BrokerDossierPane` |
