@@ -23,30 +23,25 @@ export function BrokersPane({
           return (
             <div
               key={b.id}
-              className={`rounded-[28px] border bg-white p-5 shadow-sm transition ${
-                selected ? "border-[#2b72f4] ring-2 ring-[#2b72f4]/20" : "border-black/[0.04]"
-              }`}
+              className={`person-card col${selected ? " is-open" : ""}`}
             >
-              <div className="flex items-start gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/cabinets/assets/avatar-broker.jpg"
-                  alt=""
-                  className="h-12 w-12 rounded-full object-cover"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold">{b.user.name}</div>
-                  <div className="text-sm text-[var(--kb-muted)]">{b.specialization || "Брокер ВЭД"}</div>
-                  <div className="mt-1 text-sm font-medium text-amber-600">★ {b.rating.toFixed(1)}</div>
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <div className="photo">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/cabinets/assets/avatar-broker.jpg" alt="" />
+                </div>
+                <div>
+                  <strong>{b.user.name}</strong>
+                  <div className="stars">★ {b.rating.toFixed(1)}</div>
+                  <p style={{ fontSize: 13, color: "var(--muted)", margin: "4px 0 0" }}>
+                    {b.specialization || "Брокер ВЭД"}
+                  </p>
                 </div>
               </div>
               <button
                 type="button"
-                className={`mt-4 w-full rounded-full py-2 text-sm font-semibold ${
-                  selected
-                    ? "bg-[#2b72f4] text-white"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
+                className={`btn ${selected ? "btn-primary" : "btn-ghost"}`}
+                style={{ marginTop: 12, width: "100%", justifyContent: "center" }}
                 onClick={() => onSelect(b.user.id)}
               >
                 {selected ? "Выбран ✓" : "Выбрать"}

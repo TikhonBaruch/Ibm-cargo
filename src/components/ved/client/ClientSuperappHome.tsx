@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Icon } from "@/lbm-bro/components/icon";
+import { DesignerStub } from "@/lbm-bro/components/designer-stub";
 import type { Calc } from "./types";
 
 function activeLabel(n: number) {
@@ -163,6 +164,25 @@ export function ClientSuperappHome({
           ) : null}
         </div>
       </div>
+
+      <DesignerStub
+        title="Честный знак"
+        intent="Плитка маркировки на главной и поля ЧЗ в заявке."
+        gap="Нет продукта ЧЗ в domain MVP (D27)."
+        compact
+      />
+      <DesignerStub
+        title="Таможенное оформление (ТО)"
+        intent="Отдельный модуль декларации / выпуска после кода."
+        gap="Нет модуля ТО. Shipping UI default off — плитка перевозки только при флаге."
+        compact
+      />
+      <DesignerStub
+        title="1-й код бесплатно"
+        intent="Freemium peek справочника и баннер «первый просчёт — 0 ₽»."
+        gap="Поиск ТН ВЭД на /new идёт в /api/v1/tnved/search, не бесплатный peek. Брокер — после оплаты (D11)."
+        compact
+      />
     </div>
   );
 }

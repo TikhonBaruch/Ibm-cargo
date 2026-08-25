@@ -9,6 +9,11 @@ import { StatusPill, VedEmptyState } from "../VedShell";
 import type { Calc, Me, ShipRow } from "./types";
 import { calcThumb } from "./types";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
+import {
+  clientOrderHsLabel,
+  clientOrderNextStep,
+  formatRub,
+} from "../lbm-pane-visual";
 
 type OrderFilter = "all" | "done" | "broker" | "pay";
 
@@ -135,56 +140,46 @@ export function DashboardPane({
 
   if (pane === "orders") {
     return (
-      <section className="space-y-4">
-        <div className="overflow-hidden rounded-[28px] border border-black/[0.04] bg-white shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-black/[0.04] px-5 py-4">
-            <div>
-              <h2 className="text-lg font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-                Заявки на просчёт
-              </h2>
-              <p className="mt-0.5 text-sm text-[var(--kb-muted)]">
-                История AI-расчётов, оплаты тарифов и проверок брокером
-              </p>
-            </div>
+      <section>
+        <div className="card-head">
+          <div>
+            <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Заявки на просчёт</h3>
+            <p>Карточки заявок — откройте, чтобы увидеть код, смету и оплату</p>
           </div>
-          <div className="flex flex-wrap gap-2 px-5 py-3">
-            {(
-              [
-                ["all", "Все"],
-                ["done", "Готово"],
-                ["broker", "У брокера"],
-                ["pay", "Оплата"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setFilter(id)}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-                  filter === id
-                    ? "bg-[#2b72f4] text-white"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <OrdersTable
-            calcs={filtered}
-            listTotal={calcs.length}
-            filter={filter}
-            onResetFilter={() => setFilter("all")}
-            busy={busy}
-            me={me}
-            selectedId={selectedId}
-            onOpen={onOpen}
-            onPay={onPay}
-            onTopupThenPay={onTopupThenPay}
-            showTariff
-            createHref={createHref}
-          />
         </div>
+        <div className="filter-chips">
+          {(
+            [
+              ["all", "Все"],
+              ["done", "Готово"],
+              ["broker", "У брокера"],
+              ["pay", "Оплата"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              className={filter === id ? "on" : ""}
+              onClick={() => setFilter(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <OrdersTable
+          calcs={filtered}
+          listTotal={calcs.length}
+          filter={filter}
+          onResetFilter={() => setFilter("all")}
+          busy={busy}
+          me={me}
+          selectedId={selectedId}
+          onOpen={onOpen}
+          onPay={onPay}
+          onTopupThenPay={onTopupThenPay}
+          showTariff
+          createHref={createHref}
+        />
       </section>
     );
   }
@@ -536,14 +531,14 @@ function OrdersTable({
     />
   ) : null;
 
-  const rowActions = (c: Calc, payable: boolean, canPay: boolean, price: number) => (
-    <div className="inline-flex flex-wrap items-center justify-end gap-2">
+  const rowActions = (c: Calc, payable: boolean, canPay: boolean) => (
+    <div className="cl-order-actions" onClick={(e) => e.stopPropagation()}>
       {payable && (
         <>
           <button
             type="button"
             disabled={busy || !canPay}
-            className="rounded-full bg-[#2b72f4] px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
+            className="btn btn-primary btn-sm"
             onClick={() => onPay(c)}
           >
             Оплатить
@@ -552,7 +547,7 @@ function OrdersTable({
             <button
               type="button"
               disabled={busy}
-              className="rounded-full border px-3 py-1 text-xs font-semibold"
+              className="btn btn-ghost btn-sm"
               onClick={() => onTopupThenPay(c)}
             >
               Пополнить и оплатить
@@ -562,7 +557,7 @@ function OrdersTable({
       )}
       {!compact && c.status === "DONE" && (
         <a
-          className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800"
+          className="btn btn-ghost btn-sm"
           href={`/api/v1/calculations/${c.id}/pdf`}
           target="_blank"
           rel="noreferrer"
@@ -573,140 +568,62 @@ function OrdersTable({
     </div>
   );
 
-  return (
-    <>
-      {/* Mobile cards */}
-      <ul className="divide-y divide-slate-100 md:hidden">
-        {calcs.map((c, i) => {
-          const price = c.tariff?.priceRub ?? 0;
-          const bal = me?.company?.balanceRub ?? 0;
-          const canPay = bal >= price;
-          const payable = ["AI_READY", "AWAITING_PAYMENT"].includes(c.status) && !c.paidAt;
-          const active = selectedId === c.id;
-          const sum =
-            c.totalPaymentsRub != null
-              ? `${c.totalPaymentsRub.toLocaleString("ru-RU")} ₽`
-              : payable && price
-                ? `${price.toLocaleString("ru-RU")} ₽`
-                : "—";
-          return (
-            <li key={c.id}>
-              <button
-                type="button"
-                aria-selected={active}
-                onClick={() => onOpen(c)}
-                className={`flex w-full gap-3 px-4 py-3 text-left ${
-                  active ? "bg-[rgba(43,114,244,0.08)] shadow-[inset_3px_0_0_#2b72f4]" : ""
-                }`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={calcThumb(c, i)}
-                  alt=""
-                  className="h-11 w-11 shrink-0 rounded-lg object-cover"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="truncate font-semibold text-[#0f172a]">{c.number}</span>
-                    <StatusPill status={c.status} />
-                  </div>
-                  <div className="mt-0.5 truncate text-sm text-[var(--kb-muted)]">{c.title}</div>
-                  <div className="mt-1 text-xs text-[var(--kb-muted)]">
-                    {sum}
-                    {showTariff && c.tariff?.name ? ` · ${c.tariff.name}` : ""}
-                  </div>
-                </div>
-              </button>
-              {(payable || (!compact && c.status === "DONE")) && (
-                <div className="flex justify-end px-4 pb-3" onClick={(e) => e.stopPropagation()}>
-                  {rowActions(c, payable, canPay, price)}
-                </div>
-              )}
-            </li>
-          );
-        })}
-        {empty && <li>{empty}</li>}
-      </ul>
+  if (empty) return empty;
 
-      {/* Desktop table */}
-      <div className="hidden overflow-x-auto md:block">
-      <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-[var(--kb-muted)]">
-          <tr>
-            <th className="px-4 py-3 font-medium">№</th>
-            <th className="px-4 py-3 font-medium">{compact ? "Товар / маршрут" : "Товар"}</th>
-            {showTariff && <th className="px-4 py-3 font-medium">Тариф</th>}
-            <th className="px-4 py-3 font-medium">Сумма</th>
-            {showTariff && <th className="px-4 py-3 font-medium">Брокер</th>}
-            <th className="px-4 py-3 font-medium">Статус</th>
-            <th className="px-4 py-3 font-medium" />
-          </tr>
-        </thead>
-        <tbody>
-          {calcs.map((c, i) => {
-            const price = c.tariff?.priceRub ?? 0;
-            const bal = me?.company?.balanceRub ?? 0;
-            const canPay = bal >= price;
-            const payable = ["AI_READY", "AWAITING_PAYMENT"].includes(c.status) && !c.paidAt;
-            const active = selectedId === c.id;
-            return (
-            <tr
-              key={c.id}
-              aria-selected={active}
-              className={`cursor-pointer border-t border-slate-100 ${
-                active
-                  ? "bg-[rgba(43,114,244,0.08)] shadow-[inset_3px_0_0_#2b72f4]"
-                  : "hover:bg-slate-50/80"
-              }`}
-              onClick={() => onOpen(c)}
-            >
-              <td className="px-4 py-3 font-medium whitespace-nowrap">{c.number}</td>
-              <td className="px-4 py-3">
-                <span className="inline-flex items-center gap-2.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={calcThumb(c, i)}
-                    alt=""
-                    className="h-9 w-9 shrink-0 rounded-lg object-cover"
-                  />
-                  <span>
-                    {c.title}
-                    {c.preferredBrokerUserId && !showTariff && (
-                      <span className="ml-2 text-xs text-[#2b72f4]">ваш брокер</span>
-                    )}
-                  </span>
-                </span>
-              </td>
-              {showTariff && (
-                <td className="px-4 py-3 text-[var(--kb-muted)]">{c.tariff?.name || "—"}</td>
-              )}
-              <td className="px-4 py-3 whitespace-nowrap">
-                {c.totalPaymentsRub != null
-                  ? `${c.totalPaymentsRub.toLocaleString("ru-RU")} ₽`
-                  : payable && price
-                    ? `${price.toLocaleString("ru-RU")} ₽`
-                    : "—"}
-              </td>
-              {showTariff && (
-                <td className="px-4 py-3">{c.preferredBrokerUser?.name || "—"}</td>
-              )}
-              <td className="px-4 py-3">
-                <StatusPill status={c.status} />
-              </td>
-              <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                {rowActions(c, payable, canPay, price)}
-              </td>
-            </tr>
-            );
-          })}
-          {empty && (
-            <tr>
-              <td colSpan={showTariff ? 7 : compact ? 4 : 5}>{empty}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      </div>
-    </>
+  return (
+    <div className="cl-order-grid">
+      {calcs.map((c, i) => {
+        const price = c.tariff?.priceRub ?? 0;
+        const bal = me?.company?.balanceRub ?? 0;
+        const canPay = bal >= price;
+        const payable = ["AI_READY", "AWAITING_PAYMENT"].includes(c.status) && !c.paidAt;
+        const active = selectedId === c.id;
+        const sum =
+          c.totalPaymentsRub != null
+            ? formatRub(c.totalPaymentsRub)
+            : payable && price
+              ? formatRub(price)
+              : "—";
+        const hs = clientOrderHsLabel({ hsCode: c.hsCode, hsCodeFinal: c.hsCodeFinal });
+        return (
+          <div
+            key={c.id}
+            className={`cl-order${active ? " is-open" : ""}`}
+            role="button"
+            tabIndex={0}
+            aria-selected={active}
+            onClick={() => onOpen(c)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onOpen(c);
+              }
+            }}
+          >
+            <div className="ph">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={calcThumb(c, i)} alt="" />
+            </div>
+            <div>
+              <h4>{c.title}</h4>
+              <div className="meta">
+                {c.number}
+                {c.country ? ` · ${c.country}` : ""}
+                {showTariff && c.tariff?.name ? ` · ${c.tariff.name}` : ""}
+                {c.preferredBrokerUser?.name ? ` · брокер ${c.preferredBrokerUser.name}` : ""}
+              </div>
+              <div className="meta">
+                HS: {hs} · {clientOrderNextStep({ status: c.status, paidAt: c.paidAt })}
+              </div>
+              {rowActions(c, payable, canPay)}
+            </div>
+            <div className="right">
+              <StatusPill status={c.status} />
+              <div className="sum">{sum}</div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }

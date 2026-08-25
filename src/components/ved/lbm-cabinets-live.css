@@ -45,3 +45,42 @@
 .lbm-live-ops .side.admin .brand-mark {
   animation: none;
 }
+/* Selected order card in live /cabinet/orders */
+.lbm-live-client .view-client .cl-order.is-open {
+  border-color: rgba(43, 114, 244, 0.45);
+  box-shadow: inset 3px 0 0 #2b72f4, var(--shadow-sm);
+}
+.lbm-live-client .view-client .cl-order .cl-order-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.lbm-live-client .view-client .wiz-steps.labeled.steps-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.lbm-live-client .view-client .wiz-steps.labeled.steps-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.lbm-live-client .view-client button.tariff-mini {
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.lbm-live-ops .person-card.is-open,
+.lbm-live-client .person-card.is-open {
+  border-color: rgba(43, 114, 244, 0.45);
+  box-shadow: inset 3px 0 0 #2b72f4, var(--shadow-sm);
+}
+.lbm-live-ops table.data tbody tr.is-open td {
+  background: #f0f5ff;
+}
+.lbm-live-client .wiz-main .three {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1200px) {
+  .lbm-live-client .wiz-main .three {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

@@ -8,7 +8,7 @@
 | Элемент | Route | Информирование | Взаимодействие |
 |---------|-------|----------------|----------------|
 | Дашборд | `/broker` | Очередь / в работе / SLA risk / avg; «Требуют внимания» | Claim; переход в work |
-| Очередь | `/queue` | AI %, SLA countdown; badges «для вас»/reserved | **Взять** (disabled если reserved) |
+| Очередь | `/queue` | `.card` + `table.data`; AI %, SLA countdown; badges «для вас»/reserved | **Взять** (disabled если reserved); approve **не** здесь |
 | В работе | `/work` | Mapping table, Δ AI≠broker, thumbs | Hs autocomplete; save; approve→PDF |
 | Чат | `/chat` | Threads + «ответ»; nav unread badge | WorkChat (скрыт при QUEUED) |
 | SLA | `/sla` | Avg, % в срок, AI≠HS bars | Read-only |

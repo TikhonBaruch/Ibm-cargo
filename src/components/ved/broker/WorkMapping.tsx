@@ -12,6 +12,7 @@ import { applyTnvedRowHint, type Calc, type MapRow } from "./types";
 import { FactorySkuSnapshot } from "./FactorySkuSnapshot";
 import { BrokerAttrsFill } from "./BrokerAttrsFill";
 import { LandedWithoutFreightCard } from "../LandedWithoutFreightCard";
+import { formatRub } from "../lbm-pane-visual";
 
 export function WorkMapping({
   selected,
@@ -74,8 +75,8 @@ export function WorkMapping({
   }, [selected?.id]);
   if (!selected) {
     return (
-      <div className="rounded-[28px] bg-white p-4 shadow-sm">
-        <h2 className="mb-3 font-semibold">Карточка</h2>
+      <div className="card">
+        <h3>Карточка</h3>
         <p className="text-sm text-[#7a7f89]">Выберите заявку</p>
       </div>
     );
@@ -85,10 +86,42 @@ export function WorkMapping({
   const extraFeeMissing = extraFeeEdit > 0 && !extraFeeNote.trim();
 
   return (
-    <div className="rounded-[28px] bg-white p-4 shadow-sm">
-      <h2 className="mb-3 font-semibold">Карточка {selected.number}</h2>
+    <div className="card">
+      <h3>Карточка {selected.number}</h3>
       <div className="space-y-3 text-sm">
         <div className="font-medium">{selected.title}</div>
+        <div className="metric-row">
+          <div className="metric">
+            <div className="k">ТН ВЭД (AI)</div>
+            <div className="v" style={{ fontSize: "1rem" }}>
+              {selected.hsCode || "—"}
+            </div>
+          </div>
+          <div className="metric">
+            <div className="k">Уверенность</div>
+            <div className="v" style={{ fontSize: "1.2rem" }}>
+              {selected.confidence != null ? `${Math.round(selected.confidence * 100)}%` : "—"}
+            </div>
+          </div>
+        </div>
+        <div className="breakdown">
+          <div>
+            <span>Пошлина</span>
+            <strong>{formatRub(selected.dutyRub ?? 0)}</strong>
+          </div>
+          <div>
+            <span>НДС 22%</span>
+            <strong>{formatRub(selected.vatRub ?? 0)}</strong>
+          </div>
+          <div>
+            <span>Сбор ПП 1637</span>
+            <strong>{formatRub(selected.feeRub ?? 0)}</strong>
+          </div>
+          <div>
+            <span>Итого</span>
+            <strong>{formatRub(selected.totalPaymentsRub ?? 0)}</strong>
+          </div>
+        </div>
         {(selected.description || selected.country || selected.shipmentValue) && (
           <div className="rounded-2xl bg-slate-50 px-3 py-2 text-xs text-[#0f172a]">
             {selected.description && (

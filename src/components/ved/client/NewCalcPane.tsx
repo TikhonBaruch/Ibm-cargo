@@ -5,7 +5,7 @@ import Link from "next/link";
 import { StatusPill } from "../VedShell";
 import { ProductCsvImport } from "./ProductCsvImport";
 import type { Broker, Calc, CalcForm, CatalogSku, CreatePhase, FormItem, TariffOption } from "./types";
-import { formatTariffOption, maxPositionsForTariffCode } from "./types";
+import { maxPositionsForTariffCode } from "./types";
 import { SkuCatalogSelect } from "./SkuCatalogSelect";
 import { ManufacturerSuggest } from "./ManufacturerSuggest";
 import { AttrSuggestChips } from "./AttrSuggestChips";
@@ -20,6 +20,12 @@ import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
 import { hasRequiredCreateAttrs } from "@/lib/ved/product-description";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import { useVedToast } from "../feedback/VedToast";
+import { DesignerStub } from "@/lbm-bro/components/designer-stub";
+import {
+  newCalcWizardProgress,
+  tariffMiniBlurb,
+  wizardStepClass,
+} from "../lbm-pane-visual";
 
 const inputClass = "w-full rounded-xl border border-slate-200 px-3 py-2 text-sm";
 const inputErrorClass = "w-full rounded-xl border border-amber-400 bg-amber-50/50 px-3 py-2 text-sm";
@@ -95,6 +101,10 @@ export function NewCalcPane({
   const tariffsReady = tariffOptions.length > 0;
   const missingRequiredHint = namedItems.some((i) => !itemRequiredAttrsOk(i));
   const highlightRequired = showRequiredErrors && missingRequiredHint;
+  const wiz = newCalcWizardProgress({
+    hasGoods: Boolean(form.title.trim() && form.description.trim() && namedItems.length > 0),
+    hasTariff: Boolean(form.tariffCode),
+  });
 
   const tryCreate = () => {
     if (!requiredAttrsOk) {
@@ -137,13 +147,45 @@ export function NewCalcPane({
   };
 
   return (
-    <section className="max-w-2xl">
+    <section className="wiz-full">
+      <div className="wiz-head">
+        <span className="go-kicker" style={{ display: "block" }}>
+          Просчёт кода ТН ВЭД ЕАЭС
+        </span>
+        <h2>Что ввозите?</h2>
+        <p className="wiz-lead">
+          Опишите товар — heuristic подготовит черновик. STANDARD/PRO после оплаты уходят брокеру.
+          Поля не прячутся: шаги слева только показывают прогресс.
+        </p>
+      </div>
+      <div className="wiz-steps labeled steps-3">
+        {wiz.labels.map((lab, i) => {
+          const n = i + 1;
+          return (
+            <button
+              key={lab}
+              type="button"
+              className={wizardStepClass(n, wiz.current)}
+              onClick={() => {
+                const el = document.getElementById(
+                  n === 1 ? "wiz-section-goods" : n === 2 ? "wiz-section-tariff" : "wiz-section-launch",
+                );
+                el?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
+              <b>{n}</b>
+              {lab}
+            </button>
+          );
+        })}
+      </div>
       {!tariffsReady && (
         <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
           Тарифы не загружены. Обновите страницу или проверьте /api/v1/tariffs.
         </p>
       )}
-      <div className="space-y-3 overflow-visible rounded-[28px] border border-black/[0.04] bg-white p-6 shadow-sm">
+      <div className="wiz-grid">
+      <div id="wiz-section-goods" className="card wiz-main space-y-3 overflow-visible">
         {/* One help surface: hide tip when required-error banner is up (same message). */}
         {stageTip && !highlightRequired && <StageTip text={stageTip} />}
 
@@ -227,7 +269,9 @@ export function NewCalcPane({
           </FieldLabel>
         </div>
 
+        <div id="wiz-section-tariff">
         <FieldLabel
+          as="div"
           label="Тариф"
           hint={
             form.tariffCode === "EXPRESS"
@@ -235,28 +279,44 @@ export function NewCalcPane({
               : `Лимит позиций: до ${maxPos}. Стандарт/Профи — очередь брокера после оплаты.`
           }
         >
-          <select
-            className={inputClass}
-            value={form.tariffCode}
-            disabled={!tariffsReady}
-            onChange={(e) => {
-              const code = e.target.value;
-              onForm({
-                tariffCode: code,
-                ...(code === "EXPRESS" ? { preferredBrokerUserId: "" } : {}),
-              });
-              const cap = maxPositionsForTariffCode(code);
-              if (items.length > cap) onItems(items.slice(0, cap));
-            }}
-          >
-            {!tariffsReady && <option value={form.tariffCode}>Загрузка тарифов…</option>}
-            {tariffOptions.map((t) => (
-              <option key={t.id || t.code} value={t.code}>
-                {formatTariffOption(t)}
-              </option>
-            ))}
-          </select>
+          <div className="three" style={{ marginTop: 8 }}>
+            {tariffOptions.map((t) => {
+              const on = form.tariffCode === t.code;
+              return (
+                <button
+                  key={t.id || t.code}
+                  type="button"
+                  disabled={!tariffsReady}
+                  className={`tariff-mini${on ? " featured" : ""}`}
+                  style={{ textAlign: "left", width: "100%" }}
+                  onClick={() => {
+                    onForm({
+                      tariffCode: t.code,
+                      ...(t.code === "EXPRESS" ? { preferredBrokerUserId: "" } : {}),
+                    });
+                    const cap = maxPositionsForTariffCode(t.code);
+                    if (items.length > cap) onItems(items.slice(0, cap));
+                  }}
+                >
+                  {t.code === "STANDARD" ? (
+                    <span className="pill blue" style={{ marginBottom: 8 }}>
+                      Популярный
+                    </span>
+                  ) : null}
+                  <h4>{t.name}</h4>
+                  <div style={{ fontSize: 13, color: "var(--muted)" }}>{tariffMiniBlurb(t.code)}</div>
+                  <div className="price">
+                    {t.priceRub.toLocaleString("ru-RU")} ₽ <small>/ просчёт</small>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          {!tariffsReady ? (
+            <p className="mt-2 text-xs text-[var(--kb-muted)]">Загрузка тарифов…</p>
+          ) : null}
         </FieldLabel>
+        </div>
 
         {form.tariffCode !== "EXPRESS" ? (
           <FieldLabel
@@ -655,6 +715,7 @@ export function NewCalcPane({
           </div>
         </div>
 
+        <div id="wiz-section-launch">
         {highlightRequired && (
           <p className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
             Не хватает обязательных полей по позиции: страна происхождения (ISO-2), производитель и состав.
@@ -666,10 +727,33 @@ export function NewCalcPane({
           type="button"
           disabled={busy || !valid || !tariffsReady}
           onClick={tryCreate}
-          className="w-full rounded-full bg-[#2b72f4] py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+          className="btn btn-primary"
+          style={{ width: "100%", justifyContent: "center" }}
         >
           {createBusyLabel(createPhase, busy)}
         </button>
+        </div>
+      </div>
+      <aside className="wiz-side">
+        <DesignerStub
+          compact
+          title="1-й код бесплатно"
+          intent="Дизайнер хотел баннер «первый просчёт — 0 ₽» и шаг «Бесплатно» в визарде."
+          gap="Нет freemium-гейта (D11): брокер только после оплаты тарифа D10."
+        />
+        <DesignerStub
+          compact
+          title="Пакеты 20 / 100 позиций"
+          intent="Макет предлагал пачки m20/m100 из файла сверх одного просчёта."
+          gap="Лимиты D10: EXPRESS 1 / STANDARD 3 / PRO 10. CSV остаётся в форме ниже."
+        />
+        <DesignerStub
+          compact
+          title="Код / Таможня / Под ключ"
+          intent="Воронка апгрейда тарифа с карточки заявки (UpgradeTile)."
+          gap="Пакет LBM — TariffCode EXPRESS/STANDARD/PRO, не смена линейки на карточке."
+        />
+      </aside>
       </div>
       {selected && (
         <div className="mt-4 space-y-2 rounded-[28px] bg-white p-4 text-sm shadow-sm">

@@ -54,7 +54,7 @@
 - ~~client settings/profile merge~~ **done** (`/settings` → `/profile`; один nav)
 - ~~client deep-link `/orders?id=`~~ **done** (openCalc + SupportPane)
 - ~~client SUPPORT thread read~~ **done** (полный тред + `?threadId=` + archive tabs)
-- ~~list compact topup-then-pay~~ **done** (DashboardPane OrdersTable)
+- ~~list compact topup-then-pay~~ **done** (DashboardPane orders cards)
 - ~~attrs на карточке работы брокера~~ **done** (read-only колонка в WorkMapping)
 - ~~broker товарное описание + прочие сборы~~ **done** (`plan-broker-desc-fees.md`)
 - ~~broker empty attrs fill~~ **done** (`plan-broker-empty-attrs.md`)

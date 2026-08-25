@@ -254,6 +254,7 @@ app/client/**              # Next routes UI lab
 |------|-----|-----------|
 | **A–B** | Клиентский lab `/client/*` + stubs | **done** |
 | **C** | **Live chrome:** `LbmCabinetsShell` на `/cabinet` `/broker` `/admin`. Клиент = product-shell + superapp home (`ClientSuperappHome`). Брокер/админ = ops-шелл вокруг существующих panes. Данные только `/api/v1` | Не монтировать prototype `BrokerShell`/`AdminShell`; не сплющивать admin nav; не выкидывать WorkMapping; нет proto-bar и fake GMV |
+| **C2** | **Pane visual:** карточки заявок, wizard chrome на `/new`, stepper на детали, очередь `.card`/`table.data`, QC-шапка WorkMapping, person-card брокеров, `tariff-mini` D10. Hold-модули → `DesignerStub` | Не копировать Код/Таможня/Под ключ, freemium, ЧЗ/ТО/голос, НДС 20%/сбор 15k, браузерный classify; не дробить NewCalc на шаги, скрывающие `HsCodeAutocomplete`/`FieldSuggest`; claim ≠ approve |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -302,7 +303,21 @@ app/client/**              # Next routes UI lab
 | Импорт `src/lbm-bro` + `/client` | done (as-is) |
 | Анализ в KB (клиент + брокер + админ) | done |
 | Фаза C: live chrome (`LbmCabinetsShell`) | **этот PR** |
+| Фаза C2: pane visual + `DesignerStub` | **этот PR** |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** три live-кабинета на токенах D14: клиент = светлое суперприложение на `/cabinet`; брокер/админ = тёмный ops (админ — фиолетовый mark + группы nav). Domain и инварианты не менять; lab `/client` — референс; данные только `/api/v1` и тарифы D10.
+**Одной фразой:** три live-кабинета на токенах D14: клиент = светлое суперприложение на `/cabinet` (карточки заявок, wizard chrome, stepper); брокер/админ = тёмный ops; hold-модули макета — `DesignerStub`. Domain и инварианты не менять; lab `/client` — референс; данные только `/api/v1` и тарифы D10.
+
+### C2 — что натянуто / что stub
+
+| Live pane | Chrome | Не копировать из макета |
+|-----------|--------|-------------------------|
+| `/cabinet/orders` | `.cl-order-grid` + filter chips | фильтры ТН ВЭД / draft прототипа |
+| `/cabinet/new` | `.wiz-steps` товар→тариф→запуск; `tariff-mini` D10 | шаги «Бесплатно» / пакеты 20/100; скрытие HS combobox |
+| OrderDetail | stepper D8 + `.order-hs` live | UpgradeTile Код/Таможня/Под ключ; НДС 20%; сбор 15k |
+| `/broker/queue` | `.card` + `table.data` | approve на очереди |
+| `/broker/work` | QC metric/breakdown **над** WorkMapping | тонкая demo-таблица вместо mapping |
+| `/admin/brokers` | `.person-card` | фейковый SLA 3.1 ч |
+| `/admin/tariffs` | `.tariff-mini` EXPRESS/STANDARD/PRO | имена Код/Таможня/Под ключ |
+| Superapp home | `DesignerStub` ЧЗ / ТО / 1-й бесплатно | кликабельные плитки hold-модулей |

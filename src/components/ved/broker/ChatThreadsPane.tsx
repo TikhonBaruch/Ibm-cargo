@@ -39,6 +39,8 @@ export function ChatThreadsPane({
   }
 
   return (
+    <div className="card">
+      <h3>Чаты по заявкам</h3>
     <ul className="space-y-2">
       {threads.map((t) => {
         const calc = t.calculation;
@@ -86,5 +88,6 @@ export function ChatThreadsPane({
         );
       })}
     </ul>
+    </div>
   );
 }
