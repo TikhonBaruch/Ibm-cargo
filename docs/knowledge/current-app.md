@@ -35,6 +35,10 @@ docs/knowledge/           # ADR, branches, skeleton, testing, ops
 
 Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp`. Этот репозиторий: Preview URL, не `ibm-cargo.vercel.app`.
 
+### Автономия вне taurus (D36)
+
+MVP D27 **не** требует sibling `taurus/llm` / `../llm`: draft = heuristic (+ opt-in `LLM_SERVICE_URL` fail-open). Проверка 2026-08-25: `test:ci` PASS · live `smoke:mvp` #47935 · `smoke:payments` PASS · без записи в матрицу. Nested `llm/` в репо — sync-источник зеркал, не runtime npm-dep. Канон: [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md).
+
 ## Живое (VED + ветви 1–2)
 
 - Роли `CLIENT` / `BROKER` / `MANUFACTURER` + staff; вход `/login`, **регистрация импортёра** `/register` (`POST /api/v1/auth/register` — Company + User CLIENT в одной tx; брокер и производитель только seed/admin) — **D25** / **D31**
@@ -93,6 +97,7 @@ Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smo
 | Container inventory | 14 + ocr scaffold | [`../containers.md`](../containers.md) · [`containerization.md`](./containerization.md) |
 | Container add priorities (P1a/P1b–P3) | P1a now (D27); P1b Growth; ocr scaffold; anti-patterns D19 | [`../../containers/README.md`](../../containers/README.md) §«Что добавлять» · [`growth.md`](./growth.md) |
 | Parallel ownership / multi-model (D35) | packages domain/orch/mesh; llm matrix canon; sync mirrors | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
+| Автономия вне taurus (**D36**) | MVP без sibling `../llm`; matrix HTTP/sync only | [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md) · smoke #47935 |
 | Vision-before-classify | **done** — OCR_TIMEOUT 90s; no classify until Qwen OK (requeue); last attempt fail-open; maxDuration 300 | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |
 | Vision step logging | **done** — `[ai-drain]` phases + ServiceCall.fetch + `aiDraft.visionTrace` | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) §Пошаговые логи |
 | Client LLM soft-fail notice | **done** — `aiDraft.llmSoftFails` + «Тестовый режим» в карточке/PDF | [`plan-client-llm-soft-fail.md`](./plan-client-llm-soft-fail.md) |

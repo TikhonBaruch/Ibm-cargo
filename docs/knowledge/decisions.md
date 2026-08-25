@@ -303,4 +303,6 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 
 Канон: [`ved-invariants.mdc`](./ved-invariants.mdc) · [`ved-ownership.mdc`](./ved-ownership.mdc) · [`database.md`](./database.md) · [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`AGENTS.md`](../../AGENTS.md).
 
+**Проверка автономии (2026-08-25):** LBM MVP/CI без sibling taurus — [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md).
+
 

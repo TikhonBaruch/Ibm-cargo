@@ -35,7 +35,7 @@
 | Гладкий create / smoke S3 / compress | [`plan-smooth-create-path.md`](./plan-smooth-create-path.md) |
 | Журнал AI-цепочки + online probes | [`plan-chain-run-log.md`](./plan-chain-run-log.md) |
 | Параллельная ownership + multi-model (D35) | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`../../src/lib/ved/PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
-| Изоляция LBM ↔ taurus/llm (**D36**, always) | [`decisions.md`](./decisions.md) D36 · [`ved-invariants.mdc`](./ved-invariants.mdc) · [`database.md`](./database.md) |
+| Изоляция LBM ↔ taurus/llm (**D36**, always) | [`decisions.md`](./decisions.md) D36 · [`ved-invariants.mdc`](./ved-invariants.mdc) · [`database.md`](./database.md) · проверка: [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md) |
 | Vision до classify (таймаут / gate) | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |
 | LLM на заполнении + удачные прецеденты | [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) |
 | Typeahead полей NewCalc | [`plan-field-suggest.md`](./plan-field-suggest.md) · precedents [`plan-precedent-suggest-service.md`](./plan-precedent-suggest-service.md) · fix [`plan-field-suggest-fix.md`](./plan-field-suggest-fix.md) |
