@@ -12,7 +12,7 @@ Ibm-cargo/
   docs/
 ```
 
-Vercel **Root Directory = `.`** (Next в корне репо — так деплой проходит без ручного Root=`app`).
+Vercel: **Root = `.`**, **Framework = Services**. Нельзя убирать `services` из `vercel.json` (иначе: *Project framework is set to "services", but no services are declared*). Канон: `vercel.services.bff.json`.
 
 ## Старт
 
