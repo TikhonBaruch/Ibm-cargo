@@ -756,19 +756,19 @@ export function NewCalcPane({
       </aside>
       </div>
       {selected && (
-        <div className="mt-4 space-y-2 rounded-[28px] bg-white p-4 text-sm shadow-sm">
+        <div className="mt-4 card" style={{ marginBottom: 0 }}>
           <div>
             Создано {selected.number} · <StatusPill status={selected.status} />{" "}
-            <Link href={ordersHref} className="text-[#2b72f4]">
+            <Link href={ordersHref} className="btn btn-ghost btn-sm" style={{ marginLeft: 8 }}>
               К заявкам · оплатить
             </Link>
           </div>
           {isAiDrainPending(selected) ? (
-            <p className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-950">
+            <p className="alert-box" style={{ marginTop: 12 }}>
               Уточняем ТН ВЭД… Предварительный код уже есть; точный обновится через 1–2 мин.
             </p>
           ) : selected.aiDraft?.llmEnrich ? (
-            <p className="text-xs text-emerald-700">
+            <p className="meta" style={{ marginTop: 12, color: "var(--ok)" }}>
               Код уточнён ({selected.aiDraft.llmEnrich}
               {selected.hsCode ? ` · ${selected.hsCode}` : ""}).
             </p>

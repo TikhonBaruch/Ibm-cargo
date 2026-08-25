@@ -93,3 +93,92 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* C4: leftover VedShell SaaS chrome → prototype tokens (do not restyle header search). */
+.lbm-live-client [class*="rounded-[28px]"],
+.lbm-live-ops [class*="rounded-[28px]"],
+.lbm-live-ops [class*="rounded-[24px]"] {
+  border-radius: 20px;
+}
+.lbm-live-client [class*="rounded-[28px]"].bg-white,
+.lbm-live-ops [class*="rounded-[28px]"].bg-white,
+.lbm-live-ops [class*="rounded-[24px]"].bg-white {
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.lbm-live-client [class*="rounded-[22px]"],
+.lbm-live-ops [class*="rounded-[22px]"] {
+  border-radius: 16px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+}
+.lbm-live-client input[class*="rounded-xl"]:not([class*="amber"]),
+.lbm-live-client select[class*="rounded-xl"]:not([class*="amber"]),
+.lbm-live-client textarea[class*="rounded-xl"]:not([class*="amber"]),
+.lbm-live-ops input[class*="rounded-xl"]:not([class*="amber"]),
+.lbm-live-ops select[class*="rounded-xl"]:not([class*="amber"]),
+.lbm-live-ops textarea[class*="rounded-xl"]:not([class*="amber"]) {
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: #f5f7fa;
+  padding: 12px 14px;
+}
+.lbm-live-client input[class*="rounded-xl"]:focus,
+.lbm-live-client select[class*="rounded-xl"]:focus,
+.lbm-live-client textarea[class*="rounded-xl"]:focus,
+.lbm-live-ops input[class*="rounded-xl"]:focus,
+.lbm-live-ops select[class*="rounded-xl"]:focus,
+.lbm-live-ops textarea[class*="rounded-xl"]:focus {
+  border-color: var(--blue);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(43, 114, 244, 0.12);
+  outline: none;
+}
+.lbm-live-client .cl-search input,
+.lbm-live-client .im-search input {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+}
+.lbm-live-client .field > label,
+.lbm-live-ops .field > label {
+  display: block;
+}
+.lbm-live-client .chat-box.tall,
+.lbm-live-ops .chat-box.tall {
+  max-height: min(28rem, 55vh);
+  min-height: 12rem;
+}
+.lbm-live-ops button.activity-item,
+.lbm-live-client button.activity-item,
+.lbm-live-ops button.im-row {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.lbm-live-ops button.activity-item.on,
+.lbm-live-client button.activity-item.on {
+  background: #fff;
+  border-color: rgba(43, 114, 244, 0.45);
+  box-shadow: inset 3px 0 0 #2b72f4;
+}
+.lbm-live-client .field input[type="range"],
+.lbm-live-ops .field input[type="range"] {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  height: 8px;
+}
+.lbm-live-client .field input.w-full,
+.lbm-live-client .field select.w-full,
+.lbm-live-client .field textarea.w-full,
+.lbm-live-ops .field input.w-full,
+.lbm-live-ops .field select.w-full,
+.lbm-live-ops .field textarea.w-full {
+  width: 100%;
+}

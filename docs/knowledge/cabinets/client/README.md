@@ -23,10 +23,10 @@
 | Элемент | Где | Тип |
 |---------|-----|-----|
 | FAQ / гайд / ТО | `/faq` `/guide` `/clearance` | copy D10 + `DesignerStub` на hold |
-| Баланс / брокеры / перевозка / производитель | `/balance` `/brokers` `/shipping` `/factory` | плитки главной или deep-link; shipping/factory live только при флаге, иначе stub |
+| Баланс / брокеры / перевозка / производитель | `/balance` `/brokers` `/shipping` `/factory` | плитки главной или deep-link; shipping/factory live только при флаге, иначе stub; factory live = `.card` / `.field` / `table.data` |
 | OrderDetail | dash/orders | HS, **смета без доставки**, attrs, preferred, timeline |
 | «Оплатить тариф» / «Пополнить до тарифа и оплатить» | OrderDetail | деньги |
-| OrderChat + 📎 + waitingOn | OrderDetail | диалог; poll 12с |
+| OrderChat + 📎 + waitingOn | OrderDetail | `.chat-box` / `.bubble` / `.chat-row`; poll 12с |
 | EventsTimeline | OrderDetail | D24 история |
 | KPI «Непрочитанных» | badge «Чат» | `GET chat?scope=unread` (CALC+SUPPORT, waitingOn=CLIENT) |
 | Deep-link заявки | `/orders?id=` | Support / openCalc синхронизирует URL |

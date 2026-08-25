@@ -234,6 +234,13 @@ export function resolveClientSearch(input: {
   return `${input.path("/tnved")}?q=${encodeURIComponent(raw)}`;
 }
 
+export function payoutStatusPill(status: string): { label: string; cls: "ok" | "warn" | "blue" | "muted" } {
+  if (status === "PAID") return { label: "Выплачено", cls: "ok" };
+  if (status === "DOCS_REQUESTED") return { label: "Документы", cls: "warn" };
+  if (status === "ACCRUED") return { label: "Начисление", cls: "blue" };
+  return { label: status || "—", cls: "muted" };
+}
+
 export function clientNavHighlight(pathname: string, nav: Array<{ href: string; label: string }>): string {
   const p = (pathname || "/").replace(/\/$/, "") || "/";
   const byLabel = (match: string | RegExp) =>

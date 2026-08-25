@@ -187,7 +187,7 @@ export function DashboardPane({
   return (
     <section className="space-y-5">
       {calcs.length === 0 ? (
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+        <div className="card">
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
             С чего начать
           </p>
@@ -214,7 +214,7 @@ export function DashboardPane({
       ) : null}
 
       {unreadCount > 0 ? (
-        <div className="rounded-[28px] border border-[#2b72f4]/25 bg-[#e8f0fe] px-5 py-4 text-sm">
+        <div className="alert-box">
           <p className="font-semibold text-[#0f172a]">Ждут вашего ответа: {unreadCount}</p>
           <p className="mt-1 text-[var(--kb-muted)]">
             Брокер или поддержка написали — откройте заявку или «Поддержку» в меню.
@@ -222,7 +222,7 @@ export function DashboardPane({
         </div>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="stats">
         {[
           { v: active, k: "Активные заявки" },
           { v: atBroker, k: "На проверке у брокера" },
@@ -230,26 +230,21 @@ export function DashboardPane({
           { v: factoryActiveCount, k: "Запросы производителю", href: factoryHref },
           { v: unreadCount, k: "Непрочитанных" },
         ].map((s) => (
-          <div
-            key={s.k}
-            className="rounded-[28px] border border-black/[0.04] bg-white px-5 py-4 shadow-sm"
-          >
-            <div className="text-3xl font-extrabold tracking-tight" style={{ fontFamily: "var(--kb-font-display)" }}>
-              {s.v}
-            </div>
+          <div key={s.k} className="stat">
+            <div className="v">{s.v}</div>
             {"href" in s && s.href ? (
-              <Link href={s.href} className="mt-1 block text-sm text-[#2b72f4]">
+              <Link href={s.href} className="k">
                 {s.k}
               </Link>
             ) : (
-              <div className="mt-1 text-sm text-[var(--kb-muted)]">{s.k}</div>
+              <div className="k">{s.k}</div>
             )}
           </div>
         ))}
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="overflow-hidden rounded-[28px] border border-black/[0.04] bg-white shadow-sm">
+        <div className="card" style={{ overflow: "hidden", padding: 0 }}>
           <div className="border-b border-black/[0.04] px-5 py-4">
             <h2 className="text-lg font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
               Последние просчёты
@@ -268,7 +263,7 @@ export function DashboardPane({
           />
         </div>
 
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+        <div className="card">
           <h2 className="text-lg font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
             Быстрый просчёт
           </h2>
@@ -401,7 +396,7 @@ export function DashboardPane({
       </div>
 
       {showShipping && (
-      <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+      <div className="card">
         {activeShip ? (
           <>
             <h2 className="mb-4 text-lg font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>

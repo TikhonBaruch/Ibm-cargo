@@ -115,9 +115,9 @@ export function OrderDetail({
             </div>
           </div>
           {(selected.description || selected.country || selected.shipmentValue) && (
-            <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-[#0f172a]">
+            <div className="card" style={{ margin: "12px 0 0" }}>
               {selected.description && <p className="whitespace-pre-wrap">{selected.description}</p>}
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#7a7f89]">
+              <div className="meta" style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: "8px 16px" }}>
                 {selected.country && <span>Страна: {selected.country}</span>}
                 {selected.shipmentValue && <span>Стоимость партии: {selected.shipmentValue}</span>}
               </div>

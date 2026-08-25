@@ -14,10 +14,11 @@ export function PlatformSettingsPane({
   onSave: () => void;
 }) {
   return (
-    <section className="max-w-lg">
-      <div className="space-y-3 rounded-[28px] border border-black/[0.04] bg-white p-6 shadow-sm">
-        <label className="block text-sm">
-          Порог confidence
+    <section style={{ maxWidth: 560 }}>
+      <div className="card">
+        <h3>Настройки платформы</h3>
+        <div className="field">
+          <label>Порог confidence · {Math.round(settings.confidenceThreshold * 100)}%</label>
           <input
             type="range"
             min={0.5}
@@ -25,126 +26,77 @@ export function PlatformSettingsPane({
             step={0.01}
             value={settings.confidenceThreshold}
             onChange={(e) => onChange({ ...settings, confidenceThreshold: Number(e.target.value) })}
-            className="w-full"
           />
-          <span>{Math.round(settings.confidenceThreshold * 100)}%</span>
-        </label>
-        <label className="block text-sm">
-          SLA по умолчанию, ч
+        </div>
+        <div className="field">
+          <label>SLA по умолчанию, ч</label>
           <input
             type="number"
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
             value={settings.defaultSlaHours}
             onChange={(e) => onChange({ ...settings, defaultSlaHours: Number(e.target.value) })}
           />
-        </label>
-        <label className="block text-sm">
-          Окно preferred broker, ч
+        </div>
+        <div className="field">
+          <label>Окно preferred broker, ч</label>
           <input
             type="number"
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
             value={settings.preferredClaimHours}
             onChange={(e) => onChange({ ...settings, preferredClaimHours: Number(e.target.value) })}
           />
-        </label>
-        <label className="block text-sm">
-          Курс USD
+        </div>
+        <div className="field">
+          <label>Курс USD</label>
           <input
             type="number"
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
             value={settings.usdRate}
             onChange={(e) => onChange({ ...settings, usdRate: Number(e.target.value) })}
           />
-        </label>
-        <label className="block text-sm">
-          Курс CNY
+        </div>
+        <div className="field">
+          <label>Курс CNY</label>
           <input
             type="number"
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
             value={settings.cnyRate}
             onChange={(e) => onChange({ ...settings, cnyRate: Number(e.target.value) })}
           />
-        </label>
-        <label className="block text-sm">
-          Курс EUR
+        </div>
+        <div className="field">
+          <label>Курс EUR</label>
           <input
             type="number"
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
             value={settings.eurRate}
             onChange={(e) => onChange({ ...settings, eurRate: Number(e.target.value) })}
           />
-        </label>
-        <label className="block text-sm">
-          Запас к курсу, %
+        </div>
+        <div className="field">
+          <label>Запас к курсу, %</label>
           <input
             type="number"
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
             value={settings.fxBufferPct}
             onChange={(e) => onChange({ ...settings, fxBufferPct: Number(e.target.value) })}
           />
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={settings.autoAssignBrokers}
-            onChange={(e) => onChange({ ...settings, autoAssignBrokers: e.target.checked })}
-          />
-          Автоназначение брокера
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={settings.marketplaceEnabled}
-            onChange={(e) => onChange({ ...settings, marketplaceEnabled: e.target.checked })}
-          />
-          Маркетплейс брокеров
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={settings.maintenanceMode}
-            onChange={(e) => onChange({ ...settings, maintenanceMode: e.target.checked })}
-          />
-          Режим обслуживания
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={settings.paymentsEnabled}
-            onChange={(e) => onChange({ ...settings, paymentsEnabled: e.target.checked })}
-          />
-          Платежи / пополнение
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={settings.llmEnrichEnabled}
-            onChange={(e) => onChange({ ...settings, llmEnrichEnabled: e.target.checked })}
-          />
-          LLM enrich (внешний кластер)
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={settings.notifyEnabled}
-            onChange={(e) => onChange({ ...settings, notifyEnabled: e.target.checked })}
-          />
-          Email / notify
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={settings.mockTopupAllowed}
-            onChange={(e) => onChange({ ...settings, mockTopupAllowed: e.target.checked })}
-          />
-          Mock topup (AND с env)
-        </label>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={onSave}
-          className="rounded-full bg-[#2b72f4] px-5 py-2.5 text-sm font-semibold text-white"
-        >
+        </div>
+        {(
+          [
+            ["autoAssignBrokers", "Автоназначение брокера"],
+            ["marketplaceEnabled", "Маркетплейс брокеров"],
+            ["maintenanceMode", "Режим обслуживания"],
+            ["paymentsEnabled", "Платежи / пополнение"],
+            ["llmEnrichEnabled", "LLM enrich (внешний кластер)"],
+            ["notifyEnabled", "Email / notify"],
+            ["mockTopupAllowed", "Mock topup (AND с env)"],
+          ] as const
+        ).map(([key, label]) => (
+          <label key={key} className="toggle-row">
+            <input
+              type="checkbox"
+              checked={Boolean(settings[key])}
+              onChange={(e) => onChange({ ...settings, [key]: e.target.checked })}
+            />
+            {label}
+          </label>
+        ))}
+        <button type="button" disabled={busy} onClick={onSave} className="btn btn-primary btn-sm">
           Сохранить
         </button>
       </div>

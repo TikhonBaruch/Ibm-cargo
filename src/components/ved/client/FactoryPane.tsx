@@ -140,7 +140,7 @@ export function FactoryPane({
   }
 
   return (
-    <section className="space-y-5">
+    <section>
       <div className="card-head">
         <div>
           <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Производитель</h3>
@@ -149,68 +149,63 @@ export function FactoryPane({
           </p>
         </div>
       </div>
-      <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+      <div className="card">
         <ManufacturerSuggest value={manufacturer} onChange={setManufacturer} disabled={busy} />
-        <p className="mt-3 text-xs text-[var(--kb-muted)]">
+        <p className="meta" style={{ marginTop: 10 }}>
           Ниже — запрос qty по опубликованному SKU (сборный заказ). Нового производителя без SKU
           можно указать в «Новый просчёт».
         </p>
       </div>
 
-      <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-wide text-[var(--kb-muted)]">
-          {CLIENT_SEGMENT_LABELS[segment]}
-        </p>
-        <p className="mt-1 text-sm text-[var(--kb-muted)]">{hint}</p>
+      <div className="card">
+        <h3>{CLIENT_SEGMENT_LABELS[segment]}</h3>
+        <p className="meta" style={{ marginTop: 0, marginBottom: 12 }}>{hint}</p>
         {segment === "RETAIL_SMALL" && selected?.moq ? (
-          <p className="mt-2 text-sm">
+          <p className="meta">
             MOQ производителя {selected.moq}. Ваш qty идёт в общую сборку, не обязан быть полным MOQ.
           </p>
         ) : null}
 
         {selected ? (
-          <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 px-3 py-3 text-sm">
-            <p className="font-medium">{selected.name}</p>
-            <p className="text-[var(--kb-muted)]">
-              {selected.company.name} · {selected.sku}
-              {selected.originCountry ? ` · ${selected.originCountry}` : ""}
-            </p>
-            <p className="mt-1 text-[var(--kb-muted)]">
-              {selected.netWeightKg != null ? `нетто ${selected.netWeightKg} кг` : "нетто —"}
-              {selected.moq ? ` · MOQ ${selected.moq}` : ""}
-              {selected.packMultiple ? ` · кратность ${selected.packMultiple}` : ""}
-            </p>
-            {selected.openPool ? (
-              <p className="mt-1">
-                В открытой сборке {selected.openPool.qtyTotal}
-                {selected.openPool.targetQty ? ` / цель ${selected.openPool.targetQty}` : ""} (без
-                данных других покупателей)
-              </p>
-            ) : (
-              <p className="mt-1 text-[var(--kb-muted)]">Открытой сборки по этому SKU пока нет.</p>
-            )}
+          <div className="activity-item" style={{ marginBottom: 12 }}>
+            <div>
+              <strong>{selected.name}</strong>
+              <span>
+                {selected.company.name} · {selected.sku}
+                {selected.originCountry ? ` · ${selected.originCountry}` : ""}
+                {" · "}
+                {selected.netWeightKg != null ? `нетто ${selected.netWeightKg} кг` : "нетто —"}
+                {selected.moq ? ` · MOQ ${selected.moq}` : ""}
+                {selected.packMultiple ? ` · кратность ${selected.packMultiple}` : ""}
+              </span>
+              {selected.openPool ? (
+                <span>
+                  В открытой сборке {selected.openPool.qtyTotal}
+                  {selected.openPool.targetQty ? ` / цель ${selected.openPool.targetQty}` : ""} (без
+                  данных других покупателей)
+                </span>
+              ) : (
+                <span>Открытой сборки по этому SKU пока нет.</span>
+              )}
+            </div>
           </div>
         ) : null}
 
         {skusForManufacturer.length === 0 ? (
-          <p className="mt-3 text-sm text-[var(--kb-muted)]">
+          <p className="meta">
             Пока нет опубликованных SKU. Укажите производителя выше или сделайте просчёт ТН ВЭД в
             «Новый просчёт».
           </p>
         ) : (
           <form
-            className="mt-4 space-y-3"
             onSubmit={(e) => {
               e.preventDefault();
               void submitOne();
             }}
           >
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium text-[var(--kb-muted)]">
-                Артикул производителя
-              </span>
+            <div className="field">
+              <label>Артикул производителя</label>
               <select
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                 value={skuId}
                 onChange={(e) => setSkuId(e.target.value)}
                 required
@@ -224,55 +219,48 @@ export function FactoryPane({
                   </option>
                 ))}
               </select>
-            </label>
-            <label className="block max-w-[12rem]">
-              <span className="mb-1 block text-xs font-medium text-[var(--kb-muted)]">Количество</span>
+            </div>
+            <div className="field" style={{ maxWidth: "12rem" }}>
+              <label>Количество</label>
               <input
                 type="number"
                 min={1}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                 value={qty}
                 onChange={(e) => setQty(e.target.value)}
                 required
               />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium text-[var(--kb-muted)]">Комментарий</span>
+            </div>
+            <div className="field">
+              <label>Комментарий</label>
               <input
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Необязательно"
               />
-            </label>
-            <button
-              type="submit"
-              disabled={busy || !skuId}
-              className="rounded-full bg-[#2b72f4] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-            >
+            </div>
+            <button type="submit" disabled={busy || !skuId} className="btn btn-primary btn-sm">
               Запросить в сборный заказ
             </button>
           </form>
         )}
 
         {wholesale ? (
-          <div className="mt-6 border-t border-slate-100 pt-4">
-            <p className="text-sm font-medium">Опт: загрузка CSV</p>
-            <p className="mt-1 text-xs text-[var(--kb-muted)]">
-              Колонки: sku,qty,note — артикул как в каталоге производителя.
-            </p>
+          <div className="field" style={{ marginTop: 18 }}>
+            <label>Опт: загрузка CSV</label>
+            <span className="meta">Колонки: sku,qty,note — артикул как в каталоге производителя.</span>
             <textarea
-              className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 font-mono text-sm"
               rows={4}
               value={csv}
               onChange={(e) => setCsv(e.target.value)}
               placeholder={"sku,qty,note\nNB-T14-16,20,хвост май"}
+              style={{ fontFamily: "ui-monospace, monospace" }}
             />
             <button
               type="button"
               disabled={busy || !csv.trim()}
               onClick={() => void submitCsv()}
-              className="mt-2 rounded-full border border-slate-200 px-4 py-2 text-sm"
+              className="btn btn-ghost btn-sm"
+              style={{ marginTop: 8 }}
             >
               Загрузить строки
             </button>
@@ -280,69 +268,80 @@ export function FactoryPane({
         ) : null}
       </div>
 
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
+      {error ? <p className="alert-box">{error}</p> : null}
 
       {!rows?.length ? (
-        <div className="rounded-[28px] border border-black/[0.04] bg-white shadow-sm">
+        <div className="card">
           <VedEmptyState
             title="Запросов производителю пока нет"
             hint="Выберите опубликованный SKU и количество — производитель соберёт мелкие заказы в партию."
           />
         </div>
       ) : (
-        <ul className="space-y-2">
-          {rows.map((r) => (
-            <li
-              key={r.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-[22px] border border-black/[0.04] bg-white px-4 py-3 shadow-sm"
-            >
-              <div>
-                <p className="font-medium">
-                  {r.manufacturerSku.name}{" "}
-                  <span className="text-[var(--kb-muted)]">· {r.manufacturerSku.sku}</span>
-                </p>
-                <p className="text-sm text-[var(--kb-muted)]">
-                  qty {r.qty}
-                  {r.pool?.qtyTotal != null
-                    ? ` · в сборке ${r.pool.qtyTotal}${r.pool.targetQty ? ` / ${r.pool.targetQty}` : ""}`
-                    : ""}
-                  {r.rejectReason ? ` · ${r.rejectReason}` : ""}
-                </p>
-                {r.status === "CONFIRMED" ? (
-                  <p className="mt-1 text-sm">
-                    Партия набрана. Следующий шаг — просчёт ТН ВЭД (тариф брокера), не оплата
-                    производителю.
-                  </p>
-                ) : null}
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusPill status={r.status} />
-                {r.manufacturerSku.id ? (
-                  <Link
-                    href={newCalcHref({
-                      skuId: r.manufacturerSku.id,
-                      qty: r.qty,
-                      requestId: r.id,
-                    })}
-                    className="rounded-full bg-[#2b72f4] px-3 py-1 text-sm font-semibold text-white"
-                  >
-                    Просчитать ТН ВЭД
-                  </Link>
-                ) : null}
-                {r.status === "SUBMITTED" ? (
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void cancel(r.id)}
-                    className="rounded-full border border-slate-200 px-3 py-1 text-sm"
-                  >
-                    Отменить
-                  </button>
-                ) : null}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="card">
+          <h3>Запросы</h3>
+          <table className="data">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Кол-во</th>
+                <th>Статус</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id}>
+                  <td>
+                    {r.manufacturerSku.name}
+                    <div className="meta">{r.manufacturerSku.sku}</div>
+                    {r.status === "CONFIRMED" ? (
+                      <div className="meta">
+                        Партия набрана. Следующий шаг — просчёт ТН ВЭД, не оплата производителю.
+                      </div>
+                    ) : null}
+                  </td>
+                  <td>
+                    {r.qty}
+                    {r.pool?.qtyTotal != null
+                      ? ` · в сборке ${r.pool.qtyTotal}${r.pool.targetQty ? ` / ${r.pool.targetQty}` : ""}`
+                      : ""}
+                    {r.rejectReason ? ` · ${r.rejectReason}` : ""}
+                  </td>
+                  <td>
+                    <StatusPill status={r.status} />
+                  </td>
+                  <td>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {r.manufacturerSku.id ? (
+                        <Link
+                          href={newCalcHref({
+                            skuId: r.manufacturerSku.id,
+                            qty: r.qty,
+                            requestId: r.id,
+                          })}
+                          className="btn btn-primary btn-sm"
+                        >
+                          Просчитать ТН ВЭД
+                        </Link>
+                      ) : null}
+                      {r.status === "SUBMITTED" ? (
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => void cancel(r.id)}
+                          className="btn btn-ghost btn-sm"
+                        >
+                          Отменить
+                        </button>
+                      ) : null}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );

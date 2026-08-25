@@ -10,10 +10,10 @@
 | Дашборд | `/broker` | Очередь / в работе / SLA risk / avg; «Требуют внимания» | Claim; переход в work |
 | Очередь | `/queue` | `.card` + `table.data`; AI %, SLA countdown; badges «для вас»/reserved | **Взять** (disabled если reserved); approve **не** здесь |
 | В работе | `/work` | Mapping table, Δ AI≠broker, thumbs | Hs autocomplete; save; approve→PDF |
-| Чат | `/chat` | Threads + «ответ»; nav unread badge | WorkChat (скрыт при QUEUED) |
-| SLA | `/sla` | Avg, % в срок, AI≠HS bars | Read-only |
-| Выплаты | `/payouts` | ACCRUED / PAID | Read-only (PAID — admin) |
-| Профиль | `/profile` | Спец., языки, about | `acceptingJobs` checkbox |
+| Чат | `/chat` | `.card` + `.activity-list`; WorkChat = `.chat-box` | WorkChat (скрыт при QUEUED) |
+| SLA | `/sla` | `.stats` + `.breakdown` AI vs правки (live) | Read-only |
+| Выплаты | `/payouts` | `.stats` + `table.data`; pill Начисление/Документы/Выплачено | Read-only (PAID — admin) |
+| Профиль | `/profile` | `.card` + `.field` + `toggle-row` | `acceptingJobs` checkbox |
 
 Header: pill «Онлайн» / «Не принимает» ↔ `acceptingJobs` (F21); кнопка **Обновить** (+ soft poll 45с). Boot **loading ≠ empty очереди ≠ acceptingJobs off**.  
 Footer: SLA `preferredClaimHours` + **Рейтинг ★ / закрыто за нед.** из `BrokerProfile` (`formatBrokerSideFoot`).

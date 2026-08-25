@@ -769,21 +769,19 @@ export function BrokerCabinet() {
               onSelect={(c) => void openJob(c, { stayOnChat: true })}
               queueHref={queuePath}
             />
-            <div className="hidden min-h-[28rem] rounded-[28px] border border-black/[0.04] bg-white p-4 shadow-sm lg:block">
+            <div className="card hidden min-h-[28rem] lg:block" style={{ margin: 0 }}>
               {selected ? (
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <div>
+                  <div className="card-head">
                     <div>
-                      <p className="font-semibold text-[#0f172a]">
+                      <h3>
                         {selected.number} · {selected.title}
-                      </p>
-                      <p className="text-xs text-[var(--kb-muted)]">
-                        Чат с клиентом · mapping — на «В работе»
-                      </p>
+                      </h3>
+                      <p>Чат с клиентом · mapping — на «В работе»</p>
                     </div>
                     <button
                       type="button"
-                      className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-[#2b72f4]"
+                      className="btn btn-ghost btn-sm"
                       onClick={() =>
                         router.push(`${path("/work")}?id=${encodeURIComponent(selected.id)}`)
                       }
@@ -819,7 +817,7 @@ export function BrokerCabinet() {
                 <div className="mb-3">
                   <button
                     type="button"
-                    className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-[#2b72f4]"
+                    className="btn btn-ghost btn-sm"
                     onClick={() =>
                       router.push(`${path("/work")}?id=${encodeURIComponent(selected.id)}`)
                     }
@@ -852,28 +850,46 @@ export function BrokerCabinet() {
       {pane === "payouts" && <PayoutsPane payouts={payouts} />}
 
       {pane === "profile" && (
-        <section className="max-w-xl">
-          <div className="space-y-3 rounded-[28px] border border-black/[0.04] bg-white p-6 shadow-sm">
-            <input
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              placeholder="Специализация"
-              value={profile.specialization}
-              onChange={(e) => setProfile({ ...profile, specialization: e.target.value })}
-            />
-            <input
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              placeholder="Языки"
-              value={profile.languages}
-              onChange={(e) => setProfile({ ...profile, languages: e.target.value })}
-            />
-            <textarea
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              rows={3}
-              placeholder="О себе"
-              value={profile.about}
-              onChange={(e) => setProfile({ ...profile, about: e.target.value })}
-            />
-            <label className="flex items-center gap-2 text-sm">
+        <section>
+          <div className="card" style={{ maxWidth: 560 }}>
+            <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 16 }}>
+              <div className="avatar" style={{ width: 64, height: 64 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/cabinets/assets/avatar-broker.jpg" alt="" />
+              </div>
+              <div>
+                <strong style={{ fontSize: "1.1rem", fontFamily: "var(--display)" }}>
+                  {meName || "Брокер"}
+                </strong>
+                <div className="meta">Сертифицированный таможенный брокер</div>
+              </div>
+            </div>
+            <div className="field">
+              <label>Специализация</label>
+              <input
+                placeholder="Импорт из Китая, электроника, ЕАЭС"
+                value={profile.specialization}
+                onChange={(e) => setProfile({ ...profile, specialization: e.target.value })}
+              />
+            </div>
+            <div className="field">
+              <label>Языки</label>
+              <input
+                placeholder="Русский, English"
+                value={profile.languages}
+                onChange={(e) => setProfile({ ...profile, languages: e.target.value })}
+              />
+            </div>
+            <div className="field">
+              <label>О себе</label>
+              <textarea
+                rows={3}
+                placeholder="Опыт, направления, фокус классификации"
+                value={profile.about}
+                onChange={(e) => setProfile({ ...profile, about: e.target.value })}
+              />
+            </div>
+            <label className="toggle-row">
               <input
                 type="checkbox"
                 checked={profile.acceptingJobs}
@@ -881,12 +897,7 @@ export function BrokerCabinet() {
               />
               Принимаю новые заявки из очереди
             </label>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={saveProfile}
-              className="rounded-full bg-[#2b72f4] px-5 py-2.5 text-sm font-semibold text-white"
-            >
+            <button type="button" disabled={busy} onClick={saveProfile} className="btn btn-primary btn-sm">
               Сохранить
             </button>
           </div>

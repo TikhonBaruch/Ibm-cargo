@@ -256,6 +256,7 @@ app/client/**              # Next routes UI lab
 | **C** | **Live chrome:** `LbmCabinetsShell` на `/cabinet` `/broker` `/admin`. Клиент = product-shell + superapp home (`ClientSuperappHome`). Брокер/админ = ops-шелл вокруг существующих panes. Данные только `/api/v1` | Не монтировать prototype `BrokerShell`/`AdminShell`; не сплющивать admin nav; не выкидывать WorkMapping; нет proto-bar и fake GMV |
 | **C2** | **Pane visual:** карточки заявок, wizard chrome на `/new`, stepper на детали, очередь `.card`/`table.data`, QC-шапка WorkMapping, person-card брокеров, `tariff-mini` D10. Hold-модули → `DesignerStub` | Не копировать Код/Таможня/Под ключ, freemium, ЧЗ/ТО/голос, НДС 20%/сбор 15k, браузерный classify; не дробить NewCalc на шаги, скрывающие `HsCodeAutocomplete`/`FieldSuggest`; claim ≠ approve |
 | **C3** | **Максимальный match макета:** live-nav клиента = 5 тайлов (Главная · Заявки · Справочник ТН ВЭД · Чат · Компания); шапка = поиск + колокол + CTA; главная = greet/quick/ЧЗ-expand + faq/guide + lookup + лента с covers/chips/progress + svc. Extra-роуты `/cabinet/{tnved,faq,guide,clearance}`. Balance/чат/компания/брокеры — chrome макета. Hold → `DesignerStub`. Иконки — `@/lbm-bro/components/icon`. Shipping/factory не в сайдбаре (плитки/deep-link). | Не брать `tnved.json` как правду (live = `/api/v1/tnved/search`); не копировать freemium/Код-Таможня-Под ключ/НДС 20%/сбор 15k/голос/ЧЗ/ТО как продукт; не сплющивать admin nav; WorkMapping не заменять |
+| **C4** | **Остатки внутренней вёрстки:** панели, которые после C3 всё ещё на VedShell-карточках (`rounded-[28px]`, `rounded-xl` инпуты, slate-чат). CSS-мост `.lbm-live-*` + markup `.stats` / `table.data` / `.field` / `.chat-box` / `.search-row` / `.filter-chips` / `.activity-list`. | Не менять D8/D10/D11; не сплющивать admin nav; WorkMapping не заменять; кабинет производителя (`VedShell`) вне скоупа |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -280,9 +281,9 @@ app/client/**              # Next routes UI lab
 | Шаг | Критерий |
 |-----|----------|
 | Structure | Этот файл в `test:structure` |
-| Live клиент | `/cabinet` — 5 тайлов + поиск/колокол/CTA; главная = сетка макета; shipping/factory не в сайдбаре; hold → stub-роуты |
-| Live брокер | `/broker` — тёмный ops; dash `.stats` + SLA alert; `/work` = WorkMapping |
-| Live админ | `/admin` — ops + фиолетовый mark; группы nav 14 panes; KPI live |
+| Live клиент | `/cabinet` — 5 тайлов + поиск/колокол/CTA; главная = сетка макета; shipping/factory не в сайдбаре; hold → stub-роуты; factory/new/chat — `.card`/`.field`/`.chat-box` |
+| Live брокер | `/broker` — тёмный ops; dash `.stats` + SLA alert; `/work` = WorkMapping; `/sla` `/payouts` `/profile` `/chat` — прототип-хром |
+| Live админ | `/admin` — ops + фиолетовый mark; группы nav 14 panes; KPI live; bookings/clients/finance/users — `.card` + `table.data` |
 | Lab | `/client` референс (demo-store); proto-bar только там |
 | Domain | create/pay/PDF через `/api/v1`; статусы D8; НДС 22% / сбор 1637 |
 | Prod | нет proto-bar на `/cabinet|/broker|/admin`; нет fake KPI; `smoke:mvp` зелёный |
@@ -306,10 +307,28 @@ app/client/**              # Next routes UI lab
 | Фаза C: live chrome (`LbmCabinetsShell`) | **этот PR** |
 | Фаза C2: pane visual + `DesignerStub` | **этот PR** |
 | Фаза C3: 5-tile IA + шапка макета + extra-роуты + stub hold | **этот PR** |
+| Фаза C4: leftover inner panes → `.card` / `.stats` / `table.data` / `.field` / `.chat-box` | **этот PR** |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** live `/cabinet` повторяет IA и chrome макета (5 тайлов, поиск, колокол, суперприложение); брокер/админ = тёмный ops + Icon; hold-модули — `DesignerStub`. Domain D8/D10/D11/D15 и live ТН ВЭД (`/api/v1/tnved/search`) не менять.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета (5 тайлов, поиск, колокол, суперприложение); внутренние панели после C4 — тот же язык карточек/таблиц/полей; брокер/админ = тёмный ops + Icon; hold-модули — `DesignerStub`. Domain D8/D10/D11/D15 и live ТН ВЭД (`/api/v1/tnved/search`) не менять.
+
+### C4 — leftover inner panes
+
+C3 закрыл шелл, суперприложение и часть extras. Внутри кабинетов остались VedShell-карточки (`rounded-[28px] border-black/[0.04]`, `rounded-xl` инпуты, `bg-slate-50` чат) рядом с уже натянутыми `.card` / `table.data`.
+
+| Live pane | Chrome после C4 | Не копировать |
+|-----------|-----------------|---------------|
+| `/cabinet/factory` | `.card` + `.field` + `table.data` | завод-кабинет производителя (`VedShell`) |
+| `/cabinet/new` поля + баннер create | `.field` + `.card` / `.alert-box` | шаг «Бесплатно», пакеты 20/100 |
+| OrderChat / WorkChat / support thread | `.chat-box` + `.bubble` + `.chat-row` | голос |
+| `/broker/sla` | `.stats` + `.breakdown` live (не 3.1ч/96%) | фейковый рейтинг 4.9 |
+| `/broker/payouts` | `.stats` + `table.data` + pill ACCRUED/PAID | «30–40% от просчёта» как копирайт макета |
+| `/broker/profile` + `/chat` | `.card` + `.field` / `.activity-list` | — |
+| `/admin/bookings` `/clients` `/finance` | `.card` + `.search-row` + `table.data` + live `.stats` | fake GMV / 842 клиентов |
+| `/admin/users` `/audit` `/support` `/settings` `/integrations` `/orch` `/manufacturers` `/tnved` | `.card` / `.field` / `table.data` / `.activity-list` | 9 плоских пунктов прототипа |
+
+CSS-мост в `lbm-cabinets-live.css` подтягивает оставшиеся `rounded-[28px]` / `rounded-xl` внутри `.lbm-live-client` / `.lbm-live-ops` (кроме прозрачных `.cl-search` / `.im-search`).
 
 ### C3 — IA и chrome макета на live
 

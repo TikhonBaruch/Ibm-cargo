@@ -6,6 +6,7 @@ import {
   liveFeedMatch,
   liveFeedProgress,
   newCalcWizardProgress,
+  payoutStatusPill,
   resolveClientSearch,
   tariffMiniBlurb,
   wizardStepClass,
@@ -88,5 +89,12 @@ describe("lbm pane visual mapping", () => {
     expect(resolveClientSearch({ q: "8471", calcs: [], brokerNames: [], path })).toBe(
       "/cabinet/tnved?q=8471",
     );
+  });
+
+  it("maps payout statuses onto prototype pills (not raw ACCRUED enum)", () => {
+    expect(payoutStatusPill("ACCRUED")).toEqual({ label: "Начисление", cls: "blue" });
+    expect(payoutStatusPill("DOCS_REQUESTED")).toEqual({ label: "Документы", cls: "warn" });
+    expect(payoutStatusPill("PAID")).toEqual({ label: "Выплачено", cls: "ok" });
+    expect(payoutStatusPill("UNKNOWN").cls).toBe("muted");
   });
 });

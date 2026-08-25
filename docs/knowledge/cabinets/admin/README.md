@@ -30,16 +30,16 @@
 | Группа | Элемент | Route | Информирование | Взаимодействие |
 |--------|---------|-------|----------------|----------------|
 | Операции | Дашборд | `/admin` | Счётчики; bar статусов; attention | Переходы · open calc |
-| Операции | Заявки | `/bookings` | Table + StatusPill; badge QUEUED+SLA_RISK | Search, filter, **Открыть**, assign, escalate · `?id=` |
-| Операции | Клиенты | `/clients` | Компания, баланс, ledger, **сегмент**, фильтр Импортёры/Производители/режим | Drill-down · **PATCH реквизиты** · **ADJUSTMENT** · `?company=` · инвайт через Users |
+| Операции | Заявки | `/bookings` | `.card` + `.search-row` + `table.data`; badge QUEUED+SLA_RISK | Search, filter, **Открыть**, assign, escalate · `?id=` |
+| Операции | Клиенты | `/clients` | live `.stats` + `.filter-chips` + `table.data` | Drill-down · **PATCH реквизиты** · **ADJUSTMENT** · `?company=` · инвайт через Users |
 | Операции | Производители | `/manufacturers` | Очередь PENDING + постоянный каталог; badge | Approve / Reject · drawer компании · [`plan-manufacturer-proposals.md`](../../plan-manufacturer-proposals.md) |
 | Операции | Брокеры | `/brokers` | `.person-card` сетка; модерация · acceptingJobs · профиль | Одобрить / Отклонить · пауза · **drawer: specialization/languages/about** |
 | Операции | Поддержка | `/support` | SUPPORT inbox (фильтры Нужен ответ / Ждёт клиента / Закрыто / Архив) · nav badge unread | **Ответить** (`SUPPORT_REPLY`) · Close / Archive / Reopen (`SUPPORT_STATUS`) |
-| Операции | Финансы | `/finance` | Балансы; accrued; очередь выплат | фильтр статуса · **CSV** · **Отметить PAID** |
+| Операции | Финансы | `/finance` | live `.stats` + `table.data` балансы/выплаты | фильтр статуса · **CSV** · **Отметить PAID** |
 | Каталог | Тарифы | `/tariffs` | `.tariff-mini` D10 price / share / slaHours | Сохранить; макет Код/Таможня → `DesignerStub` |
 | Каталог | ТН ВЭД | `/tnved` | Поиск; форма / CSV / JSON; демо-набор; **карточка кода** | `POST …/import` · `GET …/search` · `GET …/:code` |
 | Каталог | AI-качество | `/ai-quality` | = форма settings | confidence, SLA, preferredClaimHours, USD, toggles incl. **`llmEnrichEnabled`** |
-| Платформа | Пользователи | `/users` | Staff / CLIENT / BROKER / EDITOR | create + reset password (без SUPER) |
+| Платформа | Пользователи | `/users` | `.card` + `.field` + `table.data` | create + reset password (без SUPER) |
 | Платформа | Интеграции | `/integrations` | Health + ServiceCall I/O | toggles payments/llm/**notify** |
 | Платформа | Оркестрация | `/orch` | Jobs / Outbox / **ServiceCall ocr+llm** / deps (D26) | Refresh · **Retry** FAILED/DEAD `AI_DRAIN` |
 | Платформа | Журнал | `/audit` | Audit log | Read-only · без SUPER |
