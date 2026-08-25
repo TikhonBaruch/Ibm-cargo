@@ -79,6 +79,15 @@
 .lbm-live-client .wiz-main .three {
   grid-template-columns: 1fr;
 }
+.lbm-live-client a.im-row,
+.lbm-live-client a.activity-item,
+.lbm-live-client a.go-active {
+  text-decoration: none;
+  color: inherit;
+}
+.lbm-live-client .go-svc {
+  align-items: stretch;
+}
 @media (min-width: 1200px) {
   .lbm-live-client .wiz-main .three {
     grid-template-columns: repeat(3, 1fr);

@@ -1,4 +1,3 @@
-import { factoryUiEnabled, shippingUiEnabled } from "@/lib/ved/cabinet-features";
 import type { InvoiceCurrency, LandedWithoutFreight } from "@/lib/ved/landed-cost";
 
 export type CalcItem = {
@@ -247,29 +246,21 @@ export function formatTariffOption(t: TariffOption): string {
   return `${t.name} — ${price} ₽ (до ${maxPos} поз.)`;
 }
 
+/** Designer IA: exactly 5 sidebar tiles. Shipping/factory stay as home tiles / deep-links. */
 export function getClientNav(
   base = "/cabinet",
-  env?: Record<string, string | undefined>
+  _env?: Record<string, string | undefined>
 ) {
   const b = base.replace(/\/$/, "");
   const root = b || "/";
   const path = (suffix: string) => (b ? `${b}${suffix}` : suffix || "/");
-  const items = [
-    { href: root === "/" ? "/" : root, label: "Дашборд", icon: "home" as const },
-    { href: path("/orders"), label: "Заявки / просчёты", icon: "list" as const },
-    { href: path("/factory"), label: "Производитель", icon: "box" as const },
-    { href: path("/brokers"), label: "Брокеры", icon: "users" as const },
-    { href: path("/shipping"), label: "Перевозка", icon: "truck" as const },
-    { href: path("/balance"), label: "Баланс", icon: "wallet" as const },
-    { href: path("/support"), label: "Поддержка", icon: "message" as const },
-    // Profile owns company settings; /settings redirects → /profile
-    { href: path("/profile"), label: "Профиль", icon: "user" as const },
+  return [
+    { href: root === "/" ? "/" : root, label: "Главная", icon: "home" as const },
+    { href: path("/orders"), label: "Заявки", icon: "list" as const },
+    { href: path("/tnved"), label: "Справочник ТН ВЭД", icon: "list" as const },
+    { href: path("/support"), label: "Чат", icon: "message" as const },
+    { href: path("/profile"), label: "Компания", icon: "user" as const },
   ];
-  return items.filter((item) => {
-    if (item.href.endsWith("/shipping") && !shippingUiEnabled(env)) return false;
-    if (item.href.endsWith("/factory") && !factoryUiEnabled(env)) return false;
-    return true;
-  });
 }
 
 export const PLACEHOLDER_THUMBS = [
@@ -296,6 +287,10 @@ export function clientPane(pathname: string): string {
   if (p.endsWith("/balance")) return "balance";
   if (p.endsWith("/profile") || p.endsWith("/settings")) return "profile";
   if (p.endsWith("/support")) return "support";
+  if (p.endsWith("/tnved")) return "tnved";
+  if (p.endsWith("/faq")) return "faq";
+  if (p.endsWith("/guide")) return "guide";
+  if (p.endsWith("/clearance")) return "clearance";
   return "dashboard";
 }
 

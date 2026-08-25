@@ -29,33 +29,38 @@ describe("cabinet-features", () => {
   });
 });
 
-describe("getClientNav shipping visibility", () => {
-  it("omits Настройки; profile owns company settings", () => {
+describe("getClientNav sidebar IA", () => {
+  it("is always the designer 5 tiles — shipping/factory stay off the sidebar", () => {
     const labels = getClientNav("/cabinet", {}).map((i) => i.label);
+    expect(labels).toEqual(["Главная", "Заявки", "Справочник ТН ВЭД", "Чат", "Компания"]);
     expect(labels).not.toContain("Настройки");
-    expect(labels).toContain("Профиль");
     expect(labels).not.toContain("Производитель");
+    expect(labels).not.toContain("Перевозка");
+    expect(labels).not.toContain("Баланс");
   });
 
-  it("omits Перевозка when shipping UI is off", () => {
-    const hrefs = getClientNav("/cabinet", {}).map((i) => i.href);
+  it("never puts Перевозка in the sidebar even when shipping UI is on", () => {
+    const hrefs = getClientNav("/cabinet", { NEXT_PUBLIC_SHIPPING_UI: "1" }).map((i) => i.href);
     expect(hrefs).not.toContain("/cabinet/shipping");
     expect(hrefs).toContain("/cabinet/orders");
+    expect(hrefs).toContain("/cabinet/tnved");
   });
 
-  it("keeps Перевозка when shipping UI is on", () => {
-    const hrefs = getClientNav("/cabinet", { NEXT_PUBLIC_SHIPPING_UI: "1" }).map((i) => i.href);
-    expect(hrefs).toContain("/cabinet/shipping");
-  });
-
-  it("keeps Производитель when factory UI is on", () => {
+  it("never puts Производитель in the sidebar even when factory UI is on", () => {
     const labels = getClientNav("/cabinet", { NEXT_PUBLIC_FACTORY_UI: "1" }).map((i) => i.label);
-    expect(labels).toContain("Производитель");
+    expect(labels).not.toContain("Производитель");
+    expect(labels).toContain("Компания");
   });
 
-  it("reads process.env when nav called without override bag", () => {
+  it("reads the same 5 tiles without an env bag", () => {
     vi.stubEnv("NEXT_PUBLIC_FACTORY_UI", "1");
-    expect(getClientNav("/cabinet").map((i) => i.label)).toContain("Производитель");
+    expect(getClientNav("/cabinet").map((i) => i.label)).toEqual([
+      "Главная",
+      "Заявки",
+      "Справочник ТН ВЭД",
+      "Чат",
+      "Компания",
+    ]);
     vi.unstubAllEnvs();
   });
 });

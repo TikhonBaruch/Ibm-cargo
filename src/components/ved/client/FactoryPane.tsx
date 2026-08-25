@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { StatusPill, VedEmptyState, api } from "../VedShell";
 import { useVedToast } from "../feedback/VedToast";
+import { DesignerStub } from "@/lbm-bro/components/designer-stub";
 import type { CatalogSku, ClientSegment, FactoryOrderRequest } from "./types";
 import { CLIENT_SEGMENT_HINTS, CLIENT_SEGMENT_LABELS } from "@/lib/ved/sku-order";
 import { ManufacturerSuggest, type ManufacturerSuggestValue } from "./ManufacturerSuggest";
@@ -140,6 +141,14 @@ export function FactoryPane({
 
   return (
     <section className="space-y-5">
+      <div className="card-head">
+        <div>
+          <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Производитель</h3>
+          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 4 }}>
+            Сборный заказ и каталог SKU
+          </p>
+        </div>
+      </div>
       <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
         <ManufacturerSuggest value={manufacturer} onChange={setManufacturer} disabled={busy} />
         <p className="mt-3 text-xs text-[var(--kb-muted)]">
@@ -336,5 +345,28 @@ export function FactoryPane({
         </ul>
       )}
     </section>
+  );
+}
+
+export function FactoryHoldPane({ homeHref }: { homeHref: string }) {
+  return (
+    <>
+      <div className="card-head">
+        <div>
+          <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Производитель</h3>
+          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 4 }}>
+            Сборный заказ — модуль макета суперприложения
+          </p>
+        </div>
+        <Link href={homeHref} className="btn btn-ghost btn-sm">
+          На главную
+        </Link>
+      </div>
+      <DesignerStub
+        title="Производитель / сборный заказ"
+        intent="Дизайнер вынес фабрику на плитку главной, не в сайдбар."
+        gap="Клиентский factory UI выключен (FACTORY_UI). Код экрана живой — включите флаг, чтобы создавать запросы."
+      />
+    </>
   );
 }

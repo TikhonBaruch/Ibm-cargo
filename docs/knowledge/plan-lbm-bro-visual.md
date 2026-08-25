@@ -73,7 +73,7 @@ CSS-канон клиента в прототипе явно подписан: *
 | `/client/ship` · `/clearance` | extra | Service pages | **Hold D27** (shipping UI off; ТО нет) |
 
 Lab-nav клиента (5 тайлов): Главная · Заявки · Справочник ТН ВЭД · Чат · Компания.  
-Live-nav (`getClientNav`): Дашборд · Заявки · Производитель† · Брокеры · Перевозка† · Баланс · Поддержка · Профиль.
+Live-nav (`getClientNav`): Главная · Заявки · Справочник ТН ВЭД · Чат · Компания. Брокеры / баланс / FAQ / гайд / перевозка / ТО / производитель — плитки главной или extra-роуты.
 
 Брокеры / баланс / FAQ / гайд / перевозка / ТО в прототипе — **плитки главной или extra-роуты**, не пункты сайдбара. Это сознательная IA суперприложения.
 
@@ -255,6 +255,7 @@ app/client/**              # Next routes UI lab
 | **A–B** | Клиентский lab `/client/*` + stubs | **done** |
 | **C** | **Live chrome:** `LbmCabinetsShell` на `/cabinet` `/broker` `/admin`. Клиент = product-shell + superapp home (`ClientSuperappHome`). Брокер/админ = ops-шелл вокруг существующих panes. Данные только `/api/v1` | Не монтировать prototype `BrokerShell`/`AdminShell`; не сплющивать admin nav; не выкидывать WorkMapping; нет proto-bar и fake GMV |
 | **C2** | **Pane visual:** карточки заявок, wizard chrome на `/new`, stepper на детали, очередь `.card`/`table.data`, QC-шапка WorkMapping, person-card брокеров, `tariff-mini` D10. Hold-модули → `DesignerStub` | Не копировать Код/Таможня/Под ключ, freemium, ЧЗ/ТО/голос, НДС 20%/сбор 15k, браузерный classify; не дробить NewCalc на шаги, скрывающие `HsCodeAutocomplete`/`FieldSuggest`; claim ≠ approve |
+| **C3** | **Максимальный match макета:** live-nav клиента = 5 тайлов (Главная · Заявки · Справочник ТН ВЭД · Чат · Компания); шапка = поиск + колокол + CTA; главная = greet/quick/ЧЗ-expand + faq/guide + lookup + лента с covers/chips/progress + svc. Extra-роуты `/cabinet/{tnved,faq,guide,clearance}`. Balance/чат/компания/брокеры — chrome макета. Hold → `DesignerStub`. Иконки — `@/lbm-bro/components/icon`. Shipping/factory не в сайдбаре (плитки/deep-link). | Не брать `tnved.json` как правду (live = `/api/v1/tnved/search`); не копировать freemium/Код-Таможня-Под ключ/НДС 20%/сбор 15k/голос/ЧЗ/ТО как продукт; не сплющивать admin nav; WorkMapping не заменять |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -279,7 +280,7 @@ app/client/**              # Next routes UI lab
 | Шаг | Критерий |
 |-----|----------|
 | Structure | Этот файл в `test:structure` |
-| Live клиент | `/cabinet` — светлый product-shell + сетка модулей; CTA «Новый просчёт»; shipping-плитка только при флаге |
+| Live клиент | `/cabinet` — 5 тайлов + поиск/колокол/CTA; главная = сетка макета; shipping/factory не в сайдбаре; hold → stub-роуты |
 | Live брокер | `/broker` — тёмный ops; dash `.stats` + SLA alert; `/work` = WorkMapping |
 | Live админ | `/admin` — ops + фиолетовый mark; группы nav 14 panes; KPI live |
 | Lab | `/client` референс (demo-store); proto-bar только там |
@@ -304,10 +305,29 @@ app/client/**              # Next routes UI lab
 | Анализ в KB (клиент + брокер + админ) | done |
 | Фаза C: live chrome (`LbmCabinetsShell`) | **этот PR** |
 | Фаза C2: pane visual + `DesignerStub` | **этот PR** |
+| Фаза C3: 5-tile IA + шапка макета + extra-роуты + stub hold | **этот PR** |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** три live-кабинета на токенах D14: клиент = светлое суперприложение на `/cabinet` (карточки заявок, wizard chrome, stepper); брокер/админ = тёмный ops; hold-модули макета — `DesignerStub`. Domain и инварианты не менять; lab `/client` — референс; данные только `/api/v1` и тарифы D10.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета (5 тайлов, поиск, колокол, суперприложение); брокер/админ = тёмный ops + Icon; hold-модули — `DesignerStub`. Domain D8/D10/D11/D15 и live ТН ВЭД (`/api/v1/tnved/search`) не менять.
+
+### C3 — IA и chrome макета на live
+
+Макет (`ClientShell` + `ClientHome`) — суперприложение, не SaaS-меню из 6–8 пунктов. C2 натянул карточки/wizard/stepper, но оставил старую IA и Lucide — визуально «не то».
+
+| Слой | Макет | Live после C3 |
+|------|--------|----------------|
+| Сайдбар | Главная · Заявки · Справочник ТН ВЭД · Чат · Компания | те же 5 тайлов → `/cabinet` `/orders` `/tnved` `/support` `/profile` |
+| Шапка | поиск + колокол + «Новый просчёт»; title скрыт на home/wizard/order | то же; order live = drawer, title на `/orders` остаётся |
+| Главная | greet + consult/ЧЗ + freemium stub + faq/guide + lookup + feed covers/chips + svc | `ClientSuperappHome` клон разметки; данные live D8 |
+| Extra | `/faq` `/guide` `/tnved` `/clearance` `/ship` | те же пути под `/cabinet/*`; ship live только при флаге, иначе stub |
+| Справочник | `tnved.json` + «1-й бесплатно» | `GET /api/v1/tnved/search` + `DesignerStub` freemium |
+| FAQ/гайд | тарифы Код/Таможня/Под ключ | copy D10 (EXPRESS 1 / STANDARD 3 / PRO 10), НДС 22% / сбор 1637 |
+| Иконки | `lbm-bro/components/icon` | то же на live chrome (не Lucide) |
+
+Брокеры / баланс / перевозка / производитель / ТО — **плитки главной или extra**, не пункты сайдбара. Флаги `SHIPPING_UI` / `FACTORY_UI` по-прежнему включают **живые** deep-link экраны, не тайлы меню.
+
+**Не копировать (stub):** ЧЗ, ТО, голос, freemium peek, пакеты 20/100, НДС 20% / сбор 15k, браузерный classify, proto-bar, fake GMV, «→ Админ».
 
 ### C2 — что натянуто / что stub
 
@@ -320,4 +340,4 @@ app/client/**              # Next routes UI lab
 | `/broker/work` | QC metric/breakdown **над** WorkMapping | тонкая demo-таблица вместо mapping |
 | `/admin/brokers` | `.person-card` | фейковый SLA 3.1 ч |
 | `/admin/tariffs` | `.tariff-mini` EXPRESS/STANDARD/PRO | имена Код/Таможня/Под ключ |
-| Superapp home | `DesignerStub` ЧЗ / ТО / 1-й бесплатно | кликабельные плитки hold-модулей |
+| Superapp home | C3: разметка `ClientHome` + live feed | кликабельный ЧЗ/ТО как продукт; `tnved.json` |

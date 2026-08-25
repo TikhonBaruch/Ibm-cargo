@@ -9,22 +9,26 @@
 
 | Элемент | Route | Информирование | Взаимодействие |
 |---------|-------|----------------|----------------|
-| Дашборд | `/` · `/cabinet` | Superapp: ТН ВЭД, заявки, поддержка, лента «В работе» | Плитки → `/new` `/orders` `/support`; shipping только при флаге |
+| Главная | `/` · `/cabinet` | Superapp как у дизайнера: greet, consult/ЧЗ-stub, faq/guide, lookup, лента covers/chips, svc | Плитки → `/new` `/orders` `/support` `/faq` `/guide` `/tnved` `/brokers` `/clearance`; shipping/factory — плитки, не сайдбар |
 | Заявки | `/orders` | Карточки (`.cl-order`): обложка, pill, «следующий шаг» D8 | Фильтры Все\|Готово\|У брокера\|Оплата; PDF при DONE; `onOpen` / pay без смены FSM |
-| Новый просчёт | `/new` (header CTA) | Wizard chrome (товар→тариф→запуск, поля не прячутся); лимит D10; heuristic top-N + **combobox ТН ВЭД** (`HsCodeAutocomplete`, `leafOnly`); **stage tip** + labels; **attr chips**; **FieldSuggest**; `tariff-mini` D10; hold → `DesignerStub` | Форма + позиции + attrs (состав/тип/цвет/возраст) + **строка производителя (hints + propose)** + опц. SKU + **HS directory + candidates** + **upload** + **CSV** · [`plan-client-tnved-search.md`](../../plan-client-tnved-search.md) · [`plan-newcalc-hints.md`](../../plan-newcalc-hints.md) · [`plan-llm-fill-hints.md`](../../plan-llm-fill-hints.md) · [`plan-field-suggest.md`](../../plan-field-suggest.md) · [`plan-manufacturer-proposals.md`](../../plan-manufacturer-proposals.md) |
-| Производитель | `/factory` | Сборный заказ; badge; `ManufacturerSuggest` | qty + SKU + пул; CTA просчёт ТН ВЭД; CSV WHOLESALE · D34 |
+| Справочник ТН ВЭД | `/tnved` | Combobox live `GET /api/v1/tnved/search` + карточка кода | Не `tnved.json`; freemium peek → `DesignerStub`; CTA → `/new` |
+| Чат | `/support` | IM-шелл: тикеты поддержки + ссылки на чат брокера по заявке | Голос → stub; FAQ → `/faq` |
+| Компания | `/profile` | `.field` реквизиты | Тумблеры уведомлений макета → stub |
+| Новый просчёт | `/new` (header CTA) | Wizard chrome (товар→тариф→запуск, поля не прячутся); лимит D10; heuristic top-N + **combobox ТН ВЭД** (`HsCodeAutocomplete`, `leafOnly`); **stage tip** + labels; **attr chips**; **FieldSuggest**; `tariff-mini` D10; hold → `DesignerStub` | Форма + позиции + attrs + **строка производителя** + опц. SKU + **HS directory** + **upload** + **CSV** · [`plan-client-tnved-search.md`](../../plan-client-tnved-search.md) |
 
-\*Скрыто без `NEXT_PUBLIC_SHIPPING_UI=1`.
+Шапка live: поиск заявки/товара/брокера + колокол (события D8) + CTA «Новый просчёт». Title скрыт на главной и wizard.
 
 ## Вложенные (не в side nav)
 
 | Элемент | Где | Тип |
 |---------|-----|-----|
+| FAQ / гайд / ТО | `/faq` `/guide` `/clearance` | copy D10 + `DesignerStub` на hold |
+| Баланс / брокеры / перевозка / производитель | `/balance` `/brokers` `/shipping` `/factory` | плитки главной или deep-link; shipping/factory live только при флаге, иначе stub |
 | OrderDetail | dash/orders | HS, **смета без доставки**, attrs, preferred, timeline |
 | «Оплатить тариф» / «Пополнить до тарифа и оплатить» | OrderDetail | деньги |
 | OrderChat + 📎 + waitingOn | OrderDetail | диалог; poll 12с |
 | EventsTimeline | OrderDetail | D24 история |
-| KPI «Непрочитанных» | Dashboard + badge «Заявки»/«Поддержка» | `GET chat?scope=unread` (CALC+SUPPORT, waitingOn=CLIENT) |
+| KPI «Непрочитанных» | badge «Чат» | `GET chat?scope=unread` (CALC+SUPPORT, waitingOn=CLIENT) |
 | Deep-link заявки | `/orders?id=` | Support / openCalc синхронизирует URL |
 | Return `?topup=1` / intentId | Balance | acquiring return |
 
@@ -38,7 +42,7 @@
 
 ## Panes (файлы)
 
-`DashboardPane` · `NewCalcPane` · `NewCalcHints` · `FieldSuggest` · `AttrSuggestChips` · `HsHintCandidates` · `HsCodeAutocomplete` (shared `ved/`) · `SkuCatalogSelect` · `FactoryPane` · `ProductCsvImport` · `BrokersPane` · `ShippingPane` · `BalancePane` · `SupportPane` · `CompanySettingsPane` · `OrderDetail` · `OrderResultFeedback` · `OrderChat`
+`DashboardPane` · `ClientSuperappHome` · `NewCalcPane` · `FaqPane` · `GuidePane` · `TnvedDirectoryPane` · `ClearancePane` · `HsCodeAutocomplete` (shared `ved/`) · `FactoryPane` · `BrokersPane` · `ShippingPane` · `BalancePane` · `SupportPane` · `CompanySettingsPane` · `OrderDetail` · `OrderChat`
 
 ## Взаимодействия → другие роли
 

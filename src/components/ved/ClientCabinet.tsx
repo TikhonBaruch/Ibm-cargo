@@ -7,7 +7,6 @@
 import { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Plus } from "lucide-react";
 import { factoryUiEnabled, shippingUiEnabled } from "@/lib/ved/cabinet-features";
 import { formatShipmentInvoice, parseShipmentInvoice } from "@/lib/ved/landed-cost";
 import { isAiDrainPending, waitForAiEnrich } from "@/lib/ved/ai-drain-client";
@@ -26,7 +25,11 @@ import { ShippingPane } from "./client/ShippingPane";
 import { BalancePane } from "./client/BalancePane";
 import { CompanySettingsPane } from "./client/CompanySettingsPane";
 import { SupportPane, type SupportThread } from "./client/SupportPane";
-import { FactoryPane } from "./client/FactoryPane";
+import { FactoryPane, FactoryHoldPane } from "./client/FactoryPane";
+import { FaqPane } from "./client/FaqPane";
+import { GuidePane } from "./client/GuidePane";
+import { TnvedDirectoryPane } from "./client/TnvedDirectoryPane";
+import { ClearancePane } from "./client/ClearancePane";
 import type { SupportTicketAction } from "@/lib/ved/support-ticket";
 import {
   clientPane,
@@ -48,17 +51,22 @@ import {
   formItemFromCatalogSku,
 } from "./client/types";
 import { factoryNavBadge } from "@/lib/ved/sku-order";
+import { liveBellNotes, resolveClientSearch } from "./lbm-pane-visual";
 
 const PAGE_META: Record<string, { title: string; lead: string }> = {
-  dashboard: { title: "Дашборд", lead: "Сводка по просчётам, брокерам и платежам" },
-  orders: { title: "Заявки / просчёты", lead: "История AI-расчётов и проверок брокером" },
+  dashboard: { title: "Главная", lead: "Импорт под контролем · AI + брокер" },
+  orders: { title: "Заявки", lead: "Просчёты, статусы и действия по карточкам" },
   factory: { title: "Производитель", lead: "Сборный заказ и каталог · добавить производителя" },
   new: { title: "Новый просчёт", lead: "Опишите партию — AI подготовит черновик ТН ВЭД" },
-  brokers: { title: "Брокеры", lead: "Выберите предпочтительного брокера для очереди" },
-  shipping: { title: "Перевозка", lead: "Оформление после статуса DONE · котировки и трекинг" },
-  balance: { title: "Баланс", lead: "Оплата тарифов с баланса компании" },
-  profile: { title: "Профиль", lead: "Реквизиты и контакты компании" },
-  support: { title: "Поддержка", lead: "FAQ и обращения · по заявкам — чат с брокером" },
+  brokers: { title: "Брокеры", lead: "Назначьте эксперта или напишите в чат" },
+  shipping: { title: "Перевозка", lead: "Маршрут, способ и ориентир по цене" },
+  balance: { title: "Баланс", lead: "Пополнение и история списаний" },
+  profile: { title: "Компания", lead: "Профиль и уведомления" },
+  support: { title: "Чаты", lead: "Поддержка отдельно, брокер — по каждой заявке" },
+  tnved: { title: "Справочник ТН ВЭД", lead: "Живой поиск кодов ЕАЭС" },
+  faq: { title: "FAQ", lead: "Частые вопросы по просчёту и брокеру" },
+  guide: { title: "Как пользоваться", lead: "Четыре шага до PDF" },
+  clearance: { title: "Таможенное оформление", lead: "Декларация, платежи и выпуск груза" },
 };
 
 export function ClientCabinet() {
@@ -77,13 +85,7 @@ function ClientCabinetInner() {
   const shippingOn = shippingUiEnabled();
   const factoryOn = factoryUiEnabled();
   const paneRaw = clientPane(pathname);
-  // Shipping pane stays in code/routes; when UI flag off, treat as dashboard (no empty flash).
-  const pane =
-    !shippingOn && paneRaw === "shipping"
-      ? "dashboard"
-      : !factoryOn && paneRaw === "factory"
-        ? "dashboard"
-        : paneRaw;
+  const pane = paneRaw;
   const navBase = process.env.NEXT_PUBLIC_CLIENT_BASE ?? "/cabinet";
   const nav = getClientNav(navBase);
   const path = (suffix: string) => {
@@ -860,14 +862,13 @@ function ClientCabinetInner() {
   const meta = PAGE_META[pane] || PAGE_META.dashboard;
   const factoryBadge = factoryOn ? factoryNavBadge(factoryRequests || []) : 0;
   const navWithBadge = nav.map((item) => {
-    if (item.label === "Поддержка" || item.label.startsWith("Заявки")) {
+    if (item.label === "Чат" || item.label === "Поддержка") {
       return { ...item, badge: unreadCount || null };
-    }
-    if (factoryOn && item.label === "Производитель") {
-      return { ...item, badge: factoryBadge || null };
     }
     return item;
   });
+  const hideHeaderTitle = pane === "dashboard" || pane === "new";
+  const bellNotes = liveBellNotes(calcs, path("/orders"), unreadCount);
 
   return (
     <LbmCabinetsShell
@@ -880,17 +881,19 @@ function ClientCabinetInner() {
       avatarUrl="/cabinets/assets/avatar-user.jpg"
       userLabel={me?.name}
       userMeta={me?.company?.name}
-      hideHeaderTitle={pane === "dashboard"}
+      hideHeaderTitle={hideHeaderTitle}
       balanceRub={me?.company?.balanceRub ?? 0}
       balanceHref={path("/balance")}
-      actions={
-        <Link
-          href={path("/new")}
-          className="btn btn-primary btn-sm"
-        >
-          <Plus className="h-4 w-4" strokeWidth={2.2} />
-          Новый просчёт
-        </Link>
+      newCalcHref={path("/new")}
+      notes={bellNotes}
+      bellUnread={unreadCount > 0 || bellNotes.some((n) => n.tone === "warn")}
+      onSearch={(q) =>
+        resolveClientSearch({
+          q,
+          calcs,
+          brokerNames: brokers.map((b) => b.user.name || ""),
+          path,
+        })
       }
     >
       {error && me && (
@@ -1045,19 +1048,22 @@ function ClientCabinetInner() {
         />
       )}
 
-      {factoryOn && pane === "factory" && (
-        <FactoryPane
-          catalogSkus={catalogSkus}
-          segment={profile.clientSegment || "SINGLE"}
-          requests={factoryRequests}
-          newCalcHref={({ skuId, qty, requestId }) => {
-            const q = new URLSearchParams({ sku: skuId, qty: String(qty) });
-            if (requestId) q.set("request", requestId);
-            return `${path("/new")}?${q.toString()}`;
-          }}
-          onChanged={() => reload()}
-        />
-      )}
+      {pane === "factory" &&
+        (factoryOn ? (
+          <FactoryPane
+            catalogSkus={catalogSkus}
+            segment={profile.clientSegment || "SINGLE"}
+            requests={factoryRequests}
+            newCalcHref={({ skuId, qty, requestId }) => {
+              const q = new URLSearchParams({ sku: skuId, qty: String(qty) });
+              if (requestId) q.set("request", requestId);
+              return `${path("/new")}?${q.toString()}`;
+            }}
+            onChanged={() => reload()}
+          />
+        ) : (
+          <FactoryHoldPane homeHref={cabinetHome} />
+        ))}
 
       {pane === "brokers" && (
         <BrokersPane
@@ -1067,7 +1073,7 @@ function ClientCabinetInner() {
         />
       )}
 
-      {shippingOn && pane === "shipping" && (
+      {pane === "shipping" && (
         <ShippingPane
           calcs={calcs}
           shipping={shipping}
@@ -1075,12 +1081,41 @@ function ClientCabinetInner() {
           shipForm={shipForm}
           selectedQuoteId={selectedQuoteId}
           busy={busy}
+          live={shippingOn}
           onShipForm={(patch) => setShipForm((f) => ({ ...f, ...patch }))}
           onQuote={(id, mode) => {
             setSelectedQuoteId(id);
             setShipForm((f) => ({ ...f, mode }));
           }}
           onCreate={createShip}
+        />
+      )}
+
+      {pane === "tnved" && (
+        <TnvedDirectoryPane
+          initialQuery={search.get("q") || ""}
+          homeHref={cabinetHome}
+          newCalcHref={path("/new")}
+        />
+      )}
+
+      {pane === "faq" && <FaqPane homeHref={cabinetHome} />}
+
+      {pane === "guide" && (
+        <GuidePane
+          homeHref={cabinetHome}
+          newCalcHref={path("/new")}
+          tnvedHref={path("/tnved")}
+          ordersHref={path("/orders")}
+          supportHref={path("/support")}
+        />
+      )}
+
+      {pane === "clearance" && (
+        <ClearancePane
+          calcs={calcs}
+          newCalcHref={path("/new")}
+          ordersHref={path("/orders")}
         />
       )}
 
@@ -1145,6 +1180,7 @@ function ClientCabinetInner() {
             router.replace(path("/support"), { scroll: false });
           }}
           onStatus={(action) => void submitSupportStatus(action)}
+          faqHref={path("/faq")}
         />
       )}
         </>

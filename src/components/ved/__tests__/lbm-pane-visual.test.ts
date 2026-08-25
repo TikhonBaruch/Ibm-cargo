@@ -3,7 +3,10 @@ import {
   clientOrderHsLabel,
   clientOrderNextStep,
   clientOrderStepper,
+  liveFeedMatch,
+  liveFeedProgress,
   newCalcWizardProgress,
+  resolveClientSearch,
   tariffMiniBlurb,
   wizardStepClass,
 } from "../lbm-pane-visual";
@@ -53,5 +56,37 @@ describe("lbm pane visual mapping", () => {
     expect(tariffMiniBlurb("EXPRESS")).toMatch(/AI/);
     expect(tariffMiniBlurb("STANDARD")).toMatch(/3/);
     expect(tariffMiniBlurb("PRO")).toMatch(/10/);
+  });
+
+  it("maps D8 statuses onto superapp feed chips", () => {
+    expect(liveFeedMatch({ status: "AI_READY", paidAt: null }, "pay")).toBe(true);
+    expect(liveFeedMatch({ status: "QUEUED" }, "work")).toBe(true);
+    expect(liveFeedMatch({ status: "DONE", hsCodeFinal: "8471" }, "hs")).toBe(true);
+    expect(liveFeedMatch({ status: "DONE" }, "done")).toBe(true);
+    expect(liveFeedProgress("QUEUED")).toBeGreaterThan(liveFeedProgress("AI_READY"));
+    expect(liveFeedProgress("DONE")).toBe(100);
+  });
+
+  it("resolves header search to live cabinet routes", () => {
+    const path = (s: string) => `/cabinet${s}`;
+    expect(
+      resolveClientSearch({
+        q: "HS-12",
+        calcs: [{ id: "c1", number: "HS-12", title: "Ноутбуки" }],
+        brokerNames: ["Иванов"],
+        path,
+      }),
+    ).toBe("/cabinet/orders?id=c1");
+    expect(
+      resolveClientSearch({
+        q: "Иванов",
+        calcs: [],
+        brokerNames: ["Иванов"],
+        path,
+      }),
+    ).toBe("/cabinet/brokers");
+    expect(resolveClientSearch({ q: "8471", calcs: [], brokerNames: [], path })).toBe(
+      "/cabinet/tnved?q=8471",
+    );
   });
 });
