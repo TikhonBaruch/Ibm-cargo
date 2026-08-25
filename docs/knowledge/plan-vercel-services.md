@@ -1,7 +1,7 @@
 # План: Vercel Services — Next frontend + Docker backend
 
-Индекс: [`deploy.md`](./deploy.md) · [`environments.md`](./environments.md) · [`plan-ui-auth-stubs.md`](./plan-ui-auth-stubs.md).  
-Ветвь 3. D33. **Cutover:** см. §7. Рабочий `vercel.json` = crons-only, пока Framework = Next.js.
+Индекс: [`deploy.md`](./deploy.md) · [`environments.md`](./environments.md) · [`plan-ui-auth-stubs.md`](./plan-ui-auth-stubs.md) · [`plan-preview-auth.md`](./plan-preview-auth.md).  
+Ветвь 3. D33. **As-is этого репо:** `vercel.json` = Services BFF (канон [`vercel.services.bff.json`](../../vercel.services.bff.json)). Dashboard: **Root Directory = `.`**, **Framework = Services**. Hostname `ibm-cargo.vercel.app` — чужой проект, не прод LBM.
 
 ## 1. Идея
 
@@ -103,13 +103,14 @@ Stay-on-Next: `auth/*`, `uploads`, `imports/*`, `internal/jobs-tick`.
 | E2 prod crons-only | **done** |
 | E3 Node proxy + BFF | **done** |
 | E4 `vercel.services.bff.json` + runbook §7 | **done** |
-| Framework Services + activate json | **done** — Ready `fb8a5bc` (backend.root fix); alias live |
+| Framework Services + activate json | **done** — этот репо: `vercel.json` = BFF services; Dashboard Root=`.` |
+| E5 «No Next.js version detected» | **done** — §8; гейт `vercel-root` / `test:structure` |
 | Domain rewrite / JWT | hold |
 
 ## 5. Проверка (после cutover)
 
-- Deploy Ready, alias `ibm-cargo.vercel.app`
-- `/` и `/health` → 200  
+- Deploy Ready на **Preview** Vercel-проекта `ibm-cargo` (GitHub `TikhonBaruch/Ibm-cargo`). **Не** `https://ibm-cargo.vercel.app` — это другой Vercel-проект.
+- `/` и `/health` → 200 
 - Login NextAuth (`/api/auth/*`)  
 - `/api/v1/me` с сессией  
 - Crons paths без изменения  
@@ -118,8 +119,7 @@ Stay-on-Next: `auth/*`, `uploads`, `imports/*`, `internal/jobs-tick`.
 
 ## 6. Деплой (повседневный)
 
-Пока Framework = **Next.js**: только crons `vercel.json`.  
-Cutover — строго по §7.
+Этот репозиторий: Framework = **Services** + блок `services` в `vercel.json`. Не переключать Preset на Next.js, пока json с `services`. Root Directory всегда `.`. Исторический crons-only cutover — §7 (не откатывать json).
 
 ## 7. Cutover runbook — Vercel Dashboard (минимум даунтайма)
 
@@ -141,7 +141,7 @@ Cutover — строго по §7.
 1. [Vercel](https://vercel.com) → project **ibm-cargo** → **Settings** → **General**.  
 2. **Framework Preset** → **Services** → **Save**.  
 3. **Не** жать Redeploy старого deployment с crons-only — он упадёт.  
-4. Production alias пока отдаёт **последний успешный** Next.js deploy — сайт жив.
+4. Старый успешный deploy остаётся живым до следующего build. Hostname `ibm-cargo.vercel.app` при этом **не** наш прод.
 
 ### B — Первый деплой с новым `vercel.json` (сразу после Save)
 
@@ -162,3 +162,65 @@ Cutover — строго по §7.
 - Framework=Next.js + `vercel.json` с `services`.  
 - Redeploy старого commit без `services` после переключения Framework.  
 - Возврат Edge `middleware.ts`.
+- `"rootDirectory"` в `vercel.json` (Vercel отклоняет: Root Directory только в Dashboard).
+- Dashboard **Root Directory** = `app` / `lint` / любая папка без корневого `package.json` с `"next"`.
+
+## 8. Диагностика: «No Next.js version detected» (D33)
+
+**Точная ошибка Vercel:**
+
+```text
+Warning: Could not identify Next.js version, ensure it is defined as a project dependency.
+Error: No Next.js version detected. Make sure your package.json has "next" in either "dependencies" or "devDependencies". Also check your Root Directory setting matches the directory of your package.json file.
+```
+
+### Идея
+
+Билдер `@vercel/next` читает `package.json` из **Dashboard Root Directory**. Если там нет `"next"` — эта ошибка. В этом репозитории Next живёт в **корне**: `package.json` → `"next": "16.1.6"`, App Router в `app/`, domain в `src/`, схема в `prisma/`. Папка `app/` — это роуты Next, **не** отдельный пакет.
+
+Ошибка **не** значит, что `"next"` пропал из зависимостей. Она значит: проект смотрит не в корень репо (часто Root Directory = `app`, `lint` или Framework Preset = **Next.js** вместо **Services** при блоке `services` в `vercel.json`).
+
+`https://ibm-cargo.vercel.app` к этой ошибке не относится: это Production alias **другого** Vercel-проекта (статический IBM Cargo). Этот git деплоится как project **ibm-cargo** → Preview URL (SSO). Канон LBM: https://taurus-liart.vercel.app.
+
+Dashboard **нельзя** выставить из агента / `vercel.json` (`rootDirectory` — invalid key).
+
+### Анализ
+
+| Симптом | Причина | Что не делать |
+|---------|---------|----------------|
+| *No Next.js version detected* | Root Directory = `app` (или другая папка без `"next"`) | Класть `package.json` в `app/` — сломает пути (`app/app`, нет `next.config` / `src` / `prisma`) |
+| Тот же текст при Framework=Next.js | Preset Next.js + `vercel.json` `services` / неверный root | Ставить `"framework": "nextjs"` **на корне** `vercel.json` — перебьёт Services |
+| *no services declared* | Framework=Services, в json нет `services` | Убирать блок `services` |
+| *project-configuration* / unknown `rootDirectory` | `"rootDirectory"` в `vercel.json` | Повторять коммит `9ce7f7f` |
+
+Код-сторона (уже в репо): `services.frontend.root` = `"."`, `framework` = `"nextjs"`, `backend` = `Dockerfile.vercel`. Это относительно Dashboard Root Directory: при Root = `.` билдер видит корневой `package.json` с `"next"`.
+
+### Структурирование
+
+| Фаза | Что |
+|------|-----|
+| E1 | Unit + `test:structure`: root `"next"`, нет `app/package.json`, нет `rootDirectory`, frontend.root=`.` |
+| E2 | KB: эта ошибка = Dashboard Root Directory `.` + Framework=Services |
+| E3 | Человек: клики ниже → Redeploy текущего коммита ветки |
+
+### Клики в Vercel Dashboard (человек)
+
+Проект: [ibm-cargo](https://vercel.com/tikhonbaruchs-projects/ibm-cargo) (тот, что в комментарии Vercel на PR, **не** сайт `ibm-cargo.vercel.app`).
+
+1. [vercel.com](https://vercel.com) → team **tikhonbaruchs-projects** → project **ibm-cargo**.
+2. **Settings** → **General**:
+   - **Framework Preset** → **Services** → **Save**.
+     (Не Next.js: при блоке `services` Preset должен быть Services.)
+3. **Settings** → **Build and Deployment** (тот же блок есть и в General):
+   - **Root Directory** → **Edit** → корень репозитория: поле **пустое** или **`.`**.  
+     Не выбирать `app`, `lint`, `src`, `containers`, `llm`.
+   - **Save**.
+4. **Deployments** → открыть последний коммит этой ветки → **Redeploy** (без «Use existing Build Cache», если сомнение). Не редеплоить старый Error с Root=`app`.
+
+После Save Root Directory следующий git push / Redeploy должен найти `"next": "16.1.6"` в корневом `package.json`.
+
+### Проверка
+
+- Build log: нет *No Next.js version detected*; есть Next frontend + container `backend`.
+- Preview URL вида `ibm-cargo-git-…-tikhonbaruchs-projects.vercel.app`, не `https://ibm-cargo.vercel.app`.
+- `npm run test:ci` (гейт root/services).

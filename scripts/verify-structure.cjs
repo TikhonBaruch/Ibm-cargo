@@ -65,6 +65,7 @@ const knowledgeRequired = [
   "docs/knowledge/admin-ops.md",
   "docs/knowledge/dual-path-parity.md",
   "docs/knowledge/deploy.md",
+  "docs/knowledge/plan-vercel-services.md",
   "docs/knowledge/containerization.md",
   "docs/knowledge/web-slim.md",
   "docs/knowledge/cabinets/README.md",
@@ -230,6 +231,32 @@ try {
   }
 } catch {
   errors.push("cannot read containers/ai/src/draft-engine.js");
+}
+
+// --- Vercel: Next at repo root + Services (no dashboard-only rootDirectory) ---
+try {
+  const pkg = JSON.parse(read("package.json"));
+  const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+  if (!deps.next) {
+    errors.push('root package.json must list "next" (Vercel: No Next.js version detected)');
+  }
+  if (exists("app/package.json")) {
+    errors.push("app/package.json must not exist — Vercel Root Directory is repo root, not app/");
+  }
+  const vercel = JSON.parse(read("vercel.json"));
+  if (Object.prototype.hasOwnProperty.call(vercel, "rootDirectory")) {
+    errors.push("vercel.json must not set rootDirectory (invalid; Dashboard Root Directory = .)");
+  }
+  const fe = vercel.services && vercel.services.frontend;
+  if (!fe || fe.framework !== "nextjs" || fe.root !== ".") {
+    errors.push('vercel.json services.frontend must be { root: ".", framework: "nextjs" }');
+  }
+  const be = vercel.services && vercel.services.backend;
+  if (!be || be.runtime !== "container" || be.entrypoint !== "Dockerfile.vercel") {
+    errors.push("vercel.json services.backend must keep container + Dockerfile.vercel");
+  }
+} catch (e) {
+  errors.push(`cannot validate Vercel root/services: ${e && e.message ? e.message : e}`);
 }
 
 // --- Agent rules present (tracked copies; .cursor/ is gitignored — sync via npm run sync:cursor-rules) ---

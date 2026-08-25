@@ -53,13 +53,22 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 
 - Route handlers с Prisma **не** должны быть статически prerendered (`revalidate` без `force-dynamic`) — иначе `Environment variable not found: DATABASE_URL` на `next build` (случай `/api/promos`).
 - Публичный `POST /api/v1/auth/register` должен быть в `isPublicAuthedPath` и пропускаться middleware до RBAC без сессии (D25).
+- `Warning: Could not identify Next.js version` / `Error: No Next.js version detected` — Root Directory в Dashboard не `.` (часто `app`) или Framework Preset не **Services**. `"next"` уже в корневом `package.json`. См. [`plan-vercel-services.md`](./plan-vercel-services.md) §8.
 
 ## Vercel project settings
 
-- Root Directory: `.` (корневой Next monolith)
-- Install: `npm install` (`postinstall` → `prisma generate`)
-- Build: `npm run build`
-- Framework: Next.js (prod). Services cutover: [`plan-vercel-services.md`](./plan-vercel-services.md) §7; канон [`vercel.services.bff.json`](../../vercel.services.bff.json) → в `vercel.json` только вместе с Framework=Services. BFF: `/api/*` на `frontend`; Docker через Node `ved/proxy`, не browser→container.
+Dashboard (агент **не** может выставить эти поля). Проект: [ibm-cargo](https://vercel.com/tikhonbaruchs-projects/ibm-cargo), GitHub `TikhonBaruch/Ibm-cargo`. **Не** путать с Production URL `https://ibm-cargo.vercel.app` (чужой проект).
+
+| Setting | Значение | Где кликать |
+|---------|----------|-------------|
+| **Root Directory** | `.` (корень репо; поле пустое или `.`) | **Settings** → **Build and Deployment** (или **General**) → **Root Directory** → **Edit** → не `app` / не `lint` / не вложенная папка → **Save** |
+| **Framework Preset** | **Services** | **Settings** → **General** → **Framework Preset** → **Services** → **Save** |
+| Install | `npm install` (`postinstall` → `prisma generate`) | не Override, пока не нужно |
+| Build | `npm run build` (берётся из frontend Next) | не Override |
+
+`vercel.json` **обязан** содержать блок `services` (канон [`vercel.services.bff.json`](../../vercel.services.bff.json)): frontend `root: "."` + `framework: "nextjs"`, backend `Dockerfile.vercel`. Нельзя писать `"rootDirectory"` в json (invalid).
+
+**Ошибка** `No Next.js version detected` / `Could not identify Next.js version` = билдер смотрит не в корневой `package.json` (там уже `"next": "16.1.6"`). Почти всегда Dashboard Root Directory = `app` или Framework ≠ Services. Канон и клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §8. BFF: `/api/*` на `frontend`; Docker через Node `ved/proxy`, не browser→container.
 
 ## Порядок ship
 

@@ -22,6 +22,7 @@
 | После Configuration — Prisma `Environment variable not found: DATABASE_URL` на `user.findUnique` | Runtime Preview **без** `DATABASE_URL`. Не инлайнить `process.env.DATABASE_URL` на билде; lazy Prisma + `datasourceUrl`. |
 | После Configuration — «неверный пароль» при живой БД | Нет seed в `newlsu_lbm` **или** на `/login` сокращения `client@` (seed = `client@example.com`) |
 | Пустой env → `https://ibm-cargo.vercel.app` | Хардкод fallback в `site-url.ts` / sitemap / robots |
+| `No Next.js version detected` / `Could not identify Next.js version` | Dashboard Root Directory ≠ `.` (часто `app`) или Framework ≠ **Services**. `"next"` уже в корневом `package.json`. Не hostname `ibm-cargo.vercel.app`. Клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §8. |
 
 Не делать: коммитить секреты; fallback secret на **Production**; считать `ibm-cargo.vercel.app` продом LBM.
 

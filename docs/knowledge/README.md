@@ -89,7 +89,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-worker-shutdown.md    # stopWorker: clearInterval + дождаться in-flight logistics
   plan-api-sigterm.md        # api SIGTERM: server.close + prisma.$disconnect + exit 0
   plan-husky-precommit.md    # husky: lint + logistics/shipping gate before commit
-  plan-vercel-services.md    # Vercel Services BFF; cutover §7; vercel.services.bff.json
+  plan-vercel-services.md    # Vercel Services BFF; Root Directory=.; ошибка No Next.js version detected
   plan-ui-auth-stubs.md      # UI: RSC layout stubs + requirePathAccess (дыры без middleware)
   plan-preview-auth.md       # Preview NextAuth: чужой хост ibm-cargo.vercel.app; seed/DATABASE_URL; полные демо-email
   plan-llm-fill-hints.md     # Client: attr chips + 👍 на черновик HS; broker similar precedents
@@ -151,7 +151,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | Смета платежей / НДС / сборы | [`customs-payments.md`](./customs-payments.md) → `src/lib/ved/customs-fees.ts` |
 | Смета без международной доставки | [`plan-landed-without-freight.md`](./plan-landed-without-freight.md) → `src/lib/ved/landed-cost.ts` |
 | Extract / новый контейнер | containerization C* + D19 → contracts envelope → monorepo |
-| Деплой | deploy.md → не ставить `USE_DOMAIN_API` на Vercel без cutover |
+| Деплой | [`deploy.md`](./deploy.md) → Root Directory `.` + Framework Services; не `USE_DOMAIN_API` без cutover; не `ibm-cargo.vercel.app` |
 | Поднять локально / выбрать режим | [`environments.md`](./environments.md) → [`../development.md`](../development.md) → [`runbook.md`](./runbook.md) |
 | Что уже на prod / smoke | [`current-app.md`](./current-app.md) § интегрированные → [`staging.md`](./staging.md) → [`roadmap.md`](./roadmap.md) |
 | Broker QC loop (feedback → broker) | [`plan-broker-qc-loop.md`](./plan-broker-qc-loop.md) · [`cabinets/broker/`](./cabinets/broker/) |
