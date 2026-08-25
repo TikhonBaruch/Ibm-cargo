@@ -13,7 +13,7 @@ const jsonlPath = path.join(root, "scripts/data/tnved/normalized/codes.jsonl");
 const summaryPath = path.join(root, "scripts/data/tnved/normalized/summary.json");
 const psnPath =
   process.env.PSN_NOTES ||
-  path.join(root, "../llm/data/tnved/normalized/notes.jsonl");
+  path.join(root, "llm/data/tnved/normalized/notes.jsonl");
 
 type OverlayFile = {
   rules: Array<{ flag: string; prefixes: string[] }>;
@@ -107,7 +107,7 @@ function main() {
   });
   const twsPath =
     process.env.TWS_CODES_JSONL ||
-    path.join(root, "../llm/data/tnved/normalized/codes.jsonl");
+    path.join(root, "llm/data/tnved/normalized/codes.jsonl");
   const twsCorpus: TwsCorpusDuty[] = existsSync(twsPath)
     ? (loadJsonl(twsPath) as unknown as TwsCorpusDuty[])
     : [];

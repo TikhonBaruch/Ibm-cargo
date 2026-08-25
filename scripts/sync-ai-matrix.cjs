@@ -4,7 +4,7 @@
  * Canon: /home/andrey/llm/services/{classification,ocr}
  * Usage:
  *   node scripts/sync-ai-matrix.cjs           # copy
- *   node scripts/sync-ai-matrix.cjs --check   # exit 2 if drift (when ../llm exists)
+ *   node scripts/sync-ai-matrix.cjs --check   # exit 2 if drift (when ./llm exists)
  *   node scripts/sync-ai-matrix.cjs --dry-run
  */
 const fs = require("node:fs");
@@ -12,7 +12,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 
 const root = path.resolve(__dirname, "..");
-const matrixRoot = path.resolve(root, "../llm");
+const matrixRoot = path.resolve(root, "llm");
 const dryRun = process.argv.includes("--dry-run");
 const checkOnly = process.argv.includes("--check");
 
@@ -66,10 +66,10 @@ function listOptionalTests(fromDir) {
 
 if (!fs.existsSync(matrixRoot)) {
   if (checkOnly) {
-    console.log("sync-ai-matrix: sibling ../llm missing — skip check");
+    console.log("sync-ai-matrix: ./llm missing — skip check");
     process.exit(0);
   }
-  console.error("sync-ai-matrix: expected sibling repo at", matrixRoot);
+  console.error("sync-ai-matrix: expected llm package at", matrixRoot);
   process.exit(1);
 }
 

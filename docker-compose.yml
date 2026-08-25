@@ -215,7 +215,7 @@ services:
   llm:
     <<: *restart
     # Canon: llm/services/classification. Default mirror: ./containers/llm.
-    # Override: LLM_DOCKER_CONTEXT=../llm/services/classification
+    # Override: LLM_DOCKER_CONTEXT=./llm/services/classification
     build:
       context: ${LLM_DOCKER_CONTEXT:-./containers/llm}
     profiles: ["scale", "full"]
@@ -239,7 +239,7 @@ services:
       QWEN_MODEL: ${QWEN_MODEL:-}
       TNVED_CODES_PATH: ${TNVED_CODES_PATH:-/data/tnved/codes.jsonl}
     volumes:
-      - ${TNVED_DATA_DIR:-../llm/data/tnved/normalized}:/data/tnved:ro
+      - ${TNVED_DATA_DIR:-./llm/data/tnved/normalized}:/data/tnved:ro
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4500/health"]
       interval: 10s
@@ -266,7 +266,7 @@ services:
   ocr:
     <<: *restart
     # Canon: llm/services/ocr. Default mirror: ./containers/ocr.
-    # Override: OCR_DOCKER_CONTEXT=../llm/services/ocr
+    # Override: OCR_DOCKER_CONTEXT=./llm/services/ocr
     build:
       context: ${OCR_DOCKER_CONTEXT:-./containers/ocr}
     profiles: ["scale", "full"]
