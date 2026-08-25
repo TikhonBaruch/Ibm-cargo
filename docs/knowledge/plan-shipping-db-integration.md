@@ -56,7 +56,7 @@ Next `POST/GET /api/v1/shipping` вызывает writer. Поведение HTT
 ## 5. Проверка
 
 - `npm run test:ci` — integration **не** в unit (exclude `*.integration.test.ts`).
-- `RUN_DB_INTEGRATION=1 npm run test:integration` — локальный Postgres (`postgresql://taurus:taurus@127.0.0.1:5432/taurus`).
+- `RUN_DB_INTEGRATION=1 npm run test:integration` — локальный Postgres (`postgresql://lbm:lbm@127.0.0.1:5432/lbm`).
 - Без флага / без локальной БД — skip, не fail CI.
 
 ## 6. Деплой

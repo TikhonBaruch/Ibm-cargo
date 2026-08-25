@@ -3,7 +3,7 @@
  * Phase 0 smoke (client): login → list/create → pay AI_READY → PDF or QUEUED.
  *
  *   node scripts/smoke-client-path.mjs
- *   TEST_API_URL=https://taurus-liart.vercel.app node scripts/smoke-client-path.mjs
+ *   TEST_API_URL=https://ibm-cargo.vercel.app node scripts/smoke-client-path.mjs
  */
 const BASE = process.env.TEST_API_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
 const EMAIL = process.env.CLIENT_EMAIL || "client@example.com";

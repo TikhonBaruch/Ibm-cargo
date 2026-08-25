@@ -1,6 +1,6 @@
 /**
  * OCR / docs-ingest. Envelope: contracts/d-ocr.ai.json
- * Synced with taurus/containers/ocr — text PDF + vision describe/reset (Qwen or DeepSeek by chainId).
+ * Synced with containers/ocr — text PDF + vision describe/reset (Qwen or DeepSeek by chainId).
  */
 import http from "node:http";
 import { extractText, getDocumentProxy } from "unpdf";

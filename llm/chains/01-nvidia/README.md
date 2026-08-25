@@ -10,4 +10,4 @@ See `profile.env.example`. Typical:
 - `OPENAI_BASE_URL=https://integrate.api.nvidia.com/v1`
 - `LLM_CLASSIFY_MODEL=meta/llama-3.1-8b-instruct`
 
-Taurus: `AI_CHAIN_ID=1`.
+LBM: `AI_CHAIN_ID=1`.

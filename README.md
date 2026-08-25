@@ -27,7 +27,7 @@ npm run dev            # http://localhost:3000
 - Функция: `/cabinet`
 - Demo: `client@example.com` / `demo1234`
 
-## LLM / OCR / mesh (полная копия taurus)
+## LLM / OCR / mesh (полная копия исходного продукта (mesh + Next))
 
 Как у исходного проекта: Compose **Mode B**, UI может оставаться `npm run dev`.
 

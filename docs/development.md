@@ -82,7 +82,7 @@ node containers/logistics/src/index.js
 ## Структура
 
 ```text
-lbm-broker/  # локальный каталог может оставаться taurus
+lbm-broker/  # каталог репозитория Ibm-cargo
   app/ src/ prisma/ public/     # Next monolith UI (Vercel)
   containers/
     web/ admin/ broker/ client/ # UI surfaces (без Prisma)
@@ -171,5 +171,5 @@ C1 Compose ready / Vercel dual; C2–C4 done as designed; C5 slim = scaffold.
 ## Деплой (GitHub → Vercel)
 
 Checklist env, ignore и порядок push: [`knowledge/deploy.md`](./knowledge/deploy.md).  
-Прод: https://taurus-liart.vercel.app — без `USE_DOMAIN_API` (Prisma в Next).
+Прод: https://ibm-cargo.vercel.app — без `USE_DOMAIN_API` (Prisma в Next).
 

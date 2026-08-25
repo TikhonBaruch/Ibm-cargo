@@ -35,13 +35,13 @@
 
 ### Фаза 0 — инвентарь
 
-Что лежит в `taurus/scripts/data/tnved/` и `llm/data/tnved/` (jsonl, TWS, PDF). Поиск TWS CSV в `~/Backups`, если пропал с диска.
+Что лежит в `scripts/data/tnved/` и `llm/data/tnved/` (jsonl, TWS, PDF). Поиск TWS CSV в `~/Backups`, если пропал с диска.
 
 ### Фаза 1 — повторный fetch официального
 
 | Команда / URL | Зачем |
 |---------------|--------|
-| `npm run tnved:fetch` (taurus) | ФНС zip, checksum |
+| `npm run tnved:fetch` (LBM) | ФНС zip, checksum |
 | `tnved:fetch-nsi` / `fetch-fts` (llm) | повторный probe СТНВЭДСТ и list.csv |
 | `ETT_DOWNLOAD_PDF=1 tnved:fetch-ett` | PDF групп ЕТТ + правила (юридический текст) |
 | `tnved:fetch-psn` если нет PDF | пояснения |
@@ -53,7 +53,7 @@ Rate-limit ~300 мс. Не CI.
 ### Фаза 2 — нормализация и overlay пошлины
 
 1. `llm`: `tnved:parse-tws` (если CSV найден) → `tnved:normalize`.
-2. `taurus`: `tnved:normalize` → `tnved:compose`.
+2. `lbm`: `tnved:normalize` → `tnved:compose`.
 3. Overlay `dutyPct` из llm `codes.jsonl` (`source: tws-csv`) на листья ФНС → `TnvedDutyRate.source = tws-csv` (не выдавать за НСИ).
 4. `tnved:load -- --full` **только** `DATABASE_URL=local`.
 
@@ -96,7 +96,7 @@ Alta/TKS KEY · полный join решений к листьям · НДС 10%
 | G триггеры | акциз 633 / утиль 662 / НТМ 2108 листьев |
 | PDF ЕТТ | **101/101** скачаны (~34 МБ), XLSX на странице нет |
 
-Повтор: `npm run tnved:compose` затем `env -u DATABASE_URL DATABASE_URL=postgresql://taurus:taurus@127.0.0.1:5432/taurus npm run tnved:load -- --full`.
+Повтор: `npm run tnved:compose` затем `env -u DATABASE_URL DATABASE_URL=postgresql://lbm:lbm@127.0.0.1:5432/lbm npm run tnved:load -- --full`.
 
 ## Проверка 2026-08-18 (D33 шаги 5–8)
 
@@ -133,7 +133,7 @@ TWS — **сторонний fill**, не выдавать в UI как «ЕТТ
 
 Build на Hobby: `prisma generate` only, **без** migrate. Полный dump ТН ВЭД — **не** MVP CTA (D27). Merge в `main` этого среза **не** тащит кабинет завода / миграции D31–D34 (отдельный PR).
 
-После push ветки: Vercel Preview. Prod https://taurus-liart.vercel.app — только после merge в `main`. Smoke против preview: `TEST_API_URL=<preview> npm run smoke:mvp` (не грузить корпус).
+После push ветки: Vercel Preview. Prod https://ibm-cargo.vercel.app — только после merge в `main`. Smoke против preview: `TEST_API_URL=<preview> npm run smoke:mvp` (не грузить корпус).
 
-**Деплой 2026-08-18:** [PR #7](https://github.com/TikhonBaruch/taurus/pull/7). Preview падал на `npm run build`: TS `layer: "D"` при типе `"A"|"B"|"C"` (`tnved.ts:204`). Локальный Next типы пропускал; Vercel — нет. Правка слоёв A–G запушена (`d9e5619`). В `main` не мержили; TWS на sweb не грузили.
+**Деплой 2026-08-18:** [PR #7](https://github.com/TikhonBaruch/Ibm-cargo/pull/7). Preview падал на `npm run build`: TS `layer: "D"` при типе `"A"|"B"|"C"` (`tnved.ts:204`). Локальный Next типы пропускал; Vercel — нет. Правка слоёв A–G запушена (`d9e5619`). В `main` не мержили; TWS на sweb не грузили.
 

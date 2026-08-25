@@ -74,7 +74,7 @@ ingest (cabinet / CSV / upload)
 ### Срез 0 — локальные OpenAI-compatible профили (этот цикл)
 
 **Не** срез 5 (параллельный multi-LLM router, hold D30) и **не** новый AI-стек.  
-Канон: Taurus **не** зовёт модель из UI; `containers/ai` enrich → `LLM_SERVICE_URL` → `containers/llm` / `llm/services/classification`; envelope [`d-draft.llm.json`](../contracts/d-draft.llm.json); fail-open; gate `llmEnrichEnabled`; D27 — opt-in URL/env, не CTA.
+Канон: LBM **не** зовёт модель из UI; `containers/ai` enrich → `LLM_SERVICE_URL` → `containers/llm` / `llm/services/classification`; envelope [`d-draft.llm.json`](../contracts/d-draft.llm.json); fail-open; gate `llmEnrichEnabled`; D27 — opt-in URL/env, не CTA.
 
 Один активный chat-провайдер через уже существующий `POST …/chat/completions`. Смена модели = env, не новый сервис и не новые поля classify/duty.
 
@@ -100,7 +100,7 @@ ingest (cabinet / CSV / upload)
 - Vercel: `LLM_PROVIDER`/`DEEPSEEK_*`/`QWEN_*` on Next → `provider-mesh` (no docker URL).  
 Create → draft enrich → **inline** `AI_DRAIN`; job `DONE` для orch; worker/cron = retry.
 
-**Именование:** в продукте — **AI-контур** (Qwen-VL → DeepSeek); репозиторий `/llm` — **матрица ИИ-сервисов** (HTTP classification/OCR). Не путать с FSM расчёта в Taurus.
+**Именование:** в продукте — **AI-контур** (Qwen-VL → DeepSeek); репозиторий `/llm` — **матрица ИИ-сервисов** (HTTP classification/OCR). Не путать с FSM расчёта в LBM.
 
 **Точность кандидатов (2026-08-21):** chapter/heading-hint раньше lexical; стоп-токен `носки`; synonym→leaf score (`640411`, `610910`, `847130`, `851713`, `853952`); при `hsCode:null` — lexical fallback в главе, не чужой heuristic.
 
@@ -240,7 +240,7 @@ Vision: без Qwen — не блокируем; optional второй vision п
 4. Drain пишет в `aiDraft` (`llmEnrich`, disclaimer, confidence) и снимает pending.
 5. Sync `enrichDraftWithLlm` на create **пропускать**, если будет `AI_DRAIN` (один вызов модели).
 
-**Починка 2026-08-21:** api был на сети `taurus_lbm`, postgres — на `taurus_taurus` без общего DNS; `DATABASE_URL` ждал `lbm`/`lbm`, том — `taurus`. Таймаут enrich был 3–4s. Исправлено: compose `POSTGRES_*=taurus`, сеть+alias, `LLM_TIMEOUT_MS` 30s, inline drain.
+**Починка 2026-08-21:** api был на сети `lbm_lbm`, postgres — на `lbm_default` без общего DNS; `DATABASE_URL` ждал `lbm`/`lbm`, том — `lbm`. Таймаут enrich был 3–4s. Исправлено: compose `POSTGRES_*=lbm`, сеть+alias, `LLM_TIMEOUT_MS` 30s, inline drain.
 
 ```text
 create persist + heuristic AI_READY

@@ -25,7 +25,7 @@
 ## Проверка
 
 - Unit: analyze helpers.
-- Online: `TEST_API_URL=https://taurus-liart.vercel.app npm run probe:ai-chain` (≥3 сценария).
+- Online: `TEST_API_URL=https://ibm-cargo.vercel.app npm run probe:ai-chain` (≥3 сценария).
 
 ## Готово (2026-08-23)
 

@@ -57,10 +57,10 @@ TEST_API_URL=http://localhost:3000 npm run smoke:full
 
 ## Что после деплоя
 
-E2E бьёт в `TEST_API_URL` (по умолчанию `https://taurus-liart.vercel.app`).
+E2E бьёт в `TEST_API_URL` (по умолчанию `https://ibm-cargo.vercel.app`).
 
 ```bash
-TEST_API_URL=https://taurus-liart.vercel.app RUN_E2E=1 npm run test:e2e
+TEST_API_URL=https://ibm-cargo.vercel.app RUN_E2E=1 npm run test:e2e
 ```
 
 Конфиг: `vitest.e2e.config.ts`. Без `RUN_E2E=1` suites — `describe.skip`.

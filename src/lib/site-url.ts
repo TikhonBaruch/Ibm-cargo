@@ -7,7 +7,7 @@ export function resolveSiteUrl(env: NodeJS.ProcessEnv = process.env): string {
     env.NEXTAUTH_URL,
     env.NEXT_PUBLIC_SITE_URL,
     env.VERCEL_URL ? `https://${env.VERCEL_URL}` : "",
-    "https://taurus-liart.vercel.app",
+    "https://ibm-cargo.vercel.app",
   ];
   for (const raw of candidates) {
     const t = (raw || "").trim();

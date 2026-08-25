@@ -2,7 +2,7 @@
 /**
  * Online AI-chain probes → JSONL for analysis.
  *
- *   TEST_API_URL=https://taurus-liart.vercel.app npm run probe:ai-chain
+ *   TEST_API_URL=https://ibm-cargo.vercel.app npm run probe:ai-chain
  *
  * Writes: tmp/chain-probes-<stamp>.jsonl (+ .md summary)
  */

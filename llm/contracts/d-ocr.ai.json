@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://taurus.local/contracts/d-ocr.ai.json",
+  "$id": "https://lbm.local/contracts/d-ocr.ai.json",
   "title": "D-OCR document extract",
   "description": "Optional OCR / docs-ingest behind create and PDF table import. Fail-open; writes item attrs (D24) via domain, no second FSM. Describe vision backend follows chainId / AI_CHAIN_ID (Qwen or DeepSeek). UIs never call this directly.",
   "x-contractVersion": 1,

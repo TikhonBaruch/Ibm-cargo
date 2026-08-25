@@ -6,7 +6,7 @@
 
 Частник: ТН ВЭД (heuristic) → брокер-QC → PDF. Shipping UI default off.  
 Демо: `client@` / `broker@` / `operator@` / `admin@example.com` · `demo1234`.  
-Прод: https://taurus-liart.vercel.app
+Прод: https://ibm-cargo.vercel.app
 
 ## Куда смотреть
 

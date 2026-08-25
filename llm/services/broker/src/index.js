@@ -17,7 +17,7 @@ function advise(body = {}) {
       : "Ask about HS codes, rates, or import risks. Stub AI Broker.",
     escalate,
     topics: ["hs", "duty", "risk"],
-    disclaimer: "Stub AI Broker. Not a licensed customs opinion. Escalate to human broker after pay in Taurus.",
+    disclaimer: "Stub AI Broker. Not a licensed customs opinion. Escalate to human broker after pay in LBM.",
   };
 }
 

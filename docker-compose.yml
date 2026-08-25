@@ -30,16 +30,16 @@ services:
     profiles: ["core", "full", "web", "scale"]
     networks: [lbm]
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-taurus}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-taurus}
-      POSTGRES_DB: ${POSTGRES_DB:-taurus}
+      POSTGRES_USER: ${POSTGRES_USER:-lbm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lbm}
+      POSTGRES_DB: ${POSTGRES_DB:-lbm}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./containers/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-taurus} -d ${POSTGRES_DB:-taurus}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lbm} -d ${POSTGRES_DB:-lbm}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -75,7 +75,7 @@ services:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       # Compose Mode B: always use in-network postgres (do not inherit host DATABASE_URL).
       # Defaults match long-lived local volume (POSTGRES_*); override via .env / docker.env.
-      DATABASE_URL: postgresql://${POSTGRES_USER:-taurus}:${POSTGRES_PASSWORD:-taurus}@postgres:5432/${POSTGRES_DB:-taurus}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-lbm}:${POSTGRES_PASSWORD:-lbm}@postgres:5432/${POSTGRES_DB:-lbm}?schema=public
       INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-secret-change-me}
       WEB_SERVICE_URL: ${WEB_SERVICE_URL:-http://web:3000}
       AI_SERVICE_URL: http://ai:4100
@@ -201,7 +201,7 @@ services:
     environment:
       PORT: 4800
       NODE_ENV: ${NODE_ENV:-development}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-taurus}:${POSTGRES_PASSWORD:-taurus}@postgres:5432/${POSTGRES_DB:-taurus}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-lbm}:${POSTGRES_PASSWORD:-lbm}@postgres:5432/${POSTGRES_DB:-lbm}?schema=public
       INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-secret-change-me}
     depends_on:
       postgres:
@@ -305,7 +305,7 @@ services:
       PORT: 3000
       NODE_ENV: production
       # Compose Mode B: always use in-network postgres (do not inherit host DATABASE_URL).
-      DATABASE_URL: postgresql://${POSTGRES_USER:-taurus}:${POSTGRES_PASSWORD:-taurus}@postgres:5432/${POSTGRES_DB:-taurus}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-lbm}:${POSTGRES_PASSWORD:-lbm}@postgres:5432/${POSTGRES_DB:-lbm}?schema=public
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev-secret-change-me}
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}

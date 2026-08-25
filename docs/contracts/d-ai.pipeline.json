@@ -5,7 +5,7 @@
   "description": "BackgroundJob AI_DRAIN: vision describe (Qwen or DeepSeek by chainId) → reset → classify against local TN VED corpus. UI never calls models. Overlay HS after heuristic AI_READY; do not stub-OK jobs.",
   "x-contractVersion": 1,
   "x-owner": "services/ocr",
-  "x-taurusAlias": "d-ai.pipeline.json",
+  "x-lbmAlias": "d-ai.pipeline.json",
   "x-transport": [
     "POST /v1/internal/ai-drain",
     "POST /v1/describe",

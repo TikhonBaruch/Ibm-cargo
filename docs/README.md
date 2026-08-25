@@ -46,7 +46,7 @@
 
 ## Быстрые ссылки
 
-- Репозиторий: `/home/andrey/taurus`
-- Прод (Vercel): https://taurus-liart.vercel.app
+- Репозиторий: `Ibm-cargo (this repo)`
+- Прод (Vercel): https://ibm-cargo.vercel.app
 - Контейнеры: [`containers/`](../containers/)
 - Compose: `docker-compose.yml`, шаблон env: `docker.env.example`

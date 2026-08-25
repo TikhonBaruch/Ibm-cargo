@@ -19,7 +19,7 @@ fi
 echo "==> Проверка удалённого репозитория..."
 if ! git ls-remote origin HEAD >/dev/null 2>&1; then
   echo "Репозиторий origin недоступен."
-  echo "Создайте приватный репозиторий: https://github.com/TikhonBaruch/taurus"
+  echo "Создайте репозиторий: https://github.com/TikhonBaruch/Ibm-cargo"
   echo "Без README, .gitignore и license — репозиторий должен быть пустым."
   exit 1
 fi
@@ -27,4 +27,4 @@ fi
 echo "==> Push ветки main..."
 git push -u origin main
 
-echo "Готово: https://github.com/TikhonBaruch/taurus"
+echo "Готово: https://github.com/TikhonBaruch/Ibm-cargo"

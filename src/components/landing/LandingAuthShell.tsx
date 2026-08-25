@@ -19,7 +19,7 @@ type Props = {
   active: "login" | "register";
 };
 
-/** Landing chrome (header + modal card) for /login and /register — same visual as taurus landing. */
+/** Landing chrome (header + modal card) for /login and /register — same visual as the LBM landing. */
 export function LandingAuthShell({ title, subtitle, children, active }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
 

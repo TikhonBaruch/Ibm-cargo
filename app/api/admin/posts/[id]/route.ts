@@ -108,7 +108,7 @@ export async function PUT(
 
   // Notify when published (fire-and-forget)
   if (status === "PUBLISHED") {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://taurus.vercel.app";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ibm-cargo.vercel.app";
     notifyPublished(post.title, `${siteUrl}/posts/${post.slug}`).catch(() => {});
 
     // Auto-posting to social platforms

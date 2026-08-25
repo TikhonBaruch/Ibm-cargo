@@ -45,7 +45,7 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 - Signup: `/register` + `POST /api/v1/auth/register` (D25) — публичный путь в middleware
 - **Не** ставить docker DNS / `USE_DOMAIN_API=1` на Vercel
 - Миграции схемы — отдельно на prod DB (`db push` / migrate)
-- Verify: `TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp` (+ `smoke:full`, `smoke:payments`)
+- Verify: `TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp` (+ `smoke:full`, `smoke:payments`)
 
 Подробности: [`deploy.md`](./deploy.md) · результаты: [`staging.md`](./staging.md).
 
@@ -56,7 +56,7 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 | `USE_DOMAIN_API` | proxy session `/api/v1` → `containers/api` |
 | `AI_SERVICE_URL` / `LLM_SERVICE_URL` | draft / enrich; **host** `.env` / `.env.local` → `http://127.0.0.1:4500`; **Compose** hardcodes `http://llm:4500` для ai/api/web (не подставлять host URL в контейнер) |
 | `OCR_SERVICE_URL` | Qwen-VL describe в `AI_DRAIN` (+ extract); host `http://127.0.0.1:4700`; Compose `http://ocr:4700` |
-| `POSTGRES_USER` / `PASSWORD` / `DB` | Compose volume as-is: default **`taurus`/`taurus`/`taurus`** (не `lbm` — старый default ломал api↔postgres). Host `.env` `DATABASE_URL` на sweb **не** прокидывается в api/web |
+| `POSTGRES_USER` / `PASSWORD` / `DB` | Compose volume as-is: default **`lbm`/`lbm`/`lbm`** (не `lbm` — старый default ломал api↔postgres). Host `.env` `DATABASE_URL` на sweb **не** прокидывается в api/web |
 | `TNVED_CODES_PATH` | corpus mount в compose (`/data/tnved/codes.jsonl`) — только `containers/llm` |
 | `PAYMENTS_SERVICE_URL` / `NOTIFY_SERVICE_URL` / `LOGISTICS_SERVICE_URL` | C4 opt-in |
 | `S3_*` | durable VED uploads on Vercel (`BUCKET`/`ENDPOINT`/`REGION`/`ACCESS_KEY`/`SECRET_KEY`); optional `S3_OBJECT_ACL=public-read` for cabinet `<img>` |
@@ -68,10 +68,10 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 
 ### Local mesh (Qwen → DeepSeek)
 
-1. `docker compose -p taurus --profile core up -d` (postgres+redis+api+ai+worker+llm+ocr).  
-2. Postgres и api должны быть в одной сети (`taurus_lbm`) с DNS-алиасом `postgres`. Если api не видит БД:  
-   `docker network connect --alias postgres taurus_lbm taurus-postgres-1`.  
-3. Для UI Mode A — **`.env.local`** с локальным `DATABASE_URL=postgresql://taurus:taurus@127.0.0.1:5432/taurus` + `AI/LLM/OCR_SERVICE_URL` на `127.0.0.1` (не sweb).  
+1. `docker compose -p lbm --profile core up -d` (postgres+redis+api+ai+worker+llm+ocr).  
+2. Postgres и api должны быть в одной сети (`lbm_lbm`) с DNS-алиасом `postgres`. Если api не видит БД:  
+   `docker network connect --alias postgres lbm_lbm lbm-postgres-1`.  
+3. Для UI Mode A — **`.env.local`** с локальным `DATABASE_URL=postgresql://lbm:lbm@127.0.0.1:5432/lbm` + `AI/LLM/OCR_SERVICE_URL` на `127.0.0.1` (не sweb).  
 4. Create: heuristic/precedent + `llmEnrichPending` → **быстрый 201** → `after()` гоняет AI_DRAIN (Qwen-VL ≤90s → DeepSeek ≤120s; `maxDuration=300`).  
    При фото: classify **ждёт** vision (requeue), см. [`plan-vision-before-classify.md`](./plan-vision-before-classify.md).
 5. Кабинет poll GET ≤**120s** (create) + **пока открыта карточка** с `llmEnrichPending`; UI: фазы кнопки / баннер «Уточняем ТН ВЭД…» → «Код уточнён» ([`plan-smooth-create-path.md`](./plan-smooth-create-path.md)). Фото >~350KB — client JPEG compress перед upload.  

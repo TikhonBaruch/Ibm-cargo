@@ -10,7 +10,7 @@
 ## Анализ
 
 As-is: 14+ контейнеров и dual-path (Vercel Prisma-in-Next vs Compose `USE_DOMAIN_API`).  
-AI-логика размазана: `src/lib/ved/provider-mesh*` (Vercel), `containers/llm|ocr` (Compose mirror), канон capability — репо **`/home/andrey/llm`**.  
+AI-логика размазана: `src/lib/ved/provider-mesh*` (Vercel), `containers/llm|ocr` (Compose mirror), канон capability — репо **`Ibm-cargo/llm`**.  
 Антипаттерн D19 уже запрещает дробить infra; не хватало явной таблицы «кто трогает какие файлы» и канона sync mirror.
 
 ## Структура (этот цикл)
@@ -29,7 +29,7 @@ AI-логика размазана: `src/lib/ved/provider-mesh*` (Vercel), `cont
 1. D27 MVP не ломать.  
 2. Не контейнер на DeepSeek/Qwen/… — только profile + `LLM_CLASSIFY_CHAIN`.  
 3. UI без Prisma. UI не зовёт matrix URL.  
-4. Envelope sync: `llm/contracts` ↔ `taurus/docs/contracts`.  
+4. Envelope sync: `llm/contracts` ↔ `docs/contracts`.  
 5. Fail-open create.
 
 ## Проверка

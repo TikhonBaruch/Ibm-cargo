@@ -23,7 +23,7 @@
 1. Скачайте XML/JSON справочника СТНВЭДСТ с портала НСИ/opendata.
 2. Положите как `data/tnved/raw/nsi-stnvedst/<YYYY-MM-DD>/catalog.xml` (или `.json`).
 3. Dataset ФТС (CSV/XML) → `data/tnved/raw/fts-opendata/<date>/datasets/`.
-4. Либо положите выгрузку листьев: `TWS_TNVED_….csv` в корень `/home/andrey/llm` и `npm run tnved:parse-tws`.
+4. Либо положите выгрузку листьев: `TWS_TNVED_….csv` в корень `Ibm-cargo/llm` и `npm run tnved:parse-tws`.
 5. `npm run tnved:normalize && npm run tnved:export-import`.
 
 Или задайте прямой URL: `NSI_XML_URL=… npm run tnved:fetch-nsi`.
@@ -149,13 +149,13 @@
 |---------------------|------------------|--------|
 | Пояснения HS | ЕЭК PSN (`notes.jsonl`, ~97 PDF) | — |
 | 10-значные коды + названия | ФНС TNVED.ZIP + TWS CSV | эталон NSI XML |
-| Пошлина (fill) | TWS → `tws-csv` в Taurus **local** (~12.6k `%`) | НСИ СТНВЭДСТ |
+| Пошлина (fill) | TWS → `tws-csv` в LBM **local** (~12.6k `%`) | НСИ СТНВЭДСТ |
 | PDF ЕТТ по группам | ЕЭК catr/ett **101 PDF** (2026-08-17) | OCR вне скоупа |
 | Решения о классификации | индекс HTML ЕЭК (413 ссылок) | PDF: старый DNS / 500 |
-| НДС / акциз / НТМ | триггеры в Taurus; НДС 22% + сбор | ФТС dataset или TKS/Alta KEY |
+| НДС / акциз / НТМ | триггеры в LBM; НДС 22% + сбор | ФТС dataset или TKS/Alta KEY |
 | Полный эталон СТНВЭДСТ | — | не в публичных 195 НСИ; KZ v4 403 |
 
-Команды доп.: `tnved:fetch-classifications`, `tnved:fetch-kz`. Taurus overlay: `tnved:compose` → local `tnved:load -- --full`.
+Команды доп.: `tnved:fetch-classifications`, `tnved:fetch-kz`. LBM overlay: `tnved:compose` → local `tnved:load -- --full`.
 
 Вне ТН ВЭД: smoke `http://127.0.0.1:4500|4700|…` — локальные сервисы матрицы; `$id` contracts `*.local` — схемы, не данные.
 

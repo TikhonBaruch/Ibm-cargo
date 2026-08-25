@@ -108,7 +108,7 @@ Stay-on-Next: `auth/*`, `uploads`, `imports/*`, `internal/jobs-tick`.
 
 ## 5. Проверка (после cutover)
 
-- Deploy Ready, alias `taurus-liart.vercel.app`
+- Deploy Ready, alias `ibm-cargo.vercel.app`
 - `/` и `/health` → 200  
 - Login NextAuth (`/api/auth/*`)  
 - `/api/v1/me` с сессией  
@@ -138,7 +138,7 @@ Cutover — строго по §7.
 
 ### A — Dashboard: Framework → Services
 
-1. [Vercel](https://vercel.com) → project **taurus** → **Settings** → **General**.  
+1. [Vercel](https://vercel.com) → project **ibm-cargo** → **Settings** → **General**.  
 2. **Framework Preset** → **Services** → **Save**.  
 3. **Не** жать Redeploy старого deployment с crons-only — он упадёт.  
 4. Production alias пока отдаёт **последний успешный** Next.js deploy — сайт жив.

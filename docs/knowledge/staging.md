@@ -9,13 +9,13 @@
 |-------|------------|-----|
 | **Local** | ежедневная разработка | Mode A: `.env` → `prisma db push` → `npm run dev` ([`environments.md`](./environments.md)) |
 | **Preview** | PR / ветка перед prod | Vercel Preview Deployment |
-| **Prod** | пользователи | https://taurus-liart.vercel.app |
+| **Prod** | пользователи | https://ibm-cargo.vercel.app |
 
 Отдельный долгоживущий staging-стенд **не обязателен**, если каждый PR получает Vercel Preview. Осторожно: общая preview-БД = prod sweb → smoke пишет тестовые регистрации/топапы.
 
 ## Vercel Preview
 
-1. Push ветки → Vercel создаёт preview URL (`https://taurus-*-*.vercel.app`).
+1. Push ветки → Vercel создаёт preview URL (`https://ibm-cargo-*-*.vercel.app`).
 2. Env: **зеркало Production** — как минимум `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (origin preview!), `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, полный набор `S3_*` (`BUCKET`, `ENDPOINT`, `REGION`, `ACCESS_KEY`, `SECRET_KEY`).
 3. Smoke:
 
@@ -30,9 +30,9 @@ TEST_API_URL=https://your-preview.vercel.app npm run smoke:full
 ## Prod smoke (после merge в `main`)
 
 ```bash
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:payments
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:full
+TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp
+TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:payments
+TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:full
 ```
 
 Требования prod:
@@ -104,9 +104,9 @@ Preview/Production env: `S3_OBJECT_ACL=public-read`, `SMTP_FROM` (для inline 
 ## Визуальный чеклист C ↔ B ↔ A (Preview / prod)
 
 Цель: руками проверить взаимодействие **Клиент → Брокер → Админ** на Vercel после деплоя ветки `cursor/admin-ops-harden` (пакет кабинетов).  
-**Preview (2026-08-12):** https://taurus-git-cursor-admin-ops-harden-tikhonbaruchs-projects.vercel.app · PR: https://github.com/TikhonBaruch/taurus/pull/1  
+**Preview:** Vercel Preview of `TikhonBaruch/Ibm-cargo` (PR on current branch).  
 
-**Доступ:** на Preview включён Vercel Deployment Protection (`ssoProtection: all_except_custom_domains`). Открывать через кнопку **Visit Preview** в PR / Vercel dashboard (SSO под аккаунтом TikhonBaruch). Прямой curl без SSO уходит на `vercel.com/login`. Prod custom domain (`taurus-liart.vercel.app`) от SSO свободен.  
+**Доступ:** на Preview включён Vercel Deployment Protection (`ssoProtection: all_except_custom_domains`). Открывать через кнопку **Visit Preview** в PR / Vercel dashboard (SSO под аккаунтом TikhonBaruch). Прямой curl без SSO уходит на `vercel.com/login`. Prod custom domain (`ibm-cargo.vercel.app`) от SSO свободен.  
 Канон техдолга: [`plan-tech-debt.md`](./plan-tech-debt.md). Демо: `client@example.com` / `broker@example.com` / `admin@example.com` / `operator@example.com` · `demo1234` (оба ADMIN; SUPER obscure).
 
 ### Подготовка

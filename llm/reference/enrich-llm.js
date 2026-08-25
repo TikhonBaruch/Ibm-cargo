@@ -1,7 +1,7 @@
 /**
  * S6: optional LLM enrich on top of heuristic draft.
  * Fail-open: any LLM/network error returns the original draft unchanged.
- * SOURCE: taurus/containers/ai/src/enrich-llm.js — reference only.
+ * SOURCE: containers/ai/src/enrich-llm.js — reference only.
  *
  * @param {object} body request body (description, title, shipmentValue, …)
  * @param {object} draft heuristic AiDraftResult

@@ -6,7 +6,7 @@
  * Requires running app (local or TEST_API_URL) and seeded demo users/balance.
  *
  *   npm run smoke:full
- *   TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:full
+ *   TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:full
  *
  * Image is attachment-only (not sent to AI/LLM). LLM enrich is optional:
  * logged when aiDraft.llmEnrich is present (compose with LLM_SERVICE_URL).

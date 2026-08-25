@@ -1,6 +1,6 @@
 # Текущее приложение (as-is)
 
-Репозиторий: `/home/andrey/taurus` — Next.js App Router + Prisma + NextAuth + Telegram.
+Репозиторий: `Ibm-cargo (this repo)` — Next.js App Router + Prisma + NextAuth + Telegram.
 
 Единая KB: [`README.md`](./README.md) · каркас: [`skeleton.md`](./skeleton.md) · ADR: [`decisions.md`](./decisions.md) D1–D34.  
 План / smoke: [`roadmap.md`](./roadmap.md) · [`staging.md`](./staging.md).  
@@ -33,7 +33,7 @@ docs/knowledge/           # ADR, branches, skeleton, testing, ops
 6. Seed-брокер claim → `IN_REVIEW`; approve → `DONE` + `pdfHtml`.
 7. Клиент видит статус и PDF из тех же полей Postgres.
 
-Live: `TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp`.
+Live: `TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp`.
 
 ## Живое (VED + ветви 1–2)
 
@@ -101,7 +101,7 @@ Live: `TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp`.
 | Product focus D27 | частник: ТН ВЭД → брокер-QC → PDF; «под ключ» отложено | [`product.md`](./product.md) · ADR D27 · polish без logistics/LLM/acquiring |
 | Dual-path / notify runbook | F17/F19 checklist | [`dual-path-parity.md`](./dual-path-parity.md) · [`runbook.md`](./runbook.md) |
 
-Прод UI: https://taurus-liart.vercel.app · merge register: ветка `cursor/gap-providers-c5` → `main` (2026-08-05).
+Прод UI: https://ibm-cargo.vercel.app · merge register: ветка `cursor/gap-providers-c5` → `main` (2026-08-05).
 
 ## В работе / не на `origin/main`
 

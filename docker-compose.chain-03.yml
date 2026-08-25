@@ -1,6 +1,6 @@
 # Chain 3 — DeepSeek-only overlay for Compose
 #
-# Usage (from taurus root, with base compose):
+# Usage (from LBM repo root, with base compose):
 #   docker compose -f docker-compose.yml -f docker-compose.chain-03.yml --profile scale up -d llm ocr api
 #
 # Requires DEEPSEEK_API_KEY in .env (or shell). Does not add vendor containers.

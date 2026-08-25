@@ -16,13 +16,13 @@ describe("resolveSiteUrl", () => {
       resolveSiteUrl({
         NEXTAUTH_URL: "",
         NEXT_PUBLIC_SITE_URL: "  ",
-        VERCEL_URL: "taurus-git-x.vercel.app",
+        VERCEL_URL: "lbm-git-x.vercel.app",
       } as NodeJS.ProcessEnv)
-    ).toBe("https://taurus-git-x.vercel.app");
+    ).toBe("https://lbm-git-x.vercel.app");
   });
 
   it("falls back to prod host", () => {
-    expect(resolveSiteUrl({} as NodeJS.ProcessEnv)).toBe("https://taurus-liart.vercel.app");
+    expect(resolveSiteUrl({} as NodeJS.ProcessEnv)).toBe("https://ibm-cargo.vercel.app");
   });
 });
 

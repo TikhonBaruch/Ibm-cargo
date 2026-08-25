@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
 const RUN = process.env.RUN_E2E === "1";
-const BASE_URL = process.env.TEST_API_URL || "https://taurus-liart.vercel.app";
+const BASE_URL = process.env.TEST_API_URL || "http://127.0.0.1:3000";
 const d = RUN ? describe : describe.skip;
 
 const EMAIL = process.env.CLIENT_EMAIL || "client@example.com";

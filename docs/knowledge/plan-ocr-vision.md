@@ -195,7 +195,7 @@ npm run ops:track-a        # не требует vision, но фиксирует
 1. `docs/contracts/d-ocr.ai.json`
 2. `llm/contracts/d-ocr.ai.json`
 3. `containers/ocr` ↔ `llm/services/ocr` (зеркало)
-4. [`integration-taurus.md`](../../llm/docs/integration-taurus.md) в matrix repo — при смене transport
+4. [`integration-lbm.md`](../../llm/docs/integration-lbm.md) в matrix repo — при смене transport
 
 ---
 

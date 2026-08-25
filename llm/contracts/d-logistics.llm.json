@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://llm.local/contracts/d-logistics.llm.json",
   "title": "AI Logistics route",
-  "description": "AI routing suggestions. Distinct from Taurus 3PL containers/logistics D-SHIP.",
+  "description": "AI routing suggestions. Distinct from LBM 3PL containers/logistics D-SHIP.",
   "x-contractVersion": 1,
   "x-owner": "services/logistics",
   "x-transport": ["POST /v1/route", "GET /health"],

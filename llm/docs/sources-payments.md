@@ -1,15 +1,15 @@
 # Источники: таможенные платежи (без KEY)
 
 Инвентарь **2026-08-11**.  
-Канон в единой KB Taurus: [`../../taurus/docs/knowledge/customs-payments.md`](../../taurus/docs/knowledge/customs-payments.md).
+Канон в единой KB LBM: [`../../docs/knowledge/customs-payments.md`](../../docs/knowledge/customs-payments.md).
 
 ## Без платных ключей (делаем)
 
 | Слой | Источник | Действие |
 |------|----------|----------|
-| НДС default | НК РФ, с 01.01.2026 **22%** | stub `/v1/duty` + Taurus heuristic |
-| Таможенный сбор | ПП 1637 / 1638 | шкала в Taurus `customs-fees.ts` |
-| Коды + пошлина | TWS / ЕЭК | Taurus local: `tws-csv` overlay (~12.6k `%`); llm `codes.jsonl` |
+| НДС default | НК РФ, с 01.01.2026 **22%** | stub `/v1/duty` + LBM heuristic |
+| Таможенный сбор | ПП 1637 / 1638 | шкала в LBM `customs-fees.ts` |
+| Коды + пошлина | TWS / ЕЭК | LBM local: `tws-csv` overlay (~12.6k `%`); llm `codes.jsonl` |
 | Пояснения | ЕЭК PSN PDF + том VI | `tnved:fetch-psn` / `tnved:parse-psn` → text |
 
 ## Hold / KEY позже

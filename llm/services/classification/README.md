@@ -1,9 +1,9 @@
 # services/classification
 
-Classification + Duty (Taurus landing: **AI Classification**).  
-Envelope compatible with Taurus `d-draft.llm.json` → here `contracts/d-classification.llm.json`.
+Classification + Duty (LBM landing: **AI Classification**).  
+Envelope compatible with LBM `d-draft.llm.json` → here `contracts/d-classification.llm.json`.
 
-**Canon for HTTP classify/duty** (Taurus D35). Taurus `containers/llm` is a Compose mirror — sync via `npm run sync:ai-matrix` in Taurus, or build with `LLM_DOCKER_CONTEXT=../llm/services/classification`.
+**Canon for HTTP classify/duty** (LBM D35). LBM `containers/llm` is a Compose mirror — sync via `npm run sync:ai-matrix` in LBM, or build with `LLM_DOCKER_CONTEXT=../llm/services/classification`.
 
 | | |
 |--|--|

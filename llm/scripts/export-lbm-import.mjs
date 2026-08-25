@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Export normalized codes.jsonl → batches for Taurus POST /api/v1/tnved/import (max 500).
+ * Export normalized codes.jsonl → batches for LBM POST /api/v1/tnved/import (max 500).
  *
  * Usage: npm run tnved:export-import
- * Does NOT call Taurus — dry files only. Set TAURUS_TNVED_IMPORT_URL + cookie/token later.
+ * Does NOT call LBM — dry files only. Set LBM_TNVED_IMPORT_URL + cookie/token later.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -66,7 +66,7 @@ async function main() {
     totalItems: items.length,
     batchSize: BATCH,
     batchCount: batchIdx,
-    taurusEndpoint: "POST /api/v1/tnved/import (ADMIN)",
+    lbmEndpoint: "POST /api/v1/tnved/import (ADMIN)",
     note: "Dry-run files only. Upload with admin session; do not auto-post to prod.",
   };
   writeJson(path.join(TNVED_ROOT, "export", "manifest.json"), manifest);

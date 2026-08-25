@@ -1,8 +1,8 @@
 # Vision — шесть AI-модулей
 
-Источник pitch: Taurus landing `#features` (`src/components/landing/markup.ts`) + `docs/knowledge/product.md`.
+Источник pitch: LBM landing `#features` (`src/components/landing/markup.ts`) + `docs/knowledge/product.md`.
 
-> **Vision ≠ as-is.** Taurus MVP (D27): ТН ВЭД draft → брокер-QC → PDF.  
+> **Vision ≠ as-is.** LBM MVP (D27): ТН ВЭД draft → брокер-QC → PDF.  
 > This matrix develops model services externally for later URL wiring.
 
 ## Модули
@@ -18,7 +18,7 @@
 
 AI — первая линия; брокер подтверждает. Ценность: уверенность в стоимости импорта до оплаты поставщику.
 
-Roadmap фаз (Taurus): MVP → Growth (OCR, консультант) → Platform → Ecosystem.  
-OCR / Risk / Cargo в Taurus помечены Growth / P3; heuristic-v1 остаётся ядром draft.
+Roadmap фаз (LBM): MVP → Growth (OCR, консультант) → Platform → Ecosystem.  
+OCR / Risk / Cargo в LBM помечены Growth / P3; heuristic-v1 остаётся ядром draft.
 
-См. также [`matrix.md`](./matrix.md), [`integration-taurus.md`](./integration-taurus.md).
+См. также [`matrix.md`](./matrix.md), [`integration-lbm.md`](./integration-lbm.md).

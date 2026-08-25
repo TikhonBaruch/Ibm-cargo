@@ -8,7 +8,7 @@
 Единая точка выбора цепочки и транспорта к capability-сервисам без Docker-на-вендора.
 
 ```
-UI → Taurus orch (AI_DRAIN)
+UI → LBM orch (AI_DRAIN)
   → Mode B: HTTP → containers/llm + ocr   (OCR_SERVICE_URL / LLM_SERVICE_URL)
   → Mode A: in-process mesh + AI_CHAIN_ID  (Vercel keys)
 ```

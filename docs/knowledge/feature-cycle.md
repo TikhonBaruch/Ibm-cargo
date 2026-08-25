@@ -68,7 +68,7 @@
 ```bash
 npm run dev                    # Mode A, см. environments.md
 npm run test:ci
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp
+TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp
 npm run ops:track-a
 ```
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Sync AI capability mirrors: llm repo → taurus/containers/{llm,ocr}.
- * Canon: /home/andrey/llm/services/{classification,ocr}
+ * Sync AI capability mirrors: llm repo → containers/{llm,ocr}.
+ * Canon: Ibm-cargo/llm/services/{classification,ocr}
  * Usage:
  *   node scripts/sync-ai-matrix.cjs           # copy
  *   node scripts/sync-ai-matrix.cjs --check   # exit 2 if drift (when ./llm exists)

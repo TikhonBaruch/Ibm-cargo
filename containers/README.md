@@ -28,7 +28,7 @@
 
 **ServiceCall (D26):** журналируются вызовы `api` / `ai` / `llm` / `payments` / `notify` / `logistics` / `worker`. UI-контейнеры своих таблиц не получают.
 
-**AI matrix canon (D35):** HTTP classify/OCR живут в sibling-репо `/home/andrey/llm`. Синхронизация зеркал: `npm run sync:ai-matrix`. Сборка compose напрямую из matrix: `LLM_DOCKER_CONTEXT=../llm/services/classification`, `OCR_DOCKER_CONTEXT=../llm/services/ocr`. **Model ≠ container** — см. [`docs/knowledge/plan-parallel-ownership.md`](../docs/knowledge/plan-parallel-ownership.md).
+**AI matrix canon (D35):** HTTP classify/OCR живут в sibling-репо `Ibm-cargo/llm`. Синхронизация зеркал: `npm run sync:ai-matrix`. Сборка compose напрямую из matrix: `LLM_DOCKER_CONTEXT=../llm/services/classification`, `OCR_DOCKER_CONTEXT=../llm/services/ocr`. **Model ≠ container** — см. [`docs/knowledge/plan-parallel-ownership.md`](../docs/knowledge/plan-parallel-ownership.md).
 
 ## Что добавлять (рекомендации ВЭД/B2B SaaS)
 

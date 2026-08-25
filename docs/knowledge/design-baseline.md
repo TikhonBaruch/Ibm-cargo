@@ -8,7 +8,7 @@
 
 - Живой UI = React `VedShell` + panes в `src/components/ved/{client,broker,admin}` + orchestrators
 - Визуал ≈ [`cargo-broker-cabinets.html`](../design/refs/cargo-broker-cabinets.html); данные с `/api/v1` (не цифры из мока)
-- Прод: https://taurus-liart.vercel.app — `/cabinet`, `/broker`, `/admin`
+- Прод: https://ibm-cargo.vercel.app — `/cabinet`, `/broker`, `/admin`
 - **Не** возвращать `CabinetsApp`; **не** добавлять proto-bar ролей в прод (proto-bar только в HTML-рефе)
 
 ## Код vs реф

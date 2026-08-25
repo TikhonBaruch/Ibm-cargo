@@ -20,6 +20,6 @@ Ownership для параллельной разработки — **логич�
 ## External AI matrix
 
 HTTP classify/OCR/duty живут в репо **`llm`** (`services/classification`, `services/ocr`).  
-Taurus `containers/llm` / `containers/ocr` — Compose **mirror**; sync: `npm run sync:ai-matrix`.  
+LBM `containers/llm` / `containers/ocr` — Compose **mirror**; sync: `npm run sync:ai-matrix`.  
 Новая **модель** → env profile / chain в matrix (или Vercel mesh).  
 Новая **capability** (risk, documents, …) → новый сервис в `llm` + ADR + `*_SERVICE_URL`, не папка под vendor.

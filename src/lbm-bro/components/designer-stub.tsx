@@ -16,13 +16,13 @@ export type DesignerStubProps = {
 };
 
 /**
- * Marks UI that exists in the lbm-bro design but is not wired to taurus domain.
+ * Marks UI that exists in the lbm-bro design but is not wired to LBM domain.
  * Visible to reviewers: do not hide missing product behind silent no-ops.
  */
 export function DesignerStub({
   title,
   intent,
-  gap = "Нет в domain MVP (taurus D27) — только визуал ibm-cargo.",
+  gap = "Нет в domain MVP (LBM D27) — только визуал ibm-cargo.",
   children,
   className = "",
   compact = false,

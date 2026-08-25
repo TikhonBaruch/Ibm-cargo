@@ -1,6 +1,6 @@
 # Цепочка функционала и проверка шагов
 
-Снимок проверки: **2026-08-07**. Unit: `npm run test:unit` (199 PASS). Live: prod `https://taurus-liart.vercel.app`.  
+Снимок проверки: **2026-08-07**. Unit: `npm run test:unit` (199 PASS). Live: prod `https://ibm-cargo.vercel.app`.  
 Стратегия: [`plan-track-a-p0.md`](./plan-track-a-p0.md) · as-is: [`current-app.md`](./current-app.md) · ADMIN ops: [`admin-ops.md`](./admin-ops.md) (D28) · correctness: [`cabinets/shared/correctness.md`](./cabinets/shared/correctness.md).
 
 ## 1. Разделы UI (кабинеты)
@@ -148,4 +148,4 @@ npm run smoke:full
 ```
 
 Повторная проверка prod: `npm run test:unit` затем  
-`TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp && … smoke:broker && … smoke:chat && … smoke:shipping`.
+`TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp && … smoke:broker && … smoke:chat && … smoke:shipping`.

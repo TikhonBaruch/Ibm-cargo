@@ -30,7 +30,7 @@ Runtime Next пока в корне (Vercel); extract UI в `containers/web` —
 
 ## D7. kargo
 
-**Решение:** `kargo-broker/kargo` — архив версий; работа в репозитории GitHub `TikhonBaruch/taurus` (бренд LBM Брокер).
+**Решение:** `kargo-broker/kargo` — архив версий; работа в репозитории GitHub `TikhonBaruch/Ibm-cargo` (бренд LBM Брокер).
 
 ## D8. Статусная машина Calculation
 
@@ -283,7 +283,7 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 **Решение:**
 
 1. **Пакеты** — logical `domain` / `orch` / `mesh` / `draft` в [`src/lib/ved/PACKAGES.md`](../../src/lib/ved/PACKAGES.md); UI — `containers/{client,broker,admin,manufacturer}` + panes. Один PR ≈ один пакет (+ dual-path api при domain writers).
-2. **Канон AI HTTP** — репо `llm` (`services/classification`, `services/ocr`). Taurus `containers/llm|ocr` = Compose mirrors; `npm run sync:ai-matrix` или `LLM_DOCKER_CONTEXT` / `OCR_DOCKER_CONTEXT`.
+2. **Канон AI HTTP** — репо `llm` (`services/classification`, `services/ocr`). LBM `containers/llm|ocr` = Compose mirrors; `npm run sync:ai-matrix` или `LLM_DOCKER_CONTEXT` / `OCR_DOCKER_CONTEXT`.
 3. **Model ≠ container** — новая модель = env profile + optional chain (`LLM_CLASSIFY_CHAIN`). Новая **capability** = новый сервис в matrix + ADR + `*_SERVICE_URL`.
 4. Не дробить postgres/redis/gateway (D19). UI не зовёт matrix URL.
 

@@ -26,7 +26,7 @@
 | **1** | Миграции БД-2 на целевых БД | P0 | **done** (2026-08-12 sweb) | `verified_determinations` есть; unit fail-open без `prisma:error`; sweb = lexical only (нет pgvector) |
 | **2** | Починить `npm run lint` под Next 16 | P0 | pending | `npm run lint` exit 0 (ESLint CLI / eslint.config) |
 | **3** | tsc в CI + починить 4 test-файла | P1 | pending | `npx tsc --noEmit` green или осознанный exclude тестов + gate |
-| **4** | Нарезать WIP на PR / Preview deploy | P1 | **done** Preview READY (2026-08-12) | [PR #1](https://github.com/TikhonBaruch/taurus/pull/1) · Preview: `https://taurus-git-cursor-admin-ops-harden-tikhonbaruchs-projects.vercel.app` · чеклист [`staging.md`](./staging.md) |
+| **4** | Нарезать WIP на PR / Preview deploy | P1 | **done** Preview READY (2026-08-12) | [PR #1](https://github.com/TikhonBaruch/Ibm-cargo/pull/1) · Preview: Vercel Preview of Ibm-cargo · чеклист [`staging.md`](./staging.md) |
 | **5** | Dual-path docs + `customs-fees` канон | P1 | pending | `dual-path-parity.md` включает reclassify/imports; один канон fees |
 | **6** | PROTECTED_V1: adjust + imports preview | P2 | pending | middleware + unit `security`/`access` |
 | **7** | Нарезать `AdminVedCabinet` на panes | P2 | **done** | orchestrator ~816 LOC + `ved/admin/*` (14 panes + `types.ts`) · nav groups были prerequisite |

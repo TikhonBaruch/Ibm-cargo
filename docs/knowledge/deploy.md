@@ -2,8 +2,8 @@
 
 Проект уже связан с remote и Vercel. Этот checklist — безопасная выкладка без секретов и тяжёлых ассетов.
 
-Прод UI: https://taurus-liart.vercel.app (hostname Vercel пока `taurus-liart`; бренд LBM Брокер)  
-Remote: `git@github.com:TikhonBaruch/taurus.git`  
+Прод UI: https://ibm-cargo.vercel.app (hostname Vercel: ibm-cargo)  
+Remote: `git@github.com:TikhonBaruch/Ibm-cargo.git`  
 Локальная разработка: [`../development.md`](../development.md).  
 Карта сред (local vs Compose vs prod): [`environments.md`](./environments.md).  
 Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./roadmap.md).
@@ -26,7 +26,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 |----------|------------------|
 | `DATABASE_URL` | Postgres (sweb или другой); URL-encode спецсимволы в пароле |
 | `NEXTAUTH_SECRET` | Длинный random secret |
-| `NEXTAUTH_URL` | `https://taurus-liart.vercel.app` (точный origin деплоя; на Preview — origin preview URL) |
+| `NEXTAUTH_URL` | `https://ibm-cargo.vercel.app` (точный origin деплоя; на Preview — origin preview URL) |
 | `NEXT_PUBLIC_SITE_URL` | Тот же origin |
 | `ALLOW_MOCK_TOPUP` | `1` для демо mock-пополнения баланса (D13); без флага mock topup в production отключён |
 | `CRON_SECRET` | **Required** for Vercel Cron auth: platform sends `Authorization: Bearer <CRON_SECRET>` only if this env exists. Used by `/api/v1/internal/sla-tick` and `/api/v1/internal/jobs-tick`. Fallback to `NEXTAUTH_SECRET` only for manual/`x-internal-key` calls — **not** for Vercel Cron. |
@@ -83,10 +83,10 @@ WIP остаётся локально; Vercel задеплоит только т
 6. Smoke/e2e против прода:
 
 ```bash
-TEST_API_URL=https://taurus-liart.vercel.app RUN_E2E=1 npm run test:e2e
+TEST_API_URL=https://ibm-cargo.vercel.app RUN_E2E=1 npm run test:e2e
 # или
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:full
+TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp
+TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:full
 ```
 
 ### C — После деплоя

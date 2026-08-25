@@ -1,6 +1,6 @@
 /**
  * AI Logistics route stub. Envelope: contracts/d-logistics.llm.json
- * Port 4601 — distinct from Taurus containers/logistics :4600 (3PL quotes).
+ * Port 4601 — distinct from LBM containers/logistics :4600 (3PL quotes).
  */
 import http from "node:http";
 
@@ -44,7 +44,7 @@ function route(body = {}) {
     cargoType: cargo,
     prefer,
     options,
-    disclaimer: "Stub AI Logistics. Not a 3PL quote. Taurus shipping uses containers/logistics separately.",
+    disclaimer: "Stub AI Logistics. Not a 3PL quote. LBM shipping uses containers/logistics separately.",
   };
 }
 

@@ -136,7 +136,7 @@ Impact ↑
 |-----|----------|--------------|
 | 0.1 | `git push origin main` (коммит D24) | `origin/main` содержит D24 |
 | 0.2 | Дождаться Vercel deploy | prod UI обновлён |
-| 0.3 | `TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp` и `smoke:full` | PASS; create/pay не 500 на `calculation_events` |
+| 0.3 | `TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp` и `smoke:full` | PASS; create/pay не 500 на `calculation_events` |
 | 0.4 | При drift — `prisma db push` на sweb | schema = Prisma ([`database.md`](./database.md)) |
 
 **Стоп-критерий этапа:** smoke mvp/full зелёные на prod после deploy.

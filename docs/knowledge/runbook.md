@@ -74,7 +74,7 @@ DATABASE_URL='postgresql://lbm:lbm@localhost:5432/lbm?schema=public' npx prisma 
 TEST_API_URL=http://localhost:8080 NEXTAUTH_URL=http://localhost:8080 npm run smoke:gateway
 ```
 
-> **Ребренд local slug (`lbm`):** после смены `POSTGRES_USER`/`POSTGRES_DB` с `taurus` на `lbm` нужен `docker compose down -v` и заново `db push` + `db seed` — старый volume хранит role `taurus`.
+> **Ребренд local slug (`lbm`):** после смены `POSTGRES_USER`/`POSTGRES_DB` с `lbm` на `lbm` нужен `docker compose down -v` и заново `db push` + `db seed` — старый volume хранит role `lbm`.
 
 Local **PASS 2026-08-07**. Prisma `binaryTargets` includes `linux-musl-openssl-3.0.x` for Alpine images.  
 If Docker Hub / npm-in-build timeouts: host-build Next standalone into `containers/*/.export/` (gitignored), then `docker compose build`. Optional: `docker-compose.build-host.yml` (`build.network: host`).
@@ -134,8 +134,8 @@ npm run smoke:reclassify     # broker LLM reclassify (compose)
 npm run smoke:precedent-vector  # pgvector precedent-v2 (needs OPENAI_API_KEY)
 npm run smoke:mvp        # register→topup→create→pay→claim→approve (D25)
 # Prod:
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:full
+TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp
+TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:full
 ```
 
 `smoke:mvp`: upload optional если host отвечает 503 «S3 not configured». Актуальные результаты — [`staging.md`](./staging.md).

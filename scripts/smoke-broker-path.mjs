@@ -4,7 +4,7 @@
  * Requires a running app (local or TEST_API_URL) and seeded DB (demo #SEED-MULTI in queue).
  *
  *   npm run smoke:broker
- *   TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:broker
+ *   TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:broker
  *
  * Covers real broker check/correct path (WorkMapping inputs). There is no
  * "send for revision with dropdowns" API — only PATCH items + approve (and chat).

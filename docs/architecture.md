@@ -4,7 +4,7 @@
 
 **LBM Брокер** — AI-платформа импорта/ВЭД: AI готовит черновик (ТН ВЭД, платежи, документы), брокер подтверждает, клиент получает результат (PDF / дальше перевозка).
 
-Репозиторий GitHub: `TikhonBaruch/taurus` (hostname/path пока исторические); публичный бренд — **LBM Брокер**.
+Репозиторий GitHub: `TikhonBaruch/Ibm-cargo`; публичный бренд — **LBM Брокер**.
 
 Каркас: [`knowledge/skeleton.md`](./knowledge/skeleton.md). Решения: [`knowledge/decisions.md`](./knowledge/decisions.md).
 
@@ -75,7 +75,7 @@ flowchart TB
 ## Данные
 
 - ORM: Prisma 6 — `prisma/schema.prisma`
-- Prod: sweb `newlsu_taurus` — [knowledge/database.md](./knowledge/database.md)
+- Prod: sweb `newlsu_lbm` — [knowledge/database.md](./knowledge/database.md)
 - Local Compose: сервис `postgres`
 
 ## Auth
