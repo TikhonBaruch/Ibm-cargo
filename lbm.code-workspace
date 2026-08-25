@@ -1,7 +1,6 @@
 {
   "folders": [
-    { "name": "app", "path": "app" },
-    { "name": "llm", "path": "llm" }
+    { "name": "LBM", "path": "." }
   ],
   "settings": {}
 }

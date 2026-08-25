@@ -21,6 +21,6 @@ ADR: `docs/knowledge/decisions.md` · product: `docs/knowledge/product.md` (D27)
 - **D33:** no code without KB plan; no close without KB update.
 - **D34:** factory pool ≠ D8; segments on `Company.clientSegment`.
 - **D35:** model ≠ container; UI never calls `LLM_SERVICE_URL` / `OCR_SERVICE_URL`.
-- **D36 (always):** LBM/ibm-cargo + **its** DB must **not** touch taurus/llm **or nested `./llm`** (files, DB, volumes, secrets). Own `DATABASE_URL` only. Matrix = **HTTP only** (`*_SERVICE_URL`). `containers/{llm,ocr}` are LBM-owned — no `sync:ai-matrix` from nested llm.
+- **D36 (always):** LBM + **its** DB must **not** touch taurus/llm. Nested `./llm` **not in this git repo** (full split). Matrix = **HTTP only**. `containers/{llm,ocr}` LBM-owned — no sync from matrix tree.
 
 After domain changes: `npm run test:ci`.

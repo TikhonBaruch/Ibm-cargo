@@ -99,12 +99,12 @@ MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ o
 | Container inventory | 14 + ocr scaffold | [`../containers.md`](../containers.md) · [`containerization.md`](./containerization.md) |
 | Container add priorities (P1a/P1b–P3) | P1a now (D27); P1b Growth; ocr scaffold; anti-patterns D19 | [`../../containers/README.md`](../../containers/README.md) §«Что добавлять» · [`growth.md`](./growth.md) |
 | Parallel ownership / multi-model (D35) | packages domain/orch/mesh; llm matrix canon; sync mirrors | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
-| Автономия / zero coupling (**D36**) | MVP без nested `./llm`; matrix HTTP only; sync retired | [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) · smoke #47935 |
+| Автономия / full split (**D36**) | nested `./llm` удалён из git; MVP без матрицы | [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) · smoke #47935 |
 | Vision-before-classify | **done** — OCR_TIMEOUT 90s; no classify until Qwen OK (requeue); last attempt fail-open; maxDuration 300 | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |
 | Vision step logging | **done** — `[ai-drain]` phases + ServiceCall.fetch + `aiDraft.visionTrace` | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) §Пошаговые логи |
 | Client LLM soft-fail notice | **done** — `aiDraft.llmSoftFails` + «Тестовый режим» в карточке/PDF | [`plan-client-llm-soft-fail.md`](./plan-client-llm-soft-fail.md) |
 | Orch↔llm runChain | **done** — `chains/run-chain` + `docker-compose.chain-03.yml`; rules slim + `sync:cursor-rules` | [`plan-llm-orch-run-chain.md`](./plan-llm-orch-run-chain.md) |
-| AI chains 1/2/3 | **done** — registry + `AI_CHAIN_ID`; default **2**; chain **3** DeepSeek vision+classify | [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · `llm/chains/` · `src/lib/ved/chains/` |
+| AI chains 1/2/3 | **done** — registry + `AI_CHAIN_ID`; default **2**; chain **3** DeepSeek vision+classify | [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · `src/lib/ved/chains/` |
 | Product focus D27 | частник: ТН ВЭД → брокер-QC → PDF; «под ключ» отложено | [`product.md`](./product.md) · ADR D27 · polish без logistics/LLM/acquiring |
 | Dual-path / notify runbook | F17/F19 checklist | [`dual-path-parity.md`](./dual-path-parity.md) · [`runbook.md`](./runbook.md) |
 

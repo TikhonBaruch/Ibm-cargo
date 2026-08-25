@@ -2,7 +2,7 @@
 
 Инвентарь обновлён **2026-08-11**.  
 **MVP (D27):** смета = пошлина + НДС + таможенный сбор; акциз / утильсбор / НТМ — **hold** (не CTA).  
-Связано: [`data-model.md`](./data-model.md) · [`calculation-fields.md`](./calculation-fields.md) · корпус [`Ibm-cargo/llm/docs/sources-tnved.md`](../../../llm/docs/sources-tnved.md) · [`sources-payments.md`](../../../llm/docs/sources-payments.md).
+Связано: [`data-model.md`](./data-model.md) · [`calculation-fields.md`](./calculation-fields.md) · LBM customs helpers [`customs-fees.ts`](../../src/lib/ved/customs-fees.ts) (D36: источники матрицы не в этом репо).
 
 ## Состав платежей (импорт в РФ)
 

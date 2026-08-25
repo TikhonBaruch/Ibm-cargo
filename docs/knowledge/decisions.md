@@ -301,9 +301,10 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 4. Допустимо: **только HTTP** к матрице через `LLM_SERVICE_URL` / `OCR_SERVICE_URL` (opt-in fail-open). **Запрещено:** `sync:ai-matrix` из nested llm, default mount/build context на `./llm`, скрипты LBM с путями в `./llm/data` или `./llm/services`.
 5. `containers/{llm,ocr}` — канон LBM для Compose classify/OCR; правятся в LBM PR. Задачи на саму матрицу — отдельный ownership/PR в taurus/llm.
 6. `npm run sync:ai-matrix` — **retired** (stub no-op). Corpus: `containers/llm/data/tnved/normalized` (не `./llm/data`).
+7. Nested `./llm` **не** входит в git ibm-cargo ([`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md)); `.gitignore` блокирует повторное появление.
 
-Канон: [`ved-invariants.mdc`](./ved-invariants.mdc) · [`ved-ownership.mdc`](./ved-ownership.mdc) · [`database.md`](./database.md) · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) · [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md) · [`AGENTS.md`](../../AGENTS.md).
+Канон: [`ved-invariants.mdc`](./ved-invariants.mdc) · [`ved-ownership.mdc`](./ved-ownership.mdc) · [`database.md`](./database.md) · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) · [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) · [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md) · [`AGENTS.md`](../../AGENTS.md).
 
-**Проверка (2026-08-25):** MVP/CI без sibling; затем zero coupling tooling — [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md).
+**Проверка (2026-08-25):** MVP/CI без sibling; zero coupling tooling; **full split** — дерево `llm/` удалено из репо.
 
 

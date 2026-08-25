@@ -42,7 +42,7 @@
 6. Platform gates (D28) · dual-path writers (D24) · BackgroundJob ≠ D8 FSM (D26).
 7. D33: без плана в KB — нет кода; без KB — задача не закрыта.
 8. Не коммитить `.env` / секреты.
-9. **D36 (always):** LBM/ibm-cargo и **его** БД **не** трогают taurus/llm **и nested `./llm`**. Свой `DATABASE_URL`. Матрица — **только HTTP**. `containers/{llm,ocr}` LBM-owned; `sync:ai-matrix` retired.
+9. **D36 (always):** LBM **отделён** от taurus/llm — nested `./llm` нет в git; свой `DATABASE_URL`; matrix = HTTP only; `containers/{llm,ocr}` LBM-owned.
 
 ## Перед сдачей
 

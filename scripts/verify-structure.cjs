@@ -131,11 +131,29 @@ try {
 }
 
 try {
+  const { execSync } = require("node:child_process");
+  const tracked = execSync("git ls-files llm", {
+    cwd: root,
+    encoding: "utf8",
+  }).trim();
+  if (tracked) {
+    errors.push(
+      "nested llm/ must not be git-tracked (D36 full split — remove tree; see plan-full-split-ibm-cargo.md)"
+    );
+  }
+} catch {
+  /* not a git checkout — skip */
+}
+
+try {
   const decisions = read("docs/knowledge/decisions.md");
   if (!decisions.includes("D35")) errors.push("decisions.md missing D35");
   if (!decisions.includes("D36")) errors.push("decisions.md missing D36");
   if (!/нулев|zero coupling|nested \.\/llm/i.test(decisions)) {
     errors.push("decisions.md D36 must state zero coupling to nested ./llm");
+  }
+  if (!decisions.includes("plan-full-split")) {
+    errors.push("decisions.md D36 must link plan-full-split-ibm-cargo.md");
   }
 } catch {
   errors.push("cannot read decisions.md for D35/D36");

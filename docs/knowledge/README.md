@@ -35,7 +35,7 @@
 | Гладкий create / smoke S3 / compress | [`plan-smooth-create-path.md`](./plan-smooth-create-path.md) |
 | Журнал AI-цепочки + online probes | [`plan-chain-run-log.md`](./plan-chain-run-log.md) |
 | Параллельная ownership + multi-model (D35) | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`../../src/lib/ved/PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
-| Изоляция LBM ↔ taurus/nested `./llm` (**D36**, zero coupling) | [`decisions.md`](./decisions.md) D36 · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) · [`ved-invariants.mdc`](./ved-invariants.mdc) |
+| Изоляция / full split (**D36**) | [`decisions.md`](./decisions.md) D36 · [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) |
 | Vision до classify (таймаут / gate) | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |
 | LLM на заполнении + удачные прецеденты | [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) |
 | Typeahead полей NewCalc | [`plan-field-suggest.md`](./plan-field-suggest.md) · precedents [`plan-precedent-suggest-service.md`](./plan-precedent-suggest-service.md) · fix [`plan-field-suggest-fix.md`](./plan-field-suggest-fix.md) |
@@ -227,7 +227,7 @@ UI baseline: tag **`ved-ui-cabinets-baseline`** · ADR **D14** · [`design.md`](
 14. Не коммитить секреты; host БД — в [`database.md`](./database.md), пароли только в `.env`. SUPER credentials — не в публичных демо-строках (D6/D28).
 15. **Цикл фичи (D33)** — идея → анализ → **план в `docs/knowledge/`** → реализация → проверка → анализ → правка → деплой Hobby → KB. Без плана не начинать `src/` / `app/` / `containers/`. PR без KB не закрывать ([`feature-cycle.md`](./feature-cycle.md)).
 16. **Параллельная ownership / multi-model (D35)** — пакеты в [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md); `containers/{llm,ocr}` LBM-owned; модель ≠ контейнер ([`plan-parallel-ownership.md`](./plan-parallel-ownership.md)).
-17. **Изоляция / zero coupling (D36, always)** — LBM не читает/не пишет nested `./llm` или taurus; свой `DATABASE_URL`; matrix = HTTP only; sync retired ([`decisions.md`](./decisions.md) D36 · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md)).
+17. **Изоляция / full split (D36, always)** — nested `./llm` **нет в git**; matrix = HTTP only; `containers/{llm,ocr}` LBM-owned ([`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md)).
 
 ## Машинные проверки
 

@@ -14,7 +14,7 @@ Canon: `docs/knowledge/branches.md` · `src/lib/ved/PACKAGES.md` · `plan-parall
 | Cabinets | orchestration only (`*Cabinet.tsx`) |
 | Session API | `app/api/v1/*` · domain extract `containers/api` |
 | domain / orch / mesh / draft | see `PACKAGES.md` |
-| `containers/llm` · `containers/ocr` | **LBM-owned** Compose services (D36 — no nested `./llm` sync) |
+| `containers/llm` · `containers/ocr` | **LBM-owned** Compose services (D36 full split — nested `./llm` not in git) |
 
 ## D36 — zero coupling to taurus / nested `./llm` (always)
 
@@ -37,5 +37,5 @@ Forbidden: `sync:ai-matrix` copy; mount/build defaults on `./llm`; edit matrix s
 - `@prisma/client` in `containers/{broker,client,admin,manufacturer}`
 - Parallel C3+C4 extracts in one change (D19)
 - Docker service per vendor
-- Touching taurus/llm or nested `./llm` from an LBM/DB changeset (D36)
-- Reintroducing sync from nested `./llm` into `containers/{llm,ocr}`
+- Touching taurus/llm or re-adding nested `./llm` to this git repo (D36)
+- Reintroducing sync from matrix tree into `containers/{llm,ocr}`
