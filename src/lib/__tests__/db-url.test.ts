@@ -31,7 +31,7 @@ describe("isMissingDatabaseUrlError", () => {
 
 describe("webHealthPayload", () => {
   it("stays ok when DATABASE_URL is missing (liveness)", () => {
-    expect(webHealthPayload({} as NodeJS.ProcessEnv)).toEqual({
+    expect(webHealthPayload(asEnv({}))).toEqual({
       ok: true,
       service: "web",
       databaseUrl: false,
@@ -39,8 +39,6 @@ describe("webHealthPayload", () => {
   });
 
   it("reports databaseUrl when the env is set at runtime", () => {
-    expect(
-      webHealthPayload({ DATABASE_URL: " postgresql://x " } as NodeJS.ProcessEnv).databaseUrl
-    ).toBe(true);
+    expect(webHealthPayload(asEnv({ DATABASE_URL: " postgresql://x " })).databaseUrl).toBe(true);
   });
 });
