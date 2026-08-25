@@ -66,7 +66,7 @@ Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smo
 | **Broker reclassify** | `POST …/reclassify` + WorkMapping feedback → LLM (skip precedent); `IN_REVIEW` | `smoke:reclassify` |
 | Shipping UI flag | `shippingUiEnabled` (`src/lib/ved/cabinet-features.ts`): nav/дашборд/pane «Перевозка» **скрыты** по умолчанию; код и `/api/v1/shipping` сохранены; `/cabinet/shipping` → redirect на дашборд | unit `cabinet-features`; go-live: `NEXT_PUBLIC_SHIPPING_UI=1` ([`roadmap.md`](./roadmap.md) §2.2) |
 | Factory UI flag | `factoryUiEnabled`: код default off; **Vercel Pro Production/Preview `NEXT_PUBLIC_FACTORY_UI=1`**. Client must read `process.env.NEXT_PUBLIC_*` literally (не `env[key]`) иначе Next не инлайнит и UI остаётся скрытым. | unit `cabinet-features`; env + [`environments.md`](./environments.md) |
-| Build-safe public API | `/api/promos` = `force-dynamic` (не prerender Prisma без `DATABASE_URL` на Vercel build) | `npm run build` |
+| Build-safe public API | `/api/promos` + `/health` = `force-dynamic` (не prerender без runtime `DATABASE_URL`) | `npm run build` · `/health` `databaseUrl` |
 | Status machine + pay gate (D8/D11) | `src/lib/ved/domain.ts` + calculations | unit + `smoke:full` / `mvp` |
 | Item limits (D10) / real items (D15) | domain + UI | unit invariants |
 | DB sequencing (D23) | [`db-process.md`](./db-process.md), create/pay/claim tx | unit |

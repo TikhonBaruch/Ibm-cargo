@@ -7,7 +7,7 @@
 Частник: ТН ВЭД (heuristic) → брокер-QC → PDF. Shipping UI default off.  
 Демо: `client@example.com` / `broker@example.com` / `operator@example.com` / `admin@example.com` · `demo1234`.  
 Канон live LBM: https://taurus-liart.vercel.app  
-`https://ibm-cargo.vercel.app` — **чужой** Vercel-проект (статический IBM Cargo), не этот репозиторий. Этот репозиторий открывается с **Vercel Preview** проекта `ibm-cargo`. Preview без `DATABASE_URL` ломает вход (Prisma).
+`https://ibm-cargo.vercel.app` — **чужой** Vercel-проект (статический IBM Cargo), не этот репозиторий. Этот репозиторий открывается с **Vercel Preview** проекта `ibm-cargo`. Preview без `DATABASE_URL` ломает вход (Prisma). Клики: [`docs/knowledge/plan-preview-auth.md`](docs/knowledge/plan-preview-auth.md) §5. Проверка: `GET /health` → `databaseUrl: true`.
 
 ## Куда смотреть
 
