@@ -33,7 +33,7 @@
 
 | # | Действие | Критерий «можно дальше» |
 |---|----------|-------------------------|
-| **1** | Канон: [`product.md`](./product.md) (D27), [`decisions.md`](./decisions.md), [`skeleton.md`](./skeleton.md) checklist; при данных — [`data-model.md`](./data-model.md) / [`calculation-fields.md`](./calculation-fields.md) | Понятно: зачем фича, кого не ломаем, hold Growth |
+| **1** | Канон: [`product.md`](./product.md) (D27), [`decisions.md`](./decisions.md), [`skeleton.md`](./skeleton.md) checklist; при данных — [`data-model.md`](./data-model.md) / [`calculation-fields.md`](./calculation-fields.md); **D36** — нулевая связка с taurus/nested `./llm` | Понятно: зачем фича, кого не ломаем, hold Growth, изоляция матрицы |
 | **2** | Зона ownership: ветвь **1 Client** / **2 Broker** / **3 Ядро** (+ Admin D28). Путь кода = [`branches.md`](./branches.md) | Нет конфликта зон; UI не тащит Prisma в `containers/{client,broker,admin}` |
 | **3** | Контракт: роли allow/deny, HTTP метод/path, «done when»; при envelope — `docs/contracts/d-*.json` | Session → 401; wrong role → 403; shape согласован dual-path |
 | **4** | Код в своей зоне; domain в `src/lib/ved/`; UI panes в `ved/client` \| `ved/broker`; session API `app/api/v1` | `npm run dev` жив; инварианты D8/D10/D11/D15 не нарушены |

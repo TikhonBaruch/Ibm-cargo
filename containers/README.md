@@ -17,9 +17,9 @@
 | Ядро | [`worker/`](./worker/) | `worker` | 4200 | SLA_TICK / OUTBOX_DRAIN / BackgroundJob (D26) |
 | Growth | [`payments/`](./payments/) | `payments` | 4300 | Эквайринг **C4** (webhook TOPUP) |
 | Growth | [`notify/`](./notify/) | `notify` | 4400 | Notify **C4** |
-| Growth | [`llm/`](./llm/) | `llm` | 4500 | Classification/Duty — **mirror** of `llm/services/classification` |
+| Growth | [`llm/`](./llm/) | `llm` | 4500 | Classification/Duty — **LBM-owned** (D36; no nested `./llm` sync) |
 | Growth | [`logistics/`](./logistics/) | `logistics` | 4600 | 3PL quotes/tracking stub |
-| Growth | [`ocr/`](./ocr/) | `ocr` | 4700 | OCR — **mirror** of `llm/services/ocr`; create fail-open |
+| Growth | [`ocr/`](./ocr/) | `ocr` | 4700 | OCR — **LBM-owned** (D36); create fail-open |
 | Infra | [`redis/`](./redis/) | `redis` | 6379 | Очередь / кэш (jobs пока в Postgres, D26) |
 | Infra | [`gateway/`](./gateway/) | `gateway` | 8080 | Nginx (`/health`, `/api/ocr/`, …) |
 | Infra | [`postgres/`](./postgres/) | `postgres` | 5432 | Init scripts локальной БД |
@@ -28,7 +28,7 @@
 
 **ServiceCall (D26):** журналируются вызовы `api` / `ai` / `llm` / `payments` / `notify` / `logistics` / `worker`. UI-контейнеры своих таблиц не получают.
 
-**AI matrix canon (D35):** HTTP classify/OCR живут в sibling-репо `Ibm-cargo/llm`. Синхронизация зеркал: `npm run sync:ai-matrix`. Сборка compose напрямую из matrix: `LLM_DOCKER_CONTEXT=../llm/services/classification`, `OCR_DOCKER_CONTEXT=../llm/services/ocr`. **Model ≠ container** — см. [`docs/knowledge/plan-parallel-ownership.md`](../docs/knowledge/plan-parallel-ownership.md).
+**AI / D36:** `containers/{llm,ocr}` — LBM-owned. Внешняя матрица (taurus / nested `./llm`) — **только HTTP** (`*_SERVICE_URL`); `sync:ai-matrix` retired. **Model ≠ container** — [`docs/knowledge/plan-parallel-ownership.md`](../docs/knowledge/plan-parallel-ownership.md) · [`plan-zero-llm-coupling.md`](../docs/knowledge/plan-zero-llm-coupling.md).
 
 ## Что добавлять (рекомендации ВЭД/B2B SaaS)
 

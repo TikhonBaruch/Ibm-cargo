@@ -2,7 +2,7 @@
 
 **Дата:** 2026-08-17.  
 **Цикл D33.** План **до** выгрузки и кода.  
-Канон: [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) · [`ai-pipeline.md`](./ai-pipeline.md) · [`customs-payments.md`](./customs-payments.md) · llm [`sources-tnved.md`](../../../llm/docs/sources-tnved.md).
+Канон: [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) · [`ai-pipeline.md`](./ai-pipeline.md) · [`customs-payments.md`](./customs-payments.md). (Источники корпуса — LBM `scripts/data/tnved` / `containers/llm/data`; внешняя матрица не в этом репо, D36.)
 
 ## Идея
 

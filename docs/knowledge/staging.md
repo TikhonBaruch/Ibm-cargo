@@ -54,6 +54,8 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 
 | Дата | Smoke | Результат | Заметки |
 |------|-------|-----------|---------|
+| 2026-08-25 | **main merge** M2+M0+D36 | **done** | #6→#7→#8 → main; nested `llm/` removed · [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) |
+| 2026-08-25 | `smoke:mvp` (post full split) | **PASS** #47936 DONE | after `git rm -r llm/`; CI 508 PASS |
 | 2026-08-25 | `smoke:mvp` | **PASS** #47934 DONE | register → mock topup → **S3** upload → create → pay → **IN_REVIEW** (autoAssign) → approve; M0.1 mock+S3 OK |
 | 2026-08-25 | `smoke:payments` | **PASS** | mock +1500 (`provider=mock`) |
 | 2026-08-25 | **M0.2 visual C↔B↔A** (prod taurus) | **PASS** | client dash/new/brokers/balance/support/profile; broker dash/queue/work/chat; admin dash (группы nav) /bookings/support/settings; без 500; shipping UI off |

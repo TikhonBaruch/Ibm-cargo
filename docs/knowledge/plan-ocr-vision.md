@@ -188,14 +188,12 @@ npm run ops:track-a        # не требует vision, но фиксирует
 
 ---
 
-## Синхронизация LLM matrix
+## Контракт OCR (LBM)
 
 При изменении envelope или engines:
 
 1. `docs/contracts/d-ocr.ai.json`
-2. `llm/contracts/d-ocr.ai.json`
-3. `containers/ocr` ↔ `llm/services/ocr` (зеркало)
-4. [`integration-lbm.md`](../../llm/docs/integration-lbm.md) в matrix repo — при смене transport
+2. `containers/ocr` (LBM-owned, D36 — нет sync из внешнего matrix tree)
 
 ---
 

@@ -35,6 +35,12 @@ docs/knowledge/           # ADR, branches, skeleton, testing, ops
 
 Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp`. Этот репозиторий: Preview URL, не `ibm-cargo.vercel.app`.
 
+### Автономия вне taurus (D36)
+
+MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ opt-in HTTP fail-open).  
+**Нулевая связка:** нет sync/mount/build из `./llm`; `containers/{llm,ocr}` LBM-owned.  
+Проверка 2026-08-25: `test:ci` · `smoke:mvp` #47935 · `smoke:payments`. Канон: [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) · [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md).
+
 ## Живое (VED + ветви 1–2)
 
 - Роли `CLIENT` / `BROKER` / `MANUFACTURER` + staff; вход `/login`, **регистрация импортёра** `/register` (`POST /api/v1/auth/register` — Company + User CLIENT в одной tx; брокер и производитель только seed/admin) — **D25** / **D31**
@@ -92,13 +98,14 @@ Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smo
 | LLM enrich (P1b) | Next `llm-enrich` + api create fail-open | set `LLM_SERVICE_URL` |
 | Container inventory | 14 + ocr scaffold | [`../containers.md`](../containers.md) · [`containerization.md`](./containerization.md) |
 | Container add priorities (P1a/P1b–P3) | P1a now (D27); P1b Growth; ocr scaffold; anti-patterns D19 | [`../../containers/README.md`](../../containers/README.md) §«Что добавлять» · [`growth.md`](./growth.md) |
-| Parallel ownership / multi-model (D35) | packages domain/orch/mesh; llm matrix canon; sync mirrors | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
+| Parallel ownership / multi-model (D35) | packages domain/orch/mesh; LBM-owned containers/{llm,ocr} | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
 | Tech-debt M2 (tsc / PROTECTED / dual-path docs) | `npm run typecheck` in `test:ci`; `EnvBag`; adjust+imports in `PROTECTED_V1`; customs-fees canon synced | [`plan-tech-debt.md`](./plan-tech-debt.md) · [`dual-path-parity.md`](./dual-path-parity.md) |
+| Автономия / full split (**D36**) | nested `./llm` удалён из git; MVP без матрицы | [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) · smoke #47936 |
 | Vision-before-classify | **done** — OCR_TIMEOUT 90s; no classify until Qwen OK (requeue); last attempt fail-open; maxDuration 300 | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |
 | Vision step logging | **done** — `[ai-drain]` phases + ServiceCall.fetch + `aiDraft.visionTrace` | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) §Пошаговые логи |
 | Client LLM soft-fail notice | **done** — `aiDraft.llmSoftFails` + «Тестовый режим» в карточке/PDF | [`plan-client-llm-soft-fail.md`](./plan-client-llm-soft-fail.md) |
 | Orch↔llm runChain | **done** — `chains/run-chain` + `docker-compose.chain-03.yml`; rules slim + `sync:cursor-rules` | [`plan-llm-orch-run-chain.md`](./plan-llm-orch-run-chain.md) |
-| AI chains 1/2/3 | **done** — registry + `AI_CHAIN_ID`; default **2**; chain **3** DeepSeek vision+classify | [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · `llm/chains/` · `src/lib/ved/chains/` |
+| AI chains 1/2/3 | **done** — registry + `AI_CHAIN_ID`; default **2**; chain **3** DeepSeek vision+classify | [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · `src/lib/ved/chains/` |
 | Product focus D27 | частник: ТН ВЭД → брокер-QC → PDF; «под ключ» отложено | [`product.md`](./product.md) · ADR D27 · polish без logistics/LLM/acquiring |
 | Dual-path / notify runbook | F17/F19 checklist | [`dual-path-parity.md`](./dual-path-parity.md) · [`runbook.md`](./runbook.md) |
 

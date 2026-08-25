@@ -28,7 +28,7 @@ Preview/smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./roadmap.
 | Профиль | Сервисы |
 |---------|---------|
 | `core` | postgres, redis, api, ai, worker |
-| `scale` | + payments, notify, llm (+ corpus volume `../llm/data/tnved/normalized`), logistics |
+| `scale` | + payments, notify, llm (+ corpus `containers/llm/data/tnved/normalized`), logistics |
 | `full` / `split` | + web/surfaces + gateway `:8080` |
 
 Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
@@ -55,11 +55,12 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 
 | Env | Смысл |
 |-----|--------|
+| `DATABASE_URL` | Mode A / Vercel — **только** Postgres LBM (**D36** zero coupling: не БД taurus/nested `./llm`) — [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) |
 | `USE_DOMAIN_API` | proxy session `/api/v1` → `containers/api` |
 | `AI_SERVICE_URL` / `LLM_SERVICE_URL` | draft / enrich; **host** `.env` / `.env.local` → `http://127.0.0.1:4500`; **Compose** hardcodes `http://llm:4500` для ai/api/web (не подставлять host URL в контейнер) |
 | `OCR_SERVICE_URL` | Qwen-VL describe в `AI_DRAIN` (+ extract); host `http://127.0.0.1:4700`; Compose `http://ocr:4700` |
 | `POSTGRES_USER` / `PASSWORD` / `DB` | Compose volume as-is: default **`lbm`/`lbm`/`lbm`** (не `lbm` — старый default ломал api↔postgres). Host `.env` `DATABASE_URL` на sweb **не** прокидывается в api/web |
-| `TNVED_CODES_PATH` | corpus mount в compose (`/data/tnved/codes.jsonl`) — только `containers/llm` |
+| `TNVED_CODES_PATH` / `TNVED_DATA_DIR` | corpus в compose: default host dir `./containers/llm/data/tnved/normalized` → `/data/tnved` (**не** `./llm`) |
 | `PAYMENTS_SERVICE_URL` / `NOTIFY_SERVICE_URL` / `LOGISTICS_SERVICE_URL` | C4 opt-in |
 | `S3_*` | durable VED uploads on Vercel (`BUCKET`/`ENDPOINT`/`REGION`/`ACCESS_KEY`/`SECRET_KEY`); optional `S3_OBJECT_ACL=public-read` for cabinet `<img>` |
 | `NEXT_PUBLIC_SHIPPING_UI` / `SHIPPING_UI` | `1`/`true` = показать клиентский UI «Перевозка» (default **off**) |

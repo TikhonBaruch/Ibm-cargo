@@ -2,7 +2,7 @@
 
 Инвентарь обновлён **2026-08-11**.  
 **Статус в продукте (D27):** справочник / Growth — **не** текущий CTA. Shipping UI выкл.; deliverable MVP = ТН ВЭД → брокер-QC → PDF ([`product.md`](./product.md)).  
-Связано: перевозка / 3PL — [`growth.md`](./growth.md) §«Перевозка»; внешняя LLM-матрица logistics — репозиторий [`llm`](../../../llm/) (`services/logistics`).
+Связано: перевозка / 3PL — [`growth.md`](./growth.md) §«Перевозка». Logistics stub: `containers/logistics` (D36: внешняя matrix не в репо).
 
 ## Что имеется в виду под «Комментариями»
 
@@ -93,7 +93,7 @@
 | Вилкова / вторичка | Да | FAQ / обучение, не канон |
 | HTML-таблицы чужих сайтов | — | Не scrape как эталон |
 
-Внешний инвентарь-зеркало для LLM-матрицы: [`Ibm-cargo/llm/docs/sources-incoterms.md`](../../../llm/docs/sources-incoterms.md) (если репозиторий рядом).
+Внешняя матрица AI **не** входит в этот репозиторий (D36 full split). Incoterms-источники — таблица выше.
 
 ## Связь с LBM Брокер
 
@@ -101,7 +101,7 @@
 |------|-----|
 | Shipping после `DONE` (D15); UI hold (D27) | [`growth.md`](./growth.md), [`current-app.md`](./current-app.md) |
 | Поля заявки / attrs | [`calculation-fields.md`](./calculation-fields.md) — базис поставки **не** MVP-обязателен |
-| Logistics AI stub | llm `services/logistics` · contract `d-logistics.llm.json` |
+| Logistics stub | `containers/logistics` · contract `docs/contracts/d-ship.logistics.json` |
 | Не обещать «под ключ» в CTA | [`product.md`](./product.md) · ADR D27 |
 
-**Follow-up (не сейчас):** лицензия ICC → структурированный glossary терминов для logistics/documents AI; поле `incoterms` / базис в attrs или контракте — отдельная задача Growth, не ломать D27.
+**Follow-up (не сейчас):** лицензия ICC → структурированный glossary терминов для logistics; поле `incoterms` / базис в attrs — Growth, не ломать D27.

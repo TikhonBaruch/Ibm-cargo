@@ -15,7 +15,7 @@ Env: `AI_CHAIN_ID=1|2|3` (алиасы `nvidia` / `qwen-deepseek` / `deepseek`).
 
 ## Структура
 
-- **Не** Docker на вендора. Профили в `llm/chains/{01,02,03}/` + adapters в `src/lib/ved/chains/`.
+- **Не** Docker на вендора. Профили/adapters в `src/lib/ved/chains/` (D36: не `llm/chains/`).
 - Capability-сервисы без изменений: `classification`, `ocr`.
 - Orch пишет `aiDraft.chainId` + soft-fails; UI не зовёт matrix.
 

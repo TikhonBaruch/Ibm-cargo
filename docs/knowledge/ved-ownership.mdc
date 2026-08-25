@@ -1,12 +1,12 @@
 ---
-description: Ownership map — UI, domain, orch, mesh, AI matrix
+description: Ownership map — UI, domain, orch, mesh, AI; D36 zero llm coupling
 globs: src/components/ved/**/*,app/api/v1/**/*,app/cabinet/**/*,app/broker/**/*,containers/**/*,src/lib/ved/**
-alwaysApply: false
+alwaysApply: true
 ---
 
 # VED ownership
 
-Canon: `docs/knowledge/branches.md` · `src/lib/ved/PACKAGES.md` · `plan-parallel-ownership.md`.
+Canon: `docs/knowledge/branches.md` · `src/lib/ved/PACKAGES.md` · `plan-parallel-ownership.md` · ADR **D36**.
 
 | Area | Put code in |
 |------|-------------|
@@ -14,11 +14,21 @@ Canon: `docs/knowledge/branches.md` · `src/lib/ved/PACKAGES.md` · `plan-parall
 | Cabinets | orchestration only (`*Cabinet.tsx`) |
 | Session API | `app/api/v1/*` · domain extract `containers/api` |
 | domain / orch / mesh / draft | see `PACKAGES.md` |
-| `containers/llm` · `containers/ocr` | Compose **mirrors** of sibling `llm` repo — `npm run sync:ai-matrix` |
+| `containers/llm` · `containers/ocr` | **LBM-owned** Compose services (D36 full split — nested `./llm` not in git) |
+
+## D36 — zero coupling to taurus / nested `./llm` (always)
+
+Changes to **this** project (ibm-cargo / LBM) or **its** database must **not** affect:
+
+- files under **taurus/llm**, sibling `../llm`, **nested `./llm`**, or external matrix clone;
+- databases, Docker volumes, or secrets belonging to that matrix project.
+
+Allowed: call matrix over HTTP (`*_SERVICE_URL`) only.  
+Forbidden: `sync:ai-matrix` copy; mount/build defaults on `./llm`; edit matrix sources; `prisma` against matrix DB; shared `DATABASE_URL`.
 
 ## Multi-model
 
-- **Model ≠ container.** Vendors = `AI_CHAIN_ID` / env profiles (`llm/chains/*`).
+- **Model ≠ container.** Vendors = `AI_CHAIN_ID` / env profiles in LBM (`src/lib/ved/chains/`).
 - **Capability = service** (classification, ocr, …). One HTTP envelope each.
 - UI never calls matrix URLs.
 
@@ -27,3 +37,5 @@ Canon: `docs/knowledge/branches.md` · `src/lib/ved/PACKAGES.md` · `plan-parall
 - `@prisma/client` in `containers/{broker,client,admin,manufacturer}`
 - Parallel C3+C4 extracts in one change (D19)
 - Docker service per vendor
+- Touching taurus/llm or re-adding nested `./llm` to this git repo (D36)
+- Reintroducing sync from matrix tree into `containers/{llm,ocr}`

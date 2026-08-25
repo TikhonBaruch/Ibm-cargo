@@ -283,10 +283,28 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 **Решение:**
 
 1. **Пакеты** — logical `domain` / `orch` / `mesh` / `draft` в [`src/lib/ved/PACKAGES.md`](../../src/lib/ved/PACKAGES.md); UI — `containers/{client,broker,admin,manufacturer}` + panes. Один PR ≈ один пакет (+ dual-path api при domain writers).
-2. **Канон AI HTTP** — репо `llm` (`services/classification`, `services/ocr`). LBM `containers/llm|ocr` = Compose mirrors; `npm run sync:ai-matrix` или `LLM_DOCKER_CONTEXT` / `OCR_DOCKER_CONTEXT`.
+2. **Канон AI HTTP (LBM)** — `containers/{llm,ocr}` (**LBM-owned**, D36). Внешняя матрица — только `*_SERVICE_URL`. Нет sync из nested `./llm`.
 3. **Model ≠ container** — новая модель = env profile + optional chain (`LLM_CLASSIFY_CHAIN`). Новая **capability** = новый сервис в matrix + ADR + `*_SERVICE_URL`.
 4. Не дробить postgres/redis/gateway (D19). UI не зовёт matrix URL.
 
 Канон: [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`ved-ownership.mdc`](./ved-ownership.mdc) · [`containerization.md`](./containerization.md).
+
+## D36. Изоляция LBM (ibm-cargo) от taurus/llm и nested `./llm` — always
+
+**Контекст:** матрица AI (`taurus/llm` / sibling `../llm` / nested `./llm`) и продукт LBM соседствуют в workspace; риск — sync, corpus-mount, миграции или правки файлов одного портят другой.
+
+**Решение (жёстко, alwaysApply) — нулевая связка:**
+
+1. Любые изменения **этого** проекта (ibm-cargo / LBM) и **его** БД **не должны** затрагивать ресурсы, БД, тома Docker, секреты или **файлы** матрицы: `taurus/llm`, sibling `../llm`, **nested `./llm`**, отдельный clone.
+2. `DATABASE_URL` / Prisma migrate|push|seed / Compose Postgres LBM — **только** БД LBM. Запрещено нацеливать LBM-инструменты на БД/volume матрицы.
+3. Правки LBM — в `app/`, `src/`, `prisma/`, `containers/` (включая **LBM-owned** `containers/{llm,ocr}`), `docs/`. **Не** читать/писать/форматировать дерево `./llm` или taurus в LBM-changeset.
+4. Допустимо: **только HTTP** к матрице через `LLM_SERVICE_URL` / `OCR_SERVICE_URL` (opt-in fail-open). **Запрещено:** `sync:ai-matrix` из nested llm, default mount/build context на `./llm`, скрипты LBM с путями в `./llm/data` или `./llm/services`.
+5. `containers/{llm,ocr}` — канон LBM для Compose classify/OCR; правятся в LBM PR. Задачи на саму матрицу — отдельный ownership/PR в taurus/llm.
+6. `npm run sync:ai-matrix` — **retired** (stub no-op). Corpus: `containers/llm/data/tnved/normalized` (не `./llm/data`).
+7. Nested `./llm` **не** входит в git ibm-cargo ([`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md)); `.gitignore` блокирует повторное появление.
+
+Канон: [`ved-invariants.mdc`](./ved-invariants.mdc) · [`ved-ownership.mdc`](./ved-ownership.mdc) · [`database.md`](./database.md) · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) · [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) · [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md) · [`AGENTS.md`](../../AGENTS.md).
+
+**Проверка (2026-08-25):** MVP/CI без sibling; zero coupling tooling; **full split** — дерево `llm/` удалено из репо.
 
 
