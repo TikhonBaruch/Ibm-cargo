@@ -85,3 +85,15 @@
 - **Перевозка / LLM / ЮKassa** — вне матрицы polish; см. [`plan-mvp-polish.md`](./plan-mvp-polish.md) §Вне скоупа
 
 При закрытии gap — обновить эту таблицу, не дублировать в `design-baseline.md`. Приоритеты фич polish: [`plan-mvp-polish.md`](./plan-mvp-polish.md) §Матрица.
+
+## UI lab lbm-bro (`/client`)
+
+Параллельная поверхность, не замена D14 `/cabinet`. Канон исследования: [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md).
+
+| Роль | Экран | Lab (route) | Domain (route) | Статус |
+|------|-------|-------------|----------------|--------|
+| Клиент | Superapp home | `/client` ✓ | `/cabinet` ✓ | визуал lab; данные demo |
+| Клиент | Заявки / карточка / wizard | `/client/orders` · `/new` ✓ | `/cabinet/orders` · `/new` ✓ | визуал lab |
+| Клиент | Справочник ТН ВЭД | `/client/tnved` ✓ | combobox в NewCalc | lab directory |
+| Брокер / админ | ops-шелл прототипа | компоненты есть, **нет lab-route** | `/broker` · `/admin` live | фаза C |
+| — | Proto-bar | `/client` layout | запрещён в prod (D14) | только lab |

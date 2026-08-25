@@ -16,7 +16,7 @@
 | Цикл фичи (D33) | [`feature-cycle.md`](docs/knowledge/feature-cycle.md) |
 | Ownership / пакеты (D35) | [`PACKAGES.md`](src/lib/ved/PACKAGES.md) · [`branches.md`](docs/knowledge/branches.md) |
 | AI / цепочки / llm↔compose | [`plan-ai-chains-1-2-3.md`](docs/knowledge/plan-ai-chains-1-2-3.md) · [`environments.md`](docs/knowledge/environments.md) · `npm run sync:ai-matrix` |
-| UI (D14/D32) | Skill `.cursor/skills/ved-ui` · [`design-patterns.md`](docs/knowledge/design-patterns.md) |
+| UI (D14/D32) | Skill `.cursor/skills/ved-ui` · [`design-patterns.md`](docs/knowledge/design-patterns.md) · lab [`plan-lbm-bro-visual.md`](docs/knowledge/plan-lbm-bro-visual.md) |
 | Notify | Skill `.cursor/skills/ved-notify` |
 | As-is / деплой / тесты | [`current-app.md`](docs/knowledge/current-app.md) · [`deploy.md`](docs/knowledge/deploy.md) · [`testing-branches.md`](docs/knowledge/testing-branches.md) |
 

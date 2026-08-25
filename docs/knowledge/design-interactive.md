@@ -9,6 +9,7 @@
 
 - [x] **Веб-сайт — интерактивный дизайн** — HTML-рефы лендинга и кабинетов + живой UI (`VedShell` / panes / `AdminVedCabinet`)
 - [x] **Мобильное приложение — интерактивный дизайн** — HTML wireframe клиента (экраны, tabbar, drawer, шаги newcalc/booking)
+- [x] **Клиентский lab lbm-bro** — Next `/client` суперприложение (`src/lbm-bro`); не замена D14. Канон: [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md)
 
 **Out of scope** (фаза Growth): React Native, PWA cutover, SMS-auth, отдельные mobile routes в Next. См. [`growth.md`](./growth.md).
 

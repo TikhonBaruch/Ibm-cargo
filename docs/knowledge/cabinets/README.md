@@ -11,6 +11,7 @@
 | Shared shell / кросс-роль | — | VedShell, StatusPill, EventsTimeline | `src/components/ved/*` | [`shared/`](./shared/) |
 
 Оркестрация на Vercel: один Next (`app/cabinet|broker|admin`) → те же компоненты (Docker COPY, без dual tree).  
+Параллельно: UI lab lbm-bro на `app/client` (`src/lbm-bro`, не extract) — [`plan-lbm-bro-visual.md`](../plan-lbm-bro-visual.md).  
 Domain API: `app/api/v1` ↔ `containers/api` при `USE_DOMAIN_API=1`.
 
 ## Как читать

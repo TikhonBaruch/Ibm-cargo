@@ -182,5 +182,6 @@ Skill агента: [`.cursor/skills/ved-ui`](../../../.cursor/skills/ved-ui/SKI
 | Admin ops / toggles | [`../admin-ops.md`](../admin-ops.md) |
 | Admin экраны детально | [`admin/README.md`](./admin/README.md) |
 | Client / broker panes | [`client/`](./client/) · [`broker/`](./broker/) |
+| Новый визуал клиента (lab) | [`../plan-lbm-bro-visual.md`](../plan-lbm-bro-visual.md) · `/client` vs `/cabinet` |
 | Цикл фичи M0–M1 | [`../feature-cycle.md`](../feature-cycle.md) |
 | Pane split tech-debt | [`../plan-tech-debt.md`](../plan-tech-debt.md) §7 |

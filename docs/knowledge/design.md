@@ -9,6 +9,7 @@
 |----------|------------|
 | [`design-baseline.md`](./design-baseline.md) | ADR D14, live UI, токены, shell, навигация кабинетов |
 | [`design-patterns.md`](./design-patterns.md) | **D32:** сначала общепризнанные паттерны (NN / WCAG / SaaS) |
+| [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) | **Lab lbm-bro:** суперприложение клиента `/client` vs domain `/cabinet` |
 | [`design-interactive.md`](./design-interactive.md) | Статус интерактивного дизайна (веб + мобилка), как открыть рефы |
 | [`design-parity.md`](./design-parity.md) | Таблица экранов реф ↔ live, UI backlog |
 | [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) | Удобство, SaaS-аналоги, empty states, nav groups |
@@ -23,6 +24,7 @@
 | Удобство / следующий кабинет | [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) · **сравнение ролей:** [`cabinets/ui-guide.md`](./cabinets/ui-guide.md) |
 | Сверить экран с моком | `design-parity.md` → `cargo-broker-cabinets.html` |
 | Mobile UX / прототип | `design-interactive.md` → `wireframe-cargo-broker-mobile.html` |
+| Новый визуал клиента (суперприложение) | [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) → `src/lbm-bro` · `/client` |
 | Прод baseline | tag **`ved-ui-cabinets-baseline`** · ADR **D14** в [`decisions.md`](./decisions.md) |
 
 ## Рефы (интерактивные HTML)

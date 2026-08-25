@@ -48,6 +48,8 @@ Live-код — источник правды. Удобство / группы /
 
 † **Перевозка** скрыта по умолчанию (`NEXT_PUBLIC_SHIPPING_UI`); код/API сохранены. Go-live — [`roadmap.md`](./roadmap.md) §2.2.
 
+Параллельный визуал клиента (суперприложение, не клон admin-шелла): lab `/client` · [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md). Domain-функция остаётся `/cabinet`. Proto-bar только в lab, не в prod (D14).
+
 As-is ops брокера: soft refresh · attrs на work · escalate own IN_REVIEW — [`cabinets/broker/`](./cabinets/broker/).
 
 Соответствие live routes и реф-панелей: [`design-parity.md`](./design-parity.md).

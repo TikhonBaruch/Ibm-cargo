@@ -167,6 +167,7 @@ Preview: SSO Vercel часто включён — открывать через 
 | [`roadmap.md`](./roadmap.md) | Фазы и post-polish + ссылка на этапы M0–G |
 | [`plan-tech-debt.md`](./plan-tech-debt.md) | M2 hardening |
 | [`plan-cabinets-d32.md`](./plan-cabinets-d32.md) | Волны кабинетов C→B→A→S (D32/D33) |
+| [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) | UI lab `/client` (lbm-bro) vs domain `/cabinet` |
 | [`plan-global.md`](./plan-global.md) | Горизонт этапов 1–5 (поиск ТН ВЭД → mesh → фото/ссылка) |
 | [`staging.md`](./staging.md) | Preview/prod smoke + визуальный чеклист |
 | [`testing-branches.md`](./testing-branches.md) | Матрица smoke |

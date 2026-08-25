@@ -40,8 +40,9 @@ Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smo
 - Роли `CLIENT` / `BROKER` / `MANUFACTURER` + staff; вход `/login`, **регистрация импортёра** `/register` (`POST /api/v1/auth/register` — Company + User CLIENT в одной tx; брокер и производитель только seed/admin) — **D25** / **D31**
 - Domain API `/api/v1/*` (session) ↔ `containers/api` при `USE_DOMAIN_API=1`: create/items, pay + preferred, claim/approve/escalate mapping, assign, PDF, chat (+threads/unread), shipping after DONE, tariffs, company/topup, payouts, settings, brokers/me, SLA tick
 - Flow: просчёт → AI **heuristic-v1** → оплата с баланса (± preferred / ЮKassa TOPUP via `PaymentIntent`) → QUEUED или DONE → mapping брокера → PDF
-- Surfaces: root `/cabinet` + `/broker` + `/admin` (VED D28) + `/manufacturer`; client `/factory` и manufacturer `/pools` живы в коде, но могут быть скрыты feature-flag по D27/D34; Legacy CMS — obscure SUPER path (D6); extract Next `containers/client:3003`, `broker:3002`, `admin:3001`, `manufacturer:3004`
+- Surfaces: CLIENT home **`/client`** (lbm-bro visual lab, demo-store) + domain `/cabinet`; `/broker` + `/admin` (VED D28) + `/manufacturer`; client `/factory` и manufacturer `/pools` живы в коде, но могут быть скрыты feature-flag по D27/D34; Legacy CMS — obscure SUPER path (D6); extract Next `containers/client:3003`, `broker:3002`, `admin:3001`, `manufacturer:3004`
 - **UI baseline:** parity с `cargo-broker-cabinets.html` + live API (D14) — [`design-baseline.md`](./design-baseline.md) · интерактив · [`design-interactive.md`](./design-interactive.md)
+- **UI lab lbm-bro:** `/client/*` суперприложение; функция — `/cabinet` + `/api/v1` · [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md)
 - **C1** Compose ready / **Vercel dual** (Prisma-in-Next); **C2–C4** done as designed (opt-in providers). **C5** scaffold + `smoke:gateway` (D22)
 - Ops: [`runbook.md`](./runbook.md) · среды: [`environments.md`](./environments.md) · DB process: [`db-process.md`](./db-process.md) (D23) · MVP smoke: `npm run smoke:mvp`
 - Демо: `client@example.com` / `broker@example.com` / `manufacturer@example.com` / `operator@example.com` / `admin@example.com` (ADMIN → `/admin`) · `demo1234` — **на публичном `/login`**. Obscure SUPER path/email в клиентском коде закодированы; seed-пароль SUPER не менялся; `robots.txt` без карты obscure-путей. План: [`plan-public-surface-hygiene.md`](./plan-public-surface-hygiene.md).
@@ -122,6 +123,7 @@ Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smo
 | Qwen→DeepSeek `AI_DRAIN` | **Compose** service URLs **или Vercel** keys: create enqueue + `after()`/worker; кабинет poll ≤2 мин до точного `hsCode`. | local · prod · [`plan-ai-mesh.md`](./plan-ai-mesh.md) |
 | Attr suggest chips + NewCalc tips | **на `main` / Hobby** — heuristic chips; progressive FieldLabel/StageTip; quick-calc без placeholder ноутбука | [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) · [`plan-newcalc-hints.md`](./plan-newcalc-hints.md) |
 | Cabinets WIP (manufacturer / factory / landed) | **на `main` / Vercel Pro**; Factory UI **on** (`NEXT_PUBLIC_FACTORY_UI=1`). Schema: `manufacturer_proposal`. | [`plan-consolidate-orders.md`](./plan-consolidate-orders.md) · [`cabinets/manufacturer/`](./cabinets/manufacturer/) |
+| **lbm-bro visual lab** | **на `main`:** `/client` = суперприложение (demo-store); CLIENT home → `/client`; `/cabinet` функция. Фаза C (broker/admin lab) — next | [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) |
 
 ### Post-ship verify (2026-08-20)
 

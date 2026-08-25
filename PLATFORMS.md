@@ -10,5 +10,5 @@
 
 ## UI
 
-- `/client/*` — дизайн lbm-bro
+- `/client/*` — дизайн lbm-bro (lab; [`docs/knowledge/plan-lbm-bro-visual.md`](./docs/knowledge/plan-lbm-bro-visual.md))
 - `/cabinet` + `/api/v1` — функция
