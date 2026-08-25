@@ -1,15 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { LandingAuthShell } from "@/components/landing/LandingAuthShell";
+
+function messageForAuthError(code: string | null | undefined): string {
+  if (code === "Configuration") {
+    return "Серверу не хватает NEXTAUTH_SECRET (или AUTH_SECRET) в Vercel → Environment Variables. Задайте для Preview и Production.";
+  }
+  if (code === "Callback") {
+    return "Не удалось проверить вход. На Vercel задайте DATABASE_URL (Postgres newlsu_lbm) для Preview и Production.";
+  }
+  return "Неверный email или пароль";
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("error");
+    if (code === "Configuration" || code === "Callback") {
+      setError(messageForAuthError(code));
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +40,7 @@ export default function LoginPage() {
       });
       if (result?.error) {
         setLoading(false);
-        setError("Неверный email или пароль");
+        setError(messageForAuthError(result.error));
         return;
       }
       await new Promise((r) => setTimeout(r, 200));

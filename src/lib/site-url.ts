@@ -6,6 +6,7 @@ export function resolveSiteUrl(env: NodeJS.ProcessEnv = process.env): string {
   const candidates = [
     env.NEXTAUTH_URL,
     env.NEXT_PUBLIC_SITE_URL,
+    env.VERCEL_BRANCH_URL ? `https://${env.VERCEL_BRANCH_URL}` : "",
     env.VERCEL_URL ? `https://${env.VERCEL_URL}` : "",
     "https://ibm-cargo.vercel.app",
   ];

@@ -91,6 +91,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-husky-precommit.md    # husky: lint + logistics/shipping gate before commit
   plan-vercel-services.md    # Vercel Services BFF; cutover §7; vercel.services.bff.json
   plan-ui-auth-stubs.md      # UI: RSC layout stubs + requirePathAccess (дыры без middleware)
+  plan-preview-auth.md       # NextAuth Configuration на Vercel Preview (AUTH_SECRET / NEXTAUTH_URL)
   plan-llm-fill-hints.md     # Client: attr chips + 👍 на черновик HS; broker similar precedents
   plan-field-suggest.md      # Client: local typeahead имя/страна/материал/бренд/состав
   plan-precedent-suggest-service.md  # Precedent typeahead container + query guard

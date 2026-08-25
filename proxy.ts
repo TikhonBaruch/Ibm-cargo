@@ -17,9 +17,9 @@ import {
   SUPER_ADMIN_BASE,
 } from "@/lib/ved/super-admin";
 import { isDomainApiEnabled, mustStayOnNext } from "@/lib/ved/proxy-paths";
-import { ensureNextAuthUrl } from "@/lib/site-url";
+import { bootAuthEnv } from "@/lib/auth-env";
 
-ensureNextAuthUrl();
+const { secret: authSecret } = bootAuthEnv();
 
 export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -44,7 +44,7 @@ export async function proxy(req: NextRequest) {
 
   const token = await getToken({
     req,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: authSecret || process.env.NEXTAUTH_SECRET,
   });
   const role = token?.role as string | undefined;
 

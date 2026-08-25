@@ -38,7 +38,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 **Не** ставить на Vercel: `USE_DOMAIN_API=1`, docker DNS (`http://ai:4100`, `http://api:4000`).  
 **Qwen / DeepSeek on Vercel:** `LLM_PROVIDER=deepseek` + `DEEPSEEK_API_KEY` (+ optional `QWEN_API_KEY` / `QWEN_VISION_MODEL`) на Production+Preview. Next вызывает провайдеров напрямую (`provider-mesh`, кандидаты из `TnvedCode`); не нужен публичный `LLM_SERVICE_URL`. Create `maxDuration=60`. Fail-open + брокер-QC.
 
-**Preview:** скопировать тот же набор ключей, что Production (включая `S3_*` и auth). Иначе preview-деплой падает на signup/upload/pay.
+**Preview:** скопировать тот же набор ключей, что Production (включая `S3_*` и auth). Иначе preview-деплой падает на signup/upload/pay. NextAuth v4: задать **`NEXTAUTH_SECRET`** (не только `AUTH_SECRET`) — иначе страница «Server error / server configuration». На Preview не копировать prod `NEXTAUTH_URL`; код подставляет `VERCEL_BRANCH_URL`. Канон: [`plan-preview-auth.md`](./plan-preview-auth.md).
 
 **Vercel Pro (2026-08-20):** `NEXT_PUBLIC_FACTORY_UI=1` на Production/Preview; cron `jobs-tick` каждые 15 мин (+ daily `sla-tick`). Build не делает `migrate deploy` — схема на sweb отдельно; не `WEB_SURFACE=slim`; не второй Postgres; Compose на Vercel не крутится. Отдельный проект `manufacturer` — ignore build + без git; UI `/manufacturer` из root. Канон: [`feature-cycle.md`](./feature-cycle.md) шаг 8.
 

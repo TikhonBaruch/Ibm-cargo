@@ -21,6 +21,16 @@ describe("resolveSiteUrl", () => {
     ).toBe("https://lbm-git-x.vercel.app");
   });
 
+  it("prefers VERCEL_BRANCH_URL over VERCEL_URL when auth URLs are empty", () => {
+    expect(
+      resolveSiteUrl({
+        NEXTAUTH_URL: "",
+        VERCEL_BRANCH_URL: "ibm-cargo-git-x.vercel.app",
+        VERCEL_URL: "ibm-cargo-abc.vercel.app",
+      } as NodeJS.ProcessEnv)
+    ).toBe("https://ibm-cargo-git-x.vercel.app");
+  });
+
   it("falls back to prod host", () => {
     expect(resolveSiteUrl({} as NodeJS.ProcessEnv)).toBe("https://ibm-cargo.vercel.app");
   });

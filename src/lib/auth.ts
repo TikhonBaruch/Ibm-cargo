@@ -3,10 +3,11 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 import { logLogin } from "./audit";
-import { ensureNextAuthUrl } from "./site-url";
+import { bootAuthEnv } from "./auth-env";
 
 // next-auth parseUrl throws on NEXTAUTH_URL="" (Vercel Preview empty override).
-ensureNextAuthUrl();
+// v4 needs NEXTAUTH_SECRET; Vercel often only has AUTH_SECRET.
+const { secret: authSecret } = bootAuthEnv();
 
 const WEB_LOGIN_ROLES = [
   "ADMIN",
@@ -19,6 +20,7 @@ const WEB_LOGIN_ROLES = [
 ] as const;
 
 export const authOptions: NextAuthOptions = {
+  secret: authSecret || undefined,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -31,9 +33,20 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+        if (!process.env.DATABASE_URL) {
+          console.error("[auth] DATABASE_URL is not set");
+          throw new Error("DATABASE_URL is not set");
+        }
+
+        let user;
+        try {
+          user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          });
+        } catch (err) {
+          console.error("[auth] authorize prisma failed", err);
+          throw err;
+        }
 
         if (!user) {
           return null;
@@ -104,5 +117,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
+    error: "/login",
   },
 };

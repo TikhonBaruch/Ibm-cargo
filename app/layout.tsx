@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Providers } from "@/components/Providers";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
-import { ensureNextAuthUrl, resolveSiteUrl } from "@/lib/site-url";
+import { bootAuthEnv } from "@/lib/auth-env";
+import { resolveSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
-ensureNextAuthUrl();
+bootAuthEnv();
 
 export const metadata: Metadata = {
   metadataBase: new URL(resolveSiteUrl()),
