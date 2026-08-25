@@ -37,6 +37,14 @@ describe("ensureNextAuthUrlForRuntime", () => {
     } as NodeJS.ProcessEnv;
     expect(ensureNextAuthUrlForRuntime(env)).toBe("https://lbm.example");
   });
+
+  it("does not keep ibm-cargo.vercel.app as production NEXTAUTH_URL", () => {
+    const env = {
+      VERCEL_ENV: "production",
+      NEXTAUTH_URL: "https://ibm-cargo.vercel.app",
+    } as NodeJS.ProcessEnv;
+    expect(ensureNextAuthUrlForRuntime(env)).toBe("http://localhost:3000");
+  });
 });
 
 describe("ensureAuthSecret", () => {

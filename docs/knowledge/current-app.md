@@ -44,7 +44,7 @@ Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smo
 - **UI baseline:** parity с `cargo-broker-cabinets.html` + live API (D14) — [`design-baseline.md`](./design-baseline.md) · интерактив · [`design-interactive.md`](./design-interactive.md)
 - **C1** Compose ready / **Vercel dual** (Prisma-in-Next); **C2–C4** done as designed (opt-in providers). **C5** scaffold + `smoke:gateway` (D22)
 - Ops: [`runbook.md`](./runbook.md) · среды: [`environments.md`](./environments.md) · DB process: [`db-process.md`](./db-process.md) (D23) · MVP smoke: `npm run smoke:mvp`
-- Демо: `client@` / `broker@` / `manufacturer@` / `operator@` / `admin@` (ADMIN → `/admin`) · `demo1234` — **на публичном `/login`**. Obscure SUPER path/email в клиентском коде закодированы; seed-пароль SUPER не менялся; `robots.txt` без карты obscure-путей. План: [`plan-public-surface-hygiene.md`](./plan-public-surface-hygiene.md).
+- Демо: `client@example.com` / `broker@example.com` / `manufacturer@example.com` / `operator@example.com` / `admin@example.com` (ADMIN → `/admin`) · `demo1234` — **на публичном `/login`**. Obscure SUPER path/email в клиентском коде закодированы; seed-пароль SUPER не менялся; `robots.txt` без карты obscure-путей. План: [`plan-public-surface-hygiene.md`](./plan-public-surface-hygiene.md).
 
 ## Интегрированные решения (на `main` / prod)
 
@@ -101,7 +101,7 @@ Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smo
 | Product focus D27 | частник: ТН ВЭД → брокер-QC → PDF; «под ключ» отложено | [`product.md`](./product.md) · ADR D27 · polish без logistics/LLM/acquiring |
 | Dual-path / notify runbook | F17/F19 checklist | [`dual-path-parity.md`](./dual-path-parity.md) · [`runbook.md`](./runbook.md) |
 
-Прод UI: https://ibm-cargo.vercel.app · merge register: ветка `cursor/gap-providers-c5` → `main` (2026-08-05).
+Прод UI: hostname `ibm-cargo.vercel.app` — **чужой** проект. Этот репозиторий: Vercel Preview `ibm-cargo`. Живой LBM: https://taurus-liart.vercel.app · merge register: ветка `cursor/gap-providers-c5` → `main` (2026-08-05).
 
 ## В работе / не на `origin/main`
 

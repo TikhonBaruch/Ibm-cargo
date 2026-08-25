@@ -27,7 +27,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 |----------|------------------|
 | `DATABASE_URL` | Postgres (sweb или другой); URL-encode спецсимволы в пароле |
 | `NEXTAUTH_SECRET` | Длинный random secret |
-| `NEXTAUTH_URL` | `https://ibm-cargo.vercel.app` (точный origin деплоя; на Preview — origin preview URL) |
+| `NEXTAUTH_URL` | origin **этого** деплоя (Preview branch URL). **Не** `https://ibm-cargo.vercel.app` — чужой проект |
 | `NEXT_PUBLIC_SITE_URL` | Тот же origin |
 | `ALLOW_MOCK_TOPUP` | `1` для демо mock-пополнения баланса (D13); без флага mock topup в production отключён |
 | `CRON_SECRET` | **Required** for Vercel Cron auth: platform sends `Authorization: Bearer <CRON_SECRET>` only if this env exists. Used by `/api/v1/internal/sla-tick` and `/api/v1/internal/jobs-tick`. Fallback to `NEXTAUTH_SECRET` only for manual/`x-internal-key` calls — **not** for Vercel Cron. |
@@ -39,7 +39,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 **Не** ставить на Vercel: `USE_DOMAIN_API=1`, docker DNS (`http://ai:4100`, `http://api:4000`).  
 **Qwen / DeepSeek on Vercel:** `LLM_PROVIDER=deepseek` + `DEEPSEEK_API_KEY` (+ optional `QWEN_API_KEY` / `QWEN_VISION_MODEL`) на Production+Preview. Next вызывает провайдеров напрямую (`provider-mesh`, кандидаты из `TnvedCode`); не нужен публичный `LLM_SERVICE_URL`. Create `maxDuration=60`. Fail-open + брокер-QC.
 
-**Preview:** скопировать тот же набор ключей, что Production (включая `S3_*` и auth). Иначе preview-деплой падает на signup/upload/pay. NextAuth v4: задать **`NEXTAUTH_SECRET`** (не только `AUTH_SECRET`) — иначе страница «Server error / server configuration». На Preview не копировать prod `NEXTAUTH_URL`; код подставляет `VERCEL_BRANCH_URL`. Канон: [`plan-preview-auth.md`](./plan-preview-auth.md).
+**Preview:** скопировать тот же набор ключей (включая `S3_*` и auth). `DATABASE_URL` — Postgres **`newlsu_lbm` с seed**; без seed `/login` даст «неверный пароль» (можно `/register`). NextAuth v4: задать **`NEXTAUTH_SECRET`** (не только `AUTH_SECRET`). На Preview не копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app` (чужой хост); код подставляет `VERCEL_BRANCH_URL`. Канон: [`plan-preview-auth.md`](./plan-preview-auth.md).
 
 **Vercel Pro (2026-08-20):** `NEXT_PUBLIC_FACTORY_UI=1` на Production/Preview; cron `jobs-tick` каждые 15 мин (+ daily `sla-tick`). Build не делает `migrate deploy` — схема на sweb отдельно; не `WEB_SURFACE=slim`; не второй Postgres; Compose на Vercel не крутится. Отдельный проект `manufacturer` — ignore build + без git; UI `/manufacturer` из root. Канон: [`feature-cycle.md`](./feature-cycle.md) шаг 8.
 
@@ -81,13 +81,13 @@ WIP остаётся локально; Vercel задеплоит только т
 3. `npm run build`
 4. Коммит осмысленными кусками (D19: лучше не мешать api+ai+payments в один PR без нужды) — **только по явной просьбе**.
 5. `git push` → auto-deploy.
-6. Smoke/e2e против прода:
+6. Smoke/e2e против Preview этого репозитория (не ibm-cargo.vercel.app):
 
 ```bash
-TEST_API_URL=https://ibm-cargo.vercel.app RUN_E2E=1 npm run test:e2e
-# или
-TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp
-TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:full
+TEST_API_URL=https://<preview>.vercel.app RUN_E2E=1 npm run test:e2e
+# или живой LBM-ориентир:
+TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp
+TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:full
 ```
 
 ### C — После деплоя

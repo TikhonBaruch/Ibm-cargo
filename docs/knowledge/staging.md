@@ -17,7 +17,7 @@
 ## Vercel Preview
 
 1. Push ветки → Vercel создаёт preview URL (`https://ibm-cargo-*-*.vercel.app`).
-2. Env: **зеркало Production** — как минимум `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (origin preview!), `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, полный набор `S3_*` (`BUCKET`, `ENDPOINT`, `REGION`, `ACCESS_KEY`, `SECRET_KEY`).
+2. Env: **зеркало** ключей этого приложения — как минимум `DATABASE_URL` на **seeded** Postgres `newlsu_lbm` (`client@example.com` / `demo1234`; `#` → `%23`), `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (origin preview, **не** `ibm-cargo.vercel.app`), `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, полный набор `S3_*`. Без seed вход даст «неверный пароль»; можно `/register`.
 3. Smoke:
 
 ```bash
@@ -107,7 +107,7 @@ Preview/Production env: `S3_OBJECT_ACL=public-read`, `SMTP_FROM` (для inline 
 Цель: руками проверить взаимодействие **Клиент → Брокер → Админ** на Vercel после деплоя ветки `cursor/admin-ops-harden` (пакет кабинетов).  
 **Preview:** Vercel Preview of `TikhonBaruch/Ibm-cargo` (PR on current branch).  
 
-**Доступ:** на Preview включён Vercel Deployment Protection (`ssoProtection: all_except_custom_domains`). Открывать через кнопку **Visit Preview** в PR / Vercel dashboard (SSO под аккаунтом TikhonBaruch). Прямой curl без SSO уходит на `vercel.com/login`. Prod custom domain (`ibm-cargo.vercel.app`) от SSO свободен.  
+**Доступ:** на Preview включён Vercel Deployment Protection (`ssoProtection: all_except_custom_domains`). Открывать через кнопку **Visit Preview** в PR / Vercel dashboard (SSO под аккаунтом TikhonBaruch). Прямой curl без SSO уходит на `vercel.com/login`. Hostname `ibm-cargo.vercel.app` — **чужой** проект, не custom domain этого приложения.  
 Канон техдолга: [`plan-tech-debt.md`](./plan-tech-debt.md). Демо: `client@example.com` / `broker@example.com` / `admin@example.com` / `operator@example.com` · `demo1234` (оба ADMIN; SUPER obscure).
 
 ### Подготовка

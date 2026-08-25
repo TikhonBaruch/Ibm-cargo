@@ -21,7 +21,7 @@ Preview/smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./roadmap.
 3. `npm run dev`
 4. Опционально stubs: `npm run docker:core` или `node containers/ai|api`
 
-Демо: `client@` / `broker@` / `operator@` / `admin@` (ADMIN) · `demo1234`.
+Демо: `client@example.com` / `broker@example.com` / `operator@example.com` / `admin@example.com` (ADMIN) · `demo1234`.
 
 ## Mode B — Compose
 
