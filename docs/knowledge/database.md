@@ -9,10 +9,11 @@ SSL на prod: `sslmode=require` (при необходимости `uselibpqcom
 SUPER UI: блок «Инфраструктура и доступы» читает `DATABASE_URL` и опциональные `OPS_*` через `GET /api/admin/infra` (только `SUPER_ADMIN`). Seed-пароль в эту панель не кладём.
 
 ```env
-DATABASE_URL="postgresql://USER:<PASSWORD_URLENCODED>@HOST:PORT/DB?schema=public&connect_timeout=15&sslmode=require"
+DATABASE_URL="postgresql://USER:<PASSWORD>@HOST:PORT/DB?schema=public&connect_timeout=15&sslmode=require"
 ```
 
-Символ `#` в пароле кодируется как `%23`.
+**As-is (Ibm-cargo / `newlsu_lbm` на sweb):** пароль БД **без** символа `#` — в `DATABASE_URL` его можно писать как есть, `%23` не нужен.  
+Если позже снова появятся спецсимволы в пароле (`#`, `@`, `/`, …) — URL-encode (`#` → `%23`). Не коммитить боевой URL.
 
 ## Схема и миграции
 

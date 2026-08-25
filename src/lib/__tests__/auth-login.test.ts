@@ -27,6 +27,7 @@ describe("messageForAuthError", () => {
   it("keeps Configuration and Callback copy", () => {
     expect(messageForAuthError("Configuration")).toMatch(/NEXTAUTH_SECRET/);
     expect(messageForAuthError("Callback")).toMatch(/DATABASE_URL/);
+    expect(messageForAuthError("Callback")).toMatch(/без #/);
   });
 
   it("keeps generic CredentialsSignin with operator hint", () => {
