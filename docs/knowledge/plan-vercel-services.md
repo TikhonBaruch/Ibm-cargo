@@ -1,7 +1,9 @@
 # План: Vercel Services — Next frontend + Docker backend
 
 Индекс: [`deploy.md`](./deploy.md) · [`environments.md`](./environments.md) · [`plan-ui-auth-stubs.md`](./plan-ui-auth-stubs.md) · [`plan-preview-auth.md`](./plan-preview-auth.md).  
-Ветвь 3. D33. **As-is этого репо:** `vercel.json` = Services BFF (канон [`vercel.services.bff.json`](../../vercel.services.bff.json)). Dashboard: **Root Directory = `.`**, **Framework = Services**. Hostname `ibm-cargo.vercel.app` — чужой проект, не прод LBM.
+Ветвь 3. D33. **As-is (post-hoist):** Next + `package.json` + `Dockerfile.vercel` + `vercel.json` **в корне репо**. Dashboard: **Root Directory = `.`**, **Framework = Services**. Канон json: [`vercel.services.bff.json`](../../vercel.services.bff.json) → `frontend.root: "."`, `backend.entrypoint: "Dockerfile.vercel"`. Hostname `ibm-cargo.vercel.app` — чужой проект, не прод LBM.
+
+**Не путать с PR #5** (`vercel-agent/fix-services-config`): там `frontend.root: "app"` под **pre-hoist** `main` (Next жил в `app/`). После hoist это **не** канон — см. §11.
 
 ## 1. Идея
 
@@ -103,9 +105,10 @@ Stay-on-Next: `auth/*`, `uploads`, `imports/*`, `internal/jobs-tick`.
 | E2 prod crons-only | **done** |
 | E3 Node proxy + BFF | **done** |
 | E4 `vercel.services.bff.json` + runbook §7 | **done** |
-| Framework Services + activate json | **done** — этот репо: `vercel.json` = BFF services; Dashboard Root=`.` |
+| Framework Services + activate json | **done** — корневой `vercel.json` = BFF; `frontend.root: "."` (не `"app"`) |
 | E5 «No Next.js version detected» | **done** — §8; гейт `vercel-root` / `test:structure` |
 | E6 empty `functions`/`static` | **done** — §9; prisma.config.ts + standalone gate; Dashboard Services |
+| E7 no services / PR#5 nested | **done** — §10–§11; hoist в main supersedes `frontend.root: "app"` |
 | Domain rewrite / JWT | hold |
 
 ## 5. Проверка (после cutover)
@@ -335,3 +338,41 @@ Vercel **не** «не видит» ключ из-за опечатки в эт�
 
 - Build log: нет *no services are declared*; есть сборка `frontend` (Next) и `backend` (`Dockerfile.vercel`).
 - `npm run test:ci` (гейт корневого `services`, нет `app/vercel.json`).
+
+## 11. PR #5 (Vercel agent) vs post-hoist канон (D33)
+
+### Идея
+
+[PR #5](https://github.com/TikhonBaruch/Ibm-cargo/pull/5) (`vercel-agent/fix-services-config`) добавил **корневой** `vercel.json` на **pre-hoist** `main`, где пакет Next жил в `app/`:
+
+```json
+"frontend": { "root": "app", "framework": "nextjs" },
+"backend":  { "root": ".", "runtime": "container", "entrypoint": "app/Dockerfile.vercel" }
+```
+
+Это чинило *no services declared* при Root=`.` **без** hoist. После hoist (PR #4): Next, `package.json`, `Dockerfile.vercel` — в **корне**. Канон:
+
+```json
+"frontend": { "root": ".", "framework": "nextjs" },
+"backend":  { "root": ".", "runtime": "container", "entrypoint": "Dockerfile.vercel" }
+```
+
+Публичные rewrites → `frontend`; `DOMAIN_API_URL` — binding frontend→backend. Framework=Services ⇔ корневой блок `services` (и наоборот). Vercel **не** читает `app/vercel.json` при Root=`.`.
+
+### Анализ
+
+| Источник | Layout | `frontend.root` | `backend.entrypoint` | Статус |
+|----------|--------|-----------------|----------------------|--------|
+| PR #5 | Next в `app/` | `"app"` | `app/Dockerfile.vercel` | temporary / **superseded** после hoist |
+| PR #4 → `main` | Next в корне | `"."` | `Dockerfile.vercel` | **канон** |
+| `app/vercel.json` | любой | — | — | игнор при Root=`.` — не канон |
+
+Риск merge #5 **после** hoist: `frontend.root: "app"` смотрит в App Router без `"next"` → *No Next.js version detected* / empty output.  
+Риск оставить только #5 **без** hoist: `Dockerfile.vercel` с `COPY containers/...` при `backend.root: "."` ищет пути в корне репо, а на pre-hoist они под `app/` — container backend хрупкий.
+
+### Структурирование / ship
+
+1. Влить PR #4 в `main` (корневой Next + корневой Services json).  
+2. Закрыть PR #5 как superseded (не мержить nested json поверх hoist).  
+3. Dashboard: Root=`.`, Framework=Services; env Preview/Prod: `DATABASE_URL` (пароль без `#`), `NEXTAUTH_SECRET`.  
+4. Гейты: `frontend.root === "."`, нет `app/package.json` / `app/vercel.json`.

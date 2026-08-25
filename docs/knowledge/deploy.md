@@ -57,7 +57,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 - `[MODULE_TYPELESS_PACKAGE_JSON]` на `eslint.config.js` — flat-config ESM без `"type":"module"` в корневом package.json. Канон: `eslint.config.mjs` (не ставить `"type":"module"` — сломает `scripts/*.cjs` / CommonJS). Не фатально для деплоя.
 - `The configuration property package.json#prisma is deprecated` — seed в `prisma.config.ts` (Prisma 6.19 `defineConfig` из `prisma/config`). Не Prisma 7. URL БД остаётся `env("DATABASE_URL")` в `prisma/schema.prisma`.
 - `WARNING! Build output contains no "functions" or "static" directory` — **фатально:** Framework = Other/Static, не **Services**. Next пишет `.next/`, не `functions/`/`static/`. Не путать с двумя warn выше. Клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §9.
-- `Project framework is set to "services", but no services are declared` — Preset **уже** Services, но прочитанный `vercel.json` без `services`. На этой ветке блок **есть** в корне. Типично: Redeploy **Production/`main`** (корневого json нет, он в `app/vercel.json`) или Root Directory = `app`. Не убирать `services`. Клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §10.
+- `Project framework is set to "services", but no services are declared` — Preset **уже** Services, но прочитанный `vercel.json` без `services`. После hoist канон — **корневой** json с `frontend.root: "."` (не `"app"`). Nested-фикс PR #5 superseded — [`plan-vercel-services.md`](./plan-vercel-services.md) §11. Не убирать `services`. Клики: §10.
 - `Warning: Could not identify Next.js version` / `Error: No Next.js version detected` — Root Directory в Dashboard не `.` (часто `app`) или Framework Preset не **Services**. `"next"` уже в корневом `package.json`. См. [`plan-vercel-services.md`](./plan-vercel-services.md) §8.
 
 ## Vercel project settings
@@ -71,7 +71,7 @@ Dashboard (агент **не** может выставить эти поля). �
 | Install | `npm install` (`postinstall` → `prisma generate`) | не Override, пока не нужно |
 | Build | `npm run build` (берётся из frontend Next) | не Override |
 
-`vercel.json` **обязан** содержать блок `services` (канон [`vercel.services.bff.json`](../../vercel.services.bff.json)): frontend `root: "."` + `framework: "nextjs"`, backend `Dockerfile.vercel`. Нельзя писать `"rootDirectory"` в json (invalid).
+`vercel.json` **обязан** содержать блок `services` (канон [`vercel.services.bff.json`](../../vercel.services.bff.json)): frontend `root: "."` + `framework: "nextjs"`, backend `entrypoint: "Dockerfile.vercel"` (не `app/Dockerfile.vercel`). Нельзя писать `"rootDirectory"` в json (invalid). Не мержить поверх hoist форму PR #5 (`frontend.root: "app"`) — §11.
 
 **Ошибка** `No Next.js version detected` / `Could not identify Next.js version` = билдер смотрит не в корневой `package.json` (там уже `"next": "16.1.6"`). Почти всегда Dashboard Root Directory = `app` или Framework ≠ Services. Канон и клики: [`plan-vercel-services.md`](./plan-vercel-services.md) §8.
 

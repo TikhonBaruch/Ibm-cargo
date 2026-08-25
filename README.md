@@ -12,8 +12,8 @@ Ibm-cargo/
   docs/
 ```
 
-Vercel: **Root = `.`**, **Framework = Services**. Нельзя убирать `services` из `vercel.json` (иначе: *Project framework is set to "services", but no services are declared*). Канон: `vercel.services.bff.json`.  
-Та же ошибка, если Redeploy **Production/`main`** (там json только в `app/`) или Root = `app` на этой ветке. Деплоить preview ветки с корневым `vercel.json`, не `https://ibm-cargo.vercel.app`.  
+Vercel: **Root = `.`**, **Framework = Services**. Корневой `vercel.json` с `services` обязателен (`frontend.root: "."`, `backend` → `Dockerfile.vercel`). Канон: `vercel.services.bff.json`.  
+Не использовать форму PR #5 (`frontend.root: "app"`) после hoist Next в корень. Не `https://ibm-cargo.vercel.app`.  
 Ошибка *No Next.js version detected* = Dashboard Root Directory не `.` (не `app`); `"next"` уже в корневом `package.json`.
 
 ## Старт

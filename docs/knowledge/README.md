@@ -89,7 +89,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-worker-shutdown.md    # stopWorker: clearInterval + дождаться in-flight logistics
   plan-api-sigterm.md        # api SIGTERM: server.close + prisma.$disconnect + exit 0
   plan-husky-precommit.md    # husky: lint + logistics/shipping gate before commit
-  plan-vercel-services.md    # Vercel Services BFF; Root=.; No Next.js / empty functions+static / no services declared
+  plan-vercel-services.md    # Vercel Services BFF; Root=.; post-hoist frontend.root=. (PR#5 app/ superseded)
   plan-ui-auth-stubs.md      # UI: RSC layout stubs + requirePathAccess (дыры без middleware)
   plan-preview-auth.md       # Preview NextAuth: чужой хост ibm-cargo.vercel.app; seed/DATABASE_URL; полные демо-email
   plan-llm-fill-hints.md     # Client: attr chips + 👍 на черновик HS; broker similar precedents
