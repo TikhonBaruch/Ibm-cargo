@@ -6,7 +6,7 @@
 
 Зафиксировано **2026-08-04** (git tag **`ved-ui-cabinets-baseline`**):
 
-- Живой UI = React `VedShell` + panes в `src/components/ved/{client,broker,admin}` + orchestrators
+- Живой UI = React `LbmCabinetsShell` + panes в `src/components/ved/{client,broker,admin}` + orchestrators (`VedShell` — manufacturer + shared widgets)
 - Визуал ≈ [`cargo-broker-cabinets.html`](../design/refs/cargo-broker-cabinets.html); данные с `/api/v1` (не цифры из мока)
 - Прод: https://ibm-cargo.vercel.app — `/cabinet`, `/broker`, `/admin`
 - **Не** возвращать `CabinetsApp`; **не** добавлять proto-bar ролей в прод (proto-bar только в HTML-рефе)
@@ -15,7 +15,7 @@
 
 | Слой | Путь |
 |------|------|
-| Shell | `src/components/ved/VedShell.tsx` |
+| Shell | `src/components/ved/LbmCabinetsShell.tsx` (live C/B/A) · `VedShell.tsx` (manufacturer + widgets) |
 | Client panes | `src/components/ved/client/*` · routes `app/cabinet/*` |
 | Broker panes | `src/components/ved/broker/*` · routes `app/broker/*` |
 | Admin VED | `src/components/ved/AdminVedCabinet.tsx` + `admin/*` panes · routes `app/admin/*` |
@@ -48,7 +48,7 @@ Live-код — источник правды. Удобство / группы /
 
 † **Перевозка** скрыта по умолчанию (`NEXT_PUBLIC_SHIPPING_UI`); код/API сохранены. Go-live — [`roadmap.md`](./roadmap.md) §2.2.
 
-Параллельный визуал клиента (суперприложение, не клон admin-шелла): lab `/client` · [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md). Domain-функция остаётся `/cabinet`. Proto-bar только в lab, не в prod (D14).
+Live chrome клиента — суперприложение (`LbmCabinetsShell` product-shell), не клон admin-шелла. Lab `/client` — референс · [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md). Proto-bar только в lab, не в prod (D14).
 
 As-is ops брокера: soft refresh · attrs на work · escalate own IN_REVIEW — [`cabinets/broker/`](./cabinets/broker/).
 

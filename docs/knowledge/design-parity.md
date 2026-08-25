@@ -88,13 +88,13 @@
 
 ## UI lab lbm-bro (три кабинета)
 
-Параллельная поверхность, не замена D14. Канон: [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md).
+Live chrome принят (фаза C): [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md). Lab `/client` — референс.
 
 | Роль | Экран | Lab | Domain | Статус |
 |------|-------|-----|--------|--------|
-| Клиент | Superapp home | `/client` ✓ | `/cabinet` ✓ | визуал lab; данные demo |
-| Клиент | Заявки / карточка / wizard | `/client/orders` · `/new` ✓ | `/cabinet/orders` · `/new` ✓ | визуал lab |
-| Клиент | Справочник ТН ВЭД | `/client/tnved` ✓ | combobox NewCalc | lab directory |
-| Брокер | Dash / queue / work / chat / SLA / pay / profile | компоненты `broker-*` | `/broker/*` live | **нет lab-route**; nav ≈ live; work demo тоньше WorkMapping |
-| Админ | Dash / orders / clients / brokers / tariffs / finance / AI / audit / settings | компоненты `admin-*` | `/admin/*` live, **14 panes + группы** | **нет lab-route**; lab = 9 плоских пунктов |
+| Клиент | Superapp home | `/client` ✓ | `/cabinet` ✓ product-shell | **live chrome** + `/api/v1` |
+| Клиент | Заявки / карточка / wizard | `/client/orders` · `/new` ✓ | `/cabinet/orders` · `/new` ✓ | live panes в новом шелле |
+| Клиент | Справочник ТН ВЭД | `/client/tnved` ✓ | combobox NewCalc | lookup-плитка → `/new` |
+| Брокер | Dash / queue / work / chat / SLA / pay / profile | компоненты `broker-*` | `/broker/*` ops-shell | WorkMapping канон QC |
+| Админ | Dash / 14 panes | компоненты `admin-*` | `/admin/*` ops + группы | без fake GMV |
 | — | Proto-bar | `/client` layout | запрещён в prod (D14) | только lab |

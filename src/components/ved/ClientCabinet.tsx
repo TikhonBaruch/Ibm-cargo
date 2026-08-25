@@ -12,9 +12,11 @@ import { factoryUiEnabled, shippingUiEnabled } from "@/lib/ved/cabinet-features"
 import { formatShipmentInvoice, parseShipmentInvoice } from "@/lib/ved/landed-cost";
 import { isAiDrainPending, waitForAiEnrich } from "@/lib/ved/ai-drain-client";
 import { compressImageForUpload } from "@/lib/ved/compress-image-client";
-import { VedShell, VedEmptyState, api } from "./VedShell";
+import { VedEmptyState, api } from "./VedShell";
+import { LbmCabinetsShell } from "./LbmCabinetsShell";
 import { useVedToast } from "./feedback/VedToast";
 import { DashboardPane } from "./client/DashboardPane";
+import { ClientSuperappHome } from "./client/ClientSuperappHome";
 import { OrderDetail } from "./client/OrderDetail";
 import { OrderDetailDrawer } from "./client/OrderDetailDrawer";
 import { OrderChat } from "./client/OrderChat";
@@ -868,27 +870,23 @@ function ClientCabinetInner() {
   });
 
   return (
-    <VedShell
+    <LbmCabinetsShell
+      variant="client"
       brand="Кабинет"
       subtitle={`Клиент · ${me?.company?.name || "…"}`}
       nav={navWithBadge}
       title={meta.title}
       lead={meta.lead}
       avatarUrl="/cabinets/assets/avatar-user.jpg"
-      footer={
-        <>
-          Баланс:{" "}
-          <strong className="text-white">
-            {(me?.company?.balanceRub ?? 0).toLocaleString("ru-RU")} ₽
-          </strong>
-          <br />
-          Тариф по умолчанию: {form.tariffCode === "PRO" ? "Профи" : form.tariffCode === "EXPRESS" ? "Экспресс" : "Стандарт"}
-        </>
-      }
+      userLabel={me?.name}
+      userMeta={me?.company?.name}
+      hideHeaderTitle={pane === "dashboard"}
+      balanceRub={me?.company?.balanceRub ?? 0}
+      balanceHref={path("/balance")}
       actions={
         <Link
           href={path("/new")}
-          className="inline-flex items-center gap-1.5 rounded-full bg-[#2b72f4] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(43,114,244,0.35)]"
+          className="btn btn-primary btn-sm"
         >
           <Plus className="h-4 w-4" strokeWidth={2.2} />
           Новый просчёт
@@ -924,6 +922,16 @@ function ClientCabinetInner() {
         <>
       {(pane === "dashboard" || pane === "orders") && (
         <>
+          {pane === "dashboard" ? (
+            <ClientSuperappHome
+              path={path}
+              calcs={calcs}
+              unreadCount={unreadCount}
+              showShipping={shippingOn}
+              showFactory={factoryOn}
+              factoryHref={factoryOn ? path("/factory") : undefined}
+            />
+          ) : (
           <DashboardPane
             pane={pane}
             me={me}
@@ -967,6 +975,7 @@ function ClientCabinetInner() {
               void topupThenPay(c.id, c.tariff?.priceRub ?? 0);
             }}
           />
+          )}
           {selected && (pane === "orders" || pane === "dashboard") && (
             <OrderDetailDrawer
               open
@@ -1140,6 +1149,6 @@ function ClientCabinetInner() {
       )}
         </>
       )}
-    </VedShell>
+    </LbmCabinetsShell>
   );
 }

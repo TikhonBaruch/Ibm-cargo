@@ -22,7 +22,7 @@ src/lib/ved/              # Domain: calculations, domain, ledger, access, settin
                           # product-description, tnved, calculation-events (D24),
                           # orchestration / orch-health (D26), platform-gates,
                           # integrations / super-admin / infra-access (D28)
-src/components/ved/       # Cabinets + VedShell
+src/components/ved/       # Cabinets + LbmCabinetsShell (live) + VedShell (manufacturer/widgets)
 src/components/ved/client/# Client panes (ветвь 1)
 src/components/ved/broker/# Broker panes (ветвь 2)
 src/lbm-bro/              # UI lab visual (не domain; план: plan-lbm-bro-visual.md)
@@ -47,7 +47,7 @@ AGENTS.md                 # Правила для агентов
 | Зона | UI | Domain |
 |------|-----|--------|
 | Клиент | `ved/client/*`, `/cabinet`, `containers/client` | create/pay/shipping/topup/chat (+ optional `items[].attrs`) |
-| Клиент UI lab | `src/lbm-bro/*`, `/client` (не extract) | нет domain writers; визуал + DesignerStub ([`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md)) |
+| Клиент UI lab | `src/lbm-bro/*`, `/client` (не extract) | референс + DesignerStub; live = `/cabinet` ([`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md)) |
 | Брокер | `ved/broker/*`, `/broker`, `containers/broker` | claim/approve/items/payouts/SLA (+ acceptingJobs gate) |
 | Ядро | `proxy.ts` (Node UI), `access.ts`, `require-path-access`, `ved/proxy` BFF, ledger, tariffs, settings, `platform-gates` | статусы D8, pay-before-queue D11, D24 events/TN VED, D26 orch |
 | Admin | `AdminVedCabinet`, `/admin/*` VED (D28) | SUPPORT, orch (+retry), tnved import, integrations (+notify), toggles, users create/reset, client ADJUSTMENT, calc deep-link+PDF, finance CSV, broker acceptingJobs |

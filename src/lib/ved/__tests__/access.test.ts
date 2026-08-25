@@ -4,6 +4,7 @@ import {
   isPublicAuthedPath,
   matchesProtectedMutation,
   PROTECTED_V1_MUTATIONS,
+  homePathForRole,
 } from "../access";
 
 describe("VED access — resolvePathAccess", () => {
@@ -27,12 +28,12 @@ describe("VED access — resolvePathAccess", () => {
     expect(resolvePathAccess("BROKER", "/broker/queue")).toEqual({ type: "allow" });
   });
 
-  it("redirects CLIENT from /broker to /client", () => {
-    expect(resolvePathAccess("CLIENT", "/broker")).toEqual({ type: "redirect", to: "/client" });
+  it("redirects CLIENT from /broker to /cabinet", () => {
+    expect(resolvePathAccess("CLIENT", "/broker")).toEqual({ type: "redirect", to: "/cabinet" });
   });
 
   it("keeps CLIENT/BROKER out of /admin", () => {
-    expect(resolvePathAccess("CLIENT", "/admin")).toEqual({ type: "redirect", to: "/client" });
+    expect(resolvePathAccess("CLIENT", "/admin")).toEqual({ type: "redirect", to: "/cabinet" });
     expect(resolvePathAccess("BROKER", "/admin/bookings")).toEqual({
       type: "redirect",
       to: "/broker",
@@ -54,7 +55,7 @@ describe("VED access — resolvePathAccess", () => {
     });
     expect(resolvePathAccess("CLIENT", "/2178737")).toEqual({
       type: "redirect",
-      to: "/client",
+      to: "/cabinet",
     });
   });
 
@@ -74,8 +75,13 @@ describe("VED access — resolvePathAccess", () => {
     expect(resolvePathAccess("MANUFACTURER", "/manufacturer/catalog")).toEqual({ type: "allow" });
     expect(resolvePathAccess("CLIENT", "/manufacturer")).toEqual({
       type: "redirect",
-      to: "/client",
+      to: "/cabinet",
     });
+  });
+
+  it("sends CLIENT home to live /cabinet (lab /client remains allowed)", () => {
+    expect(homePathForRole("CLIENT")).toBe("/cabinet");
+    expect(resolvePathAccess("CLIENT", "/client")).toEqual({ type: "allow" });
   });
 
   it("denies missing role", () => {

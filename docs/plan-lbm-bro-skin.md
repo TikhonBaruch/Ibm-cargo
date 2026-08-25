@@ -6,4 +6,4 @@
 
 Этот файл больше не источник правды. Не дублировать таблицы тарифов/экранов здесь.
 
-Кратко as-is: `/client/*` — визуал суперприложения (DemoProvider); `/cabinet` + `/api/v1` — функция. Фаза C (lab брокера/админа) — next. Не `Vercel Root=lbm` (канон Root `.`).
+Кратко as-is: live `/cabinet` `/broker` `/admin` — `LbmCabinetsShell` + `/api/v1`. Lab `/client` — референс (DemoProvider). Не `Vercel Root=lbm` (канон Root `.`).

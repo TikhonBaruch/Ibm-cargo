@@ -8,10 +8,10 @@
 | [`containers/broker`](../../../containers/broker/) (D16) | 3002 | `/broker/*` | `src/components/ved/broker/*` + `BrokerCabinet` | [`broker/`](./broker/) |
 | [`containers/admin`](../../../containers/admin/) (D20) | 3001 | `/admin/*` (VED) | `AdminVedCabinet` | [`admin/`](./admin/) |
 | [`containers/manufacturer`](../../../containers/manufacturer/) (D31) | 3004 | `/manufacturer/*` | `src/components/ved/manufacturer/*` + `ManufacturerCabinet` | [`manufacturer/`](./manufacturer/) |
-| Shared shell / кросс-роль | — | VedShell, StatusPill, EventsTimeline | `src/components/ved/*` | [`shared/`](./shared/) |
+| Shared shell / кросс-роль | — | LbmCabinetsShell (live C/B/A), VedShell (manufacturer + widgets) | `src/components/ved/*` | [`shared/`](./shared/) |
 
 Оркестрация на Vercel: один Next (`app/cabinet|broker|admin`) → те же компоненты (Docker COPY, без dual tree).  
-Параллельно: UI lab lbm-bro на `app/client` (`src/lbm-bro`, не extract) — [`plan-lbm-bro-visual.md`](../plan-lbm-bro-visual.md).  
+Live chrome: `LbmCabinetsShell` ([`plan-lbm-bro-visual.md`](../plan-lbm-bro-visual.md) фаза C). Lab lbm-bro на `app/client` — референс, не prod-лицо.  
 Domain API: `app/api/v1` ↔ `containers/api` при `USE_DOMAIN_API=1`.
 
 ## Как читать

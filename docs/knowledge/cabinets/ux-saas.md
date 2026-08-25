@@ -22,7 +22,7 @@
 
 ## 2. Ветви → кабинет → SaaS-аналог
 
-Не тащить shadcn / Sonner / Radix / «AI-glow». Live = `VedShell` + panes + `VedDetailDrawer` + `VedToast`.
+Не тащить shadcn / Sonner / Radix / «AI-glow». Live = `LbmCabinetsShell` + panes + `VedDetailDrawer` + `VedToast`.
 
 | Ветвь | Кабинет | Главный job | SaaS-аналог job | As-is | Не делать |
 |-------|---------|-------------|-----------------|-------|-----------|

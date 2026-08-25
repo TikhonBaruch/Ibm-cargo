@@ -1,0 +1,47 @@
+/* Live /cabinet|/broker|/admin: no proto-bar, so shells fill the viewport. */
+.lbm-live-client.lbm-bro-root,
+.lbm-live-ops.lbm-bro-root {
+  min-height: 100vh;
+}
+.lbm-live-client .view,
+.lbm-live-ops .view {
+  min-height: 100vh;
+}
+.lbm-live-client .view-client .cl-app,
+.lbm-live-ops .app {
+  min-height: 100vh;
+}
+@media (max-width: 980px) {
+  .lbm-live-client .view-client .cl-side {
+    top: 0;
+  }
+}
+@media (max-width: 960px) {
+  .lbm-live-ops .side {
+    top: 0;
+  }
+}
+.lbm-live-ops .topbar {
+  top: 0;
+}
+/* Keep group labels without breaking .side-nav flex (direct `a` styling). */
+.lbm-live-ops .side-nav > .lbm-nav-item {
+  display: contents;
+}
+.lbm-live-ops .side-nav .side-nav-group {
+  display: block;
+  padding: 12px 12px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.lbm-live-ops .side-nav .side-nav-group:first-child,
+.lbm-live-ops .side-nav > .lbm-nav-item:first-child .side-nav-group {
+  padding-top: 0;
+}
+/* Prod admin mark: no pulseRing spam (lab-only in prototype). */
+.lbm-live-ops .side.admin .brand-mark {
+  animation: none;
+}

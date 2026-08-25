@@ -15,7 +15,7 @@
 
 ### 1.1 Что представил дизайнер
 
-Не «форма нового просчёта в том же шелле», а **три кабинета с разным chrome**. Клиент — суперприложение (светлый product-shell). Брокер и админ — ops-шеллы одной семьи (тёмный ink; у админа фиолетовый mark). Live D14 сейчас сажает все три роли на один `VedShell`.
+Не «форма нового просчёта в том же шелле», а **три кабинета с разным chrome**. Клиент — суперприложение (светлый product-shell). Брокер и админ — ops-шеллы одной семьи (тёмный ink; у админа фиолетовый mark). Live D14 сейчас: клиент = `LbmCabinetsShell` product-shell; брокер/админ = тот же файл, ops-шелл. `VedShell` — производитель + shared `api`/`VedEmptyState`/`StatusPill`.
 
 ### 1.2 Канон визуала (токены = D14, язык = новый)
 
@@ -190,7 +190,7 @@ app/client/**              # Next routes UI lab
 
 **Ownership:** визуал lab — `src/lbm-bro` + `app/client`. Domain и extract UI — по-прежнему `src/components/ved/*` + `/cabinet|/broker|/admin` ([`branches.md`](./branches.md), D16/D17). Нет `@prisma/client` в lab (ok).
 
-**Доступ:** `homePathForRole(CLIENT) = "/client"`; `/cabinet` остаётся рабочим fallback. Proto-bar и demo-store на дефолтном лендинге клиента — **риск prod**, пока фаза D не сшита.
+**Доступ:** login CLIENT → `/cabinet` (live product-shell + `/api/v1`). `homePathForRole("CLIENT")` = `/cabinet`. Lab `/client` остаётся референсом (demo-store). Proto-bar только в lab.
 
 ---
 
@@ -250,14 +250,14 @@ app/client/**              # Next routes UI lab
 
 ## 4. План фаз (после этого исследования)
 
-Код `src/` / `app/` по этому плану — только со следующей задачей; этот PR = KB.
-
 | Фаза | Что | Не делать |
 |------|-----|-----------|
 | **A–B** | Клиентский lab `/client/*` + stubs | **done** |
-| **C** | Lab `/lab/broker` и `/lab/admin`: тот же CSS, `DesignerStub` на fake KPI, proto-tab. Поправить `href` shells с `/broker`/`/admin` на lab-пути | Не монтировать на live `/broker`/`/admin` |
-| **D** | Адаптер `DemoProvider` → `/api/v1` (list/create/pay/chat). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
-| **E** | Если lab станет prod-лицом клиента: ADR (D14/D32), `homePathForRole` осознанно, proto-bar **off**, smoke `/client` + `smoke:mvp` | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
+| **C** | **Live chrome:** `LbmCabinetsShell` на `/cabinet` `/broker` `/admin`. Клиент = product-shell + superapp home (`ClientSuperappHome`). Брокер/админ = ops-шелл вокруг существующих panes. Данные только `/api/v1` | Не монтировать prototype `BrokerShell`/`AdminShell`; не сплющивать admin nav; не выкидывать WorkMapping; нет proto-bar и fake GMV |
+| **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
+| **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
+
+Пользователь явно попросил пересобрать **живые** кабинеты в формате визуала — фаза C смещена с `/lab/broker|/lab/admin` на live routes. Lab `/client` не удаляем.
 
 Старый черновик писал «Root Directory = lbm» — **устарело** после hoist Next в корень.
 
@@ -265,11 +265,11 @@ app/client/**              # Next routes UI lab
 
 ## 5. Риски (зафиксировать до кода)
 
-1. **Второй визуальный язык (D32).** Lab на `/client` vs `VedShell` на `/cabinet` — сознательный split. Prod-cutover требует ADR, иначе два chrome у одной роли.  
-2. **Клиент уже падает на lab.** `homePathForRole("CLIENT") → /client`. Demo login показывает localStorage, не Postgres. `/cabinet` надо оставлять в proto-bar и в copy, пока нет фазы D.  
-3. **Инварианты.** Wizard demo может имитировать «отправку брокеру» без оплаты — в domain это запрещено (D11). Сшивка только через pay.  
-4. **Extract.** `containers/client` копирует `ved/client`, не `src/lbm-bro`. Lab не в Docker UI, пока нет отдельного решения.  
-5. **Admin lab** содержит выдуманные GMV — в lab подписать stub, в prod не переносить.
+1. **D32.** Live теперь использует chrome прототипа (`LbmCabinetsShell`), не второй `VedShell` у тех же ролей. `VedShell` остаётся для производителя и как источник `VedEmptyState` / `api` / `StatusPill`.
+2. **CSS прототипа** (`globals.css`) содержит неscoped `* { margin:0 }` и `button { background:none }`. На live окутываем `.lbm-bro-root`; Tailwind utilities должны побеждать. Лендинг CSS не грузит, пока пользователь не зашёл в кабинет (Next бандл).
+3. **Инварианты.** Superapp-плитки ведут на live `/new` `/orders` `/support`. Нет «отправки брокеру» без оплаты.
+4. **Extract.** `containers/{client,broker,admin}` резолвят `@/*` → `src/*`; `LbmCabinetsShell` тянет `src/lbm-bro/globals.css` + `icon`. Host/standalone trace должен включить эти файлы.
+5. **Admin KPI** — только live counts. Нет «1284» / «2.1 млн ₽».
 
 ---
 
@@ -278,18 +278,20 @@ app/client/**              # Next routes UI lab
 | Шаг | Критерий |
 |-----|----------|
 | Structure | Этот файл в `test:structure` |
-| Lab клиент | `/client` рендерит сетку; stubs видимы; `/cabinet` жив |
-| Фаза C | `/lab/broker` и `/lab/admin` не перекрывают domain; proto-bar ведёт в lab |
-| Фаза D | create/pay/PDF идут в `/api/v1`; статусы D8; НДС 22% / сбор 1637 |
-| Prod | нет proto-bar; нет fake KPI; `smoke:mvp` зелёный |
+| Live клиент | `/cabinet` — светлый product-shell + сетка модулей; CTA «Новый просчёт»; shipping-плитка только при флаге |
+| Live брокер | `/broker` — тёмный ops; dash `.stats` + SLA alert; `/work` = WorkMapping |
+| Live админ | `/admin` — ops + фиолетовый mark; группы nav 14 panes; KPI live |
+| Lab | `/client` референс (demo-store); proto-bar только там |
+| Domain | create/pay/PDF через `/api/v1`; статусы D8; НДС 22% / сбор 1637 |
+| Prod | нет proto-bar на `/cabinet|/broker|/admin`; нет fake KPI; `smoke:mvp` зелёный |
 
-Ручной чеклист (исследование, код — следующая задача):
+Ручной чеклист:
 
-| Роль | Что смотреть в прототипе | Не путать с live |
-|------|-------------------------|------------------|
-| Клиент | `/client` сетка, заявки-карточки, wizard, stubs ЧЗ/ТО | `/cabinet` — функция |
-| Брокер | `broker-pages`: dash stats, queue master-detail, тонкий work | WorkMapping / claim≠approve |
-| Админ | `admin-pages`: KPI, person-card, tariff-mini | 14 panes + группы nav; без fake GMV |
+| Роль | Куда смотреть | Не путать |
+|------|---------------|-----------|
+| Клиент | `/cabinet` superapp + `/cabinet/orders` таблица | `/client` — lab demo |
+| Брокер | `/broker` stats/queue; QC на `/work` | claim ≠ approve |
+| Админ | `/admin` KPI live + группы nav | 9 плоских пунктов прототипа |
 
 ---
 
@@ -298,9 +300,9 @@ app/client/**              # Next routes UI lab
 | Шаг | Статус |
 |-----|--------|
 | Импорт `src/lbm-bro` + `/client` | done (as-is) |
-| Анализ в KB (клиент + брокер + админ) | **done (этот PR)** |
-| Фаза C: broker/admin lab routes | next |
-| Фаза D: domain wire | later |
-| ADR cutover `/client` как prod-лицо | later, не молча |
+| Анализ в KB (клиент + брокер + админ) | done |
+| Фаза C: live chrome (`LbmCabinetsShell`) | **этот PR** |
+| Фаза D: lab → `/api/v1` | later |
+| ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** три кабинета на одних токенах D14: клиент = светлое суперприложение; брокер/админ = тёмный ops (админ — фиолетовый mark + группы nav live). Domain и инварианты не менять; lab брокера/админа отдельно от live; сшивка только через `/api/v1` и тарифы D10.
+**Одной фразой:** три live-кабинета на токенах D14: клиент = светлое суперприложение на `/cabinet`; брокер/админ = тёмный ops (админ — фиолетовый mark + группы nav). Domain и инварианты не менять; lab `/client` — референс; данные только `/api/v1` и тарифы D10.

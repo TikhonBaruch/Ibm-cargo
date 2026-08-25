@@ -3,13 +3,13 @@
 **Код:** `src/components/ved/ClientCabinet.tsx` + `src/components/ved/client/*`  
 **Routes web:** `app/cabinet/*` · **Extract:** `containers/client/app/*` (:3003, `NEXT_PUBLIC_CLIENT_BASE`)  
 **Flag:** `NEXT_PUBLIC_SHIPPING_UI` — UI «Перевозка» (default **off**)  
-**UI lab:** параллельный визуал суперприложения на `/client` (`src/lbm-bro`) — не этот контейнер. Domain остаётся здесь. План: [`plan-lbm-bro-visual.md`](../../plan-lbm-bro-visual.md).
+**UI lab:** референс суперприложения на `/client` (`src/lbm-bro`). Live лицо — этот контейнер (`LbmCabinetsShell`). План: [`plan-lbm-bro-visual.md`](../../plan-lbm-bro-visual.md).
 
 ## Nav (`getClientNav`)
 
 | Элемент | Route | Информирование | Взаимодействие |
 |---------|-------|----------------|----------------|
-| Дашборд | `/` · `/cabinet` | KPI: активные, у брокера, **производитель**, непрочит. | Быстрый AI-просчёт, фото, pay, открытие заявки |
+| Дашборд | `/` · `/cabinet` | Superapp: ТН ВЭД, заявки, поддержка, лента «В работе» | Плитки → `/new` `/orders` `/support`; shipping только при флаге |
 | Заявки | `/orders` | Таблица №/товар/тариф/сумма/брокер/`StatusPill` | Фильтры Все\|Готово\|У брокера\|Оплата; PDF при DONE |
 | Новый просчёт | `/new` (header CTA) | Лимит D10; heuristic top-N + **combobox ТН ВЭД** (`HsCodeAutocomplete`, `leafOnly`); **stage tip** + labels; **attr chips**; **FieldSuggest** (имя/страна/материал/бренд/состав); success | Форма + позиции + attrs (состав/тип/цвет/возраст) + **строка производителя (hints + propose)** + опц. SKU + **HS directory + candidates** + **upload** + **CSV** · [`plan-client-tnved-search.md`](../../plan-client-tnved-search.md) · [`plan-newcalc-hints.md`](../../plan-newcalc-hints.md) · [`plan-llm-fill-hints.md`](../../plan-llm-fill-hints.md) · [`plan-field-suggest.md`](../../plan-field-suggest.md) · [`plan-manufacturer-proposals.md`](../../plan-manufacturer-proposals.md) |
 | Производитель | `/factory` | Сборный заказ; badge; `ManufacturerSuggest` | qty + SKU + пул; CTA просчёт ТН ВЭД; CSV WHOLESALE · D34 |
