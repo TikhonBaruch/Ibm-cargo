@@ -252,6 +252,11 @@ try {
       errors.push(`package.json allowScripts must allow ${name} (npm 11.16+ advisory; do not ignore-scripts)`);
     }
   }
+  for (const pin of ["sharp@0.34.5", "sharp@0.35.3"]) {
+    if (allow[pin] !== true) {
+      errors.push(`package.json allowScripts must pin ${pin} (user log 0.34.5 / lockfile 0.35.3)`);
+    }
+  }
   if (exists("app/package.json")) {
     errors.push("app/package.json must not exist — Vercel Root Directory is repo root, not app/");
   }

@@ -245,7 +245,7 @@ WARNING! Build output contains no "functions" or "static" directory; the build m
 | Строка | Смысл |
 |--------|--------|
 | `package.json#prisma is deprecated` | Prisma 6.19: seed перенесён в `prisma.config.ts` (`defineConfig` из `prisma/config`). Схему URL не трогаем (`env("DATABASE_URL")` в `prisma/schema.prisma`). Файл конфига сам читает `.env` / `prisma/.env` (CLI больше не грузит их). Prisma 7 не поднимаем. |
-| `npm warn allow-scripts … not yet covered` | Advisory npm 11.16+. В `package.json` есть `allowScripts` (имя + pin из lockfile: Prisma 6.19.3, sharp **0.35.3**, tesseract.js 7.0.0, unrs-resolver 1.11.1). Лог с `sharp@0.34.5` = старый tree / другой деплой. Не `ignore-scripts`. |
+| `npm warn allow-scripts … not yet covered` | Advisory npm 11.16+. В `package.json` есть `allowScripts` (имя + pin: Prisma 6.19.3, sharp **0.35.3** lockfile и **0.34.5** из старого лога, tesseract.js 7.0.0, unrs-resolver 1.11.1). Лог только с `sharp@0.34.5` = другой npm tree / старый деплой. Не `ignore-scripts`. |
 | нет `functions` / `static` | **Фатально:** Framework = Other/Static, Root Directory ≠ `.`, или **чужой Vercel-проект**. |
 
 ### Анализ

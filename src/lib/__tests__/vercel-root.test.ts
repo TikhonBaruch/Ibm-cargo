@@ -55,6 +55,7 @@ describe("Vercel root Next detection", () => {
     for (const name of ["@prisma/client", "@prisma/engines", "prisma", "sharp", "tesseract.js", "unrs-resolver"]) {
       expect(allow[name], name).toBe(true);
     }
+    expect(allow["sharp@0.34.5"]).toBe(true);
     expect(allow["sharp@0.35.3"]).toBe(true);
   });
 
