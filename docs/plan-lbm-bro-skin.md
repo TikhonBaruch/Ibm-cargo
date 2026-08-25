@@ -1,7 +1,7 @@
 # Анализ lbm-bro → план визуала LBM (Ibm-cargo)
 
 **Площадка:** `TikhonBaruch/Ibm-cargo` (продукт **LBM**).  
-**Код приложения:** `app/` (Vercel Root Directory).  
+**Код приложения:** Next at repo root (`app/` = App Router routes only; Vercel Root Directory = `.`).  
 **Инфра:** отдельная Postgres + S3 bucket `lbm`.  
 **Источник UI:** lbm-bro prototype · [`PLATFORMS.md`](../PLATFORMS.md)
 
@@ -22,9 +22,9 @@
 | Radius | 28px / 16px | Крупные «soft» карточки |
 | Proto-bar | Админ / Клиент / Брокер | Только lab, не prod |
 
-### 1.3. Тарифная модель дизайнера (≠ taurus D10)
+### 1.3. Тарифная модель дизайнера (≠ LBM D10)
 
-| Дизайн | Смысл | В taurus |
+| Дизайн | Смысл | В LBM |
 |--------|--------|----------|
 | **Код** (990 ₽, 1-й бесплатно) | Только HS | Нет freemium-гейта |
 | **Таможня** (2990) | HS + пошлина/НДС, без брокера | Ближе к EXPRESS без QC? |
@@ -54,9 +54,9 @@ lib/
   tariffs / payments / clarify-ai / tnved-lookup / order-pdf …
 ```
 
-### 1.6. Что есть только в дизайне (нет / hold в taurus domain)
+### 1.6. Что есть только в дизайне (нет / hold в LBM domain)
 
-| Модуль | Замысел дизайнера | Domain taurus |
+| Модуль | Замысел дизайнера | Domain LBM |
 |--------|-------------------|---------------|
 | **Честный знак** | Маркировка в заявке, брокер проверяет коды | Нет продукта |
 | **Таможенное оформление (ТО)** | Декларация / выпуск после кода | Нет полного модуля |
@@ -68,7 +68,7 @@ lib/
 | **Shipping на главной** | LTL/FTL CTA | Domain есть, UI default **off** (D27) |
 | Proto-bar ролей | Демо | Запрещён в prod |
 
-### 1.7. Что пересекается с taurus (можно подключать позже)
+### 1.7. Что пересекается с LBM domain (можно подключать позже)
 
 Create calc, pay, queue/claim, chat text, balance/ledger, PDF, HS search, broker work, attrs/upload/CSV — **сохранять**; визуал натягивать поверх API.
 
@@ -105,7 +105,7 @@ Create calc, pay, queue/claim, chat text, balance/ledger, PDF, HS search, broker
 
 ### Фаза E — Деплой ibm-cargo
 
-16. Vercel Root Directory = `taurus`.
+16. Vercel Root Directory = `lbm`.
 17. Отдельные env/БД (следующий шаг пользователя).
 18. Smoke: login → `/client` визуал; `/cabinet` функция.
 
@@ -130,4 +130,4 @@ Create calc, pay, queue/claim, chat text, balance/ledger, PDF, HS search, broker
 | Фаза B: orders / balance / brokers / tnved / company / faq / guide | **done** |
 | Фаза C: broker/admin skin | next |
 | Domain wire (DemoProvider → `/api/v1`) | later |
-| Vercel Root=`taurus` + push | later |
+| Vercel Root=`lbm` + push | later |

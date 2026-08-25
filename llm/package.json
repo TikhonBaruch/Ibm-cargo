@@ -2,7 +2,7 @@
   "name": "@kargo/llm-matrix",
   "version": "0.1.0",
   "private": true,
-  "description": "External LLM service matrix for Taurus (Classification, OCR, Broker, Risk, Logistics, Documents)",
+  "description": "External LLM service matrix for LBM (Classification, OCR, Broker, Risk, Logistics, Documents)",
   "workspaces": [
     "services/*",
     "packages/*"
@@ -27,7 +27,7 @@
     "tnved:parse-fts": "node scripts/parse-fts-rates.mjs",
     "tnved:parse-tws": "node scripts/parse-tws-csv.mjs",
     "tnved:normalize": "node scripts/normalize-tnved.mjs",
-    "tnved:export-import": "node scripts/export-taurus-import.mjs",
+    "tnved:export-import": "node scripts/export-lbm-import.mjs",
     "tnved:adapter-tks": "node scripts/adapters/tks-archive.mjs",
     "tnved:adapter-alta": "node scripts/adapters/alta-api.mjs",
     "tnved:corpus": "npm run tnved:fetch-ett && npm run tnved:parse-ett && npm run tnved:fetch-nsi && npm run tnved:fetch-fts && npm run tnved:parse-fts && npm run tnved:parse-tws && npm run tnved:normalize && npm run tnved:export-import"

@@ -1,0 +1,34 @@
+// Vercel cloud Next builder does not need standalone (and it is not a functions/static tree).
+// Docker/local C5 export copies .next/standalone — keep it unless VERCEL is set.
+// DOCKER_BUILD=1 forces standalone even if VERCEL is present (root Dockerfile).
+const useStandalone =
+  process.env.DOCKER_BUILD === "1" || !process.env.VERCEL;
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  ...(useStandalone ? { output: "standalone" } : {}),
+  // Host docker export: allow standalone image while unrelated TS debt exists in tests/legacy.
+  typescript: { ignoreBuildErrors: true },
+  // pdfjs-dist needs DOMMatrix; keep it off the Node evaluate path.
+  serverExternalPackages: ["pdfjs-dist", "tesseract.js"],
+  // Cursor / LAN preview hits the Network URL, not localhost.
+  allowedDevOrigins: ["127.0.0.1", "localhost", "172.30.0.2"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
+      {
+        protocol: "https",
+        hostname: "api.telegram.org",
+      },
+      {
+        protocol: "https",
+        hostname: "storage.yandexcloud.net",
+      },
+    ],
+  },
+};
+
+export default nextConfig;

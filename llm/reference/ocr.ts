@@ -1,7 +1,7 @@
 /**
  * Optional OCR extract (P2). Fail-open: never blocks create.
  * Contract: contracts/d-ocr.ai.json · services/ocr
- * SOURCE: taurus/src/lib/ved/ocr.ts — reference only.
+ * SOURCE: src/lib/ved/ocr.ts — reference only.
  */
 export type ProductAttrs = Record<string, unknown>;
 

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://llm.local/contracts/d-risk.llm.json",
   "title": "AI Risk assess",
-  "description": "Inspection / red-flag stub before DT. Fail-open when wired into Taurus.",
+  "description": "Inspection / red-flag stub before DT. Fail-open when wired into LBM.",
   "x-contractVersion": 1,
   "x-owner": "services/risk",
   "x-transport": ["POST /v1/assess", "GET /health"],

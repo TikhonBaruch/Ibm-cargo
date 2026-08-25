@@ -12,7 +12,7 @@ raw/
   tws-tnved/<YYYY-MM-DD>/   # local CSV leaves (npm run tnved:parse-tws)
   fts-opendata/<YYYY-MM-DD>/
 normalized/
-  codes.jsonl               # tree nodes for Taurus import
+  codes.jsonl               # tree nodes for LBM import
   notes.jsonl               # explanatory note chunks
   classification-decisions.jsonl
 export/
@@ -33,7 +33,7 @@ Each JSONL line should include where useful:
 1. Re-run fetch scripts (rate-limit ~300–500ms between requests) and/or `tnved:parse-tws`.
 2. `npm run tnved:normalize`
 3. Review diff on `normalized/*.jsonl`
-4. `npm run tnved:export-import` then admin import into Taurus (staging first).
+4. `npm run tnved:export-import` then admin import into LBM (staging first).
 
 ## Do not
 

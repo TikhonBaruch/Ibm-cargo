@@ -12,11 +12,11 @@
     "psnFallback": 0
   },
   "sources": {
-    "psn": "/home/andrey/llm/data/tnved/raw/eec-psn/2026-08-08",
-    "ett": "/home/andrey/llm/data/tnved/raw/eec-ett/2026-08-08",
-    "nsi": "/home/andrey/llm/data/tnved/raw/nsi-stnvedst/2026-08-08",
-    "tws": "/home/andrey/llm/data/tnved/raw/tws-tnved/2026-08-08",
-    "fts": "/home/andrey/llm/data/tnved/raw/fts-opendata/2026-08-08"
+    "psn": "Ibm-cargo/llm/data/tnved/raw/eec-psn/2026-08-08",
+    "ett": "Ibm-cargo/llm/data/tnved/raw/eec-ett/2026-08-08",
+    "nsi": "Ibm-cargo/llm/data/tnved/raw/nsi-stnvedst/2026-08-08",
+    "tws": "Ibm-cargo/llm/data/tnved/raw/tws-tnved/2026-08-08",
+    "fts": "Ibm-cargo/llm/data/tnved/raw/fts-opendata/2026-08-08"
   },
   "candidateLinks": [
     "https://nsi.eaeunion.org/portal?registryType=dictionary",

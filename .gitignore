@@ -5,24 +5,53 @@ node_modules/
 **/.next/
 .turbo/
 dist/
+build/
 coverage/
 *.tsbuildinfo
+tsconfig.tsbuildinfo
 
 # secrets & local env
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env.*.local
+.env*
 !.env.example
+lbm.txt
+
+# vercel / docker local
+.vercel
+docker-compose.override.local.yml
 
 # uploads / runtime
 **/public/uploads/
+public/uploads/
 *.log
 .DS_Store
+tmp/
 
 # IDE
 .idea/
 *.swp
-.vercel
-.env*
-app/.env
-lbm.txt
+
+# Local / design dumps
+new_desing/
+Таурус/
+.cursor/
+containers/web/.export/
+containers/admin/.export/
+containers/broker/.export/
+containers/client/.export/
+containers/manufacturer/.export/
+
+# TN VED dumps
+scripts/data/tnved/raw/
+scripts/data/tnved/normalized/
+
+# Generated Next env in extract UI containers
+containers/admin/next-env.d.ts
+containers/broker/next-env.d.ts
+containers/client/next-env.d.ts
+containers/*/next-env.d.ts

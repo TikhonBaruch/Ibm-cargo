@@ -1,11 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://taurus.local/contracts/d-draft.llm.json",
+  "$id": "https://lbm.local/contracts/d-draft.llm.json",
   "title": "D-DRAFT llm enrich / Classification",
-  "description": "Optional model stub behind ai. UIs never call this. Taurus ai → classification when LLM_SERVICE_URL set. Alias of taurus docs/contracts/d-draft.llm.json.",
+  "description": "Optional model stub behind ai. UIs never call this. LBM ai → classification when LLM_SERVICE_URL set. Alias of docs/contracts/d-draft.llm.json.",
   "x-contractVersion": 1,
   "x-owner": "services/classification",
-  "x-taurusAlias": "d-draft.llm.json",
+  "x-lbmAlias": "d-draft.llm.json",
   "x-transport": ["POST /v1/classify", "POST /v1/duty"],
   "definitions": {
     "classifyRequest": {

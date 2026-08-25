@@ -1,7 +1,7 @@
 /**
  * Optional LLM enrich on heuristic draft (S6 / P1b). Fail-open.
  * Mirrors containers/ai enrich-llm.js for Next dual-path without AI container.
- * SOURCE: taurus/src/lib/ved/llm-enrich.ts — reference only; do not import from Taurus.
+ * SOURCE: src/lib/ved/llm-enrich.ts — reference only; do not import from LBM.
  */
 import type { AiDraftResult } from "./domain";
 

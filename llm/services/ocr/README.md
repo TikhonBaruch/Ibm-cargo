@@ -1,9 +1,9 @@
 # services/ocr
 
-OCR / docs-ingest (Taurus landing: **AI OCR**).  
-Contract: `contracts/d-ocr.ai.json` (synced with Taurus).
+OCR / docs-ingest (LBM landing: **AI OCR**).  
+Contract: `contracts/d-ocr.ai.json` (synced with LBM).
 
-**Canon** for extract HTTP (Taurus D35). Mirror: Taurus `containers/ocr` via `npm run sync:ai-matrix` or `OCR_DOCKER_CONTEXT=../llm/services/ocr`.
+**Canon** for extract HTTP (LBM D35). Mirror: LBM `containers/ocr` via `npm run sync:ai-matrix` or `OCR_DOCKER_CONTEXT=../llm/services/ocr`.
 
 | | |
 |--|--|

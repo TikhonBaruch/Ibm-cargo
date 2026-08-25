@@ -1,8 +1,8 @@
 # Service matrix
 
-Landing «Шесть модулей» ↔ this repo ↔ Taurus integration.
+Landing «Шесть модулей» ↔ this repo ↔ LBM integration.
 
-| Landing module | Service folder | Port | Endpoint(s) | Contract | Taurus env |
+| Landing module | Service folder | Port | Endpoint(s) | Contract | LBM env |
 |----------------|----------------|------|-------------|----------|------------|
 | AI Classification | `services/classification` | 4500 | `/v1/classify`, `/v1/duty` | `d-classification.llm.json` | `LLM_SERVICE_URL` (live) |
 | AI OCR | `services/ocr` | 4700 | `/v1/extract` | `d-ocr.ai.json` | `OCR_SERVICE_URL` (live, fail-open) |
@@ -17,14 +17,14 @@ Gateway (compose): `:8088` → `/api/llm/`, `/api/ocr/`, `/api/broker/`, …
 
 | Service | Maturity |
 |---------|----------|
-| classification | Working stub + optional OpenAI (copied from Taurus `containers/llm`) |
-| ocr | Working stub (copied from Taurus `containers/ocr`) |
+| classification | Working stub + optional OpenAI (copied from LBM `containers/llm`) |
+| ocr | Working stub (copied from LBM `containers/ocr`) |
 | broker / risk / logistics / documents | Scaffold stubs |
 
-## Naming vs Taurus product.md
+## Naming vs LBM product.md
 
 | Landing | product.md |
 |---------|------------|
 | Classification | AI Customs + AI Duty |
-| Logistics | AI Cargo (AI routing layer; 3PL stays in Taurus `containers/logistics`) |
+| Logistics | AI Cargo (AI routing layer; 3PL stays in LBM `containers/logistics`) |
 | others | same names |

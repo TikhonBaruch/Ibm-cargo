@@ -2,11 +2,11 @@
 
 Инвентарь обновлён **2026-08-11**.
 
-**Канон продуктовой KB (Taurus):** [`../taurus/docs/knowledge/incoterms.md`](../../taurus/docs/knowledge/incoterms.md)  
-(если репозитории рядом: `/home/andrey/taurus/docs/knowledge/incoterms.md`).
+**Канон продуктовой KB (LBM):** [`../docs/knowledge/incoterms.md`](../../docs/knowledge/incoterms.md)  
+(если репозитории рядом: `Ibm-cargo (this repo)/docs/knowledge/incoterms.md`).
 
 Этот файл — зеркало для LLM-матрицы (`services/logistics`, future documents).  
-Taurus: **Growth hold**, не MVP CTA (D27).
+LBM: **Growth hold**, не MVP CTA (D27).
 
 ## Иерархия истины
 
@@ -34,6 +34,6 @@ Taurus: **Growth hold**, не MVP CTA (D27).
 - Не scrape HTML «таблиц базисов» как эталон.
 - Не класть полный текст A1–B10 / Guide в git без лицензии ICC.
 - Допустимо: собственные выжимки (do/do-not, список 11 терминов, новеллы 2020) + ссылки на официальные магазины.
-- Wire в Taurus: только после ADR + env; logistics stub остаётся stub до wiring.
+- Wire в LBM: только после ADR + env; logistics stub остаётся stub до wiring.
 
-См. также: [`sources-tnved.md`](./sources-tnved.md), [`integration-taurus.md`](./integration-taurus.md).
+См. также: [`sources-tnved.md`](./sources-tnved.md), [`integration-lbm.md`](./integration-lbm.md).
