@@ -66,6 +66,10 @@ const knowledgeRequired = [
   "docs/knowledge/dual-path-parity.md",
   "docs/knowledge/deploy.md",
   "docs/knowledge/plan-vercel-services.md",
+  "docs/knowledge/plan-go-live-mvp.md",
+  "docs/knowledge/plan-max-standalone-mvp.md",
+  "docs/knowledge/plan-full-split-ibm-cargo.md",
+  "docs/knowledge/plan-zero-llm-coupling.md",
   "docs/knowledge/containerization.md",
   "docs/knowledge/web-slim.md",
   "docs/knowledge/cabinets/README.md",
@@ -157,6 +161,24 @@ try {
   }
 } catch {
   errors.push("cannot read decisions.md for D35/D36");
+}
+
+try {
+  const dualPath = read("docs/knowledge/dual-path-parity.md");
+  if (/llm\/services\/classification/.test(dualPath) || /Matrix source for `sync:ai-matrix`/.test(dualPath)) {
+    errors.push("dual-path-parity.md must not reference nested llm/services matrix sync (D36)");
+  }
+} catch {
+  errors.push("cannot read dual-path-parity.md for D36 customs-fees canon");
+}
+
+try {
+  const dataModel = read("docs/knowledge/data-model.md");
+  if (/\| \*\*Corpus lookup\*\* \| `llm\/data\//.test(dataModel)) {
+    errors.push("data-model.md corpus path must be containers/llm/data (D36)");
+  }
+} catch {
+  errors.push("cannot read data-model.md for D36 corpus path");
 }
 
 // --- Containers layout ---

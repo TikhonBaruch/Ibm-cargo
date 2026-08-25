@@ -37,11 +37,21 @@
 | 3 | Prod smoke matrix post-merge в staging | docs | **done** |
 | 4 | Индекс README → go-live + max plan | docs | **done** |
 
+## Шаг 3 (impl PR) — ops + KB hardening
+
+| # | Задача | Зона | Статус |
+|---|--------|------|--------|
+| 1 | KB drift: `dual-path-parity`, `data-model`, `plan-tnved-collect` | docs | **done** |
+| 2 | `npm run smoke:standalone` — spine bundle (mvp→payments→client→broker→full) | scripts | **done** |
+| 3 | `verify-structure`: go-live/max plans + D36 KB gates | scripts | **done** |
+
 ## Done when
 
 - [x] go-live merge on `main`
 - [x] prod smoke spine PASS (#47937–#47938)
 - [x] KB без ссылок на удалённый `llm/` tree
 - [x] parallel UI track задокументирован в branches
+- [x] `smoke:standalone` spine bundle для ops
+- [x] KB drift D36 (customs-fees canon, corpus paths)
 
 **Статус:** **done** (2026-08-25).

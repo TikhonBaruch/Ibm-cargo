@@ -72,7 +72,6 @@ See [`runbook.md`](./runbook.md) · [`containers/notify/README.md`](../../contai
 | Artifact | Role |
 |----------|------|
 | `src/lib/ved/customs-fees.ts` | **Canon** (VAT 22%, PP 1637 brackets, `customsOperationsFeeFromUsd`) |
-| `containers/{api,ai,llm}/src/customs-fees.js` | Compose mirrors — keep brackets identical |
-| `llm/services/classification/src/customs-fees.js` | Matrix source for `sync:ai-matrix` |
+| `containers/{api,ai,llm}/src/customs-fees.js` | LBM-owned Compose mirrors — keep brackets identical (**D36**: no `sync:ai-matrix` from nested `./llm`) |
 
 Do not diverge fee tables between TS and JS. Unit: `customs-fees.test.ts`.

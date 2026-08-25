@@ -24,6 +24,8 @@
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:mvp
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:payments
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:full
+# spine bundle (mvp → payments → client → broker → full):
+TEST_API_URL=https://your-preview.vercel.app npm run smoke:standalone
 ```
 
 4. `NEXTAUTH_URL` на preview должен совпадать с origin preview-деплоя (не копировать prod URL вслепую).
@@ -33,6 +35,8 @@ TEST_API_URL=https://your-preview.vercel.app npm run smoke:full
 ## Prod smoke (после merge в `main`)
 
 ```bash
+TEST_API_URL=<preview-url> npm run smoke:standalone
+# or individual:
 TEST_API_URL=<preview-url> npm run smoke:mvp
 ```
 

@@ -35,7 +35,7 @@
 
 ### Фаза 0 — инвентарь
 
-Что лежит в `scripts/data/tnved/` и `llm/data/tnved/` (jsonl, TWS, PDF). Поиск TWS CSV в `~/Backups`, если пропал с диска.
+Что лежит в `scripts/data/tnved/` и `containers/llm/data/tnved/` (jsonl, TWS, PDF). Поиск TWS CSV в `~/Backups`, если пропал с диска.
 
 ### Фаза 1 — повторный fetch официального
 
