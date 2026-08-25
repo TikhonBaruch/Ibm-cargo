@@ -68,6 +68,7 @@ export const landingMarkup = `
       <a href="#how">Как работает</a>
       <a href="#features">Возможности</a>
       <a href="#cabinet">Кабинет</a>
+      <a href="#app">Направления</a>
       <a href="#pricing">Тарифы</a>
     </nav>
     <div class="hdr-actions">

@@ -4,7 +4,8 @@
 
 | Файл | Роль |
 |------|------|
-| `LandingPage.tsx` | Монтирует разметку + init |
+| `LandingPage.tsx` | SSR разметки + init FX |
+| `LandingAuthShell.tsx` | Шапка лендинга + карточка для `/login` и `/register` |
 | `markup.ts` | HTML секций (FX, hero…footer, modal) |
 | `landing.css` | Стили референса (scoped `.landing-root`) |
 | `initLanding.ts` | Интерактив + анимации (parallax, particles, float, steps…) |

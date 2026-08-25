@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { LandingAuthShell } from "@/components/landing/LandingAuthShell";
 
 export default function RegisterPage() {
   const [companyName, setCompanyName] = useState("");
@@ -47,85 +48,72 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[#f5f7fa] px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <Link href="/" className="font-display text-2xl font-bold text-[#0f172a]">
-            LBM Брокер
-          </Link>
-          <p className="mt-1 text-sm text-[#7a7f89]">Регистрация импортёра</p>
+    <LandingAuthShell
+      title="Регистрация импортёра"
+      subtitle="Откроем кабинет компании — дальше можно создать первый просчёт."
+      active="register"
+    >
+      <form onSubmit={handleSubmit}>
+        {error && (
+          <div className="pill warn" style={{ marginBottom: 14, display: "block", padding: "10px 14px" }}>
+            {error}
+          </div>
+        )}
+        <div className="field">
+          <label>Компания</label>
+          <input
+            type="text"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            required
+            placeholder="ООО Импорт"
+            autoComplete="organization"
+          />
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 rounded-[28px] border border-black/[0.04] bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.06)]"
-        >
-          {error && <div className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-700">{error}</div>}
-          <div>
-            <label className="mb-1 block text-sm text-[#7a7f89]">Компания</label>
-            <input
-              type="text"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              required
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2b72f4]"
-              placeholder="ООО Импорт"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm text-[#7a7f89]">ИНН (необязательно)</label>
-            <input
-              type="text"
-              value={inn}
-              onChange={(e) => setInn(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2b72f4]"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm text-[#7a7f89]">Контактное лицо</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2b72f4]"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm text-[#7a7f89]">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2b72f4]"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm text-[#7a7f89]">Пароль (мин. 6 символов)</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2b72f4]"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-full bg-[#2b72f4] py-2.5 text-sm font-semibold text-white hover:bg-[#1a5fd4] disabled:opacity-60"
-          >
+        <div className="field">
+          <label>ИНН (необязательно)</label>
+          <input type="text" value={inn} onChange={(e) => setInn(e.target.value)} />
+        </div>
+        <div className="field">
+          <label>Контактное лицо</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            autoComplete="name"
+          />
+        </div>
+        <div className="field">
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
+        <div className="field">
+          <label>Пароль (мин. 6 символов)</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            autoComplete="new-password"
+          />
+        </div>
+        <div className="modal-actions" style={{ justifyContent: "stretch", marginTop: 8 }}>
+          <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: "100%" }}>
             {loading ? "Регистрация…" : "Зарегистрироваться"}
           </button>
-          <p className="text-center text-sm text-[#7a7f89]">
-            Уже есть аккаунт?{" "}
-            <Link href="/login" className="font-semibold text-[#2b72f4]">
-              Войти
-            </Link>
-          </p>
-        </form>
-      </div>
-    </div>
+        </div>
+        <p className="auth-hint">
+          Уже есть аккаунт? <Link href="/login">Войти</Link>
+        </p>
+      </form>
+    </LandingAuthShell>
   );
 }

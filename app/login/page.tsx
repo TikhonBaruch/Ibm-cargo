@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { LandingAuthShell } from "@/components/landing/LandingAuthShell";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -41,59 +42,47 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[#f5f7fa] px-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <Link href="/" className="font-display text-2xl font-bold text-[#0f172a]">
-            LBM Брокер
-          </Link>
-          <p className="mt-1 text-sm text-[#7a7f89]">Вход в кабинет</p>
+    <LandingAuthShell title="Вход в кабинет" subtitle="Email и пароль учётки LBM Брокер." active="login">
+      <form onSubmit={handleSubmit}>
+        {error && (
+          <div className="pill warn" style={{ marginBottom: 14, display: "block", padding: "10px 14px" }}>
+            {error}
+          </div>
+        )}
+        <div className="field">
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="client@example.com"
+            autoComplete="username"
+          />
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 rounded-[28px] border border-black/[0.04] bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.06)]"
-        >
-          {error && <div className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-700">{error}</div>}
-          <div>
-            <label className="mb-1 block text-sm text-[#7a7f89]">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2b72f4]"
-              placeholder="client@example.com"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm text-[#7a7f89]">Пароль</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#2b72f4]"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-full bg-[#2b72f4] py-2.5 text-sm font-semibold text-white hover:bg-[#1a5fd4] disabled:opacity-60"
-          >
+        <div className="field">
+          <label>Пароль</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+          />
+        </div>
+        <div className="modal-actions" style={{ justifyContent: "stretch", marginTop: 8 }}>
+          <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: "100%" }}>
             {loading ? "Вход…" : "Войти"}
           </button>
-          <p className="text-center text-xs text-[#7a7f89]">
-            Демо: client@ / broker@ / manufacturer@ / operator@ / admin@ — пароль{" "}
-            <code>demo1234</code>
-          </p>
-          <p className="text-center text-sm text-[#7a7f89]">
-            Нет аккаунта?{" "}
-            <Link href="/register" className="font-semibold text-[#2b72f4]">
-              Регистрация
-            </Link>
-          </p>
-        </form>
-      </div>
-    </div>
+        </div>
+        <p className="auth-hint">
+          Демо: client@ / broker@ / manufacturer@ / operator@ / admin@ — пароль <code>demo1234</code>
+        </p>
+        <p className="auth-hint">
+          Нет аккаунта?{" "}
+          <Link href="/register">Регистрация</Link>
+        </p>
+      </form>
+    </LandingAuthShell>
   );
 }
