@@ -8,8 +8,9 @@
 | Среда | Назначение | Как |
 |-------|------------|-----|
 | **Local** | ежедневная разработка | Mode A: `.env` → `prisma db push` → `npm run dev` ([`environments.md`](./environments.md)) |
-| **Preview** | PR / ветка перед prod | Vercel Preview Deployment |
-| **Prod** | канон LBM | https://taurus-liart.vercel.app |
+| **Backup ядра (D37)** | https://taurus-liart.vercel.app — **read-only, не трогать** | [`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md) |
+| **Preview (активный)** | PR / ветка | Vercel Preview проекта `ibm-cargo` |
+| **Prod (целевой)** | VPS + Compose / свой домен | Vercel — временный |
 | **Этот репозиторий** | PR Preview | Vercel project `ibm-cargo` (не hostname `ibm-cargo.vercel.app`) |
 
 Отдельный долгоживущий staging-стенд **не обязателен**, если каждый PR получает Vercel Preview. Осторожно: общая preview-БД = prod sweb → smoke пишет тестовые регистрации/топапы.
@@ -24,6 +25,8 @@
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:mvp
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:payments
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:full
+# spine bundle (mvp → payments → client → broker → full):
+TEST_API_URL=https://your-preview.vercel.app npm run smoke:standalone
 ```
 
 4. `NEXTAUTH_URL` на preview должен совпадать с origin preview-деплоя (не копировать prod URL вслепую).
@@ -33,6 +36,8 @@ TEST_API_URL=https://your-preview.vercel.app npm run smoke:full
 ## Prod smoke (после merge в `main`)
 
 ```bash
+TEST_API_URL=<preview-url> npm run smoke:standalone
+# or individual:
 TEST_API_URL=<preview-url> npm run smoke:mvp
 ```
 
@@ -54,6 +59,14 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 
 | Дата | Smoke | Результат | Заметки |
 |------|-------|-----------|---------|
+| 2026-08-25 | **go-live merge** M2+M0+D36 → `main` | **done** | [`plan-go-live-mvp.md`](./plan-go-live-mvp.md) |
+| 2026-08-25 | post-merge prod smoke | **PASS** | mvp #47937 · full #47938 · client · broker · payments |
+| 2026-08-25 | `smoke:standalone` (prod spine bundle) | **PASS** | mvp → payments → client #47932 → broker #47807 → full #47940 |
+| 2026-08-25 | **main merge** M2+M0+D36 | **done** | #6→#7→#8 → main; nested `llm/` removed · [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) |
+| 2026-08-25 | `smoke:mvp` (post full split) | **PASS** #47936 DONE | after `git rm -r llm/`; CI 508 PASS |
+| 2026-08-25 | `smoke:mvp` | **PASS** #47934 DONE | register → mock topup → **S3** upload → create → pay → **IN_REVIEW** (autoAssign) → approve; M0.1 mock+S3 OK |
+| 2026-08-25 | `smoke:payments` | **PASS** | mock +1500 (`provider=mock`) |
+| 2026-08-25 | **M0.2 visual C↔B↔A** (prod taurus) | **PASS** | client dash/new/brokers/balance/support/profile; broker dash/queue/work/chat; admin dash (группы nav) /bookings/support/settings; без 500; shipping UI off |
 | 2026-08-23 | deploy `b24b01c` + rich probe | **PASS** #47931 | ThinkPad X1 full attrs (CN, Lenovo, specs) → `8471 30 000 0` conf 0.95; `chain-log` + `chainRun` live; classify mesh ~1.3s |
 | 2026-08-23 | `probe:ai-chain` ×4 | **PASS** #47927–#47930 | laptop→8471 30; tee→6109 10; laptop+png→8471 30; shoes→6404 11; all `llm-openai-v1` ~8–22s; `chain-log` API after deploy |
 | 2026-08-23 | `smoke:mvp` | **PASS** #47924 DONE | 1-й прогон `terminated` после login; retry OK; S3 tiny upload OK |

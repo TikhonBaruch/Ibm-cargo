@@ -5,6 +5,7 @@
  */
 import path from "path";
 import { z } from "zod";
+import type { EnvBag } from "../env-bag";
 
 const LOCAL_UPLOAD_RE = /^\/uploads\/ved\/[A-Za-z0-9._-]+$/;
 
@@ -26,7 +27,7 @@ export function localUploadFsPath(mediaUrl: string): string | null {
  * S3: `${S3_ENDPOINT}/${S3_BUCKET}/` when both set.
  * Extra: comma-separated `MEDIA_URL_ALLOWED_PREFIXES` (tests / rare CDNs).
  */
-export function mediaUrlAllowedPrefixes(env: NodeJS.ProcessEnv = process.env): string[] {
+export function mediaUrlAllowedPrefixes(env: EnvBag = process.env): string[] {
   const out: string[] = [];
   const endpoint = String(env.S3_ENDPOINT || "")
     .trim()
@@ -46,7 +47,7 @@ export function mediaUrlAllowedPrefixes(env: NodeJS.ProcessEnv = process.env): s
 
 export function isAllowedMediaUrl(
   raw: string | null | undefined,
-  env: NodeJS.ProcessEnv = process.env
+  env: EnvBag = process.env
 ): boolean {
   if (raw == null) return false;
   const url = String(raw).trim();

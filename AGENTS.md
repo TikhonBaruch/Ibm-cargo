@@ -6,8 +6,9 @@
 
 Частник: ТН ВЭД (heuristic) → брокер-QC → PDF. Shipping UI default off.  
 Демо: `client@example.com` / `broker@example.com` / `operator@example.com` / `admin@example.com` · `demo1234`.  
-Канон live LBM: https://taurus-liart.vercel.app  
-`https://ibm-cargo.vercel.app` — **чужой** Vercel-проект (статический IBM Cargo), не этот репозиторий. Этот репозиторий открывается с **Vercel Preview** проекта `ibm-cargo`. Preview без `DATABASE_URL` ломает вход (Prisma). Клики: [`docs/knowledge/plan-preview-auth.md`](docs/knowledge/plan-preview-auth.md) §5. Проверка: `GET /health` → `databaseUrl: true`.
+**Прод этого репо:** https://ibm-cargo-phi.vercel.app (Vercel project `ibm-cargo`).  
+**Backup ядра (D37, read-only):** https://taurus-liart.vercel.app — **не трогать** (no deploy/smoke/migrate).  
+`https://ibm-cargo.vercel.app` — **чужой** Vercel-проект (статический IBM Cargo). Preview без `DATABASE_URL` ломает вход (Prisma). `/health` → `databaseUrl`. Канон: [`plan-taurus-backup-core.md`](docs/knowledge/plan-taurus-backup-core.md) · [`plan-preview-auth.md`](docs/knowledge/plan-preview-auth.md) §5.
 
 ## Куда смотреть
 
@@ -15,7 +16,8 @@
 |------|----------|
 | Цикл фичи (D33) | [`feature-cycle.md`](docs/knowledge/feature-cycle.md) |
 | Ownership / пакеты (D35) | [`PACKAGES.md`](src/lib/ved/PACKAGES.md) · [`branches.md`](docs/knowledge/branches.md) |
-| AI / цепочки / llm↔compose | [`plan-ai-chains-1-2-3.md`](docs/knowledge/plan-ai-chains-1-2-3.md) · [`environments.md`](docs/knowledge/environments.md) · `npm run sync:ai-matrix` |
+| AI / цепочки / D36 | [`plan-ai-chains-1-2-3.md`](docs/knowledge/plan-ai-chains-1-2-3.md) · [`environments.md`](docs/knowledge/environments.md) · [`plan-zero-llm-coupling.md`](docs/knowledge/plan-zero-llm-coupling.md) |
+| Backup taurus (D37) | [`plan-taurus-backup-core.md`](docs/knowledge/plan-taurus-backup-core.md) — **read-only, не трогать** |
 | UI (D14/D32) | Skill `.cursor/skills/ved-ui` · [`design-patterns.md`](docs/knowledge/design-patterns.md) · lab [`plan-lbm-bro-visual.md`](docs/knowledge/plan-lbm-bro-visual.md) |
 | Notify | Skill `.cursor/skills/ved-notify` |
 | As-is / деплой / тесты | [`current-app.md`](docs/knowledge/current-app.md) · [`deploy.md`](docs/knowledge/deploy.md) · [`testing-branches.md`](docs/knowledge/testing-branches.md) |
@@ -42,6 +44,8 @@
 6. Platform gates (D28) · dual-path writers (D24) · BackgroundJob ≠ D8 FSM (D26).
 7. D33: без плана в KB — нет кода; без KB — задача не закрыта.
 8. Не коммитить `.env` / секреты.
+9. **D36 (always):** LBM **отделён** от taurus/llm — nested `./llm` нет в git; свой `DATABASE_URL`; matrix = HTTP only; `containers/{llm,ocr}` LBM-owned.
+10. **D37 (always):** **taurus-liart** = backup ядра — **не deploy/smoke/migrate** из ibm-cargo.
 
 ## Перед сдачей
 
@@ -51,5 +55,5 @@
 |---------|------------|
 | `npm run test:ci` | unit → structure → contracts → verify |
 | `npm run smoke:*` | live (running app + seed) |
-| `npm run sync:ai-matrix[:check]` | llm → `containers/{llm,ocr}` |
+| `npm run sync:ai-matrix[:check]` | **retired** (D36 no-op stub) |
 | `npm run sync:cursor-rules` | `docs/knowledge/ved-*.mdc` → `.cursor/rules/` |

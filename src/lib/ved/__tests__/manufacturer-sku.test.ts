@@ -170,8 +170,9 @@ describe("C2 published catalog snapshot", () => {
     ]);
     expect(hydrated.name).toBe("Ноутбук ThinkPad");
     expect(hydrated.attrs?.brand).toBe("MyBrand");
-    expect(hydrated.attrs?.originCountry).toBe("CN");
-    expect(hydrated.attrs?.extra?.sku).toBe("NB-1");
+    const attrs = hydrated.attrs as { brand?: string; originCountry?: string; extra?: { sku?: string } };
+    expect(attrs.originCountry).toBe("CN");
+    expect(attrs.extra?.sku).toBe("NB-1");
     expect(hydrated.manufacturerSkuId).toBe("s1");
 
     await expect(

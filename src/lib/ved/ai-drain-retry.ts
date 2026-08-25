@@ -3,6 +3,7 @@
  * Staggered delays: 30s → 2m → 5m → 15m → DEAD.
  * Vision-before-classify budgets: plan-vision-before-classify.md
  */
+import type { EnvBag } from "../env-bag";
 
 export const AI_DRAIN_MAX_ATTEMPTS = 6;
 
@@ -12,12 +13,12 @@ export const VISION_DESCRIBE_TIMEOUT_MS_DEFAULT = 90_000;
 /** Default wait for classify after vision. Override: LLM_TIMEOUT_MS. */
 export const CLASSIFY_TIMEOUT_MS_DEFAULT = 120_000;
 
-export function visionDescribeTimeoutMs(env: NodeJS.ProcessEnv = process.env): number {
+export function visionDescribeTimeoutMs(env: EnvBag = process.env): number {
   const n = Number(env.OCR_TIMEOUT_MS);
   return Number.isFinite(n) && n > 0 ? n : VISION_DESCRIBE_TIMEOUT_MS_DEFAULT;
 }
 
-export function classifyTimeoutMs(env: NodeJS.ProcessEnv = process.env): number {
+export function classifyTimeoutMs(env: EnvBag = process.env): number {
   const n = Number(env.LLM_TIMEOUT_MS);
   return Number.isFinite(n) && n > 0 ? n : CLASSIFY_TIMEOUT_MS_DEFAULT;
 }

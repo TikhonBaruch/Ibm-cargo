@@ -13,7 +13,9 @@ Gate: same behaviour when `USE_DOMAIN_API=0` (Prisma in Next) and `=1` (proxy �
 | Pay | `payCalculation` | `POST …/pay` | ledger + QUEUED/DONE; outbox |
 | Claim | `claimCalculation` | `POST …/claim` | preferred window; **acceptingJobs** |
 | Map items | PATCH items | same | soft tnved; item.description; extraFee; empty attrs fill |
-| Approve | approve + PDF + outbox-in-tx | same | D26 |
+| Reclassify | `POST …/reclassify` | same | WorkMapping feedback → LLM (skip precedent); stays `IN_REVIEW` |
+| Import preview | `POST /api/v1/imports/products/preview` | Next-only (`mustStayOnNext`) | CSV/XLSX/PDF → rows + precedent/LLM classify; D10 limit |
+| Approve | approve + PDF + outbox-in-tx | same | D26; write-back `verified_determinations` |
 | Chat SUPPORT | create / reply / status | same | admin inbox + archive; `box=` filter |
 | Chat unread ADMIN | `GET chat?scope=unread` | same | `countAdminUnread` — OPEN + waitingOn BROKER |
 | Brokers list | marketplace + acceptingJobs | same | empty if marketplace off |
@@ -25,7 +27,7 @@ Gate: same behaviour when `USE_DOMAIN_API=0` (Prisma in Next) and `=1` (proxy �
 | Integrations snapshot | `GET platform/integrations` | same | payments/llm/**notify** + toggles |
 | Orch health deps | payments/llm/ai/notify/logistics/**ocr** | same | dual-path probe list must match |
 | Company admin detail | `GET /v1/company/:id` | same | ADMIN_ROLES |
-| Company ADJUSTMENT | `POST /v1/company/:id/adjust` | same | ledger ADJUSTMENT + audit |
+| Company ADJUSTMENT | `POST /v1/company/:id/adjust` | same | ledger ADJUSTMENT + audit; **PROTECTED_V1** |
 | Manufacturer SKU | `POST/PATCH /v1/manufacturer/skus` | same | D31 catalog; not D8 |
 | Factory consolidate | `POST /v1/factory/requests` · accept/confirm pools | same | D34; not D8 |
 | Published catalog | `GET /v1/catalog/skus` | same | CLIENT/BROKER; PUBLISHED only |
@@ -64,3 +66,12 @@ npm run ops:track-a -- --vercel
 ```
 
 See [`runbook.md`](./runbook.md) · [`containers/notify/README.md`](../../containers/notify/README.md) · [`plan-track-a-p0.md`](./plan-track-a-p0.md) A2.
+
+## Customs fees canon
+
+| Artifact | Role |
+|----------|------|
+| `src/lib/ved/customs-fees.ts` | **Canon** (VAT 22%, PP 1637 brackets, `customsOperationsFeeFromUsd`) |
+| `containers/{api,ai,llm}/src/customs-fees.js` | LBM-owned Compose mirrors — keep brackets identical (**D36**: no `sync:ai-matrix` from nested `./llm`) |
+
+Do not diverge fee tables between TS and JS. Unit: `customs-fees.test.ts`.

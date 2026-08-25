@@ -45,11 +45,11 @@ ADMIN UI: `/admin/tnved`. CLI (opendata, не CI): `npm run tnved:fetch` → `tn
 
 | Слой | Хранение | Потребитель | Назначение |
 |------|----------|-------------|------------|
-| **Corpus lookup** | `llm/data/tnved/normalized/codes.jsonl` (~13k leaves) | `containers/llm` `/v1/classify` | AI enrich: lexical top-K + LLM pick among candidates |
+| **Corpus lookup** | `containers/llm/data/tnved/normalized/codes.jsonl` (~13k leaves; ops-generated, not in git) | `containers/llm` `/v1/classify` | AI enrich: lexical top-K + LLM pick among candidates |
 | **DB catalog** | Prisma `TnvedCode` / `TnvedDutyRate` | Broker + **client** `HsCodeAutocomplete`, admin search/import | QC брокера, UI search |
 
 Импорт в DB: слой A из ФНС `TNVED.ZIP` → `TnvedCode`; демо-срез `demo-pack.json`; CLI чанками. Карточка `GET :code` клеит A+C+D+G; слой B на **local** — fill `TnvedDutyRate.source=tws-csv` (~12 622 листьев с `%`; не НСИ). НСИ СТНВЭДСТ / KZ v4 по-прежнему GAP. Не scrape Alta/TKS. Сборка: [`plan-tnved-collect.md`](./plan-tnved-collect.md).  
-Compose mount корпуса для llm: `../llm/data/tnved/normalized:/data/tnved:ro` — **не** заменяет Prisma seed.
+Compose mount корпуса для llm: `./containers/llm/data/tnved/normalized:/data/tnved:ro` (D36; **не** `./llm`) — **не** заменяет Prisma seed.
 
 ### 2.2 Прецеденты — verified determinations (БД-2)
 

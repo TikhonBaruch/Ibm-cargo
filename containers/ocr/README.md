@@ -21,10 +21,10 @@ Engines (fail-open):
 Domain create merges OCR attrs when `OCR_SERVICE_URL` + item `mediaUrl` (client attrs win).  
 Import preview: local `parseProductPdf` → fallback `extract-table`.
 
-## Canon (D35)
+## Ownership (D35 / D36)
 
-**Источник истины:** `llm/services/ocr`. Эта папка — Compose mirror.  
-`npm run sync:ai-matrix` · optional `OCR_DOCKER_CONTEXT=../llm/services/ocr`.
+**Эта папка — LBM-owned** Compose-сервис. Нулевая связка с nested `./llm` / taurus (нет sync).  
+Внешняя матрица — только HTTP (`OCR_SERVICE_URL`).
 
 ```bash
 curl -s localhost:4700/v1/extract -H 'content-type: application/json' \

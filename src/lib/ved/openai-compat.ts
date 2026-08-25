@@ -4,6 +4,7 @@
  * Chain: LLM_CLASSIFY_CHAIN=deepseek,qwen (failover order).
  * Mirror of containers/llm openai-compat — Vercel path without LLM_SERVICE_URL.
  */
+import type { EnvBag } from "../env-bag";
 export type OpenAiCompat = {
   profile: string;
   key: string;
@@ -12,7 +13,7 @@ export type OpenAiCompat = {
 };
 
 export function resolveOpenAiCompat(
-  env: NodeJS.ProcessEnv = process.env,
+  env: EnvBag = process.env,
   providerOverride?: string
 ): OpenAiCompat {
   const provider = String(providerOverride ?? env.LLM_PROVIDER ?? "")
@@ -68,7 +69,7 @@ export function resolveOpenAiCompat(
  * Default: LLM_PROVIDER first, then deepseek, qwen (deduped).
  * Override: LLM_CLASSIFY_CHAIN=deepseek,qwen
  */
-export function resolveClassifyChain(env: NodeJS.ProcessEnv = process.env): OpenAiCompat[] {
+export function resolveClassifyChain(env: EnvBag = process.env): OpenAiCompat[] {
   const raw = String(env.LLM_CLASSIFY_CHAIN || "").trim();
   const names = raw
     ? raw
@@ -96,15 +97,15 @@ export function resolveClassifyChain(env: NodeJS.ProcessEnv = process.env): Open
 }
 
 /** True when classify can run without LLM_SERVICE_URL (keys on Vercel / Mode A). */
-export function providerClassifyConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
+export function providerClassifyConfigured(env: EnvBag = process.env): boolean {
   return resolveClassifyChain(env).length > 0;
 }
 
-export function qwenVisionConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
+export function qwenVisionConfigured(env: EnvBag = process.env): boolean {
   return Boolean(String(env.QWEN_API_KEY || "").trim());
 }
 
 /** DeepSeek multimodal (chain 3). Same API key as classify. */
-export function deepseekVisionConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
+export function deepseekVisionConfigured(env: EnvBag = process.env): boolean {
   return Boolean(String(env.DEEPSEEK_API_KEY || "").trim());
 }

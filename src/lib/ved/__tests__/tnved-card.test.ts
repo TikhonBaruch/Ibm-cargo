@@ -73,7 +73,7 @@ describe("TN VED card envelope", () => {
   it("prefers an ETT-sourced duty over vat-only seed", () => {
     expect(
       pickEttRate([
-        { source: "seed-demo-pack+fns-tnved4", dutyPct: null, vatPct: 22 },
+        { source: "seed-demo-pack+fns-tnved4", dutyPct: null },
         { source: "ett-opendata", dutyKind: "AD_VALOREM", dutyPct: 0 },
       ])
     ).toMatchObject({ dutyPct: 0, source: "ett-opendata" });

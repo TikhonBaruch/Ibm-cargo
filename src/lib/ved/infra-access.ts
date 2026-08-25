@@ -2,6 +2,7 @@
  * Ops infra summary for SUPER_ADMIN UI.
  * Secrets come only from process.env — never hardcode seed passwords in repo.
  */
+import type { EnvBag } from "../env-bag";
 
 export type InfraCredential = {
   label: string;
@@ -46,7 +47,7 @@ export function parsePostgresUrl(raw: string | undefined): {
   }
 }
 
-export function buildInfraSections(env: NodeJS.ProcessEnv = process.env): InfraSection[] {
+export function buildInfraSections(env: EnvBag = process.env): InfraSection[] {
   const db = parsePostgresUrl(env.DATABASE_URL);
   const site = env.NEXT_PUBLIC_SITE_URL || env.NEXTAUTH_URL || "";
 

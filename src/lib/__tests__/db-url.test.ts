@@ -1,16 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { isMissingDatabaseUrlError, readDatabaseUrl } from "../db-url";
 import { webHealthPayload } from "../web-health";
+import { asEnv } from "../test-env";
 
 describe("readDatabaseUrl", () => {
   it("reads DATABASE_URL via bracket access and trims", () => {
-    expect(readDatabaseUrl({ DATABASE_URL: "  postgres://x  " } as NodeJS.ProcessEnv)).toBe(
+    expect(readDatabaseUrl(asEnv({ DATABASE_URL: "  postgres://x  " }))).toBe(
       "postgres://x"
     );
   });
 
   it("returns empty when unset", () => {
-    expect(readDatabaseUrl({} as NodeJS.ProcessEnv)).toBe("");
+    expect(readDatabaseUrl(asEnv({}))).toBe("");
   });
 });
 

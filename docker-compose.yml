@@ -214,8 +214,7 @@ services:
 
   llm:
     <<: *restart
-    # Canon: llm/services/classification. Default mirror: ./containers/llm.
-    # Override: LLM_DOCKER_CONTEXT=./llm/services/classification
+    # D36: LBM-owned service. Build context = ./containers/llm only (no nested ./llm).
     build:
       context: ${LLM_DOCKER_CONTEXT:-./containers/llm}
     profiles: ["scale", "full"]
@@ -239,7 +238,8 @@ services:
       QWEN_MODEL: ${QWEN_MODEL:-}
       TNVED_CODES_PATH: ${TNVED_CODES_PATH:-/data/tnved/codes.jsonl}
     volumes:
-      - ${TNVED_DATA_DIR:-./llm/data/tnved/normalized}:/data/tnved:ro
+      # D36: LBM-owned corpus dir (not ./llm). Place codes.jsonl under containers/llm/data/...
+      - ${TNVED_DATA_DIR:-./containers/llm/data/tnved/normalized}:/data/tnved:ro
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4500/health"]
       interval: 10s
@@ -265,8 +265,7 @@ services:
 
   ocr:
     <<: *restart
-    # Canon: llm/services/ocr. Default mirror: ./containers/ocr.
-    # Override: OCR_DOCKER_CONTEXT=./llm/services/ocr
+    # D36: LBM-owned service. Build context = ./containers/ocr only (no nested ./llm).
     build:
       context: ${OCR_DOCKER_CONTEXT:-./containers/ocr}
     profiles: ["scale", "full"]

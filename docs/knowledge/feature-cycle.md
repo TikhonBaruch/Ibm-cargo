@@ -33,7 +33,7 @@
 
 | # | Действие | Критерий «можно дальше» |
 |---|----------|-------------------------|
-| **1** | Канон: [`product.md`](./product.md) (D27), [`decisions.md`](./decisions.md), [`skeleton.md`](./skeleton.md) checklist; при данных — [`data-model.md`](./data-model.md) / [`calculation-fields.md`](./calculation-fields.md) | Понятно: зачем фича, кого не ломаем, hold Growth |
+| **1** | Канон: [`product.md`](./product.md) (D27), [`decisions.md`](./decisions.md), [`skeleton.md`](./skeleton.md) checklist; при данных — [`data-model.md`](./data-model.md) / [`calculation-fields.md`](./calculation-fields.md); **D36** — нулевая связка с taurus/nested `./llm` | Понятно: зачем фича, кого не ломаем, hold Growth, изоляция матрицы |
 | **2** | Зона ownership: ветвь **1 Client** / **2 Broker** / **3 Ядро** (+ Admin D28). Путь кода = [`branches.md`](./branches.md) | Нет конфликта зон; UI не тащит Prisma в `containers/{client,broker,admin}` |
 | **3** | Контракт: роли allow/deny, HTTP метод/path, «done when»; при envelope — `docs/contracts/d-*.json` | Session → 401; wrong role → 403; shape согласован dual-path |
 | **4** | Код в своей зоне; domain в `src/lib/ved/`; UI panes в `ved/client` \| `ved/broker`; session API `app/api/v1` | `npm run dev` жив; инварианты D8/D10/D11/D15 не нарушены |
@@ -101,9 +101,9 @@ Preview: SSO Vercel часто включён — открывать через 
 
 | # | Работа | Проверка |
 |---|--------|----------|
-| M0.1 | Mock topup + S3 остаются включены | `smoke:payments`, upload URL s3 |
-| M0.2 | Визуальный C↔B↔A на prod | Чеклист staging |
-| M0.3 | Empty states + копирайт D27 (не рерайт лендинга) | Паттерн: заголовок + почему + **одна** CTA · канон [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) §8 · эталон: дашборд клиента / BrokersPane / QueuePane |
+| M0.1 | Mock topup + S3 остаются включены | `smoke:payments`, upload URL s3 · **PASS** 2026-08-25 `smoke:mvp` (S3 + mock topup) |
+| M0.2 | Визуальный C↔B↔A на prod | **PASS** 2026-08-25 · [`staging.md`](./staging.md) |
+| M0.3 | Empty states + копирайт D27 (не рерайт лендинга) | Паттерн `VedEmptyState` · **live**; client BrokersPane выровнен на канон |
 
 Порядок кабинетов (не в один PR): **клиент → брокер → админ → супер-админ**. Производитель v1 (**D31 live**) — стыки SKU, не отдельная волна. Канон волн: [`plan-cabinets-d32.md`](./plan-cabinets-d32.md). Command palette — hold.
 
@@ -116,7 +116,7 @@ Preview: SSO Vercel часто включён — открывать через 
 | M1.c | Админ: секции сайдбара Операции / Каталог / Платформа | [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) §5 · **группы live**; panes — M2 |
 | M1.1 | Контент лендинга / подсказки статусов под D27 | Ручной `/` + кабинеты — **только по явному запросу** на копирайт лендинга |
 | M1.2 | UX кандидатов HS поверх **heuristic** (top-N + краткое «почему» из правил) — **не** LLM-CTA | Unit draft + ручной create · **done** C3 |
-| M1.3 | Починить `smoke:client` под autoAssign → `IN_REVIEW` | Скрипт PASS на prod |
+| M1.3 | Починить `smoke:client` под autoAssign → `IN_REVIEW` | Скрипт PASS — accepts `DONE`\|`QUEUED`\|`IN_REVIEW` |
 
 ### Этап M2 — Tech-debt (параллельно, не блокер CTA)
 

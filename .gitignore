@@ -50,6 +50,9 @@ containers/manufacturer/.export/
 scripts/data/tnved/raw/
 scripts/data/tnved/normalized/
 
+# Foreign AI matrix (D36 full split — never nest taurus/llm here)
+/llm/
+
 # Generated Next env in extract UI containers
 containers/admin/next-env.d.ts
 containers/broker/next-env.d.ts

@@ -25,10 +25,10 @@
 |---|-----|-----|--------|----------------|
 | **1** | Миграции БД-2 на целевых БД | P0 | **done** (2026-08-12 sweb) | `verified_determinations` есть; unit fail-open без `prisma:error`; sweb = lexical only (нет pgvector) |
 | **2** | Починить `npm run lint` под Next 16 | P0 | **done** | `npm run lint` exit 0 (`eslint app src`) |
-| **3** | tsc в CI + починить 4 test-файла | P1 | pending | `npx tsc --noEmit` green или осознанный exclude тестов + gate |
+| **3** | tsc в CI + починить test-файлы | P1 | **done** (2026-08-25) | `npm run typecheck` (`tsc --noEmit`) green; в `test:ci`; `EnvBag` + test mocks; exclude `llm/`/`containers/` |
 | **4** | Нарезать WIP на PR / Preview deploy | P1 | **done** Preview READY (2026-08-12) | [PR #1](https://github.com/TikhonBaruch/Ibm-cargo/pull/1) · Preview: Vercel Preview of Ibm-cargo · чеклист [`staging.md`](./staging.md) |
-| **5** | Dual-path docs + `customs-fees` канон | P1 | pending | `dual-path-parity.md` включает reclassify/imports; один канон fees |
-| **6** | PROTECTED_V1: adjust + imports preview | P2 | pending | middleware + unit `security`/`access` |
+| **5** | Dual-path docs + `customs-fees` канон | P1 | **done** (2026-08-25) | `dual-path-parity.md` + reclassify/imports; TS canon + JS mirrors synced |
+| **6** | PROTECTED_V1: adjust + imports preview | P2 | **done** (2026-08-25) | `access.ts` + unit `access`/`security`; handlers already `requireRole` |
 | **7** | Нарезать `AdminVedCabinet` на panes | P2 | **done** | orchestrator ~816 LOC + `ved/admin/*` (14 panes + `types.ts`) · nav groups были prerequisite |
 | **8** | Track A ops keys (Resend / ЮKassa) | P2 | pending | `ops:track-a -- --vercel` без NEED (оператор) |
 | **9** | Hygiene: next-env ignore, Prisma 7 warn | P3 | **partial** — `package.json#prisma` → `prisma.config.ts` (Prisma **6.19**); `eslint.config.mjs` (без `"type":"module"` в package.json) | нет мусора в `git status` / нет MODULE_TYPELESS_PACKAGE_JSON на `npm run lint` |
@@ -80,9 +80,9 @@ npm run smoke:precedent-vector   # skip OK без OPENAI_API_KEY
 
 2. **Lint:** **done** — `"lint": "eslint app src"` (Next 16 has no `next lint`; that treated `lint` as a directory).  
 2b. **npm allowScripts:** **done** — Prisma / sharp / tesseract.js / unrs-resolver в `package.json` `allowScripts` (имя + pin lockfile; warning npm 11.16+; install behaviour unchanged). Не `ignore-scripts`.  
-3. **tsc:** починить mocks (`ProcessEnv`, orch `never`) и JS import types; добавить script в `test:ci` или document exclude.  
+3. **tsc:** **done** — `EnvBag` для env-helpers; test mocks; `npm run typecheck` в `test:ci`; exclude `llm/` + `containers/` из root tsconfig.  
 4. **WIP split:** не один монолитный merge admin-ops+Growth.  
-5–7. Docs parity, PROTECTED, admin panes.  
+5–7. Docs parity **done**, PROTECTED adjust/imports **done**, admin panes **done**.  
 8. Keys — только ops ([`plan-track-a-p0.md`](./plan-track-a-p0.md)).
 
 ## Связанные документы

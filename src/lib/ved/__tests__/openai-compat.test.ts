@@ -1,3 +1,4 @@
+import { asEnv } from "../../test-env";
 import { describe, expect, it, afterEach, vi } from "vitest";
 import {
   providerClassifyConfigured,
@@ -69,8 +70,8 @@ describe("ai-drain-retry schedule", () => {
   });
 
   it("vision describe timeout defaults to 90s", () => {
-    expect(visionDescribeTimeoutMs({})).toBe(90_000);
-    expect(visionDescribeTimeoutMs({ OCR_TIMEOUT_MS: "120000" } as NodeJS.ProcessEnv)).toBe(120_000);
+    expect(visionDescribeTimeoutMs(asEnv({}))).toBe(90_000);
+    expect(visionDescribeTimeoutMs(asEnv({ OCR_TIMEOUT_MS: "120000" }))).toBe(120_000);
   });
 
   it("allows classify without vision only on last attempt", () => {

@@ -67,3 +67,15 @@ ADMIN ops: [`admin-ops.md`](./admin-ops.md) (D28).
 1. Клиент задаёт `preferredBrokerUserId` (optional).
 2. Иначе любой брокер `claim` из очереди.
 3. Admin `assign` перекрывает оба.
+
+## Параллельный трек: визуал кабинетов (lbm-bro)
+
+**Не смешивать** с go-live ядра / D36 / domain PR.
+
+| Трек | Ветка / PR | Ownership | Правило |
+|------|------------|-----------|---------|
+| **Standalone MVP + API** | `main` (2026-08-25) | ветвь 3 + smoke | heuristic → pay mock → broker → PDF |
+| **Визуальный skin** | `cursor/lbm-bro-visual-study-e1f0` (#9) | UI ветви 1–2 | D32: reuse `VedShell` / patterns; не второй toast API |
+| **Backend max** | `cursor/mvp-max-standalone-ff9f` | docs + smoke KB | без restyle panes |
+
+Канон прототипа: [`../../docs/plan-lbm-bro-skin.md`](../../docs/plan-lbm-bro-skin.md) · план max: [`plan-max-standalone-mvp.md`](./plan-max-standalone-mvp.md).

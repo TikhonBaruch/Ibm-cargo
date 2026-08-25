@@ -10,7 +10,7 @@
 
 | Слой | Статус | Детали |
 |------|--------|--------|
-| Контейнер `ocr` (:4700) | **partial** | `containers/ocr` + зеркало `llm/services/ocr` |
+| Контейнер `ocr` (:4700) | **partial** | `containers/ocr` (LBM-owned, D36) |
 | Create path | **wired** | `createAndDraftCalculation` → `extractWithOcr` при `OCR_SERVICE_URL` + `item.mediaUrl` (fail-open) |
 | Import preview | **wired** | CSV / XLSX / **text-layer PDF** в `ProductCsvImport` |
 | Text PDF | **done** | `parseProductPdf` (unpdf) + `ocr-pdf-table-v1` fallback |
@@ -188,14 +188,12 @@ npm run ops:track-a        # не требует vision, но фиксирует
 
 ---
 
-## Синхронизация LLM matrix
+## Контракт OCR (LBM)
 
 При изменении envelope или engines:
 
 1. `docs/contracts/d-ocr.ai.json`
-2. `llm/contracts/d-ocr.ai.json`
-3. `containers/ocr` ↔ `llm/services/ocr` (зеркало)
-4. [`integration-lbm.md`](../../llm/docs/integration-lbm.md) в matrix repo — при смене transport
+2. `containers/ocr` (LBM-owned, D36 — нет sync из внешнего matrix tree)
 
 ---
 

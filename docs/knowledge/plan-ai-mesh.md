@@ -74,7 +74,7 @@ ingest (cabinet / CSV / upload)
 ### Срез 0 — локальные OpenAI-compatible профили (этот цикл)
 
 **Не** срез 5 (параллельный multi-LLM router, hold D30) и **не** новый AI-стек.  
-Канон: LBM **не** зовёт модель из UI; `containers/ai` enrich → `LLM_SERVICE_URL` → `containers/llm` / `llm/services/classification`; envelope [`d-draft.llm.json`](../contracts/d-draft.llm.json); fail-open; gate `llmEnrichEnabled`; D27 — opt-in URL/env, не CTA.
+Канон: LBM **не** зовёт модель из UI; `containers/ai` enrich → `LLM_SERVICE_URL` → **`containers/llm`** (LBM-owned); envelope [`d-draft.llm.json`](../contracts/d-draft.llm.json); fail-open; gate `llmEnrichEnabled`; D27 — opt-in URL/env, не CTA.
 
 Один активный chat-провайдер через уже существующий `POST …/chat/completions`. Смена модели = env, не новый сервис и не новые поля classify/duty.
 

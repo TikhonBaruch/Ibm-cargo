@@ -79,7 +79,7 @@ Unit: `platform-gates.test.ts`.
 - Финансы UI: фильтр статуса выплат + client-side CSV (без отдельного export API).
 - Orch: `GET /api/v1/platform/orch` snapshot; `POST` retry → `retryBackgroundJob` / `retryOutboxMessage` (+ enqueue `OUTBOX_DRAIN`). Unit: `orchestration.test.ts`.
 - ТН ВЭД: UI `/admin/tnved` → существующий `POST /api/v1/tnved/import` (batch ≤500). Полный номенклатурный dump — Track B ([`data-model.md`](./data-model.md)).
-- **Два слоя ТН ВЭД** ([`data-model.md`](./data-model.md) §2.1): **corpus** `llm/data/tnved/normalized/codes.jsonl` → `containers/llm` classify (lookup-v1); **Prisma** `TnvedCode` → broker autocomplete + admin import. Compose mount: `../llm/data/tnved/normalized:/data/tnved:ro` + `TNVED_CODES_PATH`. Не смешивать runtime corpus с DB import.
+- **Два слоя ТН ВЭД** ([`data-model.md`](./data-model.md) §2.1): **corpus** `containers/llm/data/tnved/normalized/codes.jsonl` → classify lookup-v1; **Prisma** `TnvedCode` → broker autocomplete + admin import. Compose mount: LBM-owned dir + `TNVED_CODES_PATH`. Не mount nested `./llm` (D36). Не смешивать runtime corpus с DB import.
 - Toggle **`llmEnrichEnabled`**: `false` = heuristic only; `true` + `LLM_SERVICE_URL` = corpus lookup-v1 ± OpenAI/NIM rerank (fail-open).
 
 ## SUPER (obscure)

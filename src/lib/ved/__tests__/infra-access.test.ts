@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildInfraSections, parsePostgresUrl } from "../infra-access";
+import { asEnv } from "../../test-env";
 
 describe("parsePostgresUrl", () => {
   it("parses host user password database", () => {
@@ -22,7 +23,7 @@ describe("parsePostgresUrl", () => {
 
 describe("buildInfraSections", () => {
   it("includes database section from env", () => {
-    const sections = buildInfraSections({
+    const sections = buildInfraSections(asEnv({
       DATABASE_URL: "postgresql://u:secret@db.example:5432/app",
       NEXT_PUBLIC_SITE_URL: "https://example.com",
       S3_BUCKET: "b",
@@ -32,7 +33,7 @@ describe("buildInfraSections", () => {
       OPS_HOST: "https://panel.example",
       OPS_USER: "ops",
       OPS_PASSWORD: "opspass",
-    } as NodeJS.ProcessEnv);
+    }));
     const db = sections.find((s) => s.id === "database");
     expect(db?.credentials[0]?.login).toBe("u");
     expect(db?.credentials[0]?.password).toBe("secret");

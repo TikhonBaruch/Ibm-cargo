@@ -67,6 +67,11 @@ const knowledgeRequired = [
   "docs/knowledge/dual-path-parity.md",
   "docs/knowledge/deploy.md",
   "docs/knowledge/plan-vercel-services.md",
+  "docs/knowledge/plan-go-live-mvp.md",
+  "docs/knowledge/plan-max-standalone-mvp.md",
+  "docs/knowledge/plan-full-split-ibm-cargo.md",
+  "docs/knowledge/plan-zero-llm-coupling.md",
+  "docs/knowledge/plan-taurus-backup-core.md",
   "docs/knowledge/containerization.md",
   "docs/knowledge/web-slim.md",
   "docs/knowledge/cabinets/README.md",
@@ -80,15 +85,43 @@ for (const f of knowledgeRequired) {
   if (!exists(f)) errors.push(`missing knowledge file: ${f}`);
 }
 
-// --- AI matrix mirrors documented ---
+// --- AI services documented (D36: LBM-owned, zero nested llm coupling) ---
 try {
   const llmReadme = read("containers/llm/README.md");
-  if (!llmReadme.includes("services/classification") || !llmReadme.includes("sync:ai-matrix")) {
-    errors.push("containers/llm/README.md must document llm matrix canon + sync:ai-matrix");
+  if (!llmReadme.includes("LBM-owned") || !llmReadme.includes("D36")) {
+    errors.push("containers/llm/README.md must state LBM-owned + D36 (no nested ./llm sync)");
+  }
+  if (/\bsync:ai-matrix\b/.test(llmReadme) && !/retired|no nested|нулев/i.test(llmReadme)) {
+    errors.push("containers/llm/README.md must not promote sync:ai-matrix coupling");
   }
 } catch {
   errors.push("cannot read containers/llm/README.md");
 }
+
+try {
+  const syncStub = read("scripts/sync-ai-matrix.cjs");
+  if (!syncStub.includes("RETIRED") || !syncStub.includes("D36")) {
+    errors.push("scripts/sync-ai-matrix.cjs must be D36-retired stub (no ./llm copy)");
+  }
+  if (/copyFileSync|matrixRoot|services\/classification/.test(syncStub)) {
+    errors.push("scripts/sync-ai-matrix.cjs must not copy from nested ./llm");
+  }
+} catch {
+  errors.push("cannot read scripts/sync-ai-matrix.cjs");
+}
+
+try {
+  const compose = read("docker-compose.yml");
+  if (compose.includes("TNVED_DATA_DIR:-./llm/") || /TNVED_DATA_DIR:-\.\/llm\//.test(compose)) {
+    errors.push("docker-compose.yml must not default TNVED_DATA_DIR to nested ./llm (D36)");
+  }
+  if (!compose.includes("containers/llm/data/tnved/normalized")) {
+    errors.push("docker-compose.yml must default corpus mount to containers/llm/data (D36)");
+  }
+} catch {
+  errors.push("cannot read docker-compose.yml for D36 corpus path");
+}
+
 try {
   const packages = read("src/lib/ved/PACKAGES.md");
   for (const needle of ["domain", "orch", "mesh", "llm", "capability"]) {
@@ -96,15 +129,74 @@ try {
       errors.push(`PACKAGES.md missing concept: ${needle}`);
     }
   }
+  if (!packages.includes("D36") || !/zero|нулев|HTTP only|только HTTP/i.test(packages)) {
+    errors.push("PACKAGES.md must document D36 zero nested-llm coupling");
+  }
 } catch {
   errors.push("cannot read src/lib/ved/PACKAGES.md");
 }
 
 try {
+  const { execSync } = require("node:child_process");
+  const tracked = execSync("git ls-files llm", {
+    cwd: root,
+    encoding: "utf8",
+  }).trim();
+  if (tracked) {
+    errors.push(
+      "nested llm/ must not be git-tracked (D36 full split — remove tree; see plan-full-split-ibm-cargo.md)"
+    );
+  }
+} catch {
+  /* not a git checkout — skip */
+}
+
+try {
   const decisions = read("docs/knowledge/decisions.md");
   if (!decisions.includes("D35")) errors.push("decisions.md missing D35");
+  if (!decisions.includes("D36")) errors.push("decisions.md missing D36");
+  if (!decisions.includes("D37")) errors.push("decisions.md missing D37");
+  if (!/backup|read-only|не трогать/i.test(decisions)) {
+    errors.push("decisions.md D37 must state taurus backup read-only");
+  }
+  if (!/нулев|zero coupling|nested \.\/llm/i.test(decisions)) {
+    errors.push("decisions.md D36 must state zero coupling to nested ./llm");
+  }
+  if (!decisions.includes("plan-full-split")) {
+    errors.push("decisions.md D36 must link plan-full-split-ibm-cargo.md");
+  }
 } catch {
-  errors.push("cannot read decisions.md for D35");
+  errors.push("cannot read decisions.md for D35/D36");
+}
+
+try {
+  const agents = read("AGENTS.md");
+  if (/Канон live LBM:\s*https:\/\/taurus/i.test(agents)) {
+    errors.push("AGENTS.md must not list taurus as live canon (D37 backup)");
+  }
+  if (!/backup|D37|не трогать/i.test(agents)) {
+    errors.push("AGENTS.md must document D37 taurus backup read-only");
+  }
+} catch {
+  errors.push("cannot read AGENTS.md for D37");
+}
+
+try {
+  const dualPath = read("docs/knowledge/dual-path-parity.md");
+  if (/llm\/services\/classification/.test(dualPath) || /Matrix source for `sync:ai-matrix`/.test(dualPath)) {
+    errors.push("dual-path-parity.md must not reference nested llm/services matrix sync (D36)");
+  }
+} catch {
+  errors.push("cannot read dual-path-parity.md for D36 customs-fees canon");
+}
+
+try {
+  const dataModel = read("docs/knowledge/data-model.md");
+  if (/\| \*\*Corpus lookup\*\* \| `llm\/data\//.test(dataModel)) {
+    errors.push("data-model.md corpus path must be containers/llm/data (D36)");
+  }
+} catch {
+  errors.push("cannot read data-model.md for D36 corpus path");
 }
 
 // --- Containers layout ---

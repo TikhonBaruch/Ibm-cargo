@@ -12,21 +12,14 @@ Classification / Duty behind frozen envelopes (`d-draft.llm.json`).
 | Classify | `POST /v1/classify` |
 | Duty | `POST /v1/duty` |
 
-## Canon (D35)
+## Ownership (D35 / D36)
 
-**Источник истины:** sibling-репо `llm` → `services/classification`.  
-Эта папка — Compose **mirror** (offline / default build context).
+**Эта папка — LBM-owned** Compose-сервис. Не зеркало nested `./llm` / taurus: **нулевая связка** (нет `sync:ai-matrix` из матрицы).  
+Внешняя матрица — только HTTP (`LLM_SERVICE_URL`). Правки classify/duty для LBM — здесь.
 
-```bash
-# Prefer building from matrix:
-# LLM_DOCKER_CONTEXT=../llm/services/classification docker compose --profile scale up --build llm
+Corpus (opt-in): `data/tnved/normalized/codes.jsonl` · compose volume `TNVED_DATA_DIR`.
 
-# Or refresh mirror:
-npm run sync:ai-matrix
-npm run sync:ai-matrix:check
-```
-
-**Model ≠ container:** add vendors via `LLM_PROVIDER` / `LLM_CLASSIFY_CHAIN` + named keys — do not add `containers/deepseek`.
+**Model ≠ container:** vendors via `LLM_PROVIDER` / `LLM_CLASSIFY_CHAIN` + named keys — do not add `containers/deepseek`.
 
 ## Providers
 

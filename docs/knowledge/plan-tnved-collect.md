@@ -2,7 +2,7 @@
 
 **Дата:** 2026-08-17.  
 **Цикл D33.** План **до** выгрузки и кода.  
-Канон: [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) · [`ai-pipeline.md`](./ai-pipeline.md) · [`customs-payments.md`](./customs-payments.md) · llm [`sources-tnved.md`](../../../llm/docs/sources-tnved.md).
+Канон: [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) · [`ai-pipeline.md`](./ai-pipeline.md) · [`customs-payments.md`](./customs-payments.md). (Источники корпуса — LBM `scripts/data/tnved` / `containers/llm/data`; внешняя матрица не в этом репо, D36.)
 
 ## Идея
 
@@ -35,7 +35,7 @@
 
 ### Фаза 0 — инвентарь
 
-Что лежит в `scripts/data/tnved/` и `llm/data/tnved/` (jsonl, TWS, PDF). Поиск TWS CSV в `~/Backups`, если пропал с диска.
+Что лежит в `scripts/data/tnved/` и `containers/llm/data/tnved/` (jsonl, TWS, PDF). Поиск TWS CSV в `~/Backups`, если пропал с диска.
 
 ### Фаза 1 — повторный fetch официального
 

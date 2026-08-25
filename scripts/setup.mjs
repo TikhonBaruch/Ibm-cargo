@@ -35,4 +35,5 @@ if (withDb) {
 
 console.log("\nNext: npm run dev  →  http://localhost:3000");
 console.log("Demo: client@ / broker@ / operator@ / admin@ (ADMIN) · demo1234");
+console.log("D36: standalone LBM — no nested llm/; docs/knowledge/plan-full-split-ibm-cargo.md");
 console.log("Docs: docs/knowledge/environments.md · docs/knowledge/staging.md");

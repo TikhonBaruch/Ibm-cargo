@@ -184,7 +184,7 @@ Error: No Next.js version detected. Make sure your package.json has "next" in ei
 
 Ошибка **не** значит, что `"next"` пропал из зависимостей. Она значит: проект смотрит не в корень репо (часто Root Directory = `app`, `lint` или Framework Preset = **Next.js** вместо **Services** при блоке `services` в `vercel.json`).
 
-`https://ibm-cargo.vercel.app` к этой ошибке не относится: это Production alias **другого** Vercel-проекта (статический IBM Cargo). Этот git деплоится как project **ibm-cargo** → Preview URL (SSO). Канон LBM: https://taurus-liart.vercel.app.
+`https://ibm-cargo.vercel.app` к этой ошибке не относится: это Production alias **другого** Vercel-проекта (статический IBM Cargo). Этот git деплоится как project **ibm-cargo** → Preview URL (SSO). **D37:** taurus-liart — backup ядра, read-only ([`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md)).
 
 Dashboard **нельзя** выставить из агента / `vercel.json` (`rootDirectory` — invalid key).
 

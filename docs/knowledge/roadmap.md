@@ -78,7 +78,7 @@ Cutover slim web только после стабильного `smoke:gateway` 
 | 1f | Broker ops: unread chat badge, attrs on work, soft refresh, escalate own IN_REVIEW | **done** на `main` · [`cabinets/broker/`](./cabinets/broker/) |
 | 1g | ADMIN cabinet UX: client drill-down/ADJUSTMENT, calc `?id=`+PDF, support badge, notify card, users create/reset | **done** на `main` · [`admin-ops.md`](./admin-ops.md) |
 | 1h | ADMIN ops P1: `/tnved` import UI, finance filter+CSV, orch retry FAILED/DEAD, broker acceptingJobs PATCH | **done** на `main` · D28 §7 |
-| 1i | Tech-debt hardening: migrate БД-2 sweb, lint Next 16, tsc gate | **in progress** · шаг 1 migrate **done**; Preview/merge pack **done** · [`plan-tech-debt.md`](./plan-tech-debt.md) |
+| 1i | Tech-debt hardening: migrate БД-2 sweb, lint Next 16, tsc gate | **done** (tsc/PROTECTED/dual-path docs 2026-08-25) · Track A keys — ops · [`plan-tech-debt.md`](./plan-tech-debt.md) |
 | 1j | Post-merge prod smoke + cabinet pack live | **done** 2026-08-12 · `smoke:mvp`/`full` PASS (#47855/#47856) · [`staging.md`](./staging.md) |
 | 1k | Cabinet UX: empty states → broker queue honesty → grouped admin nav | **live** (partner v1 — после) · [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) · M0.3 / M1.0–M1.c |
 | 2 | UX PDF / pay CTA / support / gates / unread / autoAssign | **done** |
@@ -108,10 +108,12 @@ Cutover slim web только после стабильного `smoke:gateway` 
 
 | Этап | Фокус | Статус |
 |------|-------|--------|
-| **M0** | Эксплуатация: mock+S3, визуальный C↔B↔A, empty states (клиент сначала) | **сейчас** · канон [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) |
-| **M1** | Кабинеты: клиент empty → брокер queue/`acceptingJobs` → админ группы nav (**live**); HS heuristic; `smoke:client` | heuristic / smoke |
-| **M2** | Tech-debt (lint/tsc/PROTECTED/docs) + нарезка Admin panes после групп nav | [`plan-tech-debt.md`](./plan-tech-debt.md) |
-| **M3** | Опц. Resend + накопление precedent-v1 | ops / approve |
+| **M0** | Эксплуатация: mock+S3, визуальный C↔B↔A, empty states (клиент сначала) | **M0.1+M0.2 PASS** (2026-08-25); empty states live · [`staging.md`](./staging.md) |
+| **M1** | Кабинеты: клиент empty → брокер queue/`acceptingJobs` → админ группы nav (**live**); HS heuristic; `smoke:client` | **live** · smoke:client accepts IN_REVIEW (autoAssign) |
+| **M2** | Tech-debt (lint/tsc/PROTECTED/docs) + нарезка Admin panes после групп nav | **done** · на `main` (2026-08-25) |
+| **Go-live** | Merge #6→#7→#8; standalone без taurus/llm | **done** · [`plan-go-live-mvp.md`](./plan-go-live-mvp.md) |
+| **Max MVP** | KB + smoke matrix; без live pay/logistics; parallel lbm-bro UI | **in progress** · [`plan-max-standalone-mvp.md`](./plan-max-standalone-mvp.md) |
+| **M3** | Опц. Resend + накопление precedent-v1 | ops / approve (без ЮKassa в текущем scope) |
 | **G** | ЮKassa / LLM / ТН ВЭД dump / shipping / OCR / C5; **производитель v1** после M1 кабинетов | hold — не смешивать с M0; не CTA D27 |
 
 Правило: пока M0.1–M0.3 красные, не начинать G в том же PR. Command palette — hold.

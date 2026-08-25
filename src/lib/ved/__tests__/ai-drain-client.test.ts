@@ -10,15 +10,21 @@ describe("ai-drain-client", () => {
 
   it("polls until pending clears", async () => {
     let n = 0;
+    type Calc = {
+      id: string;
+      aiDrainPending?: boolean;
+      aiDraft?: { llmEnrichPending?: boolean; llmEnrich?: string; hsCode?: string };
+    };
+    const seed: Calc = { id: "c1", aiDrainPending: true, aiDraft: { llmEnrichPending: true } };
     const out = await waitForAiEnrich(
-      { id: "c1", aiDrainPending: true, aiDraft: { llmEnrichPending: true } },
+      seed,
       async () => {
         n += 1;
-        if (n < 2) return { id: "c1", aiDraft: { llmEnrichPending: true } };
+        if (n < 2) return { id: "c1", aiDraft: { llmEnrichPending: true } } satisfies Calc;
         return {
           id: "c1",
           aiDraft: { llmEnrichPending: false, llmEnrich: "llm-openai-v1", hsCode: "6109 10 000 0" },
-        };
+        } satisfies Calc;
       },
       { intervalMs: 5, timeoutMs: 500 }
     );

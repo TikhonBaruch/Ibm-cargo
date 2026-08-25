@@ -2,8 +2,8 @@
 
 Проект уже связан с remote и Vercel. Этот checklist — безопасная выкладка без секретов и тяжёлых ассетов.
 
-Канон live LBM: https://taurus-liart.vercel.app  
-`https://ibm-cargo.vercel.app` — чужой Vercel-проект, не этот репозиторий. Этот git-репозиторий деплоится как Vercel project **ibm-cargo** → **Preview URL** (SSO).  
+Канон deploy: [`deploy.md`](./deploy.md).  
+**D37:** taurus-liart — backup ядра, **не** smoke target · [`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md).  
 Remote: `git@github.com:TikhonBaruch/Ibm-cargo.git`  
 Локальная разработка: [`../development.md`](../development.md).  
 Карта сред (local vs Compose vs prod): [`environments.md`](./environments.md).  
@@ -103,9 +103,9 @@ WIP остаётся локально; Vercel задеплоит только т
 
 ```bash
 TEST_API_URL=https://<preview>.vercel.app RUN_E2E=1 npm run test:e2e
-# или живой LBM-ориентир:
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp
-TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:full
+# или Preview URL проекта ibm-cargo (не taurus — D37 backup):
+TEST_API_URL=https://<preview>.vercel.app npm run smoke:mvp
+TEST_API_URL=https://<preview>.vercel.app npm run smoke:full
 ```
 
 ### C — После деплоя
