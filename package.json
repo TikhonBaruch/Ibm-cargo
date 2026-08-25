@@ -101,5 +101,13 @@
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
+  "allowScripts": {
+    "@prisma/client": true,
+    "@prisma/engines": true,
+    "prisma": true,
+    "sharp": true,
+    "tesseract.js": true,
+    "unrs-resolver": true
   }
 }

@@ -53,6 +53,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 
 - Route handlers с Prisma **не** должны быть статически prerendered (`revalidate` без `force-dynamic`) — иначе `Environment variable not found: DATABASE_URL` на `next build` (случай `/api/promos`).
 - Публичный `POST /api/v1/auth/register` должен быть в `isPublicAuthedPath` и пропускаться middleware до RBAC без сессии (D25).
+- `npm warn allow-scripts … not yet covered by allowScripts` — advisory npm 11.16+ (скрипты всё ещё бегут). В корневом `package.json` поле `allowScripts` для Prisma/sharp/tesseract/unrs-resolver. Не `ignore-scripts`. На npm 10 предупреждения нет.
 - `Warning: Could not identify Next.js version` / `Error: No Next.js version detected` — Root Directory в Dashboard не `.` (часто `app`) или Framework Preset не **Services**. `"next"` уже в корневом `package.json`. См. [`plan-vercel-services.md`](./plan-vercel-services.md) §8.
 
 ## Vercel project settings

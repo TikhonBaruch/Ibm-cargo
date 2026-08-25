@@ -79,6 +79,7 @@ npm run smoke:precedent-vector   # skip OK без OPENAI_API_KEY
 ## Шаг 2+ (кратко)
 
 2. **Lint:** **done** — `"lint": "eslint app src"` (Next 16 has no `next lint`; that treated `lint` as a directory).  
+2b. **npm allowScripts:** **done** — Prisma / sharp / tesseract.js / unrs-resolver в `package.json` `allowScripts` (warning npm 11.16+; install behaviour unchanged).  
 3. **tsc:** починить mocks (`ProcessEnv`, orch `never`) и JS import types; добавить script в `test:ci` или document exclude.  
 4. **WIP split:** не один монолитный merge admin-ops+Growth.  
 5–7. Docs parity, PROTECTED, admin panes.  
