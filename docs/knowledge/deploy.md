@@ -2,8 +2,9 @@
 
 Проект уже связан с remote и Vercel. Этот checklist — безопасная выкладка без секретов и тяжёлых ассетов.
 
-Прод UI: https://taurus-liart.vercel.app (hostname Vercel пока `taurus-liart`; бренд LBM Брокер)  
-Remote: `https://github.com/TikhonBaruch/Ibm-cargo` (самостоятельный продукт **ibm-cargo**; не upstream `TikhonBaruch/taurus`)  
+Прод UI: Vercel project **ibm-cargo** (`tikhonbaruchs-projects/ibm-cargo`; бренд LBM Брокер). Исторический host taurus: `taurus-liart.vercel.app`.  
+Remote: `https://github.com/TikhonBaruch/Ibm-cargo`  
+`vercel.json` prod = **crons only** (Services cutover hold — `vercel.services.bff.json`).  
 Локальная разработка: [`../development.md`](../development.md).  
 Карта сред (local vs Compose vs prod): [`environments.md`](./environments.md).  
 Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./roadmap.md).
