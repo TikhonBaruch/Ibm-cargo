@@ -1,4 +1,32 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "frontend": {
+      "root": ".",
+      "framework": "nextjs",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "backend",
+          "format": "url",
+          "env": "DOMAIN_API_URL"
+        }
+      ]
+    },
+    "backend": {
+      "root": ".",
+      "runtime": "container",
+      "entrypoint": "Dockerfile.vercel"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/auth/(.*)", "destination": { "service": "frontend" } },
+    { "source": "/api/admin/(.*)", "destination": { "service": "frontend" } },
+    { "source": "/api/bff/(.*)", "destination": { "service": "frontend" } },
+    { "source": "/api/v1/(.*)", "destination": { "service": "frontend" } },
+    { "source": "/api/(.*)", "destination": { "service": "frontend" } },
+    { "source": "/(.*)", "destination": { "service": "frontend" } }
+  ],
   "crons": [
     { "path": "/api/v1/internal/sla-tick", "schedule": "0 3 * * *" },
     { "path": "/api/v1/internal/jobs-tick", "schedule": "*/2 * * * *" }
