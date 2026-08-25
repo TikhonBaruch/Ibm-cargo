@@ -289,4 +289,18 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 
 Канон: [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`ved-ownership.mdc`](./ved-ownership.mdc) · [`containerization.md`](./containerization.md).
 
+## D36. Изоляция LBM (ibm-cargo) от проекта taurus/llm — always
+
+**Контекст:** матрица AI (`taurus/llm` / sibling `llm`) и продукт LBM (`Ibm-cargo`) соседствуют в workspace и по HTTP; риск — миграции, seed, правки файлов или env одного проекта портят другой.
+
+**Решение (жёстко, alwaysApply):**
+
+1. Любые изменения **этого** проекта (ibm-cargo / LBM) и **его** БД **не должны** затрагивать ресурсы, базы данных, тома Docker, секреты или **файлы** проекта **taurus/llm** (пути: `taurus/llm`, sibling `../llm`, отдельный clone матрицы).
+2. `DATABASE_URL` / Prisma migrate|push|seed / Compose volume Postgres LBM — **только** БД LBM (`newlsu_lbm`, compose `lbm`, …). Запрещено нацеливать LBM-инструменты на БД или volume матрицы.
+3. Правки кода LBM — в `app/`, `src/`, `prisma/`, `containers/` (включая **mirrors** `containers/{llm,ocr}`), `docs/`. **Не** писать/удалять/форматировать дерево исходников **taurus/llm** в том же changeset, что LBM/DB.
+4. Допустимо: **HTTP** к матрице через `LLM_SERVICE_URL` / `OCR_SERVICE_URL`; **чтение** канона матрицы для `npm run sync:ai-matrix` → запись **только** в LBM `containers/{llm,ocr}` (зеркало), без изменения исходников taurus/llm.
+5. Задачи на саму матрицу (новые capability, корпус, contracts matrix) — **отдельный** ownership/PR в репо taurus/llm, не смешанный с LBM schema/UI.
+
+Канон: [`ved-invariants.mdc`](./ved-invariants.mdc) · [`ved-ownership.mdc`](./ved-ownership.mdc) · [`database.md`](./database.md) · [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`AGENTS.md`](../../AGENTS.md).
+
 

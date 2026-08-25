@@ -1,5 +1,5 @@
 ---
-description: VED product invariants (D8–D15, D24–D28, D32–D34) — do not violate
+description: VED product invariants (D8–D15, D24–D28, D32–D36) — do not violate
 alwaysApply: true
 ---
 
@@ -21,5 +21,6 @@ ADR: `docs/knowledge/decisions.md` · product: `docs/knowledge/product.md` (D27)
 - **D33:** no code without KB plan; no close without KB update.
 - **D34:** factory pool ≠ D8; segments on `Company.clientSegment`.
 - **D35:** model ≠ container; UI never calls `LLM_SERVICE_URL` / `OCR_SERVICE_URL`.
+- **D36 (always):** LBM/ibm-cargo code + **its** DB changes must **not** touch taurus/llm files, DB, volumes, or secrets. Own `DATABASE_URL` only. Matrix = HTTP and/or read→`sync:ai-matrix` into LBM `containers/{llm,ocr}` mirrors — never mutate taurus/llm sources in an LBM changeset.
 
 After domain changes: `npm run test:ci`.

@@ -15,7 +15,7 @@
 |------|----------|
 | Цикл фичи (D33) | [`feature-cycle.md`](docs/knowledge/feature-cycle.md) |
 | Ownership / пакеты (D35) | [`PACKAGES.md`](src/lib/ved/PACKAGES.md) · [`branches.md`](docs/knowledge/branches.md) |
-| AI / цепочки / llm↔compose | [`plan-ai-chains-1-2-3.md`](docs/knowledge/plan-ai-chains-1-2-3.md) · [`environments.md`](docs/knowledge/environments.md) · `npm run sync:ai-matrix` |
+| AI / цепочки / llm↔compose | [`plan-ai-chains-1-2-3.md`](docs/knowledge/plan-ai-chains-1-2-3.md) · [`environments.md`](docs/knowledge/environments.md) · `npm run sync:ai-matrix` · **D36** изоляция от taurus/llm |
 | UI (D14/D32) | Skill `.cursor/skills/ved-ui` · [`design-patterns.md`](docs/knowledge/design-patterns.md) |
 | Notify | Skill `.cursor/skills/ved-notify` |
 | As-is / деплой / тесты | [`current-app.md`](docs/knowledge/current-app.md) · [`deploy.md`](docs/knowledge/deploy.md) · [`testing-branches.md`](docs/knowledge/testing-branches.md) |
@@ -42,6 +42,7 @@
 6. Platform gates (D28) · dual-path writers (D24) · BackgroundJob ≠ D8 FSM (D26).
 7. D33: без плана в KB — нет кода; без KB — задача не закрыта.
 8. Не коммитить `.env` / секреты.
+9. **D36 (always):** изменения LBM/ibm-cargo и **его** БД **не** трогают файлы, БД, тома и секреты **taurus/llm**. Свой `DATABASE_URL`. Матрица — только HTTP и/или `sync:ai-matrix` → mirrors в `containers/{llm,ocr}`.
 
 ## Перед сдачей
 

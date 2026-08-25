@@ -55,6 +55,7 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 
 | Env | Смысл |
 |-----|--------|
+| `DATABASE_URL` | Mode A / Vercel — **только** Postgres LBM (**D36**: не БД taurus/llm) |
 | `USE_DOMAIN_API` | proxy session `/api/v1` → `containers/api` |
 | `AI_SERVICE_URL` / `LLM_SERVICE_URL` | draft / enrich; **host** `.env` / `.env.local` → `http://127.0.0.1:4500`; **Compose** hardcodes `http://llm:4500` для ai/api/web (не подставлять host URL в контейнер) |
 | `OCR_SERVICE_URL` | Qwen-VL describe в `AI_DRAIN` (+ extract); host `http://127.0.0.1:4700`; Compose `http://ocr:4700` |

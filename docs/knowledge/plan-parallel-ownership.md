@@ -30,7 +30,8 @@ AI-логика размазана: `src/lib/ved/provider-mesh*` (Vercel), `cont
 2. Не контейнер на DeepSeek/Qwen/… — только profile + `LLM_CLASSIFY_CHAIN`.  
 3. UI без Prisma. UI не зовёт matrix URL.  
 4. Envelope sync: `llm/contracts` ↔ `docs/contracts`.  
-5. Fail-open create.
+5. Fail-open create.  
+6. **D36:** changeset LBM/DB **не** мутирует файлы/БД/тома **taurus/llm**; `sync:ai-matrix` пишет только в LBM `containers/{llm,ocr}`.
 
 ## Проверка
 
