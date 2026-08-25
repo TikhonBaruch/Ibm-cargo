@@ -10,7 +10,7 @@
 ## Анализ
 
 As-is: 14+ контейнеров и dual-path (Vercel Prisma-in-Next vs Compose `USE_DOMAIN_API`).  
-AI-логика размазана: `src/lib/ved/provider-mesh*` (Vercel), `containers/llm|ocr` (Compose mirror), канон capability — репо **`/home/andrey/llm`**.  
+AI-логика размазана: `src/lib/ved/provider-mesh*` (Vercel), `containers/llm|ocr` (Compose mirror), канон capability — пакет **`../llm`** в репозитории **ibm-cargo** (не внешний `/home/andrey/llm`).  
 Антипаттерн D19 уже запрещает дробить infra; не хватало явной таблицы «кто трогает какие файлы» и канона sync mirror.
 
 ## Структура (этот цикл)

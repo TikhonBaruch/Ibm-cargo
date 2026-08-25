@@ -93,7 +93,7 @@
 | Вилкова / вторичка | Да | FAQ / обучение, не канон |
 | HTML-таблицы чужих сайтов | — | Не scrape как эталон |
 
-Внешний инвентарь-зеркало для LLM-матрицы: [`/home/andrey/llm/docs/sources-incoterms.md`](../../../llm/docs/sources-incoterms.md) (если репозиторий рядом).
+Инвентарь-зеркало для LLM-матрицы (тот же ibm-cargo): [`../../../llm/docs/sources-incoterms.md`](../../../llm/docs/sources-incoterms.md).
 
 ## Связь с LBM Брокер
 

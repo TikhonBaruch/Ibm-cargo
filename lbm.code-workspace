@@ -1,7 +1,0 @@
-{
-  "folders": [
-    { "name": "taurus", "path": "taurus" },
-    { "name": "llm", "path": "llm" }
-  ],
-  "settings": {}
-}

@@ -3,7 +3,7 @@
 Проект уже связан с remote и Vercel. Этот checklist — безопасная выкладка без секретов и тяжёлых ассетов.
 
 Прод UI: https://taurus-liart.vercel.app (hostname Vercel пока `taurus-liart`; бренд LBM Брокер)  
-Remote: `git@github.com:TikhonBaruch/taurus.git`  
+Remote: `https://github.com/TikhonBaruch/Ibm-cargo` (самостоятельный продукт **ibm-cargo**; не upstream `TikhonBaruch/taurus`)  
 Локальная разработка: [`../development.md`](../development.md).  
 Карта сред (local vs Compose vs prod): [`environments.md`](./environments.md).  
 Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./roadmap.md).

@@ -4,7 +4,7 @@
 
 **LBM Брокер** — AI-платформа импорта/ВЭД: AI готовит черновик (ТН ВЭД, платежи, документы), брокер подтверждает, клиент получает результат (PDF / дальше перевозка).
 
-Репозиторий GitHub: `TikhonBaruch/taurus` (hostname/path пока исторические); публичный бренд — **LBM Брокер**.
+Репозиторий GitHub: `TikhonBaruch/Ibm-cargo` (самостоятельный продукт; пакет приложения — каталог `taurus/`). Публичный бренд UI — **LBM Брокер**.
 
 Каркас: [`knowledge/skeleton.md`](./knowledge/skeleton.md). Решения: [`knowledge/decisions.md`](./knowledge/decisions.md).
 

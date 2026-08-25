@@ -1,6 +1,6 @@
 # Текущее приложение (as-is)
 
-Репозиторий: `/home/andrey/taurus` — Next.js App Router + Prisma + NextAuth + Telegram.
+Репозиторий: **ibm-cargo** (`TikhonBaruch/Ibm-cargo`), пакет `taurus/` — Next.js App Router + Prisma + NextAuth + Telegram. Отдельно от upstream taurus.
 
 Единая KB: [`README.md`](./README.md) · каркас: [`skeleton.md`](./skeleton.md) · ADR: [`decisions.md`](./decisions.md) D1–D34.  
 План / smoke: [`roadmap.md`](./roadmap.md) · [`staging.md`](./staging.md).  

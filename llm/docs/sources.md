@@ -1,6 +1,7 @@
-# Sources (copied from Taurus)
+# Sources (copied from app / historical Taurus)
 
-Snapshot date: **2026-08-07**. Origin root: `/home/andrey/taurus`.
+Snapshot date: **2026-08-07**. Origin root (historical): `/home/andrey/taurus`.  
+Текущий канон app: `../taurus` в репозитории **ibm-cargo** (отдельно от upstream).
 
 | Destination | Source |
 |-------------|--------|
@@ -16,8 +17,8 @@ Snapshot date: **2026-08-07**. Origin root: `/home/andrey/taurus`.
 | `docs/ai-pipeline.md` | adapted from `docs/knowledge/ai-pipeline.md` |
 | `docs/vision.md` | landing `#features` + `docs/knowledge/product.md` |
 
-**Not copied** (remain Taurus-only): Prisma, cabinets, payments, `containers/ai` draft server, logistics 3PL `:4600`.
+**Not copied** (remain app-only): Prisma, cabinets, payments, `containers/ai` draft server, logistics 3PL `:4600`.
 
-Scaffold **new** (not from Taurus): `services/{broker,risk,logistics,documents}`, contracts `d-broker|risk|logistics|documents.llm.json`.
+Scaffold **new** (not from original copy): `services/{broker,risk,logistics,documents}`, contracts `d-broker|risk|logistics|documents.llm.json`.
 
-Справочники корпусов (не copy из Taurus code): [`sources-tnved.md`](./sources-tnved.md), [`sources-incoterms.md`](./sources-incoterms.md), [`sources-payments.md`](./sources-payments.md). Канон Инкотермс/платежей в единой KB Taurus: `taurus/docs/knowledge/incoterms.md`, `customs-payments.md`.
+Справочники корпусов (не copy из app code): [`sources-tnved.md`](./sources-tnved.md), [`sources-incoterms.md`](./sources-incoterms.md), [`sources-payments.md`](./sources-payments.md). Канон Инкотермс/платежей в единой KB app: `taurus/docs/knowledge/incoterms.md`, `customs-payments.md`.

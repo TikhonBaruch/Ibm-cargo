@@ -2,8 +2,7 @@
 
 Инвентарь обновлён **2026-08-11**.
 
-**Канон продуктовой KB (Taurus):** [`../taurus/docs/knowledge/incoterms.md`](../../taurus/docs/knowledge/incoterms.md)  
-(если репозитории рядом: `/home/andrey/taurus/docs/knowledge/incoterms.md`).
+**Канон продуктовой KB (app в ibm-cargo):** [`../../taurus/docs/knowledge/incoterms.md`](../../taurus/docs/knowledge/incoterms.md).
 
 Этот файл — зеркало для LLM-матрицы (`services/logistics`, future documents).  
 Taurus: **Growth hold**, не MVP CTA (D27).

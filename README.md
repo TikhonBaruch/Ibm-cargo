@@ -1,20 +1,39 @@
-# LBM fork (2026-08-25)
+# ibm-cargo
 
-Полный форк кода taurus + llm (git history + working tree на момент копирования).
+Самостоятельный продукт (AI-платформа импорта / ВЭД).  
+Живёт **отдельно** от upstream `taurus` — свой remote, ветки, релизы и документация. Sync с исходным проектом не предполагается.
 
-## Что включено
-- Исходники, docs, contracts, containers, prisma schema/migrations
-- Незакоммиченные правки (в т.ч. precedent-suggest)
-- `.env.example` (не `.env` — секреты не копировались)
+Публичный бренд UI пока: **LBM Брокер**. Внутренняя раскладка репозитория:
 
-## Что не включено (следующий шаг)
-- База данных (Postgres volume / dump)
-- Хранилище uploads / S3
-- `node_modules` / `.next` — поставить: `cd taurus && npm ci` (и при необходимости containers/*)
+| Каталог | Роль |
+|---------|------|
+| [`taurus/`](taurus/) | Оркестратор: Next.js UI, Prisma, FSM просчёта, кабинеты, Compose |
+| [`llm/`](llm/) | HTTP-матрица classify / OCR / … (без D8 FSM) |
 
-## Открытие
+Workspace: [`ibm-cargo.code-workspace`](ibm-cargo.code-workspace).
+
+## Быстрый старт (Mode A)
+
 ```bash
-cursor /home/andrey/Projects/.worktrees/lbm-fork-2026-08-25/lbm.code-workspace
+# Postgres: пользователь/БД taurus:taurus@127.0.0.1:5432/taurus
+cd taurus
+cp .env.example .env   # или готовый локальный .env
+npm install
+npx prisma db push
+npx prisma db seed     # client@ / broker@ / admin@ · demo1234
+npm run dev            # http://localhost:3000
 ```
 
-Источник: `/home/andrey/taurus` + `/home/andrey/llm`
+Опционально AI stub: `node containers/ai/src/index.js` → `:4100`.  
+Подробнее: [`taurus/docs/development.md`](taurus/docs/development.md) · [`taurus/docs/knowledge/environments.md`](taurus/docs/knowledge/environments.md).
+
+## Что не в git
+
+- Секреты (`.env`)
+- Postgres volume / dump
+- Uploads / S3
+- `node_modules` / `.next`
+
+## Происхождение
+
+Изначально скопирован из кодовой базы taurus + llm (2026-08-25). Исторический манифест: [`FORK.md`](FORK.md). Дальнейшая эволюция — только в этом репозитории.

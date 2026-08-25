@@ -1,8 +1,9 @@
-# LBM Брокер
+# LBM Брокер (пакет `taurus/` в ibm-cargo)
 
-AI-платформа для импорта / ВЭД.
+AI-платформа для импорта / ВЭД.  
+Репозиторий продукта: **ibm-cargo** — развивается отдельно от upstream taurus. Имя папки `taurus/` — историческое.
 
-**Документация:** [`docs/README.md`](docs/README.md) · **Контейнеры:** [`containers/README.md`](containers/README.md)
+**Документация:** [`docs/README.md`](docs/README.md) · **Контейнеры:** [`containers/README.md`](containers/README.md) · **Корень монорепо:** [`../README.md`](../README.md)
 
 ## Стек
 

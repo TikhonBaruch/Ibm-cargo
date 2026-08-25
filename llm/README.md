@@ -1,10 +1,10 @@
 # @kargo/llm-matrix
 
-Внешняя **LLM-матрица** сервисов для [Taurus](../taurus) (Карго Брокер).  
-Шесть модулей лендинга — как отдельные HTTP-сервисы с frozen contracts; Taurus остаётся оркестратором просчёта/оплаты/брокера.
+**LLM-матрица** сервисов для пакета app ([`../taurus`](../taurus)) в репозитории **ibm-cargo**.  
+Шесть модулей лендинга — отдельные HTTP-сервисы с frozen contracts; app остаётся оркестратором просчёта/оплаты/брокера.
 
-| Сервис | Порт | Taurus env |
-|--------|------|------------|
+| Сервис | Порт | App env |
+|--------|------|---------|
 | classification | 4500 | `LLM_SERVICE_URL` |
 | ocr | 4700 | `OCR_SERVICE_URL` |
 | logistics | 4601 | future `LOGISTICS_AI_SERVICE_URL` |
@@ -27,28 +27,28 @@ docker compose up --build
 npm run smoke
 ```
 
-Если рядом крутится Taurus Compose (`llm:4500` / `ocr:4700`), поднимите матрицу на других портах и передайте URL в smoke:
+Если рядом крутится app Compose (`llm:4500` / `ocr:4700`), поднимите матрицу на других портах и передайте URL в smoke:
 
 ```bash
 PORT=14500 npm run start:classification
 CLASSIFICATION_URL=http://127.0.0.1:14500 npm run smoke
 ```
 
-Подключение к локальному Taurus:
+Подключение к локальному app (`taurus/`):
 
 ```bash
-# в env Taurus / Next
+# в env app / Next
 LLM_SERVICE_URL=http://127.0.0.1:4500
 OCR_SERVICE_URL=http://127.0.0.1:4700
 ```
 
 ## Правила
 
-См. [`AGENTS.md`](AGENTS.md). Не дублировать D8 FSM. Fail-open. UI Taurus не вызывает матрицу напрямую.
+См. [`AGENTS.md`](AGENTS.md). Не дублировать D8 FSM. Fail-open. UI app не вызывает матрицу напрямую.
 
 ## Источники
 
-Скопировано из Taurus (as-is classify/OCR + adapters): [`docs/sources.md`](docs/sources.md).
+Скопировано из app (as-is classify/OCR + adapters): [`docs/sources.md`](docs/sources.md).
 
 ## Корпус ТН ВЭД / Пояснений
 
@@ -62,8 +62,8 @@ npm run tnved:corpus
 ## Инкотермс / комментарии
 
 Инвентарь источников (Guide ICC, 723, свободный слой) — [`docs/sources-incoterms.md`](docs/sources-incoterms.md).  
-Канон в единой KB Taurus: `taurus/docs/knowledge/incoterms.md` (Growth hold, не scrape полного текста).
+Канон в единой KB app: `taurus/docs/knowledge/incoterms.md` (Growth hold, не scrape полного текста).
 
 ## Платежи (НДС / сборы)
 
-Без KEY: [`docs/sources-payments.md`](docs/sources-payments.md) · Taurus `docs/knowledge/customs-payments.md` (НДС 22%, шкала ПП 1637).
+Без KEY: [`docs/sources-payments.md`](docs/sources-payments.md) · app `docs/knowledge/customs-payments.md` (НДС 22%, шкала ПП 1637).

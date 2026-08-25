@@ -1,4 +1,7 @@
-# AGENTS.md — LBM Брокер
+# AGENTS.md — ibm-cargo / LBM Брокер
+
+Репозиторий: **ibm-cargo** (`TikhonBaruch/Ibm-cargo`) — самостоятельный продукт, не зеркало upstream taurus.  
+Каталог `taurus/` здесь — пакет приложения (историческое имя папки), не отдельный remote.
 
 Единая KB: [`docs/knowledge/README.md`](docs/knowledge/README.md) · ADR [`decisions.md`](docs/knowledge/decisions.md) · каркас [`skeleton.md`](docs/knowledge/skeleton.md).
 
@@ -6,7 +9,7 @@
 
 Частник: ТН ВЭД (heuristic) → брокер-QC → PDF. Shipping UI default off.  
 Демо: `client@` / `broker@` / `operator@` / `admin@example.com` · `demo1234`.  
-Прод: https://taurus-liart.vercel.app
+Прод (исторический host, пока не сменён): https://taurus-liart.vercel.app
 
 ## Куда смотреть
 
@@ -28,6 +31,7 @@
 - Нет `@prisma/client` в `containers/{broker,client,admin}`
 - HTTP shape контейнера → `docs/contracts/d-*.json`
 - **Model ≠ container** (D35): профили/`AI_CHAIN_ID`, не `containers/deepseek`
+- LLM-матрица — соседний пакет [`../llm`](../llm) в том же репозитории ibm-cargo
 
 ## Инварианты
 
@@ -50,5 +54,5 @@
 |---------|------------|
 | `npm run test:ci` | unit → structure → contracts → verify |
 | `npm run smoke:*` | live (running app + seed) |
-| `npm run sync:ai-matrix[:check]` | llm → `containers/{llm,ocr}` |
+| `npm run sync:ai-matrix[:check]` | `../llm` → `containers/{llm,ocr}` |
 | `npm run sync:cursor-rules` | `docs/knowledge/ved-*.mdc` → `.cursor/rules/` |

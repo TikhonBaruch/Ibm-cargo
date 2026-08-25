@@ -23,7 +23,7 @@
 1. Скачайте XML/JSON справочника СТНВЭДСТ с портала НСИ/opendata.
 2. Положите как `data/tnved/raw/nsi-stnvedst/<YYYY-MM-DD>/catalog.xml` (или `.json`).
 3. Dataset ФТС (CSV/XML) → `data/tnved/raw/fts-opendata/<date>/datasets/`.
-4. Либо положите выгрузку листьев: `TWS_TNVED_….csv` в корень `/home/andrey/llm` и `npm run tnved:parse-tws`.
+4. Либо положите выгрузку листьев: `TWS_TNVED_….csv` в корень `llm/` и `npm run tnved:parse-tws`.
 5. `npm run tnved:normalize && npm run tnved:export-import`.
 
 Или задайте прямой URL: `NSI_XML_URL=… npm run tnved:fetch-nsi`.

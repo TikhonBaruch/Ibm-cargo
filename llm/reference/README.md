@@ -1,7 +1,7 @@
 # reference/
 
-Read-only copies of Taurus adapters for local development of this matrix.  
-Do **not** treat as the live Taurus source of truth — sync from `/home/andrey/taurus` when APIs drift.
+Read-only copies of app (`../taurus`) adapters for local development of this matrix.  
+Канон живого кода — `../taurus/…` в том же репозитории **ibm-cargo**. Не sync с внешним upstream.
 
 | File | Origin |
 |------|--------|
