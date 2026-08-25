@@ -12,7 +12,7 @@
 
 ## Структура
 
-1. `/login` — демо-подсказка **без изменений**.
+1. `/login` — демо-подсказка client / broker / admin (лишние учётки — комментарий в форме, не в UI).
 2. Obscure login — нейтральный copy (без ярлыка роли/CMS).
 3. Кодировать SUPER path/email в `src/lib/ved/super-admin.ts`.
 4. Infra-панель SUPER: не хардкодить seed-пароль; credentials только из env.

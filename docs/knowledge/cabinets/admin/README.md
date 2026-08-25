@@ -36,7 +36,7 @@
 | Операции | Брокеры | `/brokers` | `.person-card` сетка; модерация · acceptingJobs · профиль | Одобрить / Отклонить · пауза · **drawer: specialization/languages/about** |
 | Операции | Поддержка | `/support` | SUPPORT inbox (фильтры Нужен ответ / Ждёт клиента / Закрыто / Архив) · nav badge unread | **Ответить** (`SUPPORT_REPLY`) · Close / Archive / Reopen (`SUPPORT_STATUS`) |
 | Операции | Финансы | `/finance` | live `.stats` + `table.data` балансы/выплаты | фильтр статуса · **CSV** · **Отметить PAID** |
-| Каталог | Тарифы | `/tariffs` | `.tariff-mini` D10 price / share / slaHours | Сохранить; макет Код/Таможня → `DesignerStub` |
+| Каталог | Тарифы | `/tariffs` | `.tariff-mini` D10 price / share / slaHours | Сохранить; hold-заметка в исходнике (без бейджа) |
 | Каталог | ТН ВЭД | `/tnved` | Поиск; форма / CSV / JSON; демо-набор; **карточка кода** | `POST …/import` · `GET …/search` · `GET …/:code` |
 | Каталог | AI-качество | `/ai-quality` | = форма settings | confidence, SLA, preferredClaimHours, USD, toggles incl. **`llmEnrichEnabled`** |
 | Платформа | Пользователи | `/users` | `.card` + `.field` + `table.data` | create + reset password (без SUPER) |

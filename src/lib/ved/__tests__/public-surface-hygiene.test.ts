@@ -18,6 +18,18 @@ describe("public surface hygiene", () => {
     expect(src).toMatch(/demo1234/);
     expect(src).toContain("client@example.com");
     expect(src).toContain("broker@example.com");
+    expect(src).toContain("admin@example.com");
+    const visible = src.replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
+    expect(visible).toMatch(/Демо: client@example.com \/ broker@example.com \/ admin@example.com/);
+  });
+
+  it("hides designer-stub badge while keeping restore markup in source", () => {
+    const src = fs.readFileSync(
+      path.join(repoRoot, "src/lbm-bro/components/designer-stub.tsx"),
+      "utf8",
+    );
+    expect(src).toContain("return null");
+    expect(src).toContain("Restore visual");
   });
 
   it("does not list obscure path in robots.txt", () => {

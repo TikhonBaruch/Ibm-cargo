@@ -257,6 +257,7 @@ app/client/**              # Next routes UI lab
 | **C2** | **Pane visual:** карточки заявок, wizard chrome на `/new`, stepper на детали, очередь `.card`/`table.data`, QC-шапка WorkMapping, person-card брокеров, `tariff-mini` D10. Hold-модули → `DesignerStub` | Не копировать Код/Таможня/Под ключ, freemium, ЧЗ/ТО/голос, НДС 20%/сбор 15k, браузерный classify; не дробить NewCalc на шаги, скрывающие `HsCodeAutocomplete`/`FieldSuggest`; claim ≠ approve |
 | **C3** | **Максимальный match макета:** live-nav клиента = 5 тайлов (Главная · Заявки · Справочник ТН ВЭД · Чат · Компания); шапка = поиск + колокол + CTA; главная = greet/quick/ЧЗ-expand + faq/guide + lookup + лента с covers/chips/progress + svc. Extra-роуты `/cabinet/{tnved,faq,guide,clearance}`. Balance/чат/компания/брокеры — chrome макета. Hold → `DesignerStub`. Иконки — `@/lbm-bro/components/icon`. Shipping/factory не в сайдбаре (плитки/deep-link). | Не брать `tnved.json` как правду (live = `/api/v1/tnved/search`); не копировать freemium/Код-Таможня-Под ключ/НДС 20%/сбор 15k/голос/ЧЗ/ТО как продукт; не сплющивать admin nav; WorkMapping не заменять |
 | **C4** | **Остатки внутренней вёрстки:** панели, которые после C3 всё ещё на VedShell-карточках (`rounded-[28px]`, `rounded-xl` инпуты, slate-чат). CSS-мост `.lbm-live-*` + markup `.stats` / `table.data` / `.field` / `.chat-box` / `.search-row` / `.filter-chips` / `.activity-list`. | Не менять D8/D10/D11; не сплющивать admin nav; WorkMapping не заменять; кабинет производителя (`VedShell`) вне скоупа |
+| **C5** | Бейдж hold скрыт: `DesignerStub` → `null` (title/intent остаются на call sites + комментарий restore). Hint `/login` = client / broker / admin | Не удалять call sites и seed-учётки |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -308,10 +309,15 @@ app/client/**              # Next routes UI lab
 | Фаза C2: pane visual + `DesignerStub` | **этот PR** |
 | Фаза C3: 5-tile IA + шапка макета + extra-роуты + stub hold | **этот PR** |
 | Фаза C4: leftover inner panes → `.card` / `.stats` / `table.data` / `.field` / `.chat-box` | **этот PR** |
+| Фаза C5: бейдж hold скрыт (`DesignerStub` → `null`); hint `/login` = client / broker / admin | **этот PR** |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** live `/cabinet` повторяет IA и chrome макета (5 тайлов, поиск, колокол, суперприложение); внутренние панели после C4 — тот же язык карточек/таблиц/полей; брокер/админ = тёмный ops + Icon; hold-модули — `DesignerStub`. Domain D8/D10/D11/D15 и live ТН ВЭД (`/api/v1/tnved/search`) не менять.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; внутренние панели — `.card` / таблицы / поля; брокер/админ = тёмный ops; hold-модули остаются в исходниках (`DesignerStub` не рисует бейдж). Domain D8/D10/D11/D15 и live ТН ВЭД (`/api/v1/tnved/search`) не менять.
+
+### C5 — бейдж hold скрыт
+
+Показ «Замысел дизайнера» убран из UI. `DesignerStub` возвращает `null`; вызовы с `title` / `intent` / `gap` и закомментированный markup в `designer-stub.tsx` — чтобы вернуть бейдж одной правкой. Публичный `/login` показывает только client / broker / admin.
 
 ### C4 — leftover inner panes
 

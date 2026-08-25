@@ -5,7 +5,7 @@
 ## Продукт (D27)
 
 Частник: ТН ВЭД (heuristic) → брокер-QC → PDF. Shipping UI default off.  
-Демо: `client@example.com` / `broker@example.com` / `operator@example.com` / `admin@example.com` · `demo1234`.  
+Демо: `client@example.com` / `broker@example.com` / `admin@example.com` · `demo1234`.  
 **Прод этого репо:** https://ibm-cargo-phi.vercel.app (Vercel project `ibm-cargo`).  
 **Backup ядра (D37, read-only):** https://taurus-liart.vercel.app — **не трогать** (no deploy/smoke/migrate).  
 `https://ibm-cargo.vercel.app` — **чужой** Vercel-проект (статический IBM Cargo). Preview без `DATABASE_URL` ломает вход (Prisma). `/health` → `databaseUrl`. Канон: [`plan-taurus-backup-core.md`](docs/knowledge/plan-taurus-backup-core.md) · [`plan-preview-auth.md`](docs/knowledge/plan-preview-auth.md) §5.

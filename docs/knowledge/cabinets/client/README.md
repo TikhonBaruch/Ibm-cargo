@@ -11,10 +11,10 @@
 |---------|-------|----------------|----------------|
 | Главная | `/` · `/cabinet` | Superapp как у дизайнера: greet, consult/ЧЗ-stub, faq/guide, lookup, лента covers/chips, svc | Плитки → `/new` `/orders` `/support` `/faq` `/guide` `/tnved` `/brokers` `/clearance`; shipping/factory — плитки, не сайдбар |
 | Заявки | `/orders` | Карточки (`.cl-order`): обложка, pill, «следующий шаг» D8 | Фильтры Все\|Готово\|У брокера\|Оплата; PDF при DONE; `onOpen` / pay без смены FSM |
-| Справочник ТН ВЭД | `/tnved` | Combobox live `GET /api/v1/tnved/search` + карточка кода | Не `tnved.json`; freemium peek → `DesignerStub`; CTA → `/new` |
+| Справочник ТН ВЭД | `/tnved` | Combobox live `GET /api/v1/tnved/search` + карточка кода | Не `tnved.json`; CTA → `/new` |
 | Чат | `/support` | IM-шелл: тикеты поддержки + ссылки на чат брокера по заявке | Голос → stub; FAQ → `/faq` |
 | Компания | `/profile` | `.field` реквизиты | Тумблеры уведомлений макета → stub |
-| Новый просчёт | `/new` (header CTA) | Wizard chrome (товар→тариф→запуск, поля не прячутся); лимит D10; heuristic top-N + **combobox ТН ВЭД** (`HsCodeAutocomplete`, `leafOnly`); **stage tip** + labels; **attr chips**; **FieldSuggest**; `tariff-mini` D10; hold → `DesignerStub` | Форма + позиции + attrs + **строка производителя** + опц. SKU + **HS directory** + **upload** + **CSV** · [`plan-client-tnved-search.md`](../../plan-client-tnved-search.md) |
+| Новый просчёт | `/new` (header CTA) | Wizard chrome (товар→тариф→запуск, поля не прячутся); лимит D10; heuristic top-N + **combobox ТН ВЭД** (`HsCodeAutocomplete`, `leafOnly`); **stage tip** + labels; **attr chips**; **FieldSuggest**; `tariff-mini` D10 | Форма + позиции + attrs + **строка производителя** + опц. SKU + **HS directory** + **upload** + **CSV** · [`plan-client-tnved-search.md`](../../plan-client-tnved-search.md) |
 
 Шапка live: поиск заявки/товара/брокера + колокол (события D8) + CTA «Новый просчёт». Title скрыт на главной и wizard.
 
@@ -22,7 +22,7 @@
 
 | Элемент | Где | Тип |
 |---------|-----|-----|
-| FAQ / гайд / ТО | `/faq` `/guide` `/clearance` | copy D10 + `DesignerStub` на hold |
+| FAQ / гайд / ТО | `/faq` `/guide` `/clearance` | copy D10; hold-заметки в исходниках, без бейджа |
 | Баланс / брокеры / перевозка / производитель | `/balance` `/brokers` `/shipping` `/factory` | плитки главной или deep-link; shipping/factory live только при флаге, иначе stub; factory live = `.card` / `.field` / `table.data` |
 | OrderDetail | dash/orders | HS, **смета без доставки**, attrs, preferred, timeline |
 | «Оплатить тариф» / «Пополнить до тарифа и оплатить» | OrderDetail | деньги |

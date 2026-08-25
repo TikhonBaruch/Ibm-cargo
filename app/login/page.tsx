@@ -108,8 +108,10 @@ export default function LoginPage() {
           </button>
         </div>
         <p className="auth-hint">
-          Демо: client@example.com / broker@example.com / manufacturer@example.com / operator@example.com / admin@example.com — пароль{" "}
+          Демо: client@example.com / broker@example.com / admin@example.com — пароль{" "}
           <code>demo1234</code>
+          {/* Hidden from this hint until restore is requested:
+              manufacturer@example.com / operator@example.com */}
         </p>
         <p className="auth-hint">
           Нет аккаунта?{" "}
