@@ -113,9 +113,9 @@ Provider stub или OpenAI — см. [`ai-pipeline.md`](./ai-pipeline.md) / [`g
 | Контейнер / пакет | Контракты | Параллельный фокус |
 |-------------------|-----------|-------------------|
 | `containers/api` + domain | d-calc, d-queue, d-map, d-thread, d-ledger | domain routes / proxy parity |
-| `containers/ai` + draft | d-draft.ai | draft engine; вызов llm |
-| **`llm` repo** `classification` (mirror `containers/llm`) | d-draft.llm | classify/duty + provider profiles/chains |
-| **`llm` repo** `ocr` (mirror `containers/ocr`) | d-ocr.ai | extract / vision |
+| `containers/ai` + draft | d-draft.ai | draft engine; optional HTTP → `containers/llm` |
+| **`containers/llm`** (LBM-owned, D36) | d-draft.llm | classify/duty + provider profiles |
+| **`containers/ocr`** (LBM-owned, D36) | d-ocr.ai | extract / vision |
 | orch (`worker`, AI_DRAIN) | d-orch.core, d-job | retries, ticks — не UI |
 | mesh (`provider-mesh`) | — (env) | Vercel direct providers; UI не зовёт |
 | `containers/notify` | d-event | template catalog |

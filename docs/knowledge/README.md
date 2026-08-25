@@ -35,6 +35,7 @@
 | Гладкий create / smoke S3 / compress | [`plan-smooth-create-path.md`](./plan-smooth-create-path.md) |
 | Журнал AI-цепочки + online probes | [`plan-chain-run-log.md`](./plan-chain-run-log.md) |
 | Параллельная ownership + multi-model (D35) | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`../../src/lib/ved/PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
+| Go-live MVP standalone (D27+D36) | [`plan-go-live-mvp.md`](./plan-go-live-mvp.md) · max без pay/logistics [`plan-max-standalone-mvp.md`](./plan-max-standalone-mvp.md) |
 | Изоляция / full split (**D36**) | [`decisions.md`](./decisions.md) D36 · [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) |
 | Vision до classify (таймаут / gate) | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |
 | LLM на заполнении + удачные прецеденты | [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) |

@@ -110,8 +110,10 @@ Cutover slim web только после стабильного `smoke:gateway` 
 |------|-------|--------|
 | **M0** | Эксплуатация: mock+S3, визуальный C↔B↔A, empty states (клиент сначала) | **M0.1+M0.2 PASS** (2026-08-25); empty states live · [`staging.md`](./staging.md) |
 | **M1** | Кабинеты: клиент empty → брокер queue/`acceptingJobs` → админ группы nav (**live**); HS heuristic; `smoke:client` | **live** · smoke:client accepts IN_REVIEW (autoAssign) |
-| **M2** | Tech-debt (lint/tsc/PROTECTED/docs) + нарезка Admin panes после групп nav | **done** (код) · Track A keys — ops · [`plan-tech-debt.md`](./plan-tech-debt.md) |
-| **M3** | Опц. Resend + накопление precedent-v1 | ops / approve |
+| **M2** | Tech-debt (lint/tsc/PROTECTED/docs) + нарезка Admin panes после групп nav | **done** · на `main` (2026-08-25) |
+| **Go-live** | Merge #6→#7→#8; standalone без taurus/llm | **done** · [`plan-go-live-mvp.md`](./plan-go-live-mvp.md) |
+| **Max MVP** | KB + smoke matrix; без live pay/logistics; parallel lbm-bro UI | **in progress** · [`plan-max-standalone-mvp.md`](./plan-max-standalone-mvp.md) |
+| **M3** | Опц. Resend + накопление precedent-v1 | ops / approve (без ЮKassa в текущем scope) |
 | **G** | ЮKassa / LLM / ТН ВЭД dump / shipping / OCR / C5; **производитель v1** после M1 кабинетов | hold — не смешивать с M0; не CTA D27 |
 
 Правило: пока M0.1–M0.3 красные, не начинать G в том же PR. Command palette — hold.

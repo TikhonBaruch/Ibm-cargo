@@ -10,7 +10,7 @@
 
 | Слой | Статус | Детали |
 |------|--------|--------|
-| Контейнер `ocr` (:4700) | **partial** | `containers/ocr` + зеркало `llm/services/ocr` |
+| Контейнер `ocr` (:4700) | **partial** | `containers/ocr` (LBM-owned, D36) |
 | Create path | **wired** | `createAndDraftCalculation` → `extractWithOcr` при `OCR_SERVICE_URL` + `item.mediaUrl` (fail-open) |
 | Import preview | **wired** | CSV / XLSX / **text-layer PDF** в `ProductCsvImport` |
 | Text PDF | **done** | `parseProductPdf` (unpdf) + `ocr-pdf-table-v1` fallback |
