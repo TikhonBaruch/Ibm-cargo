@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-queue.broker.json",
+  "title": "D-QUEUE broker→core",
+  "description": "Paid queue visibility and claim. Only QUEUED|SLA_RISK after client pay (D11).",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": ["GET /v1/calculations?scope=queue|mine", "POST /v1/calculations/:id/claim"],
+  "definitions": {
+    "listQuery": {
+      "type": "object",
+      "properties": {
+        "scope": { "type": "string", "enum": ["queue", "mine"] }
+      }
+    },
+    "claimResponse": {
+      "type": "object",
+      "required": ["id", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "status": { "type": "string", "enum": ["IN_REVIEW", "SLA_RISK"] },
+        "brokerUserId": { "type": "string" },
+        "claimedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "examples": {
+    "queueItem": {
+      "id": "calc_1",
+      "number": "#SEED-MULTI",
+      "status": "QUEUED",
+      "preferredBrokerUserId": null
+    },
+    "claimResponse": {
+      "id": "calc_1",
+      "status": "IN_REVIEW"
+    }
+  },
+  "x-invariants": ["Cannot claim from AI_READY", "Preferred exclusive timeout before open claim"]
+}

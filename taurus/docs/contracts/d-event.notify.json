@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-event.notify.json",
+  "title": "D-EVENT notify",
+  "description": "Platform outbox events. Durable rows in service_outbox (D26); RAM buffer is mirror. Freeze template names.",
+  "x-contractVersion": 2,
+  "x-owner": "containers/notify",
+  "x-transport": ["POST /v1/send", "GET /v1/outbox", "POST /v1/internal/outbox/drain"],
+  "definitions": {
+    "sendRequest": {
+      "type": "object",
+      "required": ["to"],
+      "properties": {
+        "channel": { "type": "string", "enum": ["email", "sms", "push"], "default": "email" },
+        "to": { "type": "string", "minLength": 1 },
+        "template": {
+          "type": "string",
+          "enum": ["generic", "calc.approved", "calc.sla_risk", "ledger.topup"]
+        },
+        "payload": { "type": "object", "additionalProperties": true },
+        "outboxId": { "type": "string", "description": "Optional durable ServiceOutbox id" }
+      }
+    },
+    "outboxMessage": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "outboxId": { "type": ["string", "null"] },
+        "channel": { "type": "string" },
+        "to": { "type": "string" },
+        "template": { "type": "string" },
+        "payload": { "type": "object" },
+        "status": { "type": "string" },
+        "deliveryStatus": {
+          "type": "string",
+          "enum": ["PENDING", "SENDING", "DELIVERED", "FAILED", "DEAD"]
+        },
+        "createdAt": { "type": "string" }
+      }
+    }
+  },
+  "examples": {
+    "calcApproved": {
+      "channel": "email",
+      "to": "client@example.com",
+      "template": "calc.approved",
+      "payload": { "calculationId": "calc_1", "number": "#00042", "outboxId": "obx_1" }
+    },
+    "slaRisk": {
+      "channel": "email",
+      "to": "broker@example.com",
+      "template": "calc.sla_risk",
+      "payload": { "calculationId": "calc_1" }
+    },
+    "outboxMessage": {
+      "id": "obx_1",
+      "outboxId": "obx_1",
+      "channel": "email",
+      "to": "client@example.com",
+      "template": "calc.approved",
+      "payload": {},
+      "status": "delivered",
+      "deliveryStatus": "DELIVERED",
+      "createdAt": "2026-08-05T12:00:00.000Z"
+    }
+  }
+}

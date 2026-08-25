@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+set -e
+# Block commits that break logistics / shipping (D15). Vitest = Jest-compatible API.
+npm run lint:logistics
+npm run test:logistics

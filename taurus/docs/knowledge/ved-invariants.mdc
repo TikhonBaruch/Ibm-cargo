@@ -1,0 +1,25 @@
+---
+description: VED product invariants (D8–D15, D24–D28, D32–D34) — do not violate
+alwaysApply: true
+---
+
+# VED invariants
+
+ADR: `docs/knowledge/decisions.md` · product: `docs/knowledge/product.md` (D27).
+
+- **D8/D11:** pay from `AI_READY` → `QUEUED` or `DONE`; no broker queue without pay.
+- **D10:** EXPRESS ≤1, STANDARD ≤3, PRO ≤10.
+- **D13:** tariff via company balance + ledger; MVP topup = mock.
+- **D15:** real `CalculationItem` only (never `id: "synthetic"`). Broker edits HS/duty/VAT/fee, not `TariffPlan.priceRub`. Shipping after `DONE` only; client shipping UI default off.
+- **D24:** item `attrs` / soft `tnvedCode` / `CalculationEvent` — writers in Next **and** `containers/api`.
+- **D25:** public signup = Company + CLIENT only.
+- **D26:** `BackgroundJob` / outbox / ServiceCall — infra only; not a second Calculation FSM.
+- **D27:** MVP = TN VED → broker QC → PDF; no turnkey delivery / live pay / LLM-without-code as CTA.
+- **D28:** platform gates in domain + dual-path; SUPER obscure.
+- **D6:** do not grow legacy CMS as product face.
+- **D32:** reuse UI patterns (`design-patterns.md`); no second toast/drawer/shell.
+- **D33:** no code without KB plan; no close without KB update.
+- **D34:** factory pool ≠ D8; segments on `Company.clientSegment`.
+- **D35:** model ≠ container; UI never calls `LLM_SERVICE_URL` / `OCR_SERVICE_URL`.
+
+After domain changes: `npm run test:ci`.

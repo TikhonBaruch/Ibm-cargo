@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-thread.chat.json",
+  "title": "D-THREAD chat",
+  "description": "Client↔broker dialogue via core. Does not enqueue to broker without pay. SUPPORT tickets are company/cabinet help, not calculation queue.",
+  "x-contractVersion": 3,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "GET /v1/chat?calculationId=",
+    "GET /v1/chat?scope=threads",
+    "GET /v1/chat?scope=support",
+    "GET /v1/chat?scope=support&box=",
+    "GET /v1/chat?scope=unread",
+    "GET /v1/chat?threadId=",
+    "POST /v1/chat"
+  ],
+  "definitions": {
+    "postCalculationRequest": {
+      "type": "object",
+      "required": ["calculationId", "body"],
+      "properties": {
+        "kind": { "const": "CALCULATION" },
+        "calculationId": { "type": "string" },
+        "body": { "type": "string", "minLength": 1, "maxLength": 4000 },
+        "attachmentUrl": { "type": "string" }
+      }
+    },
+    "postSupportRequest": {
+      "type": "object",
+      "required": ["kind", "subject", "body"],
+      "properties": {
+        "kind": { "const": "SUPPORT" },
+        "subject": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "body": { "type": "string", "minLength": 1, "maxLength": 4000 }
+      }
+    },
+    "postSupportReplyRequest": {
+      "type": "object",
+      "required": ["kind", "threadId", "body"],
+      "properties": {
+        "kind": { "const": "SUPPORT_REPLY" },
+        "threadId": { "type": "string" },
+        "body": { "type": "string", "minLength": 1, "maxLength": 4000 }
+      }
+    },
+    "postSupportStatusRequest": {
+      "type": "object",
+      "required": ["kind", "threadId", "action"],
+      "properties": {
+        "kind": { "const": "SUPPORT_STATUS" },
+        "threadId": { "type": "string" },
+        "action": { "type": "string", "enum": ["resolve", "archive", "reopen"] }
+      }
+    },
+    "postRequest": {
+      "description": "CALCULATION (default), SUPPORT ticket, SUPPORT_REPLY, or SUPPORT_STATUS",
+      "oneOf": [
+        { "$ref": "#/definitions/postCalculationRequest" },
+        { "$ref": "#/definitions/postSupportRequest" },
+        { "$ref": "#/definitions/postSupportReplyRequest" },
+        { "$ref": "#/definitions/postSupportStatusRequest" }
+      ]
+    },
+    "message": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "body": { "type": "string" },
+        "attachmentUrl": { "type": ["string", "null"] },
+        "authorRole": { "type": "string" },
+        "waitingOn": { "type": ["string", "null"], "enum": ["CLIENT", "BROKER", null] },
+        "ticketStatus": {
+          "type": ["string", "null"],
+          "enum": ["OPEN", "WAITING_CLIENT", "RESOLVED", "ARCHIVED", null]
+        }
+      }
+    }
+  },
+  "examples": {
+    "postRequest": {
+      "calculationId": "calc_1",
+      "body": "Нужен уточняющий инвойс",
+      "attachmentUrl": "/uploads/ved/doc.pdf"
+    },
+    "postSupportRequest": {
+      "kind": "SUPPORT",
+      "subject": "Не вижу баланс",
+      "body": "После topup баланс не обновился"
+    },
+    "postSupportStatusRequest": {
+      "kind": "SUPPORT_STATUS",
+      "threadId": "thr_1",
+      "action": "resolve"
+    },
+    "postResponse": {
+      "id": "msg_1",
+      "body": "Нужен уточняющий инвойс",
+      "waitingOn": "CLIENT"
+    }
+  },
+  "x-invariants": [
+    "No status jump to QUEUED",
+    "Thread created on claim",
+    "SUPPORT does not require calculationId",
+    "Admin GET scope=support lists SUPPORT threads (optional box=open|waiting_client|resolved|archived)",
+    "Client GET scope=support defaults to active (OPEN + WAITING_CLIENT); box=archive for RESOLVED+ARCHIVED",
+    "SUPPORT_REPLY updates waitingOn and ticketStatus; rejected on RESOLVED/ARCHIVED",
+    "SUPPORT_STATUS resolve|archive|reopen writes a system ChatMessage; not Calculation D8"
+  ]
+}

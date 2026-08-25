@@ -1,0 +1,1018 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(cuid())
+  name            String?
+  email           String?   @unique
+  emailVerified   DateTime?
+  image           String?
+  telegramId      String?   @unique
+  telegramName    String?
+  role            UserRole  @default(USER)
+  password        String?
+  bio             String?   @db.Text
+  specialization  String?
+  phone           String?
+  experience      Int?
+  sortOrder       Int       @default(0)
+  showInTeam      Boolean   @default(false)
+  companyId       String?
+  company         Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  brokerProfile   BrokerProfile?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  posts           Post[]
+  comments        Comment[]
+  calculationsAsClient Calculation[] @relation("CalculationClient")
+  calculationsAsBroker Calculation[] @relation("CalculationBroker")
+  preferredCalculations Calculation[] @relation("CalculationPreferredBroker")
+  assignments     BrokerAssignment[]
+  chatMessages    ChatMessage[]
+  chatThreadsCreated ChatThread[] @relation("ChatThreadCreator")
+  ledgerEntries   LedgerEntry[]
+  calculationEvents CalculationEvent[] @relation("CalculationEventActor")
+  manufacturerProposalsProposed ManufacturerProposal[] @relation("ManufacturerProposalProposer")
+  manufacturerProposalsReviewed ManufacturerProposal[] @relation("ManufacturerProposalReviewer")
+
+  @@index([companyId])
+  @@map("users")
+}
+
+model Post {
+  id              String     @id @default(cuid())
+  title           String
+  slug            String     @unique
+  content         String?
+  excerpt         String?
+  coverImage      String?
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+  type            PostType   @default(NEWS)
+  status          PostStatus @default(DRAFT)
+  isFeatured      Boolean    @default(false)
+  authorId        String
+  location        String?
+  latitude        Float?
+  longitude       Float?
+  publishedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  media           Media[]
+  author          User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tags            Tag[]      @relation("PostToTag")
+  comments        Comment[]
+  socialPosts     SocialPost[]
+
+  @@index([status, publishedAt])
+  @@index([type])
+  @@index([isFeatured])
+  @@index([authorId])
+  @@map("posts")
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  posts Post[] @relation("PostToTag")
+
+  @@map("tags")
+}
+
+model Media {
+  id        String    @id @default(cuid())
+  url       String
+  type      MediaType
+  filename  String?
+  size      Int?
+  postId    String
+  createdAt DateTime  @default(now())
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("media")
+}
+
+enum UserRole {
+  USER
+  EDITOR
+  ADMIN
+  SUPER_ADMIN
+  SPECIALIST
+  CLIENT
+  BROKER
+  MANUFACTURER
+}
+
+enum CompanyKind {
+  CLIENT
+  MANUFACTURER
+}
+
+enum ManufacturerSkuStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+/// Importer working mode (D34). Not a UserRole — public signup stays CLIENT (D25).
+enum ClientSegment {
+  SINGLE
+  RETAIL_SMALL
+  WHOLESALE
+}
+
+enum SkuOrderRequestStatus {
+  SUBMITTED
+  REJECTED
+  POOLED
+  CANCELLED
+}
+
+enum SkuOrderPoolStatus {
+  OPEN
+  CONFIRMED
+  CLOSED
+  CANCELLED
+}
+
+enum TariffCode {
+  EXPRESS
+  STANDARD
+  PRO
+}
+
+enum CalculationStatus {
+  DRAFT
+  AI_PROCESSING
+  AI_READY
+  AWAITING_PAYMENT
+  QUEUED
+  IN_REVIEW
+  DONE
+  SLA_RISK
+  CANCELLED
+}
+
+enum LedgerKind {
+  TOPUP
+  TARIFF_CHARGE
+  PAYOUT
+  ADJUSTMENT
+}
+
+enum BrokerModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Client/broker-proposed manufacturer; permanent Company only after ADMIN approve (D33 plan).
+enum ManufacturerProposalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ChatThreadKind {
+  CALCULATION
+  SUPPORT
+}
+
+enum ChatWaitingOn {
+  CLIENT
+  BROKER
+}
+
+/// SUPPORT ticket lifecycle only — do not use for Calculation D8.
+enum SupportTicketStatus {
+  OPEN
+  WAITING_CLIENT
+  RESOLVED
+  ARCHIVED
+}
+
+enum PayoutStatus {
+  ACCRUED
+  DOCS_REQUESTED
+  PAID
+}
+
+enum PaymentIntentStatus {
+  PENDING
+  SUCCEEDED
+  CANCELED
+  FAILED
+}
+
+enum ShippingStatus {
+  NEW
+  QUOTED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+/// Durable worker queue status (D26). Not Calculation FSM.
+enum BackgroundJobStatus {
+  QUEUED
+  RUNNING
+  DONE
+  FAILED
+  DEAD
+}
+
+/// Notify / webhook delivery status (D26).
+enum ServiceOutboxStatus {
+  PENDING
+  SENDING
+  DELIVERED
+  FAILED
+  DEAD
+}
+
+/// Cross-container HTTP call journal (D26).
+enum ServiceCallStatus {
+  PENDING
+  OK
+  FAILED
+  TIMEOUT
+}
+
+/// Append-only lifecycle / mapping history for a Calculation (D24).
+enum CalculationEventKind {
+  CREATED
+  AI_DRAFT
+  STATUS
+  PAID
+  CLAIMED
+  ITEM_MAPPED
+  APPROVED
+  NOTE
+}
+
+enum PostType {
+  NEWS
+  WORK
+  UPDATE
+  EVENT
+  PROMO
+}
+
+enum PostStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+}
+
+enum BookingStatus {
+  NEW
+  PROCESSING
+  DONE
+  CANCELLED
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  author      String
+  car         String?
+  text        String
+  rating      Int      @default(5)
+  date        String?
+  source      String?  @default("manual")
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished])
+  @@index([sortOrder])
+  @@map("reviews")
+}
+
+model Booking {
+  id         String        @id @default(cuid())
+  name       String
+  phone      String
+  service    String?
+  message    String?
+  status     BookingStatus @default(NEW)
+  notifyRole String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("bookings")
+}
+
+model TelegramRecipient {
+  id        String   @id @default(cuid())
+  name      String
+  chatId    String   @unique
+  role      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("telegram_recipients")
+}
+
+model PageSection {
+  id        String   @id @default(cuid())
+  page      String
+  type      String
+  title     String?
+  subtitle  String?
+  content   String?
+  image     String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  settings  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([page, type])
+  @@index([page])
+  @@map("page_sections")
+}
+
+model SiteSeo {
+  id              String   @id @default(cuid())
+  pageKey         String   @unique
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("site_seo")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String?
+  userId    String?
+  userName  String?
+  userRole  String?
+  details   String?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([action])
+  @@index([entity])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Comment {
+  id        String  @id @default(cuid())
+  content   String  @db.Text
+  authorId  String
+  author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies   Comment[] @relation("CommentReplies")
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+model SocialPost {
+  id        String   @id @default(cuid())
+  postId    String
+  platform  String
+  status    String   @default("pending")
+  sentAt    DateTime?
+  error     String?
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([status])
+  @@map("social_posts")
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+model Company {
+  id           String   @id @default(cuid())
+  name         String
+  inn          String?
+  kpp          String?
+  legalAddress String?
+  contactEmail String?
+  contactPhone String?
+  balanceRub   Int      @default(0)
+  /// CLIENT = importer; MANUFACTURER = factory partner catalog (D31).
+  kind         CompanyKind @default(CLIENT)
+  /// Importer persona (D34). Ignored for MANUFACTURER companies.
+  clientSegment ClientSegment @default(SINGLE)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  users        User[]
+  calculations Calculation[]
+  ledger       LedgerEntry[]
+  shipping     ShippingRequest[]
+  paymentIntents PaymentIntent[]
+  chatThreads  ChatThread[]
+  manufacturerSkus ManufacturerSku[]
+  skuOrderRequestsAsClient SkuOrderRequest[] @relation("ClientSkuOrderRequests")
+  skuOrderPoolsAsManufacturer SkuOrderPool[] @relation("ManufacturerSkuOrderPools")
+  manufacturerProposalsApproved ManufacturerProposal[] @relation("ApprovedManufacturerCompany")
+
+  @@index([inn])
+  @@index([kind])
+  @@map("companies")
+}
+
+/// Proposed manufacturer name from CLIENT/BROKER. Not a login; APPROVED → shell Company MANUFACTURER.
+model ManufacturerProposal {
+  id                 String                      @id @default(cuid())
+  name               String
+  country            String?
+  note               String?
+  status             ManufacturerProposalStatus  @default(PENDING)
+  /// CLIENT or BROKER (denormalized for admin filters).
+  sourceRole         UserRole
+  proposedByUserId   String
+  proposedByUser     User                        @relation("ManufacturerProposalProposer", fields: [proposedByUserId], references: [id], onDelete: Cascade)
+  approvedCompanyId  String?
+  approvedCompany    Company?                    @relation("ApprovedManufacturerCompany", fields: [approvedCompanyId], references: [id], onDelete: SetNull)
+  reviewedByUserId   String?
+  reviewedByUser     User?                       @relation("ManufacturerProposalReviewer", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  reviewedAt         DateTime?
+  rejectReason       String?
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+
+  @@index([status, createdAt])
+  @@index([proposedByUserId, status])
+  @@index([name])
+  @@map("manufacturer_proposals")
+}
+
+/// Factory SKU master-data (D31). Client create snapshots into CalculationItem.attrs + manufacturerSkuId.
+model ManufacturerSku {
+  id              String                 @id @default(cuid())
+  companyId       String
+  company         Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sku             String
+  gtin            String?
+  name            String
+  customsName     String?
+  brand           String?
+  model           String?
+  variant         String?
+  originCountry   String?
+  factoryName     String?
+  status          ManufacturerSkuStatus  @default(DRAFT)
+  version         Int                    @default(1)
+  netWeightKg     Float?
+  grossWeightKg   Float?
+  volumeM3        Float?
+  lengthMm        Int?
+  widthMm         Int?
+  heightMm        Int?
+  description     String?                @db.Text
+  compositionText String?                @db.Text
+  material        String?
+  purpose         String?
+  technicalSpecs  String?                @db.Text
+  hsHint          String?
+  /// Feature rows: alcohol / engine / battery / composition % / separatelyDeclared.
+  features        Json?
+  /// Packaging levels: UNIT / INNER / MASTER / PALLET / CONTAINER.
+  packagings      Json?
+  moq             Int?
+  packMultiple    Int?
+  incoterms       String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  calculationItems CalculationItem[]
+  skuOrderRequests SkuOrderRequest[]
+  skuOrderPools    SkuOrderPool[]
+
+  @@unique([companyId, sku])
+  @@index([companyId, status])
+  @@map("manufacturer_skus")
+}
+
+/// Client qty request against a published factory SKU (D34). Isolated from Calculation D8.
+model SkuOrderRequest {
+  id                 String                 @id @default(cuid())
+  clientCompanyId    String
+  clientCompany      Company                @relation("ClientSkuOrderRequests", fields: [clientCompanyId], references: [id], onDelete: Cascade)
+  manufacturerSkuId  String
+  manufacturerSku    ManufacturerSku        @relation(fields: [manufacturerSkuId], references: [id], onDelete: Restrict)
+  poolId             String?
+  pool               SkuOrderPool?          @relation(fields: [poolId], references: [id], onDelete: SetNull)
+  qty                Int
+  note               String?
+  calculationId      String?
+  status             SkuOrderRequestStatus  @default(SUBMITTED)
+  rejectReason       String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  @@index([clientCompanyId, status])
+  @@index([manufacturerSkuId, status])
+  @@index([poolId])
+  @@map("sku_order_requests")
+}
+
+/// Consolidated factory order (сборный заказ). Not a Calculation status (D8/D26).
+model SkuOrderPool {
+  id                      String              @id @default(cuid())
+  manufacturerCompanyId   String
+  manufacturerCompany     Company             @relation("ManufacturerSkuOrderPools", fields: [manufacturerCompanyId], references: [id], onDelete: Cascade)
+  manufacturerSkuId       String
+  manufacturerSku         ManufacturerSku     @relation(fields: [manufacturerSkuId], references: [id], onDelete: Restrict)
+  status                  SkuOrderPoolStatus  @default(OPEN)
+  title                   String?
+  targetQty               Int?
+  note                    String?
+  confirmedAt             DateTime?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  requests                SkuOrderRequest[]
+
+  @@index([manufacturerCompanyId, status])
+  @@index([manufacturerSkuId, status])
+  @@map("sku_order_pools")
+}
+
+model BrokerProfile {
+  id                 String                 @id @default(cuid())
+  userId             String                 @unique
+  user               User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialization     String?
+  languages          String?
+  about              String?                @db.Text
+  acceptingJobs      Boolean                @default(true)
+  rating             Float                  @default(5)
+  moderationStatus   BrokerModerationStatus @default(PENDING)
+  closedPerWeek      Int                    @default(0)
+  avgSlaHours        Float                  @default(3.2)
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  payouts            BrokerPayout[]
+
+  @@map("broker_profiles")
+}
+
+model TariffPlan {
+  id            String     @id @default(cuid())
+  code          TariffCode @unique
+  name          String
+  priceRub      Int
+  brokerSharePct Int       @default(0)
+  maxPositions  Int        @default(3)
+  slaHours      Int        @default(4)
+  description   String?
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  calculations  Calculation[]
+
+  @@map("tariff_plans")
+}
+
+model Calculation {
+  id              String            @id @default(cuid())
+  number          String            @unique
+  status          CalculationStatus @default(DRAFT)
+  title           String
+  description     String            @db.Text
+  country         String?
+  shipmentValue   String?
+  clientUserId    String
+  clientUser      User              @relation("CalculationClient", fields: [clientUserId], references: [id])
+  companyId       String?
+  company         Company?          @relation(fields: [companyId], references: [id])
+  brokerUserId    String?
+  brokerUser      User?             @relation("CalculationBroker", fields: [brokerUserId], references: [id])
+  preferredBrokerUserId String?
+  preferredBrokerUser   User?       @relation("CalculationPreferredBroker", fields: [preferredBrokerUserId], references: [id])
+  tariffId        String?
+  tariff          TariffPlan?       @relation(fields: [tariffId], references: [id])
+  aiDraft         Json?
+  hsCode          String?
+  hsCodeFinal     String?
+  confidence      Float?
+  dutyRub         Int?
+  vatRub          Int?
+  feeRub          Int?
+  /// Extra customs-adjacent charges (not TariffPlan.priceRub). Note required if > 0.
+  extraFeeRub     Int?
+  extraFeeNote    String?           @db.Text
+  totalPaymentsRub Int?
+  brokerComment   String?           @db.Text
+  paidAt          DateTime?
+  queuedAt        DateTime?
+  claimedAt       DateTime?
+  slaDeadline     DateTime?
+  doneAt          DateTime?
+  pdfHtml         String?           @db.Text
+  /// Client reaction on TN VED draft / assembled result (HELPFUL | NEEDS_WORK).
+  clientFeedbackReaction String?
+  clientFeedbackComment  String?      @db.Text
+  clientFeedbackAt       DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  items           CalculationItem[]
+  assignments     BrokerAssignment[]
+  chatThreads     ChatThread[]
+  ledgerEntries   LedgerEntry[]
+  shipping        ShippingRequest[]
+  events          CalculationEvent[]
+
+  @@index([status])
+  @@index([clientUserId])
+  @@index([brokerUserId])
+  @@index([preferredBrokerUserId])
+  @@index([companyId])
+  @@index([createdAt])
+  @@map("calculations")
+}
+
+model CalculationItem {
+  id            String      @id @default(cuid())
+  calculationId String
+  calculation   Calculation @relation(fields: [calculationId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?     @db.Text
+  /// Structured product description attrs (D24); free-text stays in name/description.
+  attrs         Json?
+  qty           Float?
+  unit          String?
+  unitPrice     Float?
+  currency      String?     @default("USD")
+  mediaUrl      String?
+  hsCodeAi      String?
+  hsCodeFinal   String?
+  /// Digits-only HS for TnvedCode lookup (no FK until directory is authoritative).
+  tnvedCode     String?
+  dutyRub       Int?
+  vatRub        Int?
+  confirmedByBrokerAt DateTime?
+  sortOrder     Int         @default(0)
+  createdAt     DateTime    @default(now())
+  /// Optional link to factory SKU (D31); demand aggregates; not required on client create.
+  manufacturerSkuId String?
+  manufacturerSku   ManufacturerSku? @relation(fields: [manufacturerSkuId], references: [id], onDelete: SetNull)
+
+  @@index([calculationId])
+  @@index([tnvedCode])
+  @@index([manufacturerSkuId])
+  @@map("calculation_items")
+}
+
+/// Append-only request / mapping history (D24). Not a substitute for status machine.
+model CalculationEvent {
+  id            String               @id @default(cuid())
+  calculationId String
+  calculation   Calculation          @relation(fields: [calculationId], references: [id], onDelete: Cascade)
+  kind          CalculationEventKind
+  actorUserId   String?
+  actor         User?                @relation("CalculationEventActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  /// Snapshot / delta: { from?, to?, items?, draft?, note? }
+  payload       Json?
+  createdAt     DateTime             @default(now())
+
+  @@index([calculationId, createdAt])
+  @@index([kind])
+  @@index([createdAt])
+  @@index([actorUserId])
+  @@map("calculation_events")
+}
+
+/// TN VED (HS) nomenclature tree — 2/4/6/8/10-digit nodes (D24).
+model TnvedCode {
+  /// Digits only, e.g. "8471300000" (10) or "8471" (4).
+  code        String   @id
+  /// Display form with spaces, e.g. "8471 30 000 0".
+  codeDisplay String
+  /// Hierarchy depth: 2, 4, 6, 8, or 10.
+  level       Int
+  parentCode  String?
+  parent      TnvedCode?  @relation("TnvedTree", fields: [parentCode], references: [code], onDelete: Restrict)
+  children    TnvedCode[] @relation("TnvedTree")
+  titleRu     String
+  titleEn     String?
+  isLeaf      Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  notes       String?  @db.Text
+  validFrom   DateTime?
+  validTo     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  rates       TnvedDutyRate[]
+
+  @@index([parentCode])
+  @@index([level])
+  @@index([isActive])
+  @@index([codeDisplay])
+  @@map("tnved_codes")
+}
+
+/// Duty/VAT hints keyed by TN VED code (importable; not broker-edited TariffPlan).
+model TnvedDutyRate {
+  id             String    @id @default(cuid())
+  code           String
+  tnved          TnvedCode @relation(fields: [code], references: [code], onDelete: Cascade)
+  /// AD_VALOREM | SPECIFIC | COMBINED
+  dutyKind       String    @default("AD_VALOREM")
+  dutyPct        Float?
+  dutyRubPerUnit Float?
+  vatPct         Float?    @default(20)
+  feeHintRub     Int?
+  unit           String?
+  validFrom      DateTime  @default(now())
+  validTo        DateTime?
+  source         String?
+  createdAt      DateTime  @default(now())
+
+  @@index([code])
+  @@index([validFrom, validTo])
+  @@map("tnved_duty_rates")
+}
+
+/// Broker-approved HS precedents for repeat product matching (Growth / local).
+model VerifiedDetermination {
+  id                  String   @id @default(cuid())
+  fingerprint         String
+  canonicalText       String   @db.Text
+  attrsSnapshot       Json?
+  hsCodeFinal         String
+  hsCodeDigits        String
+  dutyRub             Int?
+  vatRub              Int?
+  feeRub              Int?
+  brokerComment       String?  @db.Text
+  sourceCalculationId String?
+  sourceItemId        String?
+  approvedByUserId    String?
+  quality             String   @default("BROKER")
+  usageCount          Int      @default(0)
+  approvedAt          DateTime @default(now())
+  createdAt           DateTime @default(now())
+
+  @@index([fingerprint])
+  @@index([hsCodeDigits])
+  @@index([approvedAt])
+  @@map("verified_determinations")
+}
+
+model BrokerAssignment {
+  id            String      @id @default(cuid())
+  calculationId String
+  calculation   Calculation @relation(fields: [calculationId], references: [id], onDelete: Cascade)
+  brokerUserId  String
+  brokerUser    User        @relation(fields: [brokerUserId], references: [id])
+  kind          String      @default("CLAIM")
+  note          String?
+  createdAt     DateTime    @default(now())
+
+  @@index([calculationId])
+  @@index([brokerUserId])
+  @@map("broker_assignments")
+}
+
+model LedgerEntry {
+  id            String      @id @default(cuid())
+  companyId     String
+  company       Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  kind          LedgerKind
+  amountRub     Int
+  balanceAfter  Int
+  description   String?
+  calculationId String?
+  calculation   Calculation? @relation(fields: [calculationId], references: [id], onDelete: SetNull)
+  /// Unique acquiring intent — idempotent TOPUP (D13 / production acquiring).
+  paymentIntentId String?   @unique
+  paymentIntent PaymentIntent? @relation(fields: [paymentIntentId], references: [id], onDelete: SetNull)
+  createdById   String?
+  createdBy     User?       @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
+
+  @@index([companyId])
+  @@index([calculationId])
+  @@index([createdAt])
+  @@map("ledger_entries")
+}
+
+model PaymentIntent {
+  id                 String              @id @default(cuid())
+  companyId          String
+  company            Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId             String?
+  amountRub          Int
+  method             String              @default("stub")
+  provider           String              @default("stub")
+  providerPaymentId  String?             @unique
+  status             PaymentIntentStatus @default(PENDING)
+  confirmUrl         String?
+  paidAt             DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  ledgerEntry        LedgerEntry?
+
+  @@index([companyId])
+  @@index([status])
+  @@map("payment_intents")
+}
+
+model ChatThread {
+  id            String         @id @default(cuid())
+  kind          ChatThreadKind @default(CALCULATION)
+  calculationId String?
+  calculation   Calculation?   @relation(fields: [calculationId], references: [id], onDelete: Cascade)
+  /// Company owning SUPPORT tickets (null for CALCULATION threads).
+  companyId     String?
+  company       Company?       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  /// Client who opened a SUPPORT ticket.
+  createdByUserId String?
+  createdByUser User?          @relation("ChatThreadCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  subject       String?
+  /// Who should reply next (simple UX indicator for broker/client chat).
+  waitingOn     ChatWaitingOn?
+  /// Meaningful for SUPPORT; CALCULATION rows keep default OPEN and ignore it.
+  ticketStatus  SupportTicketStatus @default(OPEN)
+  resolvedAt    DateTime?
+  archivedAt    DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  messages      ChatMessage[]
+
+  @@index([calculationId])
+  @@index([kind])
+  @@index([companyId])
+  @@index([createdByUserId])
+  @@index([ticketStatus])
+  @@map("chat_threads")
+}
+
+model ChatMessage {
+  id        String     @id @default(cuid())
+  threadId  String
+  thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    User?      @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  body      String     @db.Text
+  attachmentUrl String?
+  isSystem  Boolean    @default(false)
+  createdAt DateTime   @default(now())
+
+  @@index([threadId])
+  @@index([createdAt])
+  @@map("chat_messages")
+}
+
+model BrokerPayout {
+  id             String       @id @default(cuid())
+  brokerProfileId String
+  brokerProfile  BrokerProfile @relation(fields: [brokerProfileId], references: [id], onDelete: Cascade)
+  periodLabel    String
+  amountRub      Int
+  jobsCount      Int          @default(0)
+  status         PayoutStatus @default(ACCRUED)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([brokerProfileId])
+  @@index([status])
+  @@map("broker_payouts")
+}
+
+model ShippingRequest {
+  id            String         @id @default(cuid())
+  companyId     String
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  calculationId String?
+  calculation   Calculation?   @relation(fields: [calculationId], references: [id], onDelete: SetNull)
+  origin        String
+  destination   String
+  mode          String
+  comment       String?        @db.Text
+  status        ShippingStatus @default(NEW)
+  trackingCode  String?
+  eta           DateTime?
+  /** Stub quotes: [{ mode, etaDays, priceRub, carrierLabel, selected }] */
+  quotes        Json?
+  selectedQuote Json?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([companyId])
+  @@index([calculationId])
+  @@index([status])
+  @@map("shipping_requests")
+}
+
+/// Durable background jobs for containers/worker (D26). Not a product FSM.
+model BackgroundJob {
+  id               String              @id @default(cuid())
+  /// SLA_TICK | OUTBOX_DRAIN | AI_DRAIN | LEDGER_RECONCILE | LOGISTICS_TRACK
+  kind             String
+  payload          Json?
+  status           BackgroundJobStatus @default(QUEUED)
+  runAfter         DateTime            @default(now())
+  attempts         Int                 @default(0)
+  maxAttempts      Int                 @default(5)
+  lockedAt         DateTime?
+  lockedBy         String?
+  lastError        String?             @db.Text
+  result           Json?
+  calculationId    String?
+  paymentIntentId  String?
+  createdAt        DateTime            @default(now())
+  finishedAt       DateTime?
+
+  @@index([status, runAfter])
+  @@index([kind])
+  @@index([calculationId])
+  @@index([paymentIntentId])
+  @@map("background_jobs")
+}
+
+/// Durable notify/webhook outbox (D26). Written in same tx as domain mutations.
+model ServiceOutbox {
+  id               String              @id @default(cuid())
+  channel          String              @default("email")
+  /// generic | calc.approved | calc.sla_risk | ledger.topup
+  template         String              @default("generic")
+  to               String
+  payload          Json?
+  status           ServiceOutboxStatus @default(PENDING)
+  attempts         Int                 @default(0)
+  nextAttemptAt    DateTime            @default(now())
+  lastError        String?             @db.Text
+  deliveredAt      DateTime?
+  calculationId    String?
+  paymentIntentId  String?
+  companyId        String?
+  ledgerEntryId    String?
+  createdAt        DateTime            @default(now())
+
+  @@index([status, nextAttemptAt])
+  @@index([template])
+  @@index([calculationId])
+  @@index([companyId])
+  @@map("service_outbox")
+}
+
+/// Cross-container invocation journal (D26): ai / llm / payments / notify / logistics / worker / api.
+model ServiceCall {
+  id                 String            @id @default(cuid())
+  service            String
+  operation          String
+  status             ServiceCallStatus @default(PENDING)
+  correlationId      String?
+  requestMeta        Json?
+  responseMeta       Json?
+  durationMs         Int?
+  error              String?           @db.Text
+  calculationId      String?
+  paymentIntentId    String?
+  shippingRequestId  String?
+  createdAt          DateTime          @default(now())
+  finishedAt         DateTime?
+
+  @@index([service, createdAt])
+  @@index([status])
+  @@index([correlationId])
+  @@index([calculationId])
+  @@map("service_calls")
+}

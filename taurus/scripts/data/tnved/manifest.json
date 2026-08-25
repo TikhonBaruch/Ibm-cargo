@@ -1,0 +1,88 @@
+{
+  "schema": "lbm.tnved.opendata.manifest/v1",
+  "asOf": "2026-04-27",
+  "note": "Legal open downloads only. Do not scrape Alta/TKS/CustomsOnline. Run npm run tnved:fetch locally (not CI). Raw files stay gitignored.",
+  "sources": [
+    {
+      "id": "fns-tnved-zip",
+      "layer": "A",
+      "title": "ФНС: классификатор ТН ВЭД (TNVED1–TNVED4, DOS/cp866)",
+      "page": "https://www.nalog.gov.ru/rn77/program/5961290/",
+      "url": "https://data.nalog.ru/files/tnved/tnved.zip",
+      "filename": "tnved.zip",
+      "format": "zip/txt",
+      "encoding": "cp866",
+      "asOf": "2026-04-27",
+      "license": "open government data (FNS nalog.gov.ru)",
+      "sha256": "1c8eba13c8717b1ef211e18f70b974c171f572e259b79db5fdcdc63f1ca6f184",
+      "fetch": true,
+      "unzip": true,
+      "files": ["TNVED1.TXT", "TNVED2.TXT", "TNVED3.TXT", "TNVED4.Txt"],
+      "layout": {
+        "TNVED1": "section (not HS PK — skip for TnvedCode; codes collide with groups)",
+        "TNVED2": "section|group(2)|title|notes|validFrom|validTo",
+        "TNVED3": "chapter(2)|heading(2)|title|validFrom|validTo",
+        "TNVED4": "chapter(2)|heading(2)|rest(6)|title|validFrom|validTo — 10-digit leaf; title truncated ~200 chars in source"
+      }
+    },
+    {
+      "id": "fns-tnved-arj",
+      "layer": "A",
+      "title": "ФНС TNVED.ARJ (тот же набор, что zip)",
+      "url": "https://data.nalog.ru/files/tnved/tnved.arj",
+      "filename": "tnved.arj",
+      "fetch": false,
+      "note": "Zip preferred; ARJ is a duplicate payload."
+    },
+    {
+      "id": "fns-tnved-structure",
+      "layer": "A",
+      "title": "ФНС: описание структуры файлов TNVED",
+      "url": "https://data.nalog.ru/html/sites/www.new.nalog.ru/doc/tnved_discr.docx",
+      "filename": "tnved_discr.docx",
+      "format": "docx",
+      "asOf": "2026-04-27",
+      "sha256": "d1a5135b61825acec71974d15c066f3651fca2e1dc9b9f04ac92cf4666707de5",
+      "fetch": true
+    },
+    {
+      "id": "eec-collegium-113-stnvedst",
+      "layer": "B",
+      "title": "ЕЭК Коллегия № 113 — СТНВЭДСТ (ЕТТ, машиночитаемый НСИ)",
+      "page": "https://eec.eaeunion.org/",
+      "fetch": false,
+      "note": "Slice 2: duty rates. Do not invent ad valorem from heuristic."
+    },
+    {
+      "id": "kz-egov-ett",
+      "layer": "B",
+      "title": "data.egov.kz: ЕТТ ЕАЭС (JSON/Excel fallback)",
+      "page": "https://data.egov.kz/datasets/view?index=euraziyalyk_ekonomikalyk_odakt",
+      "asOf": "2026-05-08",
+      "fetch": false,
+      "note": "v3 is link-only to EEC ETT PDFs (field `link`), not machine-readable rates. API key required for /api/v4. Parser accepts kod/stavka JSON when a real dump appears. Until then card.rate = null."
+    },
+    {
+      "id": "eec-council-80-ett-pdf",
+      "layer": "legal",
+      "title": "ЕЭК Совет № 80 — PDF глав ЕТТ (юридический эталон формулировок)",
+      "page": "https://eec.eaeunion.org/comission/department/catr/ett/",
+      "fetch": false,
+      "note": "Reconciliation, not runtime. Slice 2+."
+    },
+    {
+      "id": "eec-psn-explanations",
+      "layer": "D",
+      "title": "ЕЭК пояснения к ТН ВЭД (PSN PDF)",
+      "fetch": false,
+      "note": "Slice 4; must-cover first."
+    },
+    {
+      "id": "rf-vat-fee",
+      "layer": "C",
+      "title": "НК РФ НДС 22% + ПП 1637 сбор (уже в продукте)",
+      "fetch": false,
+      "note": "Not in FNS classifier. Card mix-in on slice 2."
+    }
+  ]
+}

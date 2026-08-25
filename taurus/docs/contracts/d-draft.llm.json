@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-draft.llm.json",
+  "title": "D-DRAFT llm enrich",
+  "description": "Optional model stub behind ai. UIs never call this. ai → llm when LLM_SERVICE_URL set.",
+  "x-contractVersion": 1,
+  "x-owner": "containers/llm",
+  "x-transport": ["POST /v1/classify", "POST /v1/duty"],
+  "definitions": {
+    "classifyRequest": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "visionDescription": { "type": "string" },
+        "country": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "classifyResponse": {
+      "type": "object",
+      "required": ["hsCode"],
+      "properties": {
+        "hsCode": { "type": "string" },
+        "confidence": { "type": "number" },
+        "disclaimer": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "dutyRequest": {
+      "type": "object",
+      "required": ["hsCode"],
+      "properties": {
+        "hsCode": { "type": "string" },
+        "shipmentValue": { "type": ["string", "number"] }
+      }
+    },
+    "dutyResponse": {
+      "type": "object",
+      "properties": {
+        "customsDutyPercent": { "type": "number" },
+        "vatPercent": { "type": "number" },
+        "feeRub": { "type": "number" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "examples": {
+    "classifyRequest": { "description": "ноутбук 16 дюймов", "country": "Китай" },
+    "classifyResponse": {
+      "hsCode": "8471 30 000 0",
+      "confidence": 0.8,
+      "disclaimer": "llm-stub-v0"
+    },
+    "dutyRequest": { "hsCode": "8471 30 000 0", "shipmentValue": 2500 },
+    "dutyResponse": { "customsDutyPercent": 0, "vatPercent": 22, "feeRub": 13541 }
+  }
+}

@@ -1,0 +1,36 @@
+# База данных LBM Брокер
+
+Провайдер: PostgreSQL (внешний host в `DATABASE_URL`).  
+SSL на prod: `sslmode=require` (при необходимости `uselibpqcompat=true` для node-pg / Prisma).
+
+Секреты и боевой хост только в `.env` / `.env.local` / Vercel (не коммитить).  
+Публичный `/login` по-прежнему показывает демо-учётки. Obscure SUPER path/email в коде закодированы; `robots.txt` obscure-пути не перечисляет.
+
+SUPER UI: блок «Инфраструктура и доступы» читает `DATABASE_URL` и опциональные `OPS_*` через `GET /api/admin/infra` (только `SUPER_ADMIN`). Seed-пароль в эту панель не кладём.
+
+```env
+DATABASE_URL="postgresql://USER:<PASSWORD_URLENCODED>@HOST:PORT/DB?schema=public&connect_timeout=15&sslmode=require"
+```
+
+Символ `#` в пароле кодируется как `%23`.
+
+## Схема и миграции
+
+- Канон моделей: `prisma/schema.prisma`.
+- На практике host часто синхронизируют через **`npx prisma db push`** (история `_prisma_migrations` может быть пустой).
+- Предпочтительно: `npx prisma migrate deploy` после выравнивания migration history.
+- Seed: `npx prisma db seed` (тарифы, demo users, heuristic **TN VED** листья — D24).
+
+### БД-2 / pgvector (2026-08-12)
+
+| Артефакт | Внешний shared host | Compose |
+|----------|---------------------|---------|
+| `verified_determinations` | **нужна** (`migrate deploy`) | нужна |
+| `embedding vector(1024)` | часто **нет** — extension `vector` может отсутствовать | `pgvector/pgvector:pg17` |
+| Runtime | `precedent-v1` (fingerprint/lexical) | + `precedent-v2` при ключе |
+
+Миграция `20260812140000_precedent_embeddings` — **fail-open** (NOTICE + skip), чтобы `migrate deploy` на host без `vector` не блокировался.  
+План hardening: [`plan-tech-debt.md`](./plan-tech-debt.md) · прецеденты: [`plan-precedent-bulk.md`](./plan-precedent-bulk.md).
+
+VED data-model (attrs / `TnvedCode` / `CalculationEvent`): [`data-model.md`](./data-model.md).  
+Очередность записей заявки: [`db-process.md`](./db-process.md).

@@ -1,0 +1,12 @@
+---
+description: Testing when changing VED domain
+globs: src/lib/ved/**/*
+alwaysApply: false
+---
+
+# VED testing
+
+- Domain changes → unit under `src/lib/ved/__tests__/`.
+- Sensitive mutations → `PROTECTED_V1_MUTATIONS` (`access.ts`).
+- Gate: `npm run test:ci`.
+- Dual-path create/pay/claim/map/approve → update `containers/api` too (D24).

@@ -1,0 +1,12 @@
+{
+  "source": "alta",
+  "status": "skipped",
+  "reason": "ALTA_API_URL + (ALTA_API_TOKEN or ALTA_LOGIN/PASSWORD) required — licensed; no public dump",
+  "refs": [
+    "https://www.alta.ru/online-services/",
+    "https://www.alta.ru/tnved/",
+    "https://www.alta.ru/poyasnenia/PRED/",
+    "http://www.tnved.online/"
+  ],
+  "fetchedAt": "2026-08-08T11:09:48.107Z"
+}

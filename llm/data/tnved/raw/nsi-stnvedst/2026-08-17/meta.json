@@ -1,0 +1,113 @@
+{
+  "source": "eec-nsi",
+  "catalogCode": "043",
+  "abbreviation": "СТНВЭДСТ",
+  "search": "СТНВЭДСТ",
+  "decision": "EEC Board Decision No. 113 (2023-08-15)",
+  "fetchedAt": "2026-08-17T15:44:45.363Z",
+  "savedArtifact": null,
+  "candidateLinks": [
+    "https://opendata.eaeunion.org/opendata/",
+    "https://opendata.eaeunion.org/opendata/favicon.ico",
+    "https://opendata.eaeunion.org/opendata/styles.d946fcc3a75e76a4.css",
+    "https://opendata.eaeunion.org/opendata/ru/api/favicon.ico",
+    "https://opendata.eaeunion.org/opendata/ru/api/styles.d946fcc3a75e76a4.css",
+    "http://opendata.eaeunion.org/odata/$metadata"
+  ],
+  "gap": "СТНВЭДСТ XML/JSON not auto-downloaded. Open nsi/opendata, download the formal catalog, place as catalog.xml in this folder, or set NSI_XML_URL.",
+  "dropIn": "data/tnved/raw/nsi-stnvedst/2026-08-17/catalog.xml",
+  "attempts": [
+    {
+      "url": "https://opendata.eaeunion.org/",
+      "finalUrl": "https://opendata.eaeunion.org/opendata/",
+      "contentType": "text/html",
+      "ok": true,
+      "bytes": 4625,
+      "topLinks": [
+        {
+          "url": "https://opendata.eaeunion.org/opendata/",
+          "score": 2
+        },
+        {
+          "url": "https://opendata.eaeunion.org/opendata/favicon.ico",
+          "score": 2
+        },
+        {
+          "url": "https://opendata.eaeunion.org/opendata/styles.d946fcc3a75e76a4.css",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "url": "https://opendata.eaeunion.org/opendata/ru/api/apiodata",
+      "finalUrl": "https://opendata.eaeunion.org/opendata/ru/api/apiodata",
+      "contentType": "text/html",
+      "ok": true,
+      "bytes": 4625,
+      "topLinks": [
+        {
+          "url": "https://opendata.eaeunion.org/opendata/",
+          "score": 2
+        },
+        {
+          "url": "https://opendata.eaeunion.org/opendata/ru/api/favicon.ico",
+          "score": 2
+        },
+        {
+          "url": "https://opendata.eaeunion.org/opendata/ru/api/styles.d946fcc3a75e76a4.css",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "url": "https://nsi.eaeunion.org/portal?registryType=dictionary",
+      "finalUrl": "https://nsi.eaeunion.org/portal?registryType=dictionary",
+      "contentType": "text/html;charset=UTF-8",
+      "ok": true,
+      "bytes": 700,
+      "topLinks": []
+    },
+    {
+      "url": "https://nsi.eaeunion.org/portal/1994/",
+      "finalUrl": "https://nsi.eaeunion.org/portal/1994/",
+      "contentType": "text/html;charset=UTF-8",
+      "ok": true,
+      "bytes": 700,
+      "topLinks": []
+    },
+    {
+      "url": "https://opendata.eaeunion.org/odata/$metadata",
+      "finalUrl": "https://opendata.eaeunion.org/odata/$metadata",
+      "contentType": "application/xml; charset=utf-8",
+      "ok": true,
+      "bytes": 310498,
+      "topLinks": []
+    },
+    {
+      "url": "http://opendata.eaeunion.org/odata/$metadata",
+      "finalUrl": "https://opendata.eaeunion.org/odata/$metadata",
+      "contentType": "application/xml; charset=utf-8",
+      "ok": true,
+      "bytes": 310498,
+      "topLinks": []
+    },
+    {
+      "url": "https://opendata.eaeunion.org/odata/",
+      "finalUrl": "https://opendata.eaeunion.org/odata/",
+      "contentType": "application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8",
+      "ok": true,
+      "bytes": 3887,
+      "topLinks": [
+        {
+          "url": "http://opendata.eaeunion.org/odata/$metadata",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "url": "https://portal.eaeunion.org/sites/odata/_api/",
+      "ok": false,
+      "error": "HTTP 404 for https://portal.eaeunion.org/sites/odata/_api/"
+    }
+  ]
+}

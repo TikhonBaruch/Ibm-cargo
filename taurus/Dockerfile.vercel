@@ -1,0 +1,25 @@
+# Domain API for Vercel Services (container runtime).
+# Build context = repository root. Listen on $PORT (injected by Vercel).
+# 12-Factor: generate at build, node as PID 1, non-root USER.
+FROM node:22-alpine
+WORKDIR /app
+
+RUN apk add --no-cache openssl \
+  && addgroup -S appuser && adduser -S -G appuser appuser
+
+COPY containers/api/package.json containers/api/package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY prisma ./prisma
+COPY containers/api/src ./src
+COPY src/lib/ved/tnved-layer-g.json ./src/tnved-layer-g.json
+
+RUN npx prisma generate --schema=./prisma/schema.prisma \
+  && chown -R appuser:appuser /app
+
+ENV NODE_ENV=production
+USER appuser
+# Vercel sets PORT; default matches local compose when unset
+ENV PORT=80
+EXPOSE 80
+CMD ["node", "src/index.js"]

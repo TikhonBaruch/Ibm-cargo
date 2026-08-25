@@ -1,0 +1,1532 @@
+﻿<!DOCTYPE html>
+<!-- Interactive design ref (not prod). Proto-bar switches admin/client/broker. Live UI: VedShell + D14. KB: docs/knowledge/design-interactive.md -->
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LBM Брокер — Админ · Клиент · Брокер (интерактивный реф)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #2b72f4;
+      --blue-2: #1a5fd4;
+      --blue-soft: #e8f0fe;
+      --ink: #0f172a;
+      --ink-2: #111827;
+      --ink-3: #1e293b;
+      --text: #1a1a1a;
+      --muted: #7a7f89;
+      --line: rgba(17, 17, 17, 0.08);
+      --bg: #f5f7fa;
+      --white: #ffffff;
+      --ok: #16a34a;
+      --ok-bg: #dcfce7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --warn: #c2410c;
+      --warn-bg: #ffedd5;
+      --star: #ffcc00;
+      --radius: 28px;
+      --radius-sm: 16px;
+      --font: "Manrope", sans-serif;
+      --display: "Nunito", sans-serif;
+      --shadow: 0 24px 50px rgba(43, 114, 244, 0.12);
+      --shadow-sm: 0 10px 28px rgba(15, 23, 42, 0.07);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 80% 40% at 50% -10%, rgba(43,114,244,.05), transparent 50%),
+        var(--bg);
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; border: none; background: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    .icon {
+      width: 1.15em; height: 1.15em; display: inline-block; vertical-align: -0.15em;
+      fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .icon-lg { width: 20px; height: 20px; }
+
+    /* —— Proto bar —— */
+    .proto-bar {
+      position: sticky; top: 0; z-index: 300;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+      padding: 10px 18px;
+      background: var(--ink);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      color: #94a3b8;
+    }
+    .proto-bar strong {
+      color: #fff; font-size: 13px; letter-spacing: -.01em;
+      font-family: var(--display);
+    }
+    .proto-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .proto-tabs button {
+      padding: 8px 14px; border-radius: 999px;
+      background: rgba(255,255,255,.06); color: #cbd5e1;
+      font-size: 13px; font-weight: 600; transition: .2s;
+    }
+    .proto-tabs button:hover { background: rgba(43,114,244,.25); color: #fff; }
+    .proto-tabs button.active {
+      background: var(--blue); color: #fff;
+      box-shadow: 0 8px 18px rgba(43,114,244,.35);
+    }
+
+    .view { display: none; min-height: calc(100vh - 52px); }
+    .view.active { display: block; animation: fadeIn .35s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes pulseRing {
+      0% { box-shadow: 0 0 0 0 rgba(43,114,244,.35); }
+      70% { box-shadow: 0 0 0 12px rgba(43,114,244,0); }
+      100% { box-shadow: 0 0 0 0 rgba(43,114,244,0); }
+    }
+
+    /* —— Buttons & pills —— */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 20px; border-radius: 999px; font-weight: 600; font-size: 14px;
+      letter-spacing: 0.01em;
+      transition: transform .18s ease, background .18s ease, box-shadow .18s ease, color .18s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: .55; cursor: default; transform: none; }
+    .btn-primary {
+      background: var(--blue); color: #fff;
+      box-shadow: 0 14px 30px rgba(43, 114, 244, 0.35);
+    }
+    .btn-primary:hover { background: var(--blue-2); }
+    .btn-dark { background: var(--ink); color: #fff; }
+    .btn-ghost {
+      background: transparent; border: 1.5px solid var(--line); color: var(--text);
+    }
+    .btn-ghost:hover { border-color: var(--ink); }
+    .btn-outline-light {
+      border: 1.5px solid rgba(255,255,255,.35); color: #fff; background: transparent;
+    }
+    .btn-outline-light:hover { background: rgba(255,255,255,.08); }
+    .btn-danger {
+      background: var(--danger-bg); color: var(--danger); border: 1.5px solid rgba(220,38,38,.2);
+    }
+    .btn-sm { padding: 9px 14px; font-size: 13px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      white-space: nowrap;
+    }
+    .pill.ok { background: var(--ok-bg); color: var(--ok); }
+    .pill.warn { background: var(--warn-bg); color: var(--warn); }
+    .pill.blue { background: var(--blue-soft); color: var(--blue-2); }
+    .pill.muted { background: #e8eef6; color: #475569; }
+    .pill.danger { background: var(--danger-bg); color: var(--danger); }
+
+    /* —— App shell —— */
+    .app {
+      display: grid; grid-template-columns: 260px 1fr;
+      min-height: calc(100vh - 52px);
+      background: var(--bg);
+    }
+    @media (max-width: 960px) {
+      .app { grid-template-columns: 1fr; }
+      .side { position: sticky; top: 52px; z-index: 50; }
+      .side-nav { flex-direction: row; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+      .side-nav button { white-space: nowrap; flex-shrink: 0; }
+      .side-foot, .side .back-link { display: none; }
+    }
+
+    .side {
+      background:
+        radial-gradient(ellipse 80% 40% at 0% 0%, rgba(43,114,244,.28), transparent 50%),
+        var(--ink);
+      color: #94a3b8;
+      padding: 20px 14px;
+      display: flex; flex-direction: column;
+    }
+    .side-brand {
+      display: flex; align-items: center; gap: 12px;
+      color: #fff; margin-bottom: 22px; padding: 4px 6px;
+      font-family: var(--display); font-weight: 700; font-size: 1rem;
+    }
+    .side-brand small {
+      display: block; font-family: var(--font); font-weight: 500;
+      color: #64748b; font-size: 11px; margin-top: 2px;
+    }
+    .brand-mark {
+      width: 40px; height: 40px; border-radius: 14px;
+      background: var(--blue); color: #fff;
+      display: grid; place-items: center;
+      box-shadow: 0 10px 22px rgba(43, 114, 244, 0.35);
+      flex-shrink: 0;
+    }
+    .side.admin .brand-mark {
+      background: linear-gradient(145deg, #2b72f4, #7c3aed);
+      animation: pulseRing 3.2s infinite;
+    }
+    .side-nav { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+    .side-nav button {
+      text-align: left; padding: 11px 12px; border-radius: 12px;
+      color: #94a3b8; font-weight: 600; font-size: 13.5px;
+      display: flex; align-items: center; gap: 10px; transition: .15s;
+    }
+    .side-nav button:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .side-nav button.active { background: var(--blue); color: #fff; }
+    .side-nav button .badge-n {
+      margin-left: auto;
+      min-width: 22px; height: 22px; padding: 0 6px;
+      border-radius: 999px; background: rgba(255,255,255,.12);
+      font-size: 11px; display: grid; place-items: center;
+    }
+    .side-nav button.active .badge-n { background: rgba(255,255,255,.25); }
+    .side-foot {
+      margin-top: 14px; padding: 12px; border-radius: 14px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+      font-size: 12px; color: #94a3b8; line-height: 1.5;
+    }
+    .side-foot strong { color: #fff; }
+    .back-link { margin-top: 12px; width: 100%; }
+
+    .main { display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      background: rgba(255,255,255,.92); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 22px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; flex-wrap: wrap;
+      position: sticky; top: 52px; z-index: 40;
+    }
+    .topbar h1 {
+      font-family: var(--display); font-size: 1.15rem;
+      font-weight: 700; letter-spacing: -.015em;
+    }
+    .topbar .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .topbar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 50%; overflow: hidden;
+      background: #ddd; flex-shrink: 0; border: 2px solid #fff;
+      box-shadow: var(--shadow-sm);
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .content { padding: 20px 22px 40px; }
+
+    /* —— Cards & stats —— */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;
+    }
+    @media (max-width: 900px) { .stats { grid-template-columns: 1fr 1fr; } }
+    .stat {
+      background: #fff; border-radius: 18px; padding: 16px 18px;
+      border: 1.5px solid var(--line); box-shadow: var(--shadow-sm);
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+    }
+    .stat:hover {
+      transform: translateY(-3px);
+      border-color: rgba(43,114,244,.3);
+      box-shadow: 0 12px 28px rgba(43,114,244,.1);
+    }
+    .stat .v {
+      font-family: var(--display); font-size: 1.55rem; font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    .stat .k { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .stat .delta {
+      font-size: 11px; font-weight: 700; margin-top: 8px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .stat .delta.up { color: var(--ok); }
+    .stat .delta.down { color: var(--danger); }
+
+    .card {
+      background: #fff; border: 1.5px solid var(--line); border-radius: 20px;
+      padding: 18px 20px; margin-bottom: 14px; box-shadow: var(--shadow-sm);
+    }
+    .card h3 {
+      font-family: var(--display); font-size: 1.08rem;
+      letter-spacing: -.015em; margin-bottom: 12px;
+    }
+    .card-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .card-head h3 { margin-bottom: 0; }
+    .card-head p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .detail-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 14px; }
+    @media (max-width: 900px) {
+      .two, .three, .detail-grid { grid-template-columns: 1fr; }
+    }
+
+    table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    table.data th, table.data td {
+      padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+    table.data th { color: var(--muted); font-weight: 600; font-size: 12px; }
+    table.data tbody tr { transition: background .15s; }
+    table.data tbody tr:hover td { background: #f0f5ff; }
+    table.data tbody tr.clickable { cursor: pointer; }
+    .row-thumb {
+      width: 36px; height: 36px; border-radius: 10px; overflow: hidden;
+      display: inline-block; vertical-align: middle; margin-right: 8px;
+      background: var(--bg);
+    }
+    .row-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .pane { display: none; }
+    .pane.active { display: block; animation: fadeIn .3s ease; }
+
+    .field { margin-bottom: 12px; }
+    .field label {
+      display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 12px 14px; border-radius: 14px;
+      border: 1.5px solid var(--line); background: #f5f7fa; outline: none; transition: .15s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--blue); background: #fff;
+      box-shadow: 0 0 0 4px rgba(43,114,244,.12);
+    }
+
+    .metric-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .metric {
+      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+    }
+    .metric .k { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .metric .v {
+      font-family: var(--display); font-size: 1.25rem; font-weight: 700;
+      letter-spacing: -.015em; margin-top: 4px;
+    }
+    .breakdown { display: grid; gap: 7px; font-size: 13px; color: var(--muted); }
+    .breakdown div { display: flex; justify-content: space-between; gap: 10px; }
+    .breakdown strong { color: var(--text); }
+
+    .person-card {
+      display: flex; gap: 12px; align-items: center;
+      padding: 14px; border-radius: 16px; border: 1.5px solid var(--line);
+      background: #fff; transition: transform .15s, box-shadow .15s;
+    }
+    .person-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .person-card.col { flex-direction: column; align-items: stretch; }
+    .person-card .photo {
+      width: 52px; height: 52px; border-radius: 14px; overflow: hidden;
+      flex-shrink: 0; background: #eee;
+    }
+    .person-card .photo img { width: 100%; height: 100%; object-fit: cover; }
+    .stars { color: var(--star); font-size: 12px; letter-spacing: 1px; text-shadow: 0 0 1px #b8860b; }
+
+    .chat-box {
+      background: #f5f7fa; border-radius: 16px; padding: 14px;
+      max-height: 280px; overflow: auto; margin-bottom: 12px;
+      display: grid; gap: 8px;
+    }
+    .bubble {
+      background: #fff; border: 1px solid var(--line);
+      border-radius: 14px 14px 14px 4px; padding: 10px 12px;
+      font-size: 13.5px; max-width: 85%;
+    }
+    .bubble.me {
+      background: var(--blue-soft); border-color: rgba(43,114,244,.2);
+      border-radius: 14px 14px 4px 14px; margin-left: auto;
+      color: var(--blue-2);
+    }
+    .chat-row { display: flex; gap: 8px; }
+
+    .thumb-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .thumb {
+      width: 64px; height: 64px; border-radius: 12px; overflow: hidden;
+      background: var(--bg); border: 1.5px solid var(--line);
+    }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb.add {
+      display: grid; place-items: center; color: var(--muted); font-size: 12px;
+      border-style: dashed; cursor: pointer;
+    }
+    .thumb.add:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); }
+
+    .media-card {
+      border-radius: 18px; overflow: hidden; min-height: 180px; position: relative;
+      background: #ddd;
+    }
+    .media-card img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+    .media-card .cap {
+      position: absolute; left: 14px; bottom: 14px; z-index: 1;
+      background: rgba(15,23,42,.78); color: #fff;
+      padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      backdrop-filter: blur(6px);
+    }
+
+    .ship-gallery {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px;
+    }
+    .ship-gallery .ph {
+      height: 88px; border-radius: 14px; overflow: hidden; background: var(--bg);
+      cursor: pointer; border: 2px solid transparent; transition: .15s;
+    }
+    .ship-gallery .ph.on, .ship-gallery .ph:hover { border-color: var(--blue); }
+    .ship-gallery .ph img { width: 100%; height: 100%; object-fit: cover; }
+
+    .search-row {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center;
+    }
+    .search-row input, .search-row select {
+      padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--line);
+      background: #fff; outline: none; min-width: 160px;
+    }
+    .search-row input:focus, .search-row select:focus {
+      border-color: var(--blue); box-shadow: 0 0 0 4px rgba(43,114,244,.12);
+    }
+    .search-row input { flex: 1; min-width: 200px; }
+
+    .toggle-row {
+      display: flex; gap: 10px; align-items: center; margin-bottom: 12px;
+      font-size: 14px; color: var(--text);
+    }
+    .toggle-row input { accent-color: var(--blue); width: 16px; height: 16px; }
+
+    .chart-bars {
+      display: flex; align-items: flex-end; gap: 8px; height: 140px;
+      padding-top: 8px;
+    }
+    .chart-bars .bar-col {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+      height: 100%; justify-content: flex-end;
+    }
+    .chart-bars .bar {
+      width: 100%; border-radius: 10px 10px 4px 4px;
+      background: linear-gradient(180deg, #60a5fa, var(--blue));
+      transition: height .4s ease;
+      min-height: 8px;
+    }
+    .chart-bars .bar-col span { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+    .alert-box {
+      background: var(--danger-bg); border: 1px solid rgba(220,38,38,.2);
+      border-radius: 14px; padding: 14px; font-size: 13px; color: #7f1d1d;
+      margin-bottom: 12px;
+    }
+    .alert-box.ok-box {
+      background: var(--ok-bg); border-color: rgba(22,163,74,.25); color: #14532d;
+    }
+    .alert-box.warn-box {
+      background: var(--warn-bg); border-color: rgba(194,65,12,.25); color: #7c2d12;
+    }
+    .alert-box strong { display: block; margin-bottom: 4px; }
+
+    .tariff-mini {
+      border: 1.5px solid var(--line); border-radius: 18px; padding: 18px;
+      background: #fff; transition: .2s;
+    }
+    .tariff-mini:hover { border-color: rgba(43,114,244,.35); box-shadow: var(--shadow-sm); }
+    .tariff-mini.featured {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(43,114,244,.12);
+    }
+    .tariff-mini h4 { font-family: var(--display); font-size: 1.1rem; margin-bottom: 4px; }
+    .tariff-mini .price {
+      font-family: var(--display); font-size: 1.6rem; font-weight: 700;
+      color: var(--blue); letter-spacing: -.02em; margin: 8px 0 12px;
+    }
+    .tariff-mini .price small { font-size: 13px; font-weight: 500; color: var(--muted); }
+
+    .activity-list { display: grid; gap: 10px; }
+    .activity-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 12px; border-radius: 14px; background: #f5f7fa;
+      border: 1px solid transparent; transition: .15s;
+    }
+    .activity-item:hover { background: #fff; border-color: var(--line); }
+    .activity-item .dot {
+      width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0;
+      background: var(--blue);
+    }
+    .activity-item .dot.ok { background: var(--ok); }
+    .activity-item .dot.warn { background: var(--warn); }
+    .activity-item .dot.danger { background: var(--danger); }
+    .activity-item strong { display: block; font-size: 13.5px; margin-bottom: 2px; }
+    .activity-item span { font-size: 12.5px; color: var(--muted); }
+
+    .toast {
+      position: fixed; right: 20px; bottom: 20px; z-index: 500;
+      background: var(--ink); color: #fff; padding: 14px 18px; border-radius: 16px;
+      box-shadow: var(--shadow); font-size: 14px; font-weight: 500;
+      max-width: min(360px, calc(100vw - 40px));
+      transform: translateY(120%); opacity: 0; transition: .3s cubic-bezier(.2,.8,.2,1);
+      pointer-events: none;
+    }
+    .toast.show { transform: none; opacity: 1; }
+
+    .filter-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .filter-chips button {
+      padding: 7px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+      border: 1.5px solid var(--line); background: #fff; color: var(--muted);
+      transition: .15s;
+    }
+    .filter-chips button:hover { border-color: var(--blue); color: var(--blue); }
+    .filter-chips button.on {
+      background: var(--blue); border-color: var(--blue); color: #fff;
+    }
+
+    .progress-line {
+      height: 8px; border-radius: 999px; background: rgba(43,114,244,.12); overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-line > i {
+      display: block; height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--blue), #60a5fa);
+    }
+  </style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+</svg>
+
+<div class="proto-bar">
+  <strong>LBM Брокер · интерактивные кабинеты</strong>
+  <div class="proto-tabs">
+    <button type="button" class="active" data-view="admin">Админ-панель</button>
+    <button type="button" data-view="client">Кабинет клиента</button>
+    <button type="button" data-view="broker">Кабинет брокера</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<!-- ===================== ADMIN ===================== -->
+<section class="view active" id="view-admin">
+  <div class="app">
+    <aside class="side admin">
+      <div class="side-brand">
+        <div class="brand-mark"><svg class="icon icon-lg"><use href="#i-cpu"/></svg></div>
+        <div>LBM Брокер<small>Админ · платформа</small></div>
+      </div>
+      <nav class="side-nav" id="adminNav">
+        <button type="button" class="active" data-pane="a-dash"><svg class="icon"><use href="#i-home"/></svg> Дашборд</button>
+        <button type="button" data-pane="a-orders"><svg class="icon"><use href="#i-list"/></svg> Заявки <span class="badge-n">48</span></button>
+        <button type="button" data-pane="a-clients"><svg class="icon"><use href="#i-users"/></svg> Клиенты</button>
+        <button type="button" data-pane="a-brokers"><svg class="icon"><use href="#i-shield"/></svg> Брокеры</button>
+        <button type="button" data-pane="a-tariffs"><svg class="icon"><use href="#i-wallet"/></svg> Тарифы</button>
+        <button type="button" data-pane="a-finance"><svg class="icon"><use href="#i-chart"/></svg> Финансы</button>
+        <button type="button" data-pane="a-ai"><svg class="icon"><use href="#i-cpu"/></svg> AI-качество</button>
+        <button type="button" data-pane="a-audit"><svg class="icon"><use href="#i-file"/></svg> Audit log</button>
+        <button type="button" data-pane="a-settings"><svg class="icon"><use href="#i-settings"/></svg> Настройки</button>
+      </nav>
+      <div class="side-foot">
+        SLA платформы: <strong>≤ 4 ч</strong><br>
+        Онлайн: <strong>18 брокеров</strong>
+      </div>
+      <button type="button" class="btn btn-outline-light btn-sm back-link" onclick="showView('client')">→ Кабинет клиента</button>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <h1 id="adminTitle">Дашборд платформы</h1>
+          <div class="sub" id="adminSub">Операции, AI, брокеры и выручка — сводка за сегодня</div>
+        </div>
+        <div class="topbar-actions">
+          <span class="pill blue">Прод · 152-ФЗ</span>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="toast('Отчёт экспортирован в CSV')">Экспорт</button>
+          <div class="avatar"><img src="assets/avatar-user.jpg" alt=""></div>
+        </div>
+      </div>
+      <div class="content">
+
+        <div class="pane active" id="a-dash">
+          <div class="stats">
+            <div class="stat"><div class="v">1 284</div><div class="k">Просчётов за месяц</div><div class="delta up">↑ 12% к прошлому</div></div>
+            <div class="stat"><div class="v">2.1 млн ₽</div><div class="k">Выручка GMV</div><div class="delta up">↑ 8%</div></div>
+            <div class="stat"><div class="v">98%</div><div class="k">Точность ТН ВЭД</div><div class="delta up">↑ 1.2 п.п.</div></div>
+            <div class="stat"><div class="v">3.2 ч</div><div class="k">Средний SLA брокера</div><div class="delta down">↓ 0.4 ч</div></div>
+          </div>
+          <div class="detail-grid">
+            <div class="card">
+              <div class="card-head">
+                <div><h3>Просчёты по дням</h3><p>Последние 7 дней · AI + брокер</p></div>
+                <span class="pill ok">Живой</span>
+              </div>
+              <div class="chart-bars" id="adminChart">
+                <div class="bar-col"><div class="bar" style="height:45%"></div><span>Ср</span></div>
+                <div class="bar-col"><div class="bar" style="height:62%"></div><span>Чт</span></div>
+                <div class="bar-col"><div class="bar" style="height:38%"></div><span>Пт</span></div>
+                <div class="bar-col"><div class="bar" style="height:28%"></div><span>Сб</span></div>
+                <div class="bar-col"><div class="bar" style="height:22%"></div><span>Вс</span></div>
+                <div class="bar-col"><div class="bar" style="height:78%"></div><span>Пн</span></div>
+                <div class="bar-col"><div class="bar" style="height:92%"></div><span>Вт</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Требуют внимания</h3>
+              <div class="activity-list">
+                <div class="activity-item"><div class="dot danger"></div><div><strong>SLA просрочен · #47890</strong><span>Химия · брокер не ответил 4 ч 20 мин</span></div></div>
+                <div class="activity-item"><div class="dot warn"></div><div><strong>AI confidence 61%</strong><span>#47894 · нужна эскалация эксперту</span></div></div>
+                <div class="activity-item"><div class="dot"></div><div><strong>Новый брокер на модерации</strong><span>Е. Соколова · сертификат загружен</span></div></div>
+                <div class="activity-item"><div class="dot ok"></div><div><strong>Выплата брокерам</strong><span>Июль · 312 400 ₽ готово к выплате</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <div><h3>Последние заявки</h3><p>Статусы по всей платформе</p></div>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="openAdminPane('a-orders')">Все заявки</button>
+            </div>
+            <table class="data">
+              <thead><tr><th>№</th><th>Клиент</th><th>Товар</th><th>Брокер</th><th>Тариф</th><th>Статус</th></tr></thead>
+              <tbody>
+                <tr class="clickable" onclick="toast('Карточка #47895')"><td>#47895</td><td>ООО «Альфа»</td><td>Серверы</td><td>—</td><td>Стандарт</td><td><span class="pill blue">Очередь</span></td></tr>
+                <tr class="clickable" onclick="toast('Карточка #47892')"><td>#47892</td><td>ООО «Импортёр»</td><td>Ноутбуки</td><td>Иванов</td><td>Стандарт</td><td><span class="pill ok">Готово</span></td></tr>
+                <tr class="clickable" onclick="toast('Карточка #47890')"><td>#47890</td><td>ООО «Бета»</td><td>Химия</td><td>Петрова</td><td>Профи</td><td><span class="pill danger">SLA</span></td></tr>
+                <tr class="clickable" onclick="toast('Карточка #47880')"><td>#47880</td><td>ООО «Текстиль»</td><td>Ткани</td><td>Иванов</td><td>Профи</td><td><span class="pill blue">У брокера</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pane" id="a-orders">
+          <div class="card">
+            <div class="card-head">
+              <div><h3>Все заявки на просчёт</h3><p>Фильтр по статусу, тарифу и брокеру</p></div>
+            </div>
+            <div class="search-row">
+              <input type="search" id="aOrderSearch" placeholder="Поиск по №, клиенту, товару…" oninput="filterAdminOrders()">
+              <select id="aOrderFilter" onchange="filterAdminOrders()">
+                <option value="all">Все статусы</option>
+                <option value="queue">Очередь</option>
+                <option value="broker">У брокера</option>
+                <option value="done">Готово</option>
+                <option value="sla">SLA risk</option>
+              </select>
+            </div>
+            <table class="data" id="aOrdersTable">
+              <thead><tr><th>№</th><th>Клиент</th><th>Товар</th><th>AI</th><th>Брокер</th><th>Статус</th><th></th></tr></thead>
+              <tbody>
+                <tr data-status="queue"><td>#47895</td><td>ООО Альфа</td><td>Серверы</td><td>92%</td><td>—</td><td><span class="pill blue">Очередь</span></td><td><button type="button" class="btn btn-ghost btn-sm" onclick="toast('Назначен брокер Иванов')">Назначить</button></td></tr>
+                <tr data-status="broker"><td>#47880</td><td>ООО Текстиль</td><td>Ткани</td><td>84%</td><td>Иванов</td><td><span class="pill blue">У брокера</span></td><td><button type="button" class="btn btn-ghost btn-sm" onclick="toast('Переназначение')">Сменить</button></td></tr>
+                <tr data-status="sla"><td>#47890</td><td>ООО Бета</td><td>Химия</td><td>61%</td><td>Петрова</td><td><span class="pill danger">SLA</span></td><td><button type="button" class="btn btn-danger btn-sm" onclick="toast('Эскалация: SLA #47890')">Эскалировать</button></td></tr>
+                <tr data-status="done"><td>#47892</td><td>ООО Импортёр</td><td>Ноутбуки</td><td>94%</td><td>Иванов</td><td><span class="pill ok">Готово</span></td><td><button type="button" class="btn btn-ghost btn-sm" onclick="toast('PDF #47892')">PDF</button></td></tr>
+                <tr data-status="queue"><td>#47894</td><td>ИП Смирнов</td><td>Станки</td><td>71%</td><td>—</td><td><span class="pill blue">Очередь</span></td><td><button type="button" class="btn btn-ghost btn-sm" onclick="toast('Назначен брокер Ким')">Назначить</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pane" id="a-clients">
+          <div class="stats">
+            <div class="stat"><div class="v">842</div><div class="k">Активных клиентов</div></div>
+            <div class="stat"><div class="v">64</div><div class="k">Новых за месяц</div></div>
+            <div class="stat"><div class="v">12 400 ₽</div><div class="k">Средний баланс</div></div>
+            <div class="stat"><div class="v">3.4</div><div class="k">Просчётов / клиент</div></div>
+          </div>
+          <div class="card">
+            <div class="search-row">
+              <input type="search" placeholder="Найти компанию или ИНН…" oninput="toast('Поиск: ' + this.value)">
+              <button type="button" class="btn btn-primary btn-sm" onclick="toast('Приглашение отправлено')"><svg class="icon"><use href="#i-plus"/></svg> Пригласить</button>
+            </div>
+            <table class="data">
+              <thead><tr><th>Компания</th><th>Контакт</th><th>Тариф</th><th>Баланс</th><th>Заявок</th><th>Статус</th></tr></thead>
+              <tbody>
+                <tr><td>ООО «Импортёр»</td><td>ved@importyor.ru</td><td>Стандарт</td><td>12 400 ₽</td><td>18</td><td><span class="pill ok">Активен</span></td></tr>
+                <tr><td>ООО «Альфа»</td><td>ops@alfa.ru</td><td>Профи</td><td>48 200 ₽</td><td>42</td><td><span class="pill ok">Активен</span></td></tr>
+                <tr><td>ООО «Бета»</td><td>ved@beta.ru</td><td>Стандарт</td><td>1 100 ₽</td><td>9</td><td><span class="pill warn">Низкий баланс</span></td></tr>
+                <tr><td>ИП Смирнов</td><td>smirnov@mail.ru</td><td>Экспресс</td><td>3 500 ₽</td><td>4</td><td><span class="pill ok">Активен</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pane" id="a-brokers">
+          <div class="alert-box warn-box">
+            <strong>1 брокер на модерации</strong>
+            Проверьте сертификат и направления перед публикацией в каталоге.
+          </div>
+          <div class="three">
+            <div class="person-card col">
+              <div style="display:flex;gap:12px;align-items:center">
+                <div class="photo"><img src="assets/avatar-broker.jpg" alt=""></div>
+                <div><strong>Алексей Иванов</strong><div class="stars">★★★★★ 4.9</div></div>
+              </div>
+              <p style="font-size:13px;color:var(--muted);margin:10px 0">Китай / ЕАЭС · 28 закрыто / нед · SLA 3.1 ч</p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span class="pill ok">Онлайн</span>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="toast('Профиль Иванова')">Карточка</button>
+              </div>
+            </div>
+            <div class="person-card col">
+              <div style="display:flex;gap:12px;align-items:center">
+                <div class="photo"><img src="assets/avatar-support.jpg" alt=""></div>
+                <div><strong>Мария Петрова</strong><div class="stars">★★★★★ 4.8</div></div>
+              </div>
+              <p style="font-size:13px;color:var(--muted);margin:10px 0">Текстиль · сертификация · 1 SLA risk</p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span class="pill warn">Занята</span>
+                <button type="button" class="btn btn-danger btn-sm" onclick="toast('SLA эскалация: Петрова')">Эскалировать</button>
+              </div>
+            </div>
+            <div class="person-card col">
+              <div style="display:flex;gap:12px;align-items:center">
+                <div class="photo"><img src="assets/avatar-support.jpg" alt=""></div>
+                <div><strong>Елена Соколова</strong><div class="stars">Новый</div></div>
+              </div>
+              <p style="font-size:13px;color:var(--muted);margin:10px 0">ЕС / химия · сертификат на проверке</p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button type="button" class="btn btn-primary btn-sm" onclick="toast('Брокер Соколова одобрена')">Одобрить</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="toast('Заявка отклонена')">Отклонить</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="a-tariffs">
+          <div class="section-note" style="margin-bottom:14px;color:var(--muted);font-size:14px">
+            Тарифы MVP из продуктовой модели: Экспресс · Стандарт · Профи. Комиссия платформы и доля брокера настраиваются ниже.
+          </div>
+          <div class="three">
+            <div class="tariff-mini">
+              <h4>Экспресс</h4>
+              <div style="font-size:13px;color:var(--muted)">Только AI</div>
+              <div class="price">500–990 ₽ <small>/ просчёт</small></div>
+              <div class="field"><label>Цена, ₽</label><input type="number" value="990"></div>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="toast('Тариф Экспресс сохранён')">Сохранить</button>
+            </div>
+            <div class="tariff-mini featured">
+              <span class="pill blue" style="margin-bottom:8px">Популярный</span>
+              <h4>Стандарт</h4>
+              <div style="font-size:13px;color:var(--muted)">AI + брокер ≤ 4 ч</div>
+              <div class="price">1 990–2 990 ₽ <small>/ просчёт</small></div>
+              <div class="field"><label>Цена, ₽</label><input type="number" value="2990"></div>
+              <div class="field"><label>Доля брокера, %</label><input type="number" value="35"></div>
+              <button type="button" class="btn btn-primary btn-sm" onclick="toast('Тариф Стандарт сохранён')">Сохранить</button>
+            </div>
+            <div class="tariff-mini">
+              <h4>Профи</h4>
+              <div style="font-size:13px;color:var(--muted)">Приоритет, до 10 позиций</div>
+              <div class="price">4 990–7 990 ₽ <small>/ просчёт</small></div>
+              <div class="field"><label>Цена, ₽</label><input type="number" value="5990"></div>
+              <div class="field"><label>Доля брокера, %</label><input type="number" value="40"></div>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="toast('Тариф Профи сохранён')">Сохранить</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="a-finance">
+          <div class="stats">
+            <div class="stat"><div class="v">2.1 млн ₽</div><div class="k">GMV за месяц</div></div>
+            <div class="stat"><div class="v">742 тыс ₽</div><div class="k">Комиссия платформы</div></div>
+            <div class="stat"><div class="v">312 тыс ₽</div><div class="k">К выплате брокерам</div></div>
+            <div class="stat"><div class="v">48</div><div class="k">Возвратов / диспутов</div></div>
+          </div>
+          <div class="two">
+            <div class="card">
+              <h3>Очередь выплат</h3>
+              <table class="data">
+                <thead><tr><th>Брокер</th><th>Период</th><th>Сумма</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td>А. Иванов</td><td>Июль</td><td>84 000 ₽</td><td><button type="button" class="btn btn-primary btn-sm" onclick="toast('Выплата Иванову отправлена')">Выплатить</button></td></tr>
+                  <tr><td>М. Петрова</td><td>Июль</td><td>71 500 ₽</td><td><button type="button" class="btn btn-primary btn-sm" onclick="toast('Выплата Петровой отправлена')">Выплатить</button></td></tr>
+                  <tr><td>Д. Ким</td><td>Июль</td><td>62 200 ₽</td><td><button type="button" class="btn btn-ghost btn-sm" onclick="toast('Документы запрошены')">Документы</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card">
+              <h3>Структура выручки</h3>
+              <div class="breakdown" style="margin-top:8px">
+                <div><span>Экспресс</span><strong>18%</strong></div>
+                <div class="progress-line"><i style="width:18%"></i></div>
+                <div style="margin-top:10px"><span>Стандарт</span><strong>54%</strong></div>
+                <div class="progress-line"><i style="width:54%"></i></div>
+                <div style="margin-top:10px"><span>Профи</span><strong>28%</strong></div>
+                <div class="progress-line"><i style="width:28%"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="a-ai">
+          <div class="stats">
+            <div class="stat"><div class="v">98%</div><div class="k">Точность после брокера</div></div>
+            <div class="stat"><div class="v">91%</div><div class="k">AI без правок</div></div>
+            <div class="stat"><div class="v">18%</div><div class="k">Кодов скорректировано</div></div>
+            <div class="stat"><div class="v">1–3 мин</div><div class="k">Среднее время AI</div></div>
+          </div>
+          <div class="two">
+            <div class="card">
+              <h3>Модули AI</h3>
+              <table class="data">
+                <thead><tr><th>Модуль</th><th>Статус</th><th>Uptime</th></tr></thead>
+                <tbody>
+                  <tr><td>AI Classification</td><td><span class="pill ok">OK</span></td><td>99.9%</td></tr>
+                  <tr><td>AI OCR</td><td><span class="pill ok">OK</span></td><td>99.7%</td></tr>
+                  <tr><td>AI Broker chat</td><td><span class="pill ok">OK</span></td><td>99.8%</td></tr>
+                  <tr><td>AI Risk</td><td><span class="pill warn">Деградация</span></td><td>98.1%</td></tr>
+                  <tr><td>AI Logistics</td><td><span class="pill ok">OK</span></td><td>99.5%</td></tr>
+                  <tr><td>AI Documents</td><td><span class="pill ok">OK</span></td><td>99.6%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card">
+              <h3>Порог эскалации</h3>
+              <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Если уверенность модели ниже порога — заявка сразу в очередь брокера.</p>
+              <div class="field"><label>Порог confidence, %</label><input type="range" id="aiThreshold" min="50" max="95" value="75" oninput="document.getElementById('aiThVal').textContent=this.value+'%'" style="accent-color:var(--blue);width:100%"></div>
+              <div style="font-family:var(--display);font-size:1.4rem;font-weight:700;color:var(--blue)" id="aiThVal">75%</div>
+              <button type="button" class="btn btn-primary btn-sm" style="margin-top:12px" onclick="toast('Порог эскалации сохранён: ' + document.getElementById('aiThVal').textContent)">Применить</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="a-audit">
+          <div class="card">
+            <div class="card-head">
+              <div><h3>Журнал действий</h3><p>Изменения расчётов, ролей и выплат · 152-ФЗ</p></div>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="toast('Audit log выгружен')">Скачать</button>
+            </div>
+            <table class="data">
+              <thead><tr><th>Время</th><th>Актор</th><th>Действие</th><th>Объект</th></tr></thead>
+              <tbody>
+                <tr><td>29.07 18:42</td><td>Иванов</td><td>Утвердил ТН ВЭД</td><td>#47892</td></tr>
+                <tr><td>29.07 18:10</td><td>Admin</td><td>Эскалация SLA</td><td>#47890</td></tr>
+                <tr><td>29.07 17:55</td><td>Система</td><td>AI-расчёт завершён</td><td>#47895</td></tr>
+                <tr><td>29.07 16:20</td><td>ООО Импортёр</td><td>Пополнение баланса</td><td>+5 000 ₽</td></tr>
+                <tr><td>29.07 15:01</td><td>Admin</td><td>Изменён тариф Стандарт</td><td>2 990 ₽</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pane" id="a-settings">
+          <div class="two">
+            <div class="card" style="max-width:100%">
+              <h3>Платформа</h3>
+              <div class="field"><label>Название</label><input value="LBM Брокер"></div>
+              <div class="field"><label>SLA брокера по умолчанию, часов</label><input type="number" value="4"></div>
+              <div class="field"><label>Курс USD (демо)</label><input type="number" value="90"></div>
+              <label class="toggle-row"><input type="checkbox" checked> Маркетплейс брокеров включён</label>
+              <label class="toggle-row"><input type="checkbox" checked> Автоназначение брокера по очереди</label>
+              <label class="toggle-row"><input type="checkbox"> Режим обслуживания</label>
+              <button type="button" class="btn btn-primary btn-sm" onclick="toast('Настройки платформы сохранены')">Сохранить</button>
+            </div>
+            <div class="card">
+              <h3>Безопасность</h3>
+              <label class="toggle-row"><input type="checkbox" checked> Обязательный 2FA для админов</label>
+              <label class="toggle-row"><input type="checkbox" checked> Audit log изменений расчёта</label>
+              <label class="toggle-row"><input type="checkbox" checked> Шифрование документов at rest</label>
+              <div class="alert-box ok-box" style="margin-top:8px">
+                <strong>Соответствие 152-ФЗ</strong>
+                Роли, журналирование и разграничение доступа активны.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CLIENT ===================== -->
+<section class="view" id="view-client">
+  <div class="app">
+    <aside class="side">
+      <div class="side-brand">
+        <div class="brand-mark"><svg class="icon icon-lg"><use href="#i-box"/></svg></div>
+        <div>Кабинет<small>Клиент · ООО «Импортёр»</small></div>
+      </div>
+      <nav class="side-nav" id="clientNav">
+        <button type="button" class="active" data-pane="c-dash"><svg class="icon"><use href="#i-home"/></svg> Дашборд</button>
+        <button type="button" data-pane="c-orders"><svg class="icon"><use href="#i-list"/></svg> Заявки / просчёты</button>
+        <button type="button" data-pane="c-brokers"><svg class="icon"><use href="#i-users"/></svg> Брокеры</button>
+        <button type="button" data-pane="c-ship"><svg class="icon"><use href="#i-truck"/></svg> Перевозка</button>
+        <button type="button" data-pane="c-balance"><svg class="icon"><use href="#i-wallet"/></svg> Баланс</button>
+        <button type="button" data-pane="c-support"><svg class="icon"><use href="#i-message"/></svg> Поддержка <span class="badge-n">3</span></button>
+        <button type="button" data-pane="c-settings"><svg class="icon"><use href="#i-settings"/></svg> Настройки</button>
+        <button type="button" data-pane="c-profile"><svg class="icon"><use href="#i-user"/></svg> Профиль</button>
+      </nav>
+      <div class="side-foot">
+        Баланс: <strong id="balanceVal">12 400 ₽</strong><br>
+        Тариф по умолчанию: Стандарт
+      </div>
+      <button type="button" class="btn btn-outline-light btn-sm back-link" onclick="showView('broker')">→ Кабинет брокера</button>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <h1 id="clientTitle">Дашборд</h1>
+          <div class="sub">Сводка по просчётам, брокерам и платежам</div>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="btn btn-primary btn-sm" onclick="openClientPane('c-dash'); document.getElementById('qDesc')?.focus(); toast('Опишите товар в «Быстрый просчёт»')">
+            <svg class="icon"><use href="#i-plus"/></svg> Новый просчёт
+          </button>
+          <div class="avatar"><img src="assets/avatar-user.jpg" alt=""></div>
+        </div>
+      </div>
+      <div class="content">
+
+        <div class="pane active" id="c-dash">
+          <div class="stats">
+            <div class="stat"><div class="v">5</div><div class="k">Активные заявки</div></div>
+            <div class="stat"><div class="v">2</div><div class="k">На проверке у брокера</div></div>
+            <div class="stat"><div class="v">1</div><div class="k">Перевозки в пути</div></div>
+            <div class="stat"><div class="v">3</div><div class="k">Непрочитанных</div></div>
+          </div>
+          <div class="detail-grid">
+            <div class="card">
+              <h3>Последние просчёты</h3>
+              <table class="data">
+                <thead><tr><th>№</th><th>Товар / маршрут</th><th>Сумма</th><th>Статус</th></tr></thead>
+                <tbody>
+                  <tr class="clickable" onclick="toast('Открыт просчёт #47892')"><td>#47892</td><td><span class="row-thumb"><img src="assets/product-laptop.jpg" alt=""></span>Ноутбуки · Китай → РФ</td><td>1 248 700 ₽</td><td><span class="pill ok">Готово</span></td></tr>
+                  <tr class="clickable" onclick="toast('Чат с брокером по #47880')"><td>#47880</td><td><span class="row-thumb"><img src="assets/ob-2-docs.jpg" alt=""></span>Ткани хлопок · Турция</td><td>—</td><td><span class="pill blue">У брокера</span></td></tr>
+                  <tr class="clickable" onclick="toast('Оплата тарифа Стандарт')"><td>#47861</td><td><span class="row-thumb"><img src="assets/ob-3-cargo.jpg" alt=""></span>Автозапчасти · Китай</td><td>2 990 ₽</td><td><span class="pill warn">Оплата</span></td></tr>
+                  <tr><td>#47840</td><td><span class="row-thumb"><img src="assets/ob-2-fleet.jpg" alt=""></span>Оборудование · ЕС</td><td>—</td><td><span class="pill muted">Черновик</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card">
+              <h3>Быстрый просчёт</h3>
+              <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Опишите товар — AI подготовит черновик кода ТН ВЭД и платежей. До 3 позиций в MVP.</p>
+              <div class="field"><label>Наименование и описание</label><textarea id="qDesc" rows="3" placeholder="Например: ноутбуки Lenovo ThinkPad, 14'', для офиса"></textarea></div>
+              <div class="field"><label>Страна / стоимость партии</label><input id="qMeta" placeholder="Китай · $18 000"></div>
+              <div class="thumb-row" style="margin-bottom:12px">
+                <div class="thumb"><img src="assets/product-laptop.jpg" alt=""></div>
+                <div class="thumb"><img src="assets/product-laptop.jpg" alt=""></div>
+                <div class="thumb add" onclick="toast('Загрузка фото (демо)')">+ фото</div>
+              </div>
+              <button type="button" class="btn btn-primary" style="width:100%" onclick="quickCalc()">Запустить AI-расчёт</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Активная перевозка LC-1042</h3>
+            <div class="two">
+              <div class="media-card">
+                <img src="assets/ob-1-truck.jpg" alt="">
+                <div class="cap">Алматы → Москва · сборный груз</div>
+              </div>
+              <div>
+                <div class="breakdown" style="margin-bottom:14px">
+                  <div><span>Статус</span><strong>На таможне РФ</strong></div>
+                  <div><span>ETA</span><strong>18 июля</strong></div>
+                  <div><span>Перевозчик</span><strong>China Cargo Line</strong></div>
+                  <div><span>Брокер</span><strong>А. Иванов</strong></div>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="toast('Трекинг LC-1042 открыт')">Открыть трекинг</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="c-orders">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Заявки на просчёт</h3>
+                <p>История AI-расчётов, оплаты тарифов и проверок брокером</p>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" onclick="quickCalc()"><svg class="icon"><use href="#i-plus"/></svg> Создать</button>
+            </div>
+            <div class="filter-chips" id="orderChips">
+              <button type="button" class="on" data-filter="all" onclick="filterClientOrders('all', this)">Все</button>
+              <button type="button" data-filter="done" onclick="filterClientOrders('done', this)">Готово</button>
+              <button type="button" data-filter="broker" onclick="filterClientOrders('broker', this)">У брокера</button>
+              <button type="button" data-filter="pay" onclick="filterClientOrders('pay', this)">Оплата</button>
+            </div>
+            <table class="data" id="ordersTable">
+              <thead><tr><th>№</th><th>Товар</th><th>Тариф</th><th>Платежи</th><th>Брокер</th><th>Статус</th></tr></thead>
+              <tbody>
+                <tr data-status="done"><td>#47892</td><td><span class="row-thumb"><img src="assets/product-laptop.jpg" alt=""></span>Ноутбуки Lenovo</td><td>Стандарт</td><td>1 248 700 ₽</td><td>Иванов</td><td><span class="pill ok">Готово</span></td></tr>
+                <tr data-status="broker"><td>#47880</td><td><span class="row-thumb"><img src="assets/ob-2-docs.jpg" alt=""></span>Ткани 100% хлопок</td><td>Профи</td><td>—</td><td>Иванов</td><td><span class="pill blue">У брокера</span></td></tr>
+                <tr data-status="pay"><td>#47861</td><td><span class="row-thumb"><img src="assets/ob-3-cargo.jpg" alt=""></span>Автозапчасти</td><td>Стандарт</td><td>тариф</td><td>—</td><td><span class="pill warn">Оплата</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card" id="calcResult" style="display:none">
+            <h3>Черновик AI · <span id="calcNum"></span></h3>
+            <div class="metric-row">
+              <div class="metric"><div class="k">Код ТН ВЭД</div><div class="v" style="font-size:1.05rem">8471 30 000 0</div></div>
+              <div class="metric"><div class="k">Уверенность</div><div class="v">94%</div></div>
+            </div>
+            <div class="breakdown">
+              <div><span>Пошлина 7%</span><strong>113 400 ₽</strong></div>
+              <div><span>НДС 20%</span><strong>346 680 ₽</strong></div>
+              <div><span>Сбор</span><strong>15 000 ₽</strong></div>
+              <div><span>Итого платежей</span><strong>1 248 700 ₽</strong></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+              <button type="button" class="btn btn-primary btn-sm" onclick="toast('Отправлено брокеру на проверку')">Отправить брокеру</button>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="toast('PDF-черновик скачан')">Скачать PDF</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="c-brokers">
+          <div style="margin-bottom:16px">
+            <h2 style="font-family:var(--display);font-size:1.3rem;margin:0">Ваши брокеры и рекомендации</h2>
+            <p style="color:var(--muted);font-size:14px;margin-top:4px">Назначаются автоматически по очереди или выбираются вручную из каталога</p>
+          </div>
+          <div class="three">
+            <div class="person-card col">
+              <div style="display:flex;gap:12px;align-items:center">
+                <div class="photo"><img src="assets/avatar-broker.jpg" alt=""></div>
+                <div><strong>Алексей Иванов</strong><div class="stars">★★★★★ 4.9</div></div>
+              </div>
+              <p style="font-size:13px;color:var(--muted);margin:10px 0">2 активные заявки · электроника, Китай</p>
+              <button type="button" class="btn btn-primary btn-sm" onclick="toast('Чат с Ивановым открыт')">Написать в чат</button>
+            </div>
+            <div class="person-card col">
+              <div style="display:flex;gap:12px;align-items:center">
+                <div class="photo"><img src="assets/avatar-support.jpg" alt=""></div>
+                <div><strong>Мария Петрова</strong><div class="stars">★★★★★ 4.8</div></div>
+              </div>
+              <p style="font-size:13px;color:var(--muted);margin:10px 0">Доступна сейчас · текстиль, сертификация</p>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="toast('Запрос на назначение брокера')">Назначить</button>
+            </div>
+            <div class="person-card col">
+              <div style="display:flex;gap:12px;align-items:center">
+                <div class="photo"><img src="assets/avatar-user.jpg" alt=""></div>
+                <div><strong>Дмитрий Ким</strong><div class="stars">★★★★☆ 4.7</div></div>
+              </div>
+              <p style="font-size:13px;color:var(--muted);margin:10px 0">Корея / Китай · сложная электроника</p>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="toast('Профиль брокера')">Смотреть профиль</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="c-ship">
+          <div class="card" style="max-width:640px">
+            <h3>Заявка на перевозку</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Привяжите готовый просчёт — логист увидит вес, объём и код ТН ВЭД.</p>
+            <div class="ship-gallery">
+              <div class="ph on" onclick="selectShip(this)"><img src="assets/ob-1-truck.jpg" alt="Авто"></div>
+              <div class="ph" onclick="selectShip(this)"><img src="assets/ob-3-port.jpg" alt="Море"></div>
+              <div class="ph" onclick="selectShip(this)"><img src="assets/ob-1-warehouse.jpg" alt="Авиа"></div>
+            </div>
+            <div class="field"><label>Связанный просчёт</label>
+              <select><option>#47892 Ноутбуки · готов</option><option>#47880 Ткани · у брокера</option></select>
+            </div>
+            <div class="field"><label>Откуда</label><input value="Шэньчжэнь, Китай"></div>
+            <div class="field"><label>Куда</label><input value="Москва, склад клиента"></div>
+            <div class="field"><label>Тип перевозки</label>
+              <select id="shipType"><option>Сборный груз (LCL)</option><option>Контейнер (FCL)</option><option>Авиа</option></select>
+            </div>
+            <div class="field"><label>Комментарий</label><textarea rows="2" placeholder="Желаемые сроки, температурный режим…"></textarea></div>
+            <button type="button" class="btn btn-primary" onclick="toast('Заявка на перевозку отправлена логистам')">Отправить заявку</button>
+          </div>
+        </div>
+
+        <div class="pane" id="c-balance">
+          <div class="stats">
+            <div class="stat"><div class="v" id="balBig">12 400 ₽</div><div class="k">Доступный баланс</div></div>
+            <div class="stat"><div class="v">8 970 ₽</div><div class="k">Списано за месяц</div></div>
+            <div class="stat"><div class="v">3</div><div class="k">Оплаченных просчёта</div></div>
+            <div class="stat"><div class="v">Стандарт</div><div class="k">Тариф по умолчанию</div></div>
+          </div>
+          <div class="two">
+            <div class="card">
+              <h3>Пополнить баланс</h3>
+              <div class="field"><label>Сумма, ₽</label><input type="number" id="topup" value="5000"></div>
+              <div class="field"><label>Способ</label>
+                <select><option>Банковская карта</option><option>СБП</option><option>Счёт для юрлица</option></select>
+              </div>
+              <button type="button" class="btn btn-primary" onclick="doTopup()">Оплатить</button>
+            </div>
+            <div class="card">
+              <h3>История операций</h3>
+              <table class="data" id="balHistory">
+                <thead><tr><th>Дата</th><th>Операция</th><th>Сумма</th></tr></thead>
+                <tbody>
+                  <tr><td>12.07</td><td>Просчёт #47892 Стандарт</td><td>−2 990 ₽</td></tr>
+                  <tr><td>10.07</td><td>Пополнение картой</td><td>+10 000 ₽</td></tr>
+                  <tr><td>03.07</td><td>Просчёт #47840 Экспресс</td><td>−990 ₽</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="c-support">
+          <div class="card" style="max-width:720px">
+            <h3>Чат поддержки платформы</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Вопросы по оплате и доступу. По заявкам пишите брокеру в карточке просчёта.</p>
+            <div class="chat-box" id="supportLog">
+              <div class="bubble">Здравствуйте! Я поддержка LBM Брокер. Чем помочь?</div>
+            </div>
+            <div class="chat-row">
+              <input id="supportInput" placeholder="Опишите вопрос…" style="flex:1;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:#f5f7fa;outline:none" onkeydown="if(event.key==='Enter')sendSupport()">
+              <button type="button" class="btn btn-primary" onclick="sendSupport()"><svg class="icon"><use href="#i-send"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="c-settings">
+          <div class="card" style="max-width:520px">
+            <h3>Уведомления и безопасность</h3>
+            <label class="toggle-row"><input type="checkbox" checked> Push о смене статуса заявки</label>
+            <label class="toggle-row"><input type="checkbox" checked> Email с PDF-отчётом</label>
+            <label class="toggle-row"><input type="checkbox"> SMS при сообщении брокера</label>
+            <label class="toggle-row"><input type="checkbox" checked> Двухфакторный вход</label>
+            <button type="button" class="btn btn-primary btn-sm" onclick="toast('Настройки сохранены')">Сохранить</button>
+          </div>
+        </div>
+
+        <div class="pane" id="c-profile">
+          <div class="card" style="max-width:560px">
+            <h3>Профиль компании</h3>
+            <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px">
+              <div class="avatar" style="width:72px;height:72px"><img src="assets/avatar-user.jpg" alt=""></div>
+              <div>
+                <strong>ООО «Импортёр»</strong>
+                <div style="font-size:13px;color:var(--muted);margin-top:4px">Контактное лицо · Иван Михайлов</div>
+                <button type="button" class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="toast('Загрузка фото')">Сменить фото</button>
+              </div>
+            </div>
+            <div class="field"><label>Наименование</label><input value="ООО «Импортёр»"></div>
+            <div class="field"><label>ИНН / КПП</label><input value="7701234567 / 770101001"></div>
+            <div class="field"><label>Юридический адрес</label><input value="г. Москва, ул. Примерная, 10"></div>
+            <div class="field"><label>Контактный email</label><input value="ved@importyor.ru"></div>
+            <div class="field"><label>Телефон</label><input value="+7 495 000-00-00"></div>
+            <button type="button" class="btn btn-primary btn-sm" onclick="toast('Профиль компании обновлён')">Сохранить</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BROKER ===================== -->
+<section class="view" id="view-broker">
+  <div class="app">
+    <aside class="side">
+      <div class="side-brand">
+        <div class="brand-mark"><svg class="icon icon-lg"><use href="#i-shield"/></svg></div>
+        <div>Кабинет<small>Брокер · А. Иванов</small></div>
+      </div>
+      <nav class="side-nav" id="brokerNav">
+        <button type="button" class="active" data-pane="b-dash"><svg class="icon"><use href="#i-home"/></svg> Дашборд</button>
+        <button type="button" data-pane="b-queue"><svg class="icon"><use href="#i-list"/></svg> Очередь <span class="badge-n" id="qBadge">12</span></button>
+        <button type="button" data-pane="b-work"><svg class="icon"><use href="#i-clock"/></svg> В работе</button>
+        <button type="button" data-pane="b-chat"><svg class="icon"><use href="#i-message"/></svg> Чат</button>
+        <button type="button" data-pane="b-sla"><svg class="icon"><use href="#i-chart"/></svg> SLA / статистика</button>
+        <button type="button" data-pane="b-pay"><svg class="icon"><use href="#i-wallet"/></svg> Выплаты</button>
+        <button type="button" data-pane="b-profile"><svg class="icon"><use href="#i-user"/></svg> Профиль</button>
+      </nav>
+      <div class="side-foot">
+        SLA: <strong>≤ 4 ч</strong><br>
+        Рейтинг ★ 4.9 · 28 закрыто / нед.
+      </div>
+      <button type="button" class="btn btn-outline-light btn-sm back-link" onclick="showView('admin')">→ Админ-панель</button>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <h1 id="brokerTitle">Дашборд брокера</h1>
+          <div class="sub">Очередь оплаченных заявок · правка AI · отправка клиенту</div>
+        </div>
+        <div class="topbar-actions">
+          <span class="pill ok">Онлайн</span>
+          <button type="button" class="btn btn-primary btn-sm" onclick="openBrokerPane('b-queue')">Открыть очередь</button>
+          <div class="avatar"><img src="assets/avatar-broker.jpg" alt=""></div>
+        </div>
+      </div>
+      <div class="content">
+
+        <div class="pane active" id="b-dash">
+          <div class="stats">
+            <div class="stat"><div class="v" id="qCount">12</div><div class="k">В общей очереди</div></div>
+            <div class="stat"><div class="v" id="wCount">4</div><div class="k">У вас в работе</div></div>
+            <div class="stat"><div class="v">1</div><div class="k">Просрочен SLA</div></div>
+            <div class="stat"><div class="v">3.1 ч</div><div class="k">Среднее время ответа</div></div>
+          </div>
+          <div class="alert-box warn-box">
+            <strong>SLA risk · #47890</strong>
+            Заявка «Химия» у коллеги — при необходимости возьмите в работу после эскалации.
+          </div>
+          <div class="card">
+            <h3>Требуют внимания</h3>
+            <table class="data">
+              <thead><tr><th>№</th><th>Клиент</th><th>Товар</th><th>AI confidence</th><th>Действие</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>#47895</td><td>ООО «Альфа»</td><td>Серверы</td><td>92%</td>
+                  <td><button type="button" class="btn btn-primary btn-sm" onclick="takeJob(this,'#47895')">Взять</button></td>
+                </tr>
+                <tr>
+                  <td>#47894</td><td>ИП Смирнов</td><td>Станки</td><td>71%</td>
+                  <td><button type="button" class="btn btn-primary btn-sm" onclick="takeJob(this,'#47894')">Взять</button></td>
+                </tr>
+                <tr>
+                  <td>#47890</td><td>ООО «Бета»</td><td>Химия</td><td>61%</td>
+                  <td><span class="pill warn">SLA risk</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pane" id="b-queue">
+          <div class="detail-grid">
+            <div class="card">
+              <h3>Очередь оплаченных заявок</h3>
+              <table class="data" id="queueTable">
+                <thead><tr><th>№</th><th>Клиент</th><th>Тариф</th><th>AI</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td>#47895</td><td>ООО Альфа</td><td>Стандарт</td><td>92%</td><td><button class="btn btn-primary btn-sm" type="button" onclick="takeJob(this,'#47895')">Взять</button></td></tr>
+                  <tr><td>#47894</td><td>ИП Смирнов</td><td>Профи</td><td>71%</td><td><button class="btn btn-primary btn-sm" type="button" onclick="takeJob(this,'#47894')">Взять</button></td></tr>
+                  <tr><td>#47891</td><td>ООО Гамма</td><td>Экспресс→апгрейд</td><td>88%</td><td><button class="btn btn-primary btn-sm" type="button" onclick="takeJob(this,'#47891')">Взять</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card" id="jobCard">
+              <h3>Карточка <span id="jobId">#47892</span></h3>
+              <div style="font-size:13px;color:var(--muted);margin-bottom:10px">
+                ООО «Импортёр» · 3 позиции · Китай · тариф Стандарт · оплачено 2 990 ₽
+              </div>
+              <div class="thumb-row" style="margin-bottom:12px">
+                <div class="thumb"><img src="assets/product-laptop.jpg" alt=""></div>
+                <div class="thumb"><img src="assets/ob-2-docs.jpg" alt=""></div>
+              </div>
+              <div class="metric-row">
+                <div class="metric"><div class="k">ТН ВЭД (AI)</div><div class="v" style="font-size:1rem" id="aiCode">8471 30 000 0</div></div>
+                <div class="metric"><div class="k">Уверенность</div><div class="v" style="font-size:1.2rem">94%</div></div>
+              </div>
+              <div class="breakdown" style="margin-bottom:12px">
+                <div><span>Пошлина</span><strong>113 400 ₽</strong></div>
+                <div><span>НДС</span><strong>346 680 ₽</strong></div>
+                <div><span>Сбор</span><strong>15 000 ₽</strong></div>
+                <div><span>Итого</span><strong>1 248 700 ₽</strong></div>
+              </div>
+              <div class="field"><label>Код ТН ВЭД (правка брокера)</label><input id="hsEdit" value="8471 30 000 0"></div>
+              <div class="field"><label>Комментарий клиенту / в журнал</label><input id="hsComment" placeholder="Уточнён код по описанию процессора и экрана"></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button type="button" class="btn btn-primary" onclick="approveJob()">Утвердить и отправить</button>
+                <button type="button" class="btn btn-ghost" onclick="openBrokerPane('b-chat')">Чат</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="b-work">
+          <div class="card">
+            <h3>Заявки в вашей работе</h3>
+            <table class="data">
+              <thead><tr><th>№</th><th>Клиент</th><th>Взято</th><th>Осталось SLA</th><th>Статус</th></tr></thead>
+              <tbody id="workBody">
+                <tr><td>#47892</td><td>ООО Импортёр</td><td>сегодня 10:20</td><td>2 ч 10 мин</td><td><span class="pill blue">Правка</span></td></tr>
+                <tr><td>#47880</td><td>ООО Текстиль</td><td>вчера 16:40</td><td>45 мин</td><td><span class="pill warn">Ждёт ответ</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pane" id="b-chat">
+          <div class="card" style="max-width:720px">
+            <h3>Чат · заявка #47880 · ткани</h3>
+            <div class="chat-box" id="brokerChatLog">
+              <div class="bubble">Клиент: нужен сертификат соответствия по ткани</div>
+              <div class="bubble me">Запросил у вас плотность и состав — жду уточнение для кода ТН ВЭД</div>
+            </div>
+            <div class="chat-row">
+              <input id="brokerChatInput" placeholder="Ответ клиенту…" style="flex:1;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:#f5f7fa;outline:none" onkeydown="if(event.key==='Enter')sendBrokerChat()">
+              <button type="button" class="btn btn-primary" onclick="sendBrokerChat()"><svg class="icon"><use href="#i-send"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="b-sla">
+          <div class="stats">
+            <div class="stat"><div class="v">3.1 ч</div><div class="k">Средний SLA</div></div>
+            <div class="stat"><div class="v">96%</div><div class="k">Заявок в срок</div></div>
+            <div class="stat"><div class="v">4.9</div><div class="k">Рейтинг клиентов</div></div>
+            <div class="stat"><div class="v">128</div><div class="k">Закрыто за месяц</div></div>
+          </div>
+          <div class="card">
+            <h3>Качество AI vs ваши правки</h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:12px">За месяц вы скорректировали код ТН ВЭД в 18% заявок. Средняя уверенность AI на принятых без правок — 91%.</p>
+            <div class="breakdown">
+              <div><span>Принято без правок</span><strong>82%</strong></div>
+              <div class="progress-line"><i style="width:82%"></i></div>
+              <div style="margin-top:10px"><span>Скорректировано вами</span><strong>18%</strong></div>
+              <div class="progress-line"><i style="width:18%;background:linear-gradient(90deg,#c2410c,#f59e0b)"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="b-pay">
+          <div class="card">
+            <h3>Выплаты (30–40% от просчёта)</h3>
+            <table class="data">
+              <thead><tr><th>Период</th><th>Заявок</th><th>Сумма</th><th>Статус</th></tr></thead>
+              <tbody>
+                <tr><td>Июль 2026</td><td>28</td><td>84 000 ₽</td><td><span class="pill blue">Начисление</span></td></tr>
+                <tr><td>Июнь 2026</td><td>31</td><td>92 500 ₽</td><td><span class="pill ok">Выплачено</span></td></tr>
+                <tr><td>Май 2026</td><td>24</td><td>71 200 ₽</td><td><span class="pill ok">Выплачено</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pane" id="b-profile">
+          <div class="card" style="max-width:560px">
+            <div style="display:flex;gap:14px;align-items:center;margin-bottom:16px">
+              <div class="avatar" style="width:64px;height:64px"><img src="assets/avatar-broker.jpg" alt=""></div>
+              <div>
+                <strong style="font-size:1.1rem;font-family:var(--display)">Алексей Иванов</strong>
+                <div style="font-size:13px;color:var(--muted)">Сертифицированный таможенный брокер</div>
+              </div>
+            </div>
+            <div class="field"><label>Специализация</label><input value="Импорт из Китая, электроника, ЕАЭС"></div>
+            <div class="field"><label>Языки</label><input value="Русский, English, 中文 (базовый)"></div>
+            <div class="field"><label>О себе</label><textarea rows="3">12 лет в ВЭД, фокус на сложной классификации IT-оборудования и проверке комплектов документов.</textarea></div>
+            <label class="toggle-row"><input type="checkbox" checked> Принимаю новые заявки из очереди</label>
+            <button type="button" class="btn btn-primary btn-sm" onclick="toast('Профиль брокера сохранён')">Сохранить</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const titles = {
+    'a-dash': ['Дашборд платформы', 'Операции, AI, брокеры и выручка — сводка за сегодня'],
+    'a-orders': ['Заявки', 'Все просчёты платформы · назначение и эскалация'],
+    'a-clients': ['Клиенты', 'Компании, балансы и активность'],
+    'a-brokers': ['Брокеры', 'Каталог, модерация и SLA'],
+    'a-tariffs': ['Тарифы', 'Экспресс · Стандарт · Профи'],
+    'a-finance': ['Финансы', 'GMV, комиссия и выплаты брокерам'],
+    'a-ai': ['AI-качество', 'Модули, точность и порог эскалации'],
+    'a-audit': ['Audit log', 'Журнал действий · 152-ФЗ'],
+    'a-settings': ['Настройки', 'Платформа и безопасность'],
+    'c-dash': 'Дашборд',
+    'c-orders': 'Заявки / просчёты',
+    'c-brokers': 'Брокеры',
+    'c-ship': 'Заказать перевозку',
+    'c-balance': 'Баланс',
+    'c-support': 'Чат поддержки',
+    'c-settings': 'Настройки',
+    'c-profile': 'Профиль',
+    'b-dash': 'Дашборд брокера',
+    'b-queue': 'Очередь заявок',
+    'b-work': 'Мои в работе',
+    'b-chat': 'Чат с клиентами',
+    'b-sla': 'Статистика / SLA',
+    'b-pay': 'Выплаты',
+    'b-profile': 'Профиль'
+  };
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window.__tt);
+    window.__tt = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + id).classList.add('active');
+    document.querySelectorAll('.proto-tabs button').forEach(b =>
+      b.classList.toggle('active', b.dataset.view === id)
+    );
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.querySelectorAll('.proto-tabs button').forEach(b =>
+    b.addEventListener('click', () => showView(b.dataset.view))
+  );
+
+  function openAdminPane(id) {
+    document.querySelectorAll('#view-admin .pane').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('#adminNav button').forEach(b =>
+      b.classList.toggle('active', b.dataset.pane === id)
+    );
+    const meta = titles[id] || ['Админ', ''];
+    document.getElementById('adminTitle').textContent = meta[0];
+    document.getElementById('adminSub').textContent = meta[1];
+  }
+
+  function openClientPane(id) {
+    document.querySelectorAll('#view-client .pane').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('#clientNav button').forEach(b =>
+      b.classList.toggle('active', b.dataset.pane === id)
+    );
+    document.getElementById('clientTitle').textContent = titles[id] || 'Кабинет';
+  }
+
+  function openBrokerPane(id) {
+    document.querySelectorAll('#view-broker .pane').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('#brokerNav button').forEach(b =>
+      b.classList.toggle('active', b.dataset.pane === id)
+    );
+    document.getElementById('brokerTitle').textContent = titles[id] || 'Кабинет';
+  }
+
+  document.querySelectorAll('#adminNav button[data-pane]').forEach(b =>
+    b.addEventListener('click', () => openAdminPane(b.dataset.pane))
+  );
+  document.querySelectorAll('#clientNav button[data-pane]').forEach(b =>
+    b.addEventListener('click', () => openClientPane(b.dataset.pane))
+  );
+  document.querySelectorAll('#brokerNav button[data-pane]').forEach(b =>
+    b.addEventListener('click', () => openBrokerPane(b.dataset.pane))
+  );
+
+  function fmt(n) { return Math.round(n).toLocaleString('ru-RU'); }
+
+  function filterAdminOrders() {
+    const q = (document.getElementById('aOrderSearch').value || '').toLowerCase();
+    const f = document.getElementById('aOrderFilter').value;
+    document.querySelectorAll('#aOrdersTable tbody tr').forEach(tr => {
+      const status = tr.dataset.status;
+      const text = tr.textContent.toLowerCase();
+      const okStatus = f === 'all' || status === f;
+      const okSearch = !q || text.includes(q);
+      tr.style.display = okStatus && okSearch ? '' : 'none';
+    });
+  }
+
+  function filterClientOrders(filter, btn) {
+    document.querySelectorAll('#orderChips button').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    document.querySelectorAll('#ordersTable tbody tr').forEach(tr => {
+      tr.style.display = filter === 'all' || tr.dataset.status === filter ? '' : 'none';
+    });
+  }
+
+  function quickCalc() {
+    const d = (document.getElementById('qDesc').value || '').trim() || 'Новый товар';
+    const tb = document.querySelector('#ordersTable tbody');
+    const tr = document.createElement('tr');
+    const num = '#4790' + Math.floor(Math.random() * 9);
+    tr.dataset.status = 'broker';
+    tr.innerHTML = `<td>${num}</td><td>${d.slice(0, 42)}</td><td>Стандарт</td><td>—</td><td>—</td><td><span class="pill blue">AI</span></td>`;
+    tb.prepend(tr);
+    openClientPane('c-orders');
+    const box = document.getElementById('calcResult');
+    box.style.display = 'block';
+    document.getElementById('calcNum').textContent = num;
+    toast('Заявка ' + num + ' создана. AI определяет код ТН ВЭД…');
+    setTimeout(() => toast('AI готов · confidence 94%. Можно отправить брокеру.'), 1200);
+  }
+
+  let bal = 12400;
+  function doTopup() {
+    const v = Number(document.getElementById('topup').value) || 0;
+    bal += v;
+    document.getElementById('balanceVal').textContent = fmt(bal) + ' ₽';
+    document.getElementById('balBig').textContent = fmt(bal) + ' ₽';
+    const tb = document.querySelector('#balHistory tbody');
+    const tr = document.createElement('tr');
+    const today = new Date();
+    const ds = String(today.getDate()).padStart(2, '0') + '.' + String(today.getMonth() + 1).padStart(2, '0');
+    tr.innerHTML = `<td>${ds}</td><td>Пополнение картой</td><td>+${fmt(v)} ₽</td>`;
+    tb.prepend(tr);
+    toast('Баланс пополнен на ' + fmt(v) + ' ₽');
+  }
+
+  function sendSupport() {
+    const inp = document.getElementById('supportInput');
+    const msg = inp.value.trim();
+    if (!msg) return;
+    const log = document.getElementById('supportLog');
+    log.innerHTML += `<div class="bubble me">${escapeHtml(msg)}</div>`;
+    inp.value = '';
+    log.scrollTop = log.scrollHeight;
+    setTimeout(() => {
+      log.innerHTML += `<div class="bubble">Приняли обращение #S-${Math.floor(Math.random() * 900 + 100)}. Ответим в течение 15 минут.</div>`;
+      log.scrollTop = log.scrollHeight;
+    }, 700);
+  }
+
+  function sendBrokerChat() {
+    const inp = document.getElementById('brokerChatInput');
+    const msg = inp.value.trim();
+    if (!msg) return;
+    const log = document.getElementById('brokerChatLog');
+    log.innerHTML += `<div class="bubble me">${escapeHtml(msg)}</div>`;
+    inp.value = '';
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function selectShip(el) {
+    document.querySelectorAll('.ship-gallery .ph').forEach(p => p.classList.remove('on'));
+    el.classList.add('on');
+    const map = ['Сборный груз (LCL)', 'Контейнер (FCL)', 'Авиа'];
+    const idx = [...el.parentElement.children].indexOf(el);
+    document.getElementById('shipType').selectedIndex = idx;
+    toast('Выбран тип: ' + map[idx]);
+  }
+
+  function takeJob(btn, id) {
+    if (btn.disabled) return;
+    btn.textContent = 'В работе';
+    btn.disabled = true;
+    btn.className = 'btn btn-ghost btn-sm';
+    document.getElementById('jobId').textContent = id;
+    let q = Number(document.getElementById('qCount').textContent);
+    let w = Number(document.getElementById('wCount').textContent);
+    if (q > 0) {
+      document.getElementById('qCount').textContent = String(q - 1);
+      document.getElementById('qBadge').textContent = String(q - 1);
+      document.getElementById('wCount').textContent = String(w + 1);
+    }
+    const wb = document.getElementById('workBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${id}</td><td>Новый клиент</td><td>только что</td><td>3 ч 50 мин</td><td><span class="pill blue">Новая</span></td>`;
+    wb.prepend(tr);
+    openBrokerPane('b-queue');
+    toast('Заявка ' + id + ' закреплена за вами');
+  }
+
+  function approveJob() {
+    const code = document.getElementById('hsEdit').value;
+    const note = document.getElementById('hsComment').value || 'без комментария';
+    document.getElementById('aiCode').textContent = code;
+    toast('Утверждено · ТН ВЭД ' + code + ' · ' + note);
+  }
+</script>
+</body>
+</html>

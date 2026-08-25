@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-ship.logistics.json",
+  "title": "D-SHIP logistics",
+  "description": "Quotes/tracking after calculation DONE only (D15). api may call logistics; client uses /api/v1/shipping.",
+  "x-contractVersion": 1,
+  "x-owner": "containers/logistics",
+  "x-relatedOwner": "containers/api",
+  "x-transport": ["POST /v1/quotes", "POST /v1/tracking", "GET /v1/tracking"],
+  "definitions": {
+    "quotesRequest": {
+      "type": "object",
+      "properties": {
+        "calculationId": { "type": "string" },
+        "origin": { "type": "string" },
+        "destination": { "type": "string" },
+        "weightKg": { "type": "number" }
+      },
+      "additionalProperties": true
+    },
+    "quote": {
+      "type": "object",
+      "properties": {
+        "carrierLabel": { "type": "string" },
+        "priceRub": { "type": "number" },
+        "etaDays": { "type": "number" }
+      }
+    },
+    "trackingRequest": {
+      "type": "object",
+      "properties": {
+        "trackingNumber": { "type": "string" },
+        "calculationId": { "type": "string" }
+      }
+    }
+  },
+  "examples": {
+    "quotesRequest": {
+      "calculationId": "calc_1",
+      "origin": "CN",
+      "destination": "RU",
+      "weightKg": 12
+    },
+    "quotesResponse": {
+      "quotes": [{ "carrierLabel": "stub-express", "priceRub": 18000, "etaDays": 14 }]
+    }
+  },
+  "x-invariants": ["Shipping only after DONE"]
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-product.calc.json",
+  "title": "D-PRODUCT product description schemas",
+  "description": "Structured product / goods description for CalculationItem (D24). Extends D-CALC itemInput; does not introduce synthetic item ids (D15).",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "POST /v1/calculations (items[].attrs)",
+    "GET /v1/calculations/:id (items[].attrs)"
+  ],
+  "definitions": {
+    "productAttrs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "material": { "type": "string", "maxLength": 200 },
+        "composition": { "type": "string", "maxLength": 500 },
+        "brand": { "type": "string", "maxLength": 120 },
+        "model": { "type": "string", "maxLength": 120 },
+        "purpose": { "type": "string", "maxLength": 500 },
+        "technicalSpecs": { "type": "string", "maxLength": 2000 },
+        "netWeightKg": { "type": "number", "minimum": 0 },
+        "grossWeightKg": { "type": "number", "minimum": 0 },
+        "originCountry": { "type": "string", "minLength": 2, "maxLength": 2 },
+        "hsHint": { "type": "string", "maxLength": 20 },
+        "extra": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "maxLength": 200 }
+        }
+      }
+    },
+    "productDescription": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "description": { "type": "string", "maxLength": 5000 },
+        "qty": { "type": "number" },
+        "unit": { "type": "string" },
+        "unitPrice": { "type": "number" },
+        "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
+        "mediaUrl": { "type": "string" },
+        "attrs": { "$ref": "#/definitions/productAttrs" }
+      }
+    }
+  },
+  "examples": {
+    "productAttrs": {
+      "brand": "Lenovo",
+      "model": "ThinkPad T14",
+      "material": "plastic/metal",
+      "originCountry": "CN",
+      "netWeightKg": 1.4,
+      "hsHint": "8471"
+    },
+    "productDescription": {
+      "name": "Ноутбук Lenovo ThinkPad T14",
+      "description": "15\" i5 16GB для импорта",
+      "qty": 50,
+      "unit": "шт",
+      "unitPrice": 320,
+      "currency": "USD",
+      "attrs": {
+        "brand": "Lenovo",
+        "model": "ThinkPad T14",
+        "originCountry": "CN"
+      }
+    }
+  },
+  "x-invariants": ["D15 no synthetic item ids", "D10 position limits still apply on items[] length"]
+}

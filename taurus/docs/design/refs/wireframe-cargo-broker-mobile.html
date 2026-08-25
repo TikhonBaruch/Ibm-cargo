@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<!-- Interactive mobile prototype (client soft-UI). NOT prod / not React Native. KB: docs/knowledge/design-interactive.md -->
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LBM Брокер — Mobile · интерактивный прототип</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #2d70f4;
+      --blue-deep: #1f5ae0;
+      --blue-soft: #e8f0ff;
+      --ink: #0f1219;
+      --muted: #8b93a7;
+      --line: #e8ecf3;
+      --bg: #f3f5f9;
+      --card: #ffffff;
+      --black: #12151c;
+      --ok: #16a34a;
+      --ok-bg: #dcfce7;
+      --warn: #d97706;
+      --warn-bg: #ffedd5;
+      --star: #f5b400;
+      --shadow: 0 12px 32px rgba(18, 21, 28, 0.07);
+      --shadow-lg: 0 20px 50px rgba(18, 21, 28, 0.12);
+      --radius: 28px;
+      --radius-sm: 18px;
+      --font: "Manrope", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background:
+        radial-gradient(ellipse at 20% 0%, #dbe7ff 0%, transparent 45%),
+        radial-gradient(ellipse at 90% 20%, #eef2f8 0%, transparent 40%),
+        linear-gradient(180deg, #e9edf5, #dfe5ef);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; border: none; background: none; color: inherit; }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    .proto-bar {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #0b1020; color: #94a3b8; border-bottom: 1px solid #1e293b;
+    }
+    .proto-bar strong { color: #fff; font-size: 13px; }
+    .proto-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .proto-tabs button {
+      padding: 7px 12px; border-radius: 999px; background: #1e293b; color: #cbd5e1;
+      font-size: 12px; font-weight: 600;
+    }
+    .proto-tabs button.active, .proto-tabs button:hover { background: var(--blue); color: #fff; }
+
+    .stage { padding: 28px 14px 56px; display: flex; justify-content: center; }
+    .phone {
+      width: 390px; max-width: 100%;
+      background: #1a1f2e; border-radius: 42px; padding: 14px;
+      box-shadow: 0 40px 100px rgba(15, 23, 42, 0.35);
+    }
+    .phone-inner {
+      background: var(--bg);
+      background-image:
+        url("data:image/svg+xml,%3Csvg width='120' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40c20-18 40-18 60 0s40 18 60 0' fill='none' stroke='%23d7dde8' stroke-width='1'/%3E%3C/svg%3E");
+      border-radius: 32px; overflow: hidden;
+      min-height: 760px; display: flex; flex-direction: column; position: relative;
+    }
+    .notch {
+      height: 30px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 22px; color: var(--ink); font-size: 12px; font-weight: 700; background: transparent;
+    }
+    .notch .icons { display: flex; gap: 5px; opacity: .7; font-size: 10px; }
+
+    .screen { display: none; flex: 1; flex-direction: column; min-height: 0; position: relative; }
+    .screen.active { display: flex; animation: up .35s ease; }
+    @keyframes up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+    .body { flex: 1; padding: 8px 18px 20px; overflow: auto; }
+    .body.pad-bot { padding-bottom: 96px; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 16px 22px; border-radius: 999px; font-weight: 700; font-size: 15px;
+      transition: transform .15s, background .15s, box-shadow .15s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: var(--blue); color: #fff;
+      box-shadow: 0 14px 30px rgba(45, 112, 244, 0.35);
+    }
+    .btn-primary:hover { background: var(--blue-deep); }
+    .btn-outline-blue {
+      background: transparent; color: var(--blue);
+      border: 1.5px solid var(--blue);
+      box-shadow: none;
+    }
+    .btn-outline-blue:hover { background: var(--blue-soft); }
+    .btn-ghost {
+      background: var(--card); border: 1.5px solid var(--line); color: var(--ink);
+    }
+    .btn-block { width: 100%; }
+    .btn-sm { padding: 8px 14px; font-size: 12px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    }
+    .pill.ok { background: var(--ok-bg); color: var(--ok); }
+    .pill.blue { background: var(--blue-soft); color: var(--blue); }
+    .pill.warn { background: var(--warn-bg); color: var(--warn); }
+    .pill.muted { background: #e8ecf3; color: #64748b; }
+
+    /* —— Onboarding —— */
+    .ob-wrap {
+      display: flex; flex-direction: column; flex: 1; min-height: 0;
+      padding: 4px 16px 16px;
+    }
+    .ob-photo {
+      flex: 1; min-height: 300px; max-height: 420px;
+      border-radius: 32px; overflow: hidden; margin-bottom: 22px;
+      position: relative; box-shadow: var(--shadow-lg);
+      background: #dbe3f0;
+    }
+    .ob-photo img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center;
+      transition: opacity .3s ease;
+    }
+    .ob-photo::after {
+      content: ""; position: absolute; inset: auto 0 0 0; height: 72px;
+      background: linear-gradient(to top, rgba(243,245,249,.55), transparent);
+      pointer-events: none;
+    }
+    .ob-title {
+      font-size: 1.85rem; font-weight: 800; letter-spacing: -.04em;
+      line-height: 1.15; margin-bottom: 12px; max-width: 14ch;
+    }
+    .ob-text { color: var(--muted); font-size: 14px; line-height: 1.55; margin-bottom: 18px; }
+    .dots { display: flex; gap: 6px; margin: 8px 0 20px; }
+    .dots span { width: 8px; height: 8px; border-radius: 50%; background: #cfd6e4; cursor: pointer; transition: .2s; }
+    .dots span:hover { background: #a8b3c9; }
+    .dots span.on { background: var(--blue); width: 22px; border-radius: 999px; }
+
+    .step-bar {
+      display: flex; gap: 8px; margin: 0 0 14px; padding: 4px;
+      background: var(--blue-soft); border-radius: 999px;
+    }
+    .step-bar button {
+      flex: 1; border: 0; background: transparent; color: var(--muted);
+      font: 650 12px/1.2 var(--font); padding: 10px 8px; border-radius: 999px;
+      cursor: pointer; transition: .2s;
+    }
+    .step-bar button.on { background: #fff; color: var(--blue); box-shadow: var(--shadow); }
+    .nc-panel[hidden], .bk-panel[hidden] { display: none !important; }
+    .drawer-nav button.on { background: var(--blue-soft); color: var(--blue); }
+
+    /* —— Auth —— */
+    .logo-block { text-align: center; margin: 28px 0 26px; }
+    .logo-mark {
+      width: 64px; height: 64px; border-radius: 22px; margin: 0 auto 12px;
+      background: linear-gradient(145deg, var(--blue), #6aa0ff);
+      color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 1.1rem;
+      box-shadow: 0 16px 36px rgba(45, 112, 244, 0.35);
+    }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 7px; }
+    .field label .req { color: var(--blue); }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 15px 16px; border-radius: 18px; border: 1.5px solid var(--line);
+      background: var(--card); outline: none; box-shadow: var(--shadow); color: var(--ink);
+    }
+    .field textarea { min-height: 88px; resize: vertical; line-height: 1.45; }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--blue); box-shadow: 0 0 0 4px rgba(45,112,244,.12);
+    }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-sec {
+      font-size: 12px; font-weight: 800; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .04em;
+      margin: 18px 0 10px;
+    }
+    .form-sec:first-of-type { margin-top: 4px; }
+    .tariff-pick { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .tariff-pick label {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px; border-radius: 18px; background: var(--card);
+      border: 1.5px solid var(--line); box-shadow: var(--shadow); cursor: pointer;
+    }
+    .tariff-pick label.active, .tariff-pick label:has(input:checked) {
+      border-color: var(--blue); background: var(--blue-soft);
+    }
+    .tariff-pick input { margin-top: 3px; accent-color: var(--blue); }
+    .tariff-pick strong { display: block; font-size: 14px; font-weight: 800; margin-bottom: 2px; }
+    .tariff-pick span { display: block; font-size: 12px; color: var(--muted); line-height: 1.35; }
+    .upload-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .upload-chip {
+      width: 72px; height: 72px; border-radius: 16px; overflow: hidden;
+      background: var(--card); border: 1.5px solid var(--line);
+      display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--muted);
+      text-align: center; padding: 6px; box-shadow: var(--shadow);
+    }
+    .upload-chip.dash { border-style: dashed; }
+    .check-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+      font-size: 13px; font-weight: 600; color: var(--ink);
+    }
+    .check-row input { accent-color: var(--blue); width: 18px; height: 18px; }
+
+    /* —— Home header —— */
+    .home-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; gap: 10px;
+    }
+    .icon-btn {
+      width: 42px; height: 42px; border-radius: 50%; background: var(--card);
+      box-shadow: var(--shadow); display: grid; place-items: center; flex-shrink: 0;
+    }
+    .icon-btn svg { width: 18px; height: 18px; stroke: var(--ink); fill: none; stroke-width: 1.8; stroke-linecap: round; }
+    .loc { text-align: left; flex: 1; padding: 0 8px; }
+    .loc small { display: block; color: var(--muted); font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+    .loc strong {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 15px; font-weight: 800; letter-spacing: -.02em;
+    }
+    .loc .pin {
+      width: 18px; height: 18px; border-radius: 50%; background: var(--blue-soft); color: var(--blue);
+      display: grid; place-items: center;
+    }
+    .loc .pin svg { width: 11px; height: 11px; stroke: var(--blue); fill: none; stroke-width: 2; }
+    .avatar {
+      width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+      box-shadow: var(--shadow); background: linear-gradient(135deg, #93c5fd, var(--blue));
+      color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 13px;
+    }
+    .avatar img { width: 100%; height: 100%; }
+
+    /* —— Side drawer —— */
+    .drawer-backdrop {
+      position: absolute; inset: 0; z-index: 40;
+      background: rgba(15, 18, 25, 0.45);
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+    .drawer {
+      position: absolute; top: 0; left: 0; bottom: 0; z-index: 45;
+      width: 78%; max-width: 290px;
+      background: #fff; border-radius: 0 28px 28px 0;
+      box-shadow: 12px 0 40px rgba(15, 18, 25, 0.18);
+      transform: translateX(-105%); transition: transform .28s ease;
+      display: flex; flex-direction: column; padding: 18px 14px 20px;
+    }
+    .drawer.open { transform: none; }
+    .drawer-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-bottom: 18px; padding: 4px 4px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .drawer-brand { display: flex; align-items: center; gap: 10px; }
+    .drawer-brand .mark {
+      width: 40px; height: 40px; border-radius: 14px;
+      background: linear-gradient(145deg, var(--blue), #6aa0ff);
+      color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 12px;
+    }
+    .drawer-brand strong { display: block; font-size: 14px; font-weight: 800; letter-spacing: -.02em; }
+    .drawer-brand small { color: var(--muted); font-size: 11px; font-weight: 600; }
+    .drawer-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .drawer-nav button {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 12px; border-radius: 16px; text-align: left;
+      font-size: 14px; font-weight: 700; color: var(--ink);
+      transition: background .15s;
+    }
+    .drawer-nav button:hover, .drawer-nav button:active { background: var(--blue-soft); color: var(--blue); }
+    .drawer-nav button .ico {
+      width: 36px; height: 36px; border-radius: 12px; background: var(--bg);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .drawer-nav button .ico svg {
+      width: 18px; height: 18px; stroke: var(--blue); fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .drawer-foot {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+      font-size: 12px; color: var(--muted);
+    }
+
+    .cats {
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 18px;
+      scrollbar-width: none;
+    }
+    .cats::-webkit-scrollbar { display: none; }
+    .cats button {
+      flex-shrink: 0; padding: 10px 16px; border-radius: 999px;
+      background: var(--card); border: 1.5px solid var(--line);
+      font-size: 13px; font-weight: 700; color: var(--muted);
+      box-shadow: var(--shadow);
+    }
+    .cats button.active {
+      background: var(--blue-soft); border-color: transparent; color: var(--blue);
+    }
+
+    .feature-card {
+      background: var(--card); border-radius: var(--radius); padding: 12px;
+      box-shadow: var(--shadow-lg); margin-bottom: 22px;
+    }
+    .feature-photo {
+      height: 168px; border-radius: 22px; overflow: hidden; margin-bottom: 14px;
+      position: relative;
+    }
+    .feature-photo .badge {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+      padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    }
+    .feature-meta { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 0 4px 4px; }
+    .feature-meta h3 { font-size: 1.05rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; }
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+    .meta-grid div span { display: block; font-size: 11px; color: var(--muted); font-weight: 600; }
+    .meta-grid div strong { color: var(--ink); font-size: 13px; font-weight: 800; }
+    .rating { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--muted); }
+    .rating .star { color: var(--star); }
+    .plus-btn {
+      width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: #fff;
+      display: grid; place-items: center; font-size: 22px; font-weight: 500;
+      box-shadow: 0 10px 24px rgba(45,112,244,.4); flex-shrink: 0;
+    }
+
+    .sec-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .sec-head h4 { font-size: 1.05rem; font-weight: 800; letter-spacing: -.02em; }
+    .sec-head a { color: var(--blue); font-size: 13px; font-weight: 700; text-decoration: none; }
+
+    .new-calc-cta {
+      width: 100%; text-align: left;
+      background: var(--card); border-radius: var(--radius); padding: 16px;
+      box-shadow: var(--shadow-lg); display: flex; gap: 14px; align-items: center;
+      transition: transform .15s;
+    }
+    .new-calc-cta:hover { transform: translateY(-2px); }
+    .new-calc-cta .ph {
+      width: 88px; height: 88px; border-radius: 20px; overflow: hidden; flex-shrink: 0;
+      background: var(--blue-soft);
+    }
+    .new-calc-cta .txt { flex: 1; min-width: 0; }
+    .new-calc-cta .txt strong {
+      display: block; font-size: 1.1rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 6px;
+    }
+    .new-calc-cta .txt span {
+      display: block; font-size: 13px; color: var(--muted); line-height: 1.4;
+    }
+    .new-calc-cta .arrow {
+      width: 40px; height: 40px; border-radius: 50%; background: var(--blue); color: #fff;
+      display: grid; place-items: center; flex-shrink: 0;
+      box-shadow: 0 10px 24px rgba(45,112,244,.35); font-size: 18px; font-weight: 600;
+    }
+
+    .near-row {
+      display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;
+      scrollbar-width: none; margin-bottom: 8px;
+    }
+    .near-row::-webkit-scrollbar { display: none; }
+    .near-card {
+      flex: 0 0 210px; background: var(--card); border-radius: 22px; padding: 10px;
+      box-shadow: var(--shadow); text-align: left;
+    }
+    .near-card .ph {
+      height: 96px; border-radius: 16px; overflow: hidden; margin-bottom: 10px;
+    }
+    .near-card strong { display: block; font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+    .near-card .row { display: flex; justify-content: space-between; align-items: center; }
+    .near-card .price { color: var(--blue); font-size: 12px; font-weight: 800; }
+
+    /* —— Floating tabbar —— */
+    .tabbar {
+      position: absolute; left: 14px; right: 14px; bottom: 16px;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      background: var(--black); border-radius: 28px; padding: 10px 6px 8px;
+      box-shadow: 0 18px 40px rgba(18, 21, 28, 0.35);
+      z-index: 5;
+    }
+    .tabbar button {
+      color: rgba(255,255,255,.45); font-size: 10px; font-weight: 700;
+      display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 2px;
+      letter-spacing: -.01em;
+    }
+    .tabbar button svg {
+      width: 20px; height: 20px; stroke: currentColor; fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .tabbar button .lbl { line-height: 1.1; }
+    .tabbar button.active { color: #fff; }
+    .tabbar button.active .lbl { color: #fff; }
+    .tabbar button.active .dot {
+      width: 4px; height: 4px; border-radius: 50%; background: var(--blue);
+      box-shadow: 0 0 10px var(--blue); margin-top: 1px;
+    }
+
+    /* —— Orders —— */
+    .page-title { font-size: 1.35rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 14px; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filters button {
+      padding: 8px 14px; border-radius: 999px; background: var(--card); border: 1.5px solid var(--line);
+      font-size: 12px; font-weight: 700; color: var(--muted); box-shadow: var(--shadow);
+    }
+    .filters button.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .list { display: flex; flex-direction: column; gap: 10px; }
+    .item {
+      background: var(--card); border-radius: var(--radius-sm); padding: 14px 16px;
+      text-align: left; width: 100%; box-shadow: var(--shadow); transition: transform .15s;
+      display: flex; gap: 12px; align-items: center;
+    }
+    .item:hover { transform: translateY(-2px); }
+    .item .thumb {
+      width: 56px; height: 56px; border-radius: 16px; overflow: hidden; flex-shrink: 0;
+      background: #e8ecf3;
+    }
+    .item .body-txt { flex: 1; min-width: 0; }
+    .item .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .item strong { font-size: 14px; font-weight: 800; }
+    .item p { font-size: 12px; color: var(--muted); }
+    .avatar img, .big-ava img { width: 100%; height: 100%; object-fit: cover; }
+    .big-ava { overflow: hidden; padding: 0; }
+
+    /* —— Booking —— */
+    .bk-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .bk-head h2 { font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; }
+    .black-card {
+      background: var(--black); color: #fff; border-radius: 30px; padding: 18px 16px 0;
+      box-shadow: var(--shadow-lg); margin-bottom: 18px; overflow: hidden;
+    }
+    .driver {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 0 4px;
+    }
+    .driver .ava {
+      width: 52px; height: 52px; border-radius: 50%; overflow: hidden;
+      border: 2px solid rgba(255,255,255,.2);
+    }
+    .driver .info strong { display: block; font-size: 15px; font-weight: 800; }
+    .driver .info span { font-size: 12px; color: rgba(255,255,255,.55); }
+    .driver .call {
+      margin-left: auto; width: 44px; height: 44px; border-radius: 50%;
+      background: var(--blue); display: grid; place-items: center;
+      box-shadow: 0 10px 24px rgba(45,112,244,.45);
+    }
+    .driver .call svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2; }
+
+    .ticket {
+      position: relative; background: #fff; color: var(--ink);
+      border-radius: 22px 22px 0 0; padding: 18px 16px 14px;
+      margin: 0 -2px;
+    }
+    .ticket::before, .ticket::after {
+      content: ""; position: absolute; top: 50%; width: 22px; height: 22px;
+      background: var(--black); border-radius: 50%;
+    }
+    .ticket::before { left: -11px; transform: translateY(-50%); }
+    .ticket::after { right: -11px; transform: translateY(-50%); }
+    .ticket-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; font-size: 13px; border-bottom: 1px dashed #e8ecf3;
+    }
+    .ticket-row:last-of-type { border-bottom: none; }
+    .ticket-row span { color: var(--muted); font-weight: 600; }
+    .ticket-row strong { font-weight: 800; }
+    .ticket-total {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 6px; padding-top: 10px; border-top: 1px dashed #e8ecf3;
+    }
+    .ticket-total strong { font-size: 1.15rem; font-weight: 800; }
+    .barcode {
+      margin-top: 14px; height: 48px; border-radius: 8px;
+      background:
+        repeating-linear-gradient(90deg,
+          #111 0 2px, transparent 2px 4px,
+          #111 4px 5px, transparent 5px 8px,
+          #111 8px 11px, transparent 11px 13px,
+          #111 13px 14px, transparent 14px 17px);
+      opacity: .85;
+    }
+    .ticket-zig {
+      height: 14px; margin: 0 -2px -1px;
+      background:
+        radial-gradient(circle at 10px 0, transparent 9px, #fff 10px) repeat-x;
+      background-size: 20px 14px; background-position: -10px 0;
+    }
+
+    .pay-block {
+      background: var(--card); border-radius: var(--radius-sm); padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .calc-sheet {
+      background: var(--card); border-radius: var(--radius-sm); padding: 16px;
+      box-shadow: var(--shadow); margin-bottom: 14px;
+    }
+    .calc-sheet .head {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px; margin-bottom: 12px;
+    }
+    .calc-sheet .head h3 {
+      font-size: 1rem; font-weight: 800; letter-spacing: -.02em;
+    }
+    .calc-sheet .meta {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;
+    }
+    .calc-sheet .meta div {
+      background: var(--bg); border-radius: 14px; padding: 10px 12px;
+    }
+    .calc-sheet .meta span {
+      display: block; font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 2px;
+    }
+    .calc-sheet .meta strong {
+      font-size: 13px; font-weight: 800; letter-spacing: -.01em;
+    }
+    .calc-rows { display: flex; flex-direction: column; gap: 0; }
+    .calc-rows .row {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13px;
+    }
+    .calc-rows .row:last-child { border-bottom: none; }
+    .calc-rows .row span { color: var(--muted); font-weight: 600; }
+    .calc-rows .row strong { font-weight: 800; }
+    .calc-rows .row.total {
+      margin-top: 4px; padding-top: 12px; border-top: 1.5px solid var(--ink);
+      border-bottom: none;
+    }
+    .calc-rows .row.total span { color: var(--ink); font-weight: 800; }
+    .calc-rows .row.total strong { color: var(--blue); font-size: 1.15rem; }
+    .calc-docs {
+      margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+    }
+    .calc-docs h4 {
+      font-size: 12px; font-weight: 800; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px;
+    }
+    .calc-docs ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .calc-docs li {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: var(--ink);
+    }
+    .calc-docs li::before {
+      content: ""; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--blue); flex-shrink: 0;
+    }
+    .calc-note {
+      margin-top: 12px; padding: 10px 12px; border-radius: 14px;
+      background: var(--blue-soft); color: var(--blue);
+      font-size: 12px; font-weight: 600; line-height: 1.4;
+    }
+    .pay-block .top {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    }
+    .pay-block .top span { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .pay-block .top a { color: var(--blue); font-size: 13px; font-weight: 700; text-decoration: none; }
+    .card-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      padding: 12px; background: var(--bg); border-radius: 16px;
+    }
+    .card-ico {
+      width: 44px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg, #1e293b, #334155); color: #fff;
+      display: grid; place-items: center; font-size: 10px; font-weight: 800;
+    }
+    .card-row strong { font-size: 14px; font-weight: 800; letter-spacing: .04em; }
+    .pay-actions { display: flex; justify-content: flex-end; }
+
+    /* —— Chat —— */
+    .chat-log { flex: 1; overflow: auto; padding: 12px 0; display: flex; flex-direction: column; gap: 8px; }
+    .bubble {
+      max-width: 82%; padding: 12px 14px; border-radius: 18px; font-size: 13px; line-height: 1.45;
+      box-shadow: var(--shadow);
+    }
+    .bubble.them { background: var(--card); align-self: flex-start; border-bottom-left-radius: 6px; }
+    .bubble.me { background: var(--blue); color: #fff; align-self: flex-end; border-bottom-right-radius: 6px; }
+    .chat-box {
+      background: var(--card); border-radius: 22px; padding: 14px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; min-height: 260px; flex: 1;
+    }
+    .chat-input { display: flex; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); margin-top: 8px; }
+    .chat-input input {
+      flex: 1; padding: 12px 14px; border-radius: 999px; border: 1.5px solid var(--line); outline: none;
+      background: var(--bg);
+    }
+    .chat-input button {
+      width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: #fff;
+      font-weight: 700; box-shadow: 0 8px 20px rgba(45,112,244,.35);
+    }
+
+    .profile-head { text-align: center; margin: 8px 0 18px; }
+    .profile-head .big-ava {
+      width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 12px;
+      background: linear-gradient(135deg, #93c5fd, var(--blue)); color: #fff;
+      display: grid; place-items: center; font-weight: 800; font-size: 1.4rem;
+      box-shadow: 0 16px 36px rgba(45,112,244,.3);
+    }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(80px);
+      background: var(--black); color: #fff; padding: 12px 18px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; opacity: 0; transition: .25s; z-index: 100; max-width: 90%;
+      box-shadow: var(--shadow-lg);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<div class="proto-bar">
+  <strong>LBM Брокер · Mobile · интерактивный прототип (не prod)</strong>
+  <div class="proto-tabs" id="topTabs">
+    <button type="button" class="active" data-screen="onboarding">Онбординг</button>
+    <button type="button" data-screen="auth">Вход</button>
+    <button type="button" data-screen="home">Главный</button>
+    <button type="button" data-screen="newcalc">Новый просчёт</button>
+    <button type="button" data-screen="booking">Бронь</button>
+    <button type="button" data-screen="orders">Заявки</button>
+    <button type="button" data-screen="chat">Чат</button>
+    <button type="button" data-screen="profile">Профиль</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="i-menu" viewBox="0 0 24 24"><circle cx="7" cy="7" r="1.6"/><circle cx="17" cy="7" r="1.6"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M6 10.5V20h12v-9.5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 7h12M8 12h12M8 17h12"/><circle cx="4" cy="7" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="17" r="1"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 18.5 3.5 21 7 18.5H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8.5a3 3 0 0 0 2 2.8z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 19.5c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M7.5 4.5h3l1.2 4.2-2 1.2a12 12 0 0 0 5.4 5.4l1.2-2 4.2 1.2v3A2 2 0 0 1 18.5 19.5 14 14 0 0 1 4.5 5.5a2 2 0 0 1 3-1z"/></symbol>
+</svg>
+
+<div class="stage">
+  <div class="phone">
+    <div class="phone-inner">
+      <div class="notch"><span>9:41</span><span class="icons">●●● ▮</span></div>
+
+      <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeMenu()"></div>
+      <aside class="drawer" id="sideDrawer" aria-hidden="true">
+        <div class="drawer-head">
+          <div class="drawer-brand">
+            <div class="mark">CB</div>
+            <div>
+              <strong>CARGO BROKER</strong>
+              <small>AI + таможенный брокер</small>
+            </div>
+          </div>
+          <button type="button" class="icon-btn" onclick="closeMenu()" aria-label="Закрыть">
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><path d="M7 7l10 10M17 7 7 17"/></svg>
+          </button>
+        </div>
+        <nav class="drawer-nav">
+          <button type="button" onclick="menuGo('home')">
+            <span class="ico"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg></span>
+            Главная
+          </button>
+          <button type="button" onclick="menuGo('newcalc')">
+            <span class="ico"><svg viewBox="0 0 24 24"><use href="#i-list"/></svg></span>
+            Новый просчёт
+          </button>
+          <button type="button" onclick="menuGo('orders')">
+            <span class="ico"><svg viewBox="0 0 24 24"><use href="#i-list"/></svg></span>
+            Мои заявки
+          </button>
+          <button type="button" onclick="menuGo('booking')">
+            <span class="ico"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></span>
+            Детали заявки
+          </button>
+          <button type="button" onclick="menuGo('chat')">
+            <span class="ico"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></span>
+            Чаты и поддержка
+          </button>
+          <button type="button" onclick="menuGo('profile')">
+            <span class="ico"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg></span>
+            Профиль и баланс
+          </button>
+          <button type="button" onclick="menuGo('auth')">
+            <span class="ico"><svg viewBox="0 0 24 24"><use href="#i-back"/></svg></span>
+            Выйти
+          </button>
+        </nav>
+        <div class="drawer-foot">Баланс: 12 400 ₽ · тариф Стандарт</div>
+      </aside>
+
+      <!-- ONBOARDING -->
+      <section class="screen active" id="screen-onboarding">
+        <div class="ob-wrap">
+          <div class="ob-photo">
+            <img id="obImg" src="assets/ob-1-warehouse.jpg" alt="Склад и логистика">
+          </div>
+          <h1 class="ob-title" id="obTitle">Все отправления в одном месте</h1>
+          <p class="ob-text" id="obText">LBM Брокер считает платежи по ТН ВЭД с помощью AI, а живой брокер проверяет результат за часы — не дни.</p>
+          <div class="dots" id="obDots"><span class="on"></span><span></span><span></span></div>
+          <button type="button" class="btn btn-primary btn-block" id="obNext">Начать <span>›</span></button>
+        </div>
+      </section>
+
+      <!-- AUTH -->
+      <section class="screen" id="screen-auth">
+        <div class="body">
+          <div class="logo-block">
+            <div class="logo-mark">CB</div>
+            <strong style="font-size:1.1rem;letter-spacing:-.02em">LBM БРОКЕР</strong>
+            <div style="color:var(--muted);font-size:13px;margin-top:4px">AI-платформа для импорта</div>
+          </div>
+          <h2 class="page-title" style="font-size:1.25rem">Вход по телефону</h2>
+          <p style="color:var(--muted);font-size:14px;margin:-8px 0 16px">Отправим SMS-код для подтверждения</p>
+          <div class="field"><label>Номер телефона</label><input id="phone" value="+7 900 123-45-67"></div>
+          <div class="field" id="codeField" style="display:none"><label>Код из SMS</label><input id="sms" placeholder="••••" maxlength="4"></div>
+          <button type="button" class="btn btn-primary btn-block" id="authBtn" onclick="authStep()">Получить код</button>
+          <button type="button" class="btn btn-ghost btn-block" style="margin-top:10px" onclick="toast('Вход по email')">Войти по email</button>
+        </div>
+      </section>
+
+      <!-- HOME -->
+      <section class="screen" id="screen-home">
+        <div class="body pad-bot">
+          <div class="home-top">
+            <button type="button" class="icon-btn" onclick="openMenu()" aria-label="Меню">
+              <svg viewBox="0 0 24 24"><use href="#i-menu"/></svg>
+            </button>
+            <div class="loc">
+              <strong style="font-size:16px;letter-spacing:-.03em">CARGO BROKER</strong>
+            </div>
+            <button type="button" class="avatar" onclick="go('profile')" aria-label="Профиль">
+              <img src="assets/avatar-user.jpg" alt="Профиль">
+            </button>
+          </div>
+
+          <div class="sec-head">
+            <h4>Мои заявки</h4>
+          </div>
+          <div class="feature-card">
+            <div class="feature-photo">
+              <img src="assets/ob-3-port.jpg" alt="Контейнерная перевозка">
+              <span class="badge">#47892</span>
+            </div>
+            <div class="feature-meta">
+              <div>
+                <h3>Ноутбуки Lenovo ThinkPad</h3>
+                <div class="meta-grid">
+                  <div><span>Номер заявки</span><strong>#47892</strong></div>
+                  <div><span>Дата</span><strong>12.07.2026</strong></div>
+                  <div><span>Платежи</span><strong>1 248 700 ₽</strong></div>
+                  <div><span>Оплата</span><strong style="color:var(--ok)">Оплачена</strong></div>
+                </div>
+                <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+                  <span class="pill ok">Готово</span>
+                  <span class="pill ok">Оплачена</span>
+                </div>
+              </div>
+              <button type="button" class="plus-btn" onclick="go('booking')" aria-label="Открыть">›</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline-blue btn-block" style="margin:-8px 0 18px" onclick="go('orders')">Все заявки</button>
+
+          <button type="button" class="new-calc-cta" onclick="go('newcalc')">
+            <div class="ph"><img src="assets/ob-2-docs.jpg" alt="Новый просчёт"></div>
+            <div class="txt">
+              <strong>Новый просчёт</strong>
+              <span>Рассчитаем таможенные платежи быстро и точно</span>
+            </div>
+            <div class="arrow">›</div>
+          </button>
+        </div>
+        <nav class="tabbar">
+          <button type="button" class="active" onclick="go('home')"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg><span class="lbl">Главная</span><span class="dot"></span></button>
+          <button type="button" onclick="go('orders')"><svg viewBox="0 0 24 24"><use href="#i-list"/></svg><span class="lbl">Заявки</span></button>
+          <button type="button" onclick="go('chat')"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg><span class="lbl">Чат</span></button>
+          <button type="button" onclick="go('profile')"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg><span class="lbl">Профиль</span></button>
+        </nav>
+      </section>
+
+      <!-- NEW CALC -->
+      <section class="screen" id="screen-newcalc">
+        <div class="body">
+          <div class="bk-head">
+            <button type="button" class="icon-btn" onclick="go('home')" aria-label="Назад">
+              <svg viewBox="0 0 24 24"><use href="#i-back"/></svg>
+            </button>
+            <h2>Новый просчёт</h2>
+            <button type="button" class="icon-btn" onclick="toast('Заполните обязательные поля (*) как можно подробнее')" aria-label="Справка">
+              <svg viewBox="0 0 24 24"><use href="#i-more"/></svg>
+            </button>
+          </div>
+
+          <div class="feature-photo" style="height:120px;border-radius:22px;overflow:hidden;margin-bottom:14px">
+            <img src="assets/ob-1-warehouse.jpg" alt="Просчёт импорта">
+          </div>
+
+          <div class="step-bar" id="ncSteps" role="tablist" aria-label="Шаги просчёта">
+            <button type="button" class="on" data-nc-step="1" onclick="setNcStep(1)">1 · Товар</button>
+            <button type="button" data-nc-step="2" onclick="setNcStep(2)">2 · Тариф</button>
+          </div>
+
+          <p style="color:var(--muted);font-size:13px;margin-bottom:8px;line-height:1.45">
+            До 3 позиций в тарифе «Стандарт». AI определит код ТН ВЭД и платежи, брокер проверит результат.
+          </p>
+
+          <div class="nc-panel" id="ncPanel1">
+          <div class="form-sec">1. Товар</div>
+          <div class="field">
+            <label>Наименование товара <span class="req">*</span></label>
+            <input id="ncName" value="Ноутбуки Lenovo ThinkPad T14" placeholder="Например: ноутбуки, ткани, запчасти">
+          </div>
+          <div class="field">
+            <label>Описание: состав, назначение, материал <span class="req">*</span></label>
+            <textarea id="ncDesc" placeholder="Минимум 50 символов: материал, назначение, комплектация, технические характеристики">Портативные компьютеры 14'', процессор Intel Core i5, ОЗУ 16 ГБ, SSD 512 ГБ, для офисной работы. Корпус пластик/металл. Партия новая, без б/у.</textarea>
+          </div>
+          <div class="field">
+            <label>Код ТН ВЭД (если известен)</label>
+            <input id="ncHs" placeholder="Оставьте пустым — определит AI" value="">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Количество <span class="req">*</span></label>
+              <input id="ncQty" type="number" value="120" min="1">
+            </div>
+            <div class="field">
+              <label>Ед. измерения <span class="req">*</span></label>
+              <select id="ncUnit">
+                <option selected>шт</option>
+                <option>кг</option>
+                <option>м²</option>
+                <option>м</option>
+                <option>пар</option>
+                <option>компл.</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Цена за единицу <span class="req">*</span></label>
+              <input id="ncUnitPrice" type="number" value="150" min="0" step="0.01">
+            </div>
+            <div class="field">
+              <label>Валюта <span class="req">*</span></label>
+              <select id="ncCurrency">
+                <option selected>USD</option>
+                <option>EUR</option>
+                <option>CNY</option>
+                <option>RUB</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Стоимость партии</label>
+            <input id="ncTotal" value="18 000 USD" readonly>
+          </div>
+
+          <div class="form-sec">2. Маршрут и сертификация</div>
+          <div class="field">
+            <label>Страна вывоза <span class="req">*</span></label>
+            <select id="ncExport">
+              <option selected>Китай (CN)</option>
+              <option>Турция (TR)</option>
+              <option>Казахстан (KZ)</option>
+              <option>Германия (DE)</option>
+              <option>Южная Корея (KR)</option>
+              <option>США (US)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Страна происхождения <span class="req">*</span></label>
+            <select id="ncOrigin">
+              <option selected>Китай (CN)</option>
+              <option>Тайвань (TW)</option>
+              <option>Вьетнам (VN)</option>
+              <option>Турция (TR)</option>
+              <option>ЕС</option>
+              <option>Другое</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Наличие сертификации <span class="req">*</span></label>
+            <select id="ncCert">
+              <option>Да, есть сертификат / декларация</option>
+              <option selected>Не знаю — нужна проверка</option>
+              <option>Нет</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Комментарий для брокера</label>
+            <textarea id="ncComment" placeholder="Особые условия, предпочтения по коду, срочность…">Нужен просчёт для ввоза в РФ, желательно уточнить необходимость сертификата связи.</textarea>
+          </div>
+
+          <div class="form-sec">3. Фото и документы</div>
+          <div class="upload-row">
+            <div class="upload-chip"><img src="assets/product-laptop.jpg" alt="Фото товара" style="width:100%;height:100%;object-fit:cover"></div>
+            <button type="button" class="upload-chip dash" onclick="toast('Добавить фото товара')">+ фото<br>товара</button>
+            <button type="button" class="upload-chip dash" onclick="toast('Загрузить инвойс')">+ инвойс</button>
+            <button type="button" class="upload-chip dash" onclick="toast('Загрузить packing list')">+ packing<br>list</button>
+            <button type="button" class="upload-chip dash" onclick="toast('Загрузить спецификацию')">+ специф.</button>
+          </div>
+          <p style="font-size:11px;color:var(--muted);margin:-2px 0 12px">Фото: jpg/png до 10 МБ. Документы: pdf/jpg до 20 МБ.</p>
+          <button type="button" class="btn btn-primary btn-block" onclick="setNcStep(2)">Далее · тариф</button>
+          <button type="button" class="btn btn-ghost btn-block" style="margin-top:8px" onclick="go('home')">Отмена</button>
+          </div>
+
+          <div class="nc-panel" id="ncPanel2" hidden>
+          <div class="form-sec">4. Тариф проверки</div>
+          <div class="tariff-pick" id="tariffPick">
+            <label>
+              <input type="radio" name="ncTariff" value="express">
+              <div>
+                <strong>Экспресс · 990 ₽</strong>
+                <span>Только AI, без проверки брокером. Простые товары, 1 позиция.</span>
+              </div>
+            </label>
+            <label class="active">
+              <input type="radio" name="ncTariff" value="standard" checked>
+              <div>
+                <strong>Стандарт · 2 990 ₽</strong>
+                <span>AI + брокер ≤ 4 ч. До 3 позиций, чат по заявке, утверждённый PDF.</span>
+              </div>
+            </label>
+            <label>
+              <input type="radio" name="ncTariff" value="pro">
+              <div>
+                <strong>Профи · 4 990 ₽</strong>
+                <span>Приоритет в очереди, до 10 позиций, расширенный диалог с брокером.</span>
+              </div>
+            </label>
+          </div>
+          <label class="check-row">
+            <input type="checkbox" id="ncUrgent">
+            Срочный (+100% к тарифу, SLA до 1 часа)
+          </label>
+
+          <button type="button" class="btn btn-primary btn-block" onclick="submitCalc()">Создать заявку на просчёт</button>
+          <button type="button" class="btn btn-ghost btn-block" style="margin-top:10px" onclick="toast('Черновик сохранён')">Сохранить черновик</button>
+          <button type="button" class="btn btn-ghost btn-block" style="margin-top:8px" onclick="setNcStep(1)">← Назад к товару</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOOKING -->
+      <section class="screen" id="screen-booking">
+        <div class="body">
+          <div class="bk-head">
+            <button type="button" class="icon-btn" onclick="go('home')" aria-label="Назад">
+              <svg viewBox="0 0 24 24"><use href="#i-back"/></svg>
+            </button>
+            <h2>Детали заявки</h2>
+            <button type="button" class="icon-btn" onclick="toast('Меню')" aria-label="Ещё">
+              <svg viewBox="0 0 24 24"><use href="#i-more"/></svg>
+            </button>
+          </div>
+
+          <div class="step-bar" id="bkSteps" role="tablist" aria-label="Шаги заявки">
+            <button type="button" class="on" data-bk-step="1" onclick="setBkStep(1)">Расчёт</button>
+            <button type="button" data-bk-step="2" onclick="setBkStep(2)">Оплата</button>
+          </div>
+
+          <div class="bk-panel" id="bkPanel1">
+          <div class="black-card">
+            <div class="driver">
+              <div class="ava">
+                <img src="assets/avatar-broker.jpg" alt="Брокер">
+              </div>
+              <div class="info">
+                <strong>Иванов Михаил</strong>
+                <span><span style="color:var(--star)">★</span> 4.8 · таможенный брокер</span>
+              </div>
+              <button type="button" class="call" onclick="toast('Звонок брокеру')" aria-label="Позвонить">
+                <svg viewBox="0 0 24 24"><use href="#i-phone"/></svg>
+              </button>
+            </div>
+
+            <div class="ticket">
+              <div class="ticket-row"><span>Заявка</span><strong>#47892</strong></div>
+              <div class="ticket-row"><span>Товар</span><strong>Ноутбуки Lenovo</strong></div>
+              <div class="ticket-row"><span>ТН ВЭД</span><strong>8471 30 000 0</strong></div>
+              <div class="ticket-row"><span>Дата готовности</span><strong>15 июл 2026</strong></div>
+              <div class="ticket-row"><span>Тариф</span><strong>Стандарт</strong></div>
+              <div class="ticket-total"><span style="color:var(--muted);font-weight:600">К оплате сервиса</span><strong>2 990 ₽</strong></div>
+              <div class="barcode" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="calc-sheet">
+            <div class="head">
+              <h3>Расчёт по заявке</h3>
+              <span class="pill ok">Утверждён</span>
+            </div>
+            <div class="meta">
+              <div>
+                <span>Страна</span>
+                <strong>Китай</strong>
+              </div>
+              <div>
+                <span>Стоимость партии</span>
+                <strong>$18 000</strong>
+              </div>
+              <div>
+                <span>Курс ЦБ</span>
+                <strong>90 ₽/$</strong>
+              </div>
+              <div>
+                <span>Уверенность AI</span>
+                <strong>94%</strong>
+              </div>
+            </div>
+            <div class="calc-rows">
+              <div class="row"><span>Таможенная стоимость</span><strong>1 620 000 ₽</strong></div>
+              <div class="row"><span>Пошлина 7%</span><strong>113 400 ₽</strong></div>
+              <div class="row"><span>НДС 20%</span><strong>346 680 ₽</strong></div>
+              <div class="row"><span>Таможенный сбор</span><strong>15 000 ₽</strong></div>
+              <div class="row total"><span>Итого таможенных платежей</span><strong>1 248 700 ₽</strong></div>
+            </div>
+            <div class="calc-docs">
+              <h4>Необходимые документы</h4>
+              <ul>
+                <li>Инвойс и packing list</li>
+                <li>Контракт / спецификация</li>
+                <li>Декларация соответствия (электроника)</li>
+              </ul>
+            </div>
+            <div class="calc-note">
+              Расчёт проверен брокером Ивановым М. Код ТН ВЭД и платежи утверждены. Можно скачать PDF или оплатить тариф.
+            </div>
+            <button type="button" class="btn btn-ghost btn-block" style="margin-top:12px" onclick="toast('PDF-отчёт #47892 скачан')">Скачать PDF-отчёт</button>
+          </div>
+          <button type="button" class="btn btn-primary btn-block" style="margin-top:14px" onclick="setBkStep(2)">Перейти к оплате</button>
+          </div>
+
+          <div class="bk-panel" id="bkPanel2" hidden>
+          <div class="pay-block">
+            <div class="top">
+              <span>Способ оплаты: карта</span>
+              <a href="#" onclick="toast('Сменить способ');return false">Изменить</a>
+            </div>
+            <div class="card-row">
+              <div class="card-ico">VISA</div>
+              <strong>**** 4523</strong>
+            </div>
+            <div class="pay-actions">
+              <button type="button" class="btn btn-primary" onclick="toast('Оплата тарифа 2 990 ₽ прошла успешно')">Оплатить тариф</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-ghost btn-block" style="margin-top:10px" onclick="setBkStep(1)">← К расчёту</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ORDERS -->
+      <section class="screen" id="screen-orders">
+        <div class="body pad-bot">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <h2 class="page-title" style="margin:0">Мои заявки</h2>
+            <button type="button" class="btn btn-primary btn-sm" onclick="newCalc()">+ Новая</button>
+          </div>
+          <div class="filters" id="filters">
+            <button type="button" class="active" data-filter="all">Все</button>
+            <button type="button" data-filter="work">В работе</button>
+            <button type="button" data-filter="done">Готово</button>
+            <button type="button" data-filter="pay">Оплата</button>
+          </div>
+          <div class="list" id="ordersList">
+            <button type="button" class="item" data-status="done" onclick="go('booking')">
+              <div class="thumb"><img src="assets/product-laptop.jpg" alt=""></div>
+              <div class="body-txt">
+                <div class="row"><strong>#47892 · Ноутбуки</strong><span class="pill ok">Готово</span></div>
+                <p>ТН ВЭД 8471… · 1 248 700 ₽ · брокер Иванов</p>
+              </div>
+            </button>
+            <button type="button" class="item" data-status="work" onclick="go('chat')">
+              <div class="thumb"><img src="assets/ob-2-docs.jpg" alt=""></div>
+              <div class="body-txt">
+                <div class="row"><strong>#47880 · Ткани</strong><span class="pill blue">У брокера</span></div>
+                <p>Ожидает проверки · открыть чат</p>
+              </div>
+            </button>
+            <button type="button" class="item" data-status="pay" onclick="go('booking')">
+              <div class="thumb"><img src="assets/ob-1-truck.jpg" alt=""></div>
+              <div class="body-txt">
+                <div class="row"><strong>#47861 · Запчасти</strong><span class="pill warn">Оплата</span></div>
+                <p>Тариф Стандарт · 2 990 ₽</p>
+              </div>
+            </button>
+            <button type="button" class="item" data-status="work" onclick="toast('Черновик')">
+              <div class="thumb"><img src="assets/ob-1-warehouse.jpg" alt=""></div>
+              <div class="body-txt">
+                <div class="row"><strong>#47840 · Оборудование</strong><span class="pill muted">Черновик</span></div>
+                <p>2 позиции · не отправлено</p>
+              </div>
+            </button>
+          </div>
+        </div>
+        <nav class="tabbar">
+          <button type="button" onclick="go('home')"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg><span class="lbl">Главная</span></button>
+          <button type="button" class="active" onclick="go('orders')"><svg viewBox="0 0 24 24"><use href="#i-list"/></svg><span class="lbl">Заявки</span><span class="dot"></span></button>
+          <button type="button" onclick="go('chat')"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg><span class="lbl">Чат</span></button>
+          <button type="button" onclick="go('profile')"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg><span class="lbl">Профиль</span></button>
+        </nav>
+      </section>
+
+      <!-- CHAT -->
+      <section class="screen" id="screen-chat">
+        <div class="body pad-bot" style="display:flex;flex-direction:column">
+          <h2 class="page-title">Чаты</h2>
+          <div class="filters" style="margin-top:-4px">
+            <button type="button" class="active" id="tabJobs" onclick="setChatTab('jobs')">По заявкам</button>
+            <button type="button" id="tabSupport" onclick="setChatTab('support')">Поддержка</button>
+          </div>
+          <div id="chatThreads" class="list" style="margin-bottom:12px">
+            <button type="button" class="item" onclick="openThread('broker')">
+              <div class="thumb"><img src="assets/avatar-broker.jpg" alt=""></div>
+              <div class="body-txt">
+                <div class="row"><strong>Брокер Иванов · #47880</strong><span class="pill blue">2</span></div>
+                <p>Нужен сертификат соответствия…</p>
+              </div>
+            </button>
+            <button type="button" class="item" onclick="openThread('support')">
+              <div class="thumb"><img src="assets/avatar-support.jpg" alt=""></div>
+              <div class="body-txt">
+                <div class="row"><strong>Поддержка LBM Брокер</strong><span class="pill muted">1</span></div>
+                <p>Помощь по оплате тарифа</p>
+              </div>
+            </button>
+          </div>
+          <div class="chat-box">
+            <strong style="font-size:13px" id="threadTitle">Диалог · #47880</strong>
+            <div class="chat-log" id="chatLog">
+              <div class="bubble them">Здравствуйте! Уточните материал ткани для кода ТН ВЭД.</div>
+              <div class="bubble me">100% хлопок, плотность 180 г/м²</div>
+              <div class="bubble them">Принял, обновлю расчёт в течение часа.</div>
+            </div>
+            <div class="chat-input">
+              <input id="chatInput" placeholder="Сообщение...">
+              <button type="button" onclick="sendChat()">➤</button>
+            </div>
+          </div>
+        </div>
+        <nav class="tabbar">
+          <button type="button" onclick="go('home')"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg><span class="lbl">Главная</span></button>
+          <button type="button" onclick="go('orders')"><svg viewBox="0 0 24 24"><use href="#i-list"/></svg><span class="lbl">Заявки</span></button>
+          <button type="button" class="active" onclick="go('chat')"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg><span class="lbl">Чат</span><span class="dot"></span></button>
+          <button type="button" onclick="go('profile')"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg><span class="lbl">Профиль</span></button>
+        </nav>
+      </section>
+
+      <!-- PROFILE -->
+      <section class="screen" id="screen-profile">
+        <div class="body pad-bot">
+          <h2 class="page-title">Профиль</h2>
+          <div class="profile-head">
+            <div class="big-ava"><img src="assets/avatar-user.jpg" alt="Профиль"></div>
+            <strong style="font-size:1.1rem">ООО «Импортёр»</strong>
+            <div style="color:var(--muted);font-size:13px;margin-top:4px">+7 900 000-00-00 · company@mail.ru</div>
+          </div>
+          <div class="item" style="margin-bottom:10px">
+            <div class="row"><span style="color:var(--muted);font-weight:600">Баланс</span><strong id="bal">12 400 ₽</strong></div>
+          </div>
+          <div class="list">
+            <button type="button" class="item" onclick="toast('Данные компании')"><strong>Данные компании</strong><p>ИНН, КПП, юр. адрес</p></button>
+            <button type="button" class="item" onclick="toast('Уведомления обновлены')"><strong>Уведомления</strong><p>Push · SMS · Email</p></button>
+            <button type="button" class="item" onclick="go('booking')"><strong>Способы оплаты</strong><p>Карты и СБП</p></button>
+            <button type="button" class="item" onclick="go('auth')"><strong>Выйти</strong><p>Завершить сессию</p></button>
+          </div>
+        </div>
+        <nav class="tabbar">
+          <button type="button" onclick="go('home')"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg><span class="lbl">Главная</span></button>
+          <button type="button" onclick="go('orders')"><svg viewBox="0 0 24 24"><use href="#i-list"/></svg><span class="lbl">Заявки</span></button>
+          <button type="button" onclick="go('chat')"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg><span class="lbl">Чат</span></button>
+          <button type="button" class="active" onclick="go('profile')"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg><span class="lbl">Профиль</span><span class="dot"></span></button>
+        </nav>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const slides = [
+    {
+      img: 'assets/ob-1-warehouse.jpg',
+      title: 'Все отправления в одном месте',
+      text: 'LBM Брокер считает платежи по ТН ВЭД с помощью AI, а живой брокер проверяет результат за часы — не дни.'
+    },
+    {
+      img: 'assets/ob-2-docs.jpg',
+      title: 'Документы под контролем',
+      text: 'Загрузите инвойс или фото — AI извлечёт данные и найдёт ошибки до подачи на таможню.'
+    },
+    {
+      img: 'assets/ob-3-port.jpg',
+      title: 'От просчёта до доставки',
+      text: 'После PDF закажите перевозку и общайтесь с брокером в чате прямо в приложении.'
+    }
+  ];
+  let slide = 0;
+  let authState = 0;
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window.__t);
+    window.__t = setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function go(id) {
+    closeMenu();
+    const screen = document.getElementById('screen-' + id);
+    if (!screen) { toast('Экран не найден: ' + id); return; }
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    screen.classList.add('active');
+    document.querySelectorAll('#topTabs button').forEach(b => {
+      b.classList.toggle('active', b.dataset.screen === id);
+    });
+    const tabMap = { home: 'home', orders: 'orders', chat: 'chat', profile: 'profile' };
+    const tab = tabMap[id] || null;
+    document.querySelectorAll('.tabbar').forEach(bar => {
+      bar.querySelectorAll('button').forEach(btn => {
+        const onclick = btn.getAttribute('onclick') || '';
+        const m = onclick.match(/go\('(\w+)'\)/);
+        const key = m ? m[1] : '';
+        const on = tab && key === tab;
+        btn.classList.toggle('active', on);
+        let dot = btn.querySelector('.dot');
+        if (on) {
+          if (!dot) {
+            dot = document.createElement('span');
+            dot.className = 'dot';
+            btn.appendChild(dot);
+          }
+        } else if (dot) {
+          dot.remove();
+        }
+      });
+    });
+    document.querySelectorAll('#sideDrawer .drawer-nav button').forEach(btn => {
+      const onclick = btn.getAttribute('onclick') || '';
+      const m = onclick.match(/menuGo\('(\w+)'\)/);
+      btn.classList.toggle('on', m && m[1] === id);
+    });
+    if (id === 'newcalc') setNcStep(1);
+    if (id === 'booking') setBkStep(1);
+  }
+
+  function setNcStep(n) {
+    const step = n === 2 ? 2 : 1;
+    const p1 = document.getElementById('ncPanel1');
+    const p2 = document.getElementById('ncPanel2');
+    if (p1) p1.hidden = step !== 1;
+    if (p2) p2.hidden = step !== 2;
+    document.querySelectorAll('#ncSteps button').forEach(b => {
+      b.classList.toggle('on', Number(b.dataset.ncStep) === step);
+    });
+  }
+
+  function setBkStep(n) {
+    const step = n === 2 ? 2 : 1;
+    const p1 = document.getElementById('bkPanel1');
+    const p2 = document.getElementById('bkPanel2');
+    if (p1) p1.hidden = step !== 1;
+    if (p2) p2.hidden = step !== 2;
+    document.querySelectorAll('#bkSteps button').forEach(b => {
+      b.classList.toggle('on', Number(b.dataset.bkStep) === step);
+    });
+  }
+
+  function openMenu() {
+    document.getElementById('sideDrawer').classList.add('open');
+    document.getElementById('drawerBackdrop').classList.add('open');
+    document.getElementById('sideDrawer').setAttribute('aria-hidden', 'false');
+  }
+
+  function closeMenu() {
+    document.getElementById('sideDrawer').classList.remove('open');
+    document.getElementById('drawerBackdrop').classList.remove('open');
+    document.getElementById('sideDrawer').setAttribute('aria-hidden', 'true');
+  }
+
+  function menuGo(id) {
+    closeMenu();
+    go(id);
+  }
+
+  document.querySelectorAll('#topTabs button').forEach(b => {
+    b.addEventListener('click', () => go(b.dataset.screen));
+  });
+
+  function renderSlide() {
+    const s = slides[slide];
+    const img = document.getElementById('obImg');
+    img.style.opacity = '0.4';
+    img.onload = () => { img.style.opacity = '1'; };
+    img.src = s.img;
+    img.alt = s.title;
+    document.getElementById('obTitle').textContent = s.title;
+    document.getElementById('obText').textContent = s.text;
+    document.getElementById('obDots').innerHTML = slides.map((_, i) => `<span class="${i===slide?'on':''}" data-slide="${i}"></span>`).join('');
+    document.getElementById('obNext').innerHTML = slide === slides.length - 1 ? 'Начать <span>›</span>' : 'Далее <span>›</span>';
+  }
+
+  slides.forEach(s => { const i = new Image(); i.src = s.img; });
+
+  document.getElementById('obDots').addEventListener('click', (e) => {
+    const t = e.target.closest('[data-slide]');
+    if (!t) return;
+    slide = Number(t.dataset.slide) || 0;
+    renderSlide();
+  });
+
+  document.getElementById('obNext').addEventListener('click', () => {
+    if (slide < slides.length - 1) { slide++; renderSlide(); }
+    else go('auth');
+  });
+  renderSlide();
+
+  function authStep() {
+    if (authState === 0) {
+      authState = 1;
+      document.getElementById('codeField').style.display = 'block';
+      document.getElementById('authBtn').textContent = 'Войти';
+      document.getElementById('sms').focus();
+      toast('SMS-код отправлен: 1234');
+    } else {
+      const code = document.getElementById('sms').value.trim();
+      if (code && code !== '1234') { toast('Неверный код, попробуйте 1234'); return; }
+      authState = 0;
+      go('home');
+      toast('Добро пожаловать!');
+    }
+  }
+
+  function newCalc() {
+    go('newcalc');
+  }
+
+  function updateNcTotal() {
+    const qtyEl = document.getElementById('ncQty');
+    if (!qtyEl) return;
+    const qty = Number(qtyEl.value) || 0;
+    const price = Number(document.getElementById('ncUnitPrice').value) || 0;
+    const cur = document.getElementById('ncCurrency').value;
+    document.getElementById('ncTotal').value = (qty * price).toLocaleString('ru-RU') + ' ' + cur;
+  }
+  ['ncQty', 'ncUnitPrice', 'ncCurrency'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', updateNcTotal);
+      el.addEventListener('change', updateNcTotal);
+    }
+  });
+  document.querySelectorAll('#tariffPick label').forEach(lab => {
+    lab.addEventListener('click', () => {
+      document.querySelectorAll('#tariffPick label').forEach(x => x.classList.remove('active'));
+      lab.classList.add('active');
+    });
+  });
+  updateNcTotal();
+
+  function submitCalc() {
+    const name = (document.getElementById('ncName').value || 'Новый товар').trim();
+    const desc = (document.getElementById('ncDesc').value || '').trim();
+    if (!name) { toast('Укажите наименование товара'); return; }
+    if (desc.length < 50) { toast('Описание должно быть не короче 50 символов'); return; }
+    const list = document.getElementById('ordersList');
+    const id = '4790' + Math.floor(Math.random() * 9);
+    const tariff = document.querySelector('input[name="ncTariff"]:checked')?.value || 'standard';
+    const tariffLabel = tariff === 'express' ? 'Экспресс' : tariff === 'pro' ? 'Профи' : 'Стандарт';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'item';
+    btn.dataset.status = 'work';
+    btn.onclick = () => go('booking');
+    btn.innerHTML = `<div class="thumb"><img src="assets/product-laptop.jpg" alt=""></div><div class="body-txt"><div class="row"><strong>#${id} · ${name}</strong><span class="pill blue">AI</span></div><p>${tariffLabel} · создано только что · расчёт...</p></div>`;
+    list.prepend(btn);
+    go('orders');
+    toast('Заявка на просчёт #' + id + ' создана (' + tariffLabel + ')');
+  }
+
+  document.querySelectorAll('#filters button').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('#filters button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      const f = b.dataset.filter;
+      document.querySelectorAll('#ordersList .item').forEach(item => {
+        item.style.display = (f === 'all' || item.dataset.status === f) ? '' : 'none';
+      });
+    });
+  });
+
+  function setChatTab(which) {
+    document.getElementById('tabJobs').classList.toggle('active', which === 'jobs');
+    document.getElementById('tabSupport').classList.toggle('active', which === 'support');
+    if (which === 'support') openThread('support');
+    else openThread('broker');
+  }
+
+  function openThread(type) {
+    const log = document.getElementById('chatLog');
+    if (type === 'support') {
+      document.getElementById('threadTitle').textContent = 'Поддержка LBM Брокер';
+      log.innerHTML = '<div class="bubble them">Здравствуйте! Чем помочь по оплате или кабинету?</div>';
+    } else {
+      document.getElementById('threadTitle').textContent = 'Диалог · #47880';
+      log.innerHTML = `
+        <div class="bubble them">Здравствуйте! Уточните материал ткани для кода ТН ВЭД.</div>
+        <div class="bubble me">100% хлопок, плотность 180 г/м²</div>
+        <div class="bubble them">Принял, обновлю расчёт в течение часа.</div>`;
+    }
+  }
+
+  function sendChat() {
+    const inp = document.getElementById('chatInput');
+    const msg = inp.value.trim();
+    if (!msg) return;
+    document.getElementById('chatLog').innerHTML += `<div class="bubble me">${msg}</div>`;
+    inp.value = '';
+    const log = document.getElementById('chatLog');
+    log.scrollTop = log.scrollHeight;
+  }
+
+  document.getElementById('chatInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendChat();
+  });
+</script>
+</body>
+</html>

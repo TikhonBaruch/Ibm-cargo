@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-calc.client.json",
+  "title": "D-CALC client→core",
+  "description": "Client create / get / pay via session /api/v1 → containers/api.",
+  "x-contractVersion": 4,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "POST /v1/calculations",
+    "GET /v1/calculations/:id",
+    "POST /v1/calculations/:id/pay",
+    "POST /v1/calculations/:id/feedback"
+  ],
+  "definitions": {
+    "itemInput": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "qty": { "type": "number" },
+        "unit": { "type": "string" },
+        "unitPrice": { "type": "number" },
+        "mediaUrl": { "type": "string", "description": "From uploads; not sent to llm" },
+        "attrs": {
+          "type": "object",
+          "description": "Structured product attrs (D24 / d-product.calc.json)"
+        },
+        "manufacturerSkuId": {
+          "type": "string",
+          "description": "Optional published ManufacturerSku id; snapshot attrs + FK (D31/C2)"
+        }
+      }
+    },
+    "createRequest": {
+      "type": "object",
+      "required": ["title", "description"],
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "country": { "type": "string" },
+        "shipmentValue": { "type": "string" },
+        "shipmentCurrency": {
+          "type": "string",
+          "enum": ["USD", "CNY", "EUR"],
+          "description": "Invoice currency; USD default. Also encoded in shipmentValue suffix (15000 CNY)."
+        },
+        "tariffCode": { "type": "string", "enum": ["EXPRESS", "STANDARD", "PRO"] },
+        "preferredBrokerUserId": { "type": ["string", "null"] },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/itemInput" }
+        }
+      }
+    },
+    "payRequest": {
+      "type": "object",
+      "properties": {
+        "preferredBrokerUserId": { "type": ["string", "null"] }
+      }
+    },
+    "feedbackRequest": {
+      "type": "object",
+      "required": ["reaction"],
+      "properties": {
+        "reaction": { "type": "string", "enum": ["HELPFUL", "NEEDS_WORK"] },
+        "comment": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "calculation": {
+      "type": "object",
+      "required": ["id", "number", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "number": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "AI_PROCESSING",
+            "AI_READY",
+            "AWAITING_PAYMENT",
+            "QUEUED",
+            "IN_REVIEW",
+            "SLA_RISK",
+            "DONE",
+            "CANCELLED"
+          ]
+        },
+        "hsCode": { "type": ["string", "null"] },
+        "confidence": { "type": ["number", "null"] },
+        "clientFeedbackReaction": { "type": ["string", "null"], "enum": ["HELPFUL", "NEEDS_WORK", null] },
+        "clientFeedbackComment": { "type": ["string", "null"] },
+        "clientFeedbackAt": { "type": ["string", "null"], "format": "date-time" },
+        "aiDraft": {
+          "type": ["object", "null"],
+          "description": "Heuristic/LLM draft; landedWithoutFreight = invoice→ТС→payments without freight"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": { "type": "string", "not": { "const": "synthetic" } },
+              "hsCodeAi": { "type": ["string", "null"] },
+              "mediaUrl": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": {
+    "createRequest": {
+      "title": "Smoke laptop",
+      "description": "Ноутбук для импорта",
+      "country": "CN",
+      "shipmentValue": "2500",
+      "shipmentCurrency": "USD",
+      "tariffCode": "STANDARD",
+      "items": [{ "name": "Laptop", "qty": 1, "unitPrice": 2500, "mediaUrl": "/uploads/ved/x.png" }]
+    },
+    "createResponseStatus": "AI_READY",
+    "payResponseStatus": ["QUEUED", "DONE"]
+  },
+  "x-invariants": [
+    "D10 position limits",
+    "D11 no QUEUED without pay",
+    "D15 no synthetic item ids",
+    "customs value = invoice × FX × buffer; not CIF; no freight in landedWithoutFreight"
+  ]
+}

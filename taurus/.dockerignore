@@ -1,0 +1,36 @@
+# Allow preinstalled container deps for offline-ish Docker builds (flaky npm-in-Docker).
+# Root node_modules / .next stay excluded — web uses Next standalone export.
+.next
+**/.next
+!containers/web/.export
+!containers/web/.export/**
+!containers/admin/.export
+!containers/admin/.export/**
+!containers/broker/.export
+!containers/broker/.export/**
+!containers/client/.export
+!containers/client/.export/**
+node_modules
+!containers/api/node_modules
+!containers/api/node_modules/**
+!containers/broker/node_modules
+!containers/broker/node_modules/**
+!containers/admin/node_modules
+!containers/admin/node_modules/**
+!containers/client/node_modules
+!containers/client/node_modules/**
+.git
+.vercel
+.env
+.env.local
+.env*.local
+*.md
+!README.md
+docs/design/refs
+new_desing
+Таурус
+tsconfig.tsbuildinfo
+coverage
+.turbo
+**/*.test.ts
+**/__tests__

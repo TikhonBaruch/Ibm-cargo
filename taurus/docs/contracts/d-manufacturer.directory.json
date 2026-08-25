@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-manufacturer.directory.json",
+  "title": "Manufacturer directory + proposals (ADMIN approve)",
+  "description": "CLIENT/BROKER propose manufacturer names; permanent Company MANUFACTURER only after ADMIN approve. Hints = approved companies + own PENDING.",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "GET /v1/manufacturers/directory",
+    "POST /v1/manufacturers/proposals",
+    "GET /v1/admin/manufacturer-proposals",
+    "POST /v1/admin/manufacturer-proposals/:id/approve",
+    "POST /v1/admin/manufacturer-proposals/:id/reject"
+  ],
+  "definitions": {
+    "directoryHint": {
+      "type": "object",
+      "required": ["id", "name", "kind"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "kind": { "type": "string", "enum": ["approved", "pending"] },
+        "companyId": { "type": ["string", "null"] },
+        "proposalId": { "type": ["string", "null"] },
+        "country": { "type": ["string", "null"] }
+      }
+    },
+    "proposal": {
+      "type": "object",
+      "required": ["id", "name", "status", "sourceRole"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+        "sourceRole": { "type": "string" },
+        "approvedCompanyId": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "examples": {
+    "directoryHint": {
+      "id": "co:c1",
+      "name": "Demo Factory",
+      "kind": "approved",
+      "companyId": "c1"
+    },
+    "proposal": {
+      "id": "p1",
+      "name": "NewCo",
+      "status": "PENDING",
+      "sourceRole": "CLIENT"
+    }
+  }
+}

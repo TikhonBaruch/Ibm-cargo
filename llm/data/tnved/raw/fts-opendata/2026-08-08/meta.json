@@ -1,0 +1,63 @@
+{
+  "source": "fts-opendata",
+  "fetchedAt": "2026-08-08T11:23:18.142Z",
+  "downloaded": 0,
+  "catalogSize": 16,
+  "tnvedKeywordHits": 0,
+  "status": "ok",
+  "gap": "FTS open-data list.csv has no TN VED/ETT duty classifier dataset (registries & vacancies dominate). Codes/rates remain EEC NSI/ETT; set FTS_DATASET_URL for overlays.",
+  "dropIn": "data/tnved/raw/fts-opendata/2026-08-08/datasets/",
+  "attempts": [
+    {
+      "url": "https://customs.gov.ru/opendata/list.csv",
+      "finalUrl": "https://customs.gov.ru/opendata/list.csv",
+      "contentType": "text/csv; charset=UTF-8",
+      "ok": true,
+      "bytes": 9185,
+      "hits": 36,
+      "catalogHits": 0
+    },
+    {
+      "url": "https://customs.gov.ru/opendata",
+      "finalUrl": "https://customs.gov.ru/opendata",
+      "contentType": "text/html; charset=UTF-8",
+      "ok": true,
+      "bytes": 1005083,
+      "hits": 1,
+      "catalogHits": 0
+    },
+    {
+      "url": "https://data.customs.gov.ru/",
+      "ok": false,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://data.customs.ru/",
+      "ok": false,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://customs.gov.ru/",
+      "finalUrl": "https://customs.gov.ru/",
+      "contentType": "text/html; charset=UTF-8",
+      "ok": true,
+      "bytes": 853762,
+      "hits": 0,
+      "catalogHits": 0
+    },
+    {
+      "url": "https://edata.customs.ru/",
+      "finalUrl": "https://edata.customs.ru/FtsPersonalCabinetWeb/",
+      "contentType": "text/html; charset=utf-8",
+      "ok": true,
+      "bytes": 16510,
+      "hits": 0,
+      "catalogHits": 0
+    },
+    {
+      "url": "https://tnved.customs.ru/",
+      "ok": false,
+      "error": "fetch failed"
+    }
+  ]
+}

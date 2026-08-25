@@ -1,0 +1,17 @@
+---
+description: D33 — no code without a written plan; no close without KB
+alwaysApply: true
+---
+
+# Feature cycle (D33)
+
+Canon: `docs/knowledge/feature-cycle.md`.
+
+```text
+idea → analysis → plan (required) → implement → test → re-analyze → fix
+  → deploy (Vercel Hobby) → KB update
+```
+
+**Stops:** no KB plan → no code (typo/one-line copy: 3 bullets in PR still naming cycle steps). No KB update → task not closed.
+
+Deploy: merge `main` → Hobby; migrate separately from build; no second Postgres for prod UI.

@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-sku.manufacturer.json",
+  "title": "D-SKU manufacturer catalog (D31)",
+  "description": "Factory SKU master-data. Isolated from Calculation D8 FSM. Snapshot into item attrs later; HS final remains broker (D15).",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "GET /v1/manufacturer/skus",
+    "POST /v1/manufacturer/skus",
+    "GET /v1/manufacturer/skus/:id",
+    "PATCH /v1/manufacturer/skus/:id",
+    "GET /v1/manufacturer/dashboard",
+    "GET|PATCH /v1/manufacturer/company"
+  ],
+  "definitions": {
+    "skuFeature": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "COMPOSITION",
+            "ALCOHOL",
+            "ENGINE",
+            "BATTERY",
+            "RADIO",
+            "PRECIOUS",
+            "SOFTWARE",
+            "CITES",
+            "SPARE_PART",
+            "KIT_COMPONENT",
+            "OTHER"
+          ]
+        },
+        "value": { "type": "string" },
+        "unit": { "type": "string" },
+        "sharePct": { "type": "number" },
+        "separatelyDeclared": { "type": "boolean" }
+      }
+    },
+    "skuPackaging": {
+      "type": "object",
+      "required": ["level"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["UNIT", "INNER", "MASTER", "PALLET", "CONTAINER"]
+        },
+        "packType": { "type": "string" },
+        "qtyPerParent": { "type": "number" },
+        "lengthMm": { "type": "number" },
+        "widthMm": { "type": "number" },
+        "heightMm": { "type": "number" },
+        "weightKg": { "type": "number" },
+        "volumeM3": { "type": "number" }
+      }
+    },
+    "manufacturerSku": {
+      "type": "object",
+      "required": ["sku", "name"],
+      "properties": {
+        "sku": { "type": "string" },
+        "name": { "type": "string" },
+        "netWeightKg": { "type": "number" },
+        "grossWeightKg": { "type": "number" },
+        "volumeM3": { "type": "number" },
+        "lengthMm": { "type": "integer" },
+        "widthMm": { "type": "integer" },
+        "heightMm": { "type": "integer" },
+        "features": { "type": "array", "items": { "$ref": "#/definitions/skuFeature" } },
+        "packagings": { "type": "array", "items": { "$ref": "#/definitions/skuPackaging" } }
+      }
+    }
+  },
+  "examples": {
+    "manufacturerSku": {
+      "sku": "NB-T14-16",
+      "name": "Ноутбук ThinkPad T14",
+      "netWeightKg": 1.4,
+      "grossWeightKg": 2.1,
+      "features": [{ "kind": "BATTERY", "value": "52", "unit": "Wh", "separatelyDeclared": false }],
+      "packagings": [{ "level": "PALLET", "packType": "euro_pallet", "lengthMm": 1200, "widthMm": 800 }]
+    }
+  },
+  "x-invariants": [
+    "No public manufacturer signup (D25)",
+    "Does not write Calculation.status (D8)",
+    "HS hint is not hsCodeFinal (D15)"
+  ]
+}

@@ -1,0 +1,2586 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>Единая Товарная номенклатура внешнеэкономической деятельности Евразийского экономического союза и Единый таможенный тариф Евразийского экономического союза</title>
+    <link rel="icon" type="image/png" href="/public/images/icondata.png">
+
+            <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <meta content="В этом наборе содержaтся коды ТН ВЭД ЕАЭС" name="description">
+    <meta content="ЕАЭО СЭҚ ТН кодтары,коды ТН ВЭД ЕАЭС" name="keywords">
+    <meta content="egov" name="author">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:site_name" content="Открытые данные">
+    <meta property="og:title" content="Единая Товарная номенклатура внешнеэкономической деятельности Евразийского экономического союза и Единый таможенный тариф Евразийского экономического союза">
+    <meta property="og:description" content="В этом наборе содержaтся коды ТН ВЭД ЕАЭС">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://data.egov.kz/public/images/logodataru.png"><!-- link to image for socio -->
+    <meta property="og:url" content="https://data.egov.kz/datasets/view?index=euraziyalyk_ekonomikalyk_odakt">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://mc.yandex.ru https://www.google.com https://www.gstatic.com https://platform.twitter.com https://www.google-analytics.com https://www.googletagmanager.com https://my.egov.kz; frame-src 'self' http://localhost:9020 http://127.0.0.1:9020 http://localhost:9955 http://127.0.0.1:9955 https://www.google.com https://platform.twitter.com https://open.egov.kz;">
+
+    <link rel="stylesheet" href="/public/css/style.css" />
+    <link href="/public/assets/frontend/layout/css/style.css" rel="stylesheet">
+    <link href="/public/assets/global/css/components.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/public/fontawesome/css/all.css">
+
+    <!-- Global styles START -->
+    <link href="/public/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/public/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Global styles END -->
+
+    <link href="/public/assets/global/plugins/ion.rangeslider/css/ion.rangeSlider.css" rel="stylesheet" type="text/css"/>
+    <link href="/public/assets/global/plugins/ion.rangeslider/css/ion.rangeSlider.Metronic.css" rel="stylesheet" type="text/css"/>
+
+    <!-- BEGIN PAGE LEVEL STYLES -->
+    <link rel="stylesheet" type="text/css" href="/public/assets/global/plugins/bootstrap-select/bootstrap-select.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/public/assets/global/plugins/select2/select2.css"/>
+    <link rel="stylesheet" type="text/css" href="/public/assets/global/plugins/jquery-multi-select/css/multi-select.css"/>
+    <!-- BEGIN THEME STYLES -->
+
+    <!-- Page level plugin styles START -->
+    <link href="/public/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet">
+    <link href="/public/assets/global/plugins/carousel-owl-carousel/owl-carousel/owl.carousel.css" rel="stylesheet">
+    <link href="/public/assets/global/plugins/slider-revolution-slider/rs-plugin/css/settings.css" rel="stylesheet">
+    <link href="/public/assets/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css">
+    <link href="/public/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>
+
+    <link href="/public/assets/global/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.css" rel="stylesheet"/>
+    <!-- Page level plugin styles END -->
+    <link rel="stylesheet" type="text/css" href="/public/assets/global/plugins/bootstrap-toastr/toastr.min.css"/>
+    <!-- Theme styles START -->
+    <link href="/public/assets/global/css/components.css" rel="stylesheet">
+    <link href="/public/assets/global/css/plugins.css" rel="stylesheet">
+    <link href="/public/assets/frontend/layout/css/style.css" rel="stylesheet">
+    <link href="/public/assets/frontend/pages/css/style-shop.css" rel="stylesheet" type="text/css">
+    <link href="/public/assets/frontend/pages/css/style-revolution-slider.css" rel="stylesheet"><!-- metronic revo slider styles -->
+    <link href="/public/assets/frontend/layout/css/style-responsive.css" rel="stylesheet">
+    <link href="/public/assets/frontend/layout/css/themes/green.css" rel="stylesheet" id="style-color">
+    <link href="/public/assets/frontend/layout/css/custom.css" rel="stylesheet">
+    <link href="/public/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/public/assets/global/plugins/typeahead/typeahead.css">
+    <link rel="stylesheet" type="text/css" href="/public/css/jcarousel.basic.css">
+
+    <link href="/public/stylesheets/main.css" rel="stylesheet">
+    <link href="/public/stylesheets/e-header.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/public/mobile/mobile.css"/>
+    <link href="/public/mobile/mobile_full_view.css" rel="stylesheet" type="text/css">
+
+    <!--Spec version-->
+    <link rel="stylesheet" href="/public/spec/spec.css"/>
+    <link href="/public/spec/spec-inverted.css" rel="stylesheet">
+
+    <style type="text/css">
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="/public/css/jcarousel.basic.css">
+
+    <link rel="stylesheet" type="text/css" href="/public/slick/slick.css" />
+    <link rel="stylesheet" type="text/css" href="/public/slick/slick-theme.css" />
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" > (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(51837473, "init", { id:51837473, clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true }); </script> <noscript><div><img src="https://mc.yandex.ru/watch/51837473" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+
+
+
+</head>
+
+<body id="body-id" class=" ">
+<div
+        class="op-title-info"
+        data-legalacts="component.OPENNPA"
+        data-data="component.OPENDATA"
+        data-budget="component.OPENBUDGET"
+        data-dialog="component.OPENDIALOG"
+        data-evaluation="component.EVALUATION"
+        data-calendar_epir_events="calendar_epir_events"
+></div>
+
+
+
+
+
+<div id="proposalModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" style="z-index: 99999">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Заявка на открытые данные</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs nav-justified">
+                    <li class="active" id="publishTab">
+                        <a href="#tab_1_1_2" data-toggle="tab">
+                        На публикацию </a>
+                    </li>
+                    <li class="" id="actualTab">
+                        <a href="#tab_1_1_1" data-toggle="tab">
+                        На актуализацию </a>
+                    </li>
+
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane" id="tab_1_1_1">
+                        Для добавления заявки Вам необходимо осуществить <a href="/security/loginwithproposalmodal">авторизацию</a> или <a href="https://idp.egov.kz/idp/register.jsp">зарегистрироваться</a> 
+                    </div>
+                    <div class="tab-pane active" id="tab_1_1_2">
+                        Для добавления заявки Вам необходимо осуществить <a href="/security/loginwithproposalmodal">авторизацию</a> или <a href="https://idp.egov.kz/idp/register.jsp">зарегистрироваться</a> 
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn default">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<link href="/public/assets/global/plugins/bvi/css/bvi.min.css" rel="stylesheet">
+<div id="top">
+    
+    
+    <header class="b-header">
+    
+        <div class="b-header__container container">
+            <a href="#" class="b-header__menu-links js_showHeaderMenu">
+                <span class="b-header__menu-btn"></span>
+            </a>
+            <div class="b-header__link-block js_headerMenu">
+                <ul class="b-header__list">
+                    <li class="b-header__list-item">
+                        <a href="http://egov.kz" target="_blank" class="b-header__list-link">Цифровое правительство</a>
+                    </li>
+                    <li class="b-header__list-item">
+                        <a href="http://open.egov.kz" target="_blank" class="b-header__list-link">Открытое правительство</a>
+                    </li>
+                    <li class="b-header__list-item">
+                        
+                        <a href="http://government.kz/ru" target="_blank" class="b-header__list-link">Правительство Республики Казахстан</a>
+                        
+                        
+                        
+                    </li>
+                    <li class="b-header__list-item mobile-version hide-spec hide-mobile">
+                        <a href="javascript:void(0);" class="b-header__list-link">
+                            <i class="fas fa-mobile-alt"></i>
+                            Мобильная версия сайта</a>
+                    </li>
+<!--                    <li class="b-header__list-item spec-version hide-spec hide-mobile">-->
+<!--                        <a href="javascript:void(0);" class="bvi-open b-header__list-link">-->
+<!--                            <i class="fas fa-eye"></i>-->
+<!--                            Версия для слабовидящихfffffffffff</a>-->
+<!--                    </li>-->
+                    <li class="b-header__list-item">
+                        <a href="#" class="bvi-open b-header__list-link" title="Версия сайта для слабовидящих"><i class="fas fa-eye"></i>Версия для слабовидящих</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="b-header__block">
+                <div class="b-header__infoblock">
+                    <div class="b-header__info b-header__info--lang">
+                        <a href="/application/changelang?lang=kk" data-lang="kk" class=" b-header__link">ҚАЗ</a>
+                        <a href="/application/changelang?lang=ru" data-lang="ru" class="b-header__link_active2 b-header__link">РУС</a>
+                        <a href="/application/changelang?lang=en" data-lang="en" class=" b-header__link">ENG</a>
+                    </div>
+                    
+                    
+                        <div class="b-header__info">
+                            <a href="/security/login" class="b-header__link">Войти</a>
+                            <span class="b-header__text">или</span>
+                            <a href="https://idp.egov.kz/idp/register.jsp" class="b-header__link">зарегистрироваться</a>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- END HEADER -->
+    <div id="top_2">
+        <div class="inblock">
+            <a id="logo" href="/"><img src="/public/images/logodataru.png"  /></a>
+			<div class="resize top-menu-wrapper">
+                <ul class="topmenu topright resize">
+                    <li class=""><a href="/pages/about" >О портале</a></li>
+                    <li class=""><a href="/govagenciescontroller/list" >Организации и ГО</a></li>
+                    <li class="active">
+                        <a href="/datasets/listbygovagency">Данные</a>
+
+                        <ul class="dropdown-menu">
+                            <li class="active"><a href="/datasets/listbycategory">По категориям</a></li>
+                            <li class=""><a href="/datasets/listbygovagency">По ГО/организациям</a></li>
+                            <li class=""><a href="/datasets/byusers">От внешних пользователей</a></li>
+                            <li class=" hide-mobile"><a href="/proposals/actualize">Заявки</a></li>
+                            <li class="show-mobile"><a href="#">Категории</a></li>
+                            <li class=""><a href="/datasets/archive">Архивы</a></li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="/pages/samples">Разработчикам</a>
+
+                        <ul class="dropdown-menu">
+                            <li><a href="/pages/samples">Описание API</a></li>
+                            <li><a href="/pages/format">Формат данных</a></li>
+                            <li class="">
+                                <a href="/services/sample">
+                                Примеры сервисов
+                                </a>
+
+                                <ul class="dropdown-menu">
+                                    <li><a href="/services/rka">Поиск по РКА</a></li>
+                                    <li><a href="/services/street">Проверка улиц</a></li>
+                                    <li><a href="/services/con">Поиск ЦОН</a></li>
+                                    <li><a href="/services/notaries">Поиск Нотариус</a></li>
+                                    <li><a href="/services/pharmacy">Поиск Аптек</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="/application/downloadservicelist"><span>Перечень сервисов</span></a></li>
+                            <li><a href="/profile/apikeylist"><span>Кабинет разработчика</span></a></li>
+
+                        </ul>
+                    </li>
+                    <li class="show-mobile"><a href="javascript:void(0);">Подать заявку</a>
+                        <ul>
+                            <li><a
+                                    data-original-title="Заявка на открытые данные"
+                                    data-placement="left"
+                                    data-toggle="modal"
+                                    href="#proposalModal">На публикацию</a></li>
+                            <li><a
+                                    data-original-title="Заявка на открытые данные"
+                                    data-placement="left"
+                                    data-toggle="modal"
+                                    href="#proposalModal">На актуализацию</a></li>
+                        </ul>
+                    </li>
+
+                    <!--<li class=" hide-mobile"><a href="/news/list">Новости</a></li>-->
+                    <li class=""><a href="/apps/list">Приложения</a></li>
+                    <li class="show-mobile"><a href="javascript:void(0);">Компоненты ОП</a>
+                        <ul>
+                            <li><a class="none-decoration" href="https://dialog.egov.kz/">Открытый диалог</a></li>
+                            <li><a class="none-decoration" href="https://budget.egov.kz/">Открытые бюджеты</a></li>
+                            <li><a class="none-decoration" href="https://legalacts.egov.kz/">Открытые НПА</a></li>
+                            <li><a class="none-decoration" href="https://evaluation.egov.kz/">Оценка эффективности деятельности ГО</a></li>
+                        </ul>
+                    </li>
+                    <li class="show-mobile"><a href="/pages/help">Помощь пользователям</a></li>
+                    <li>
+                        <a>Ещё</a>
+
+                        <ul class="dropdown-menu">
+                            <li class=""><a href="/pages/faq">FAQ</a></li>
+
+                            <li class=""><a href="/contests/list">Конкурсы</a></li>
+                            
+                            
+                                <li class=""><a href="/pages/portalpage?id=57238451">АИС ОИП</a></li>
+                                
+                                <li class=""><a href="/pages/portalpage?id=122085422">Сервисы КПСиСУ</a></li>
+                                
+                                
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="extended-search col-xs-12 show-mobile">
+            <div class="button-wrapper col-xs-12">
+                <div class="button-position"></div>
+            </div>
+            <form action="/datasets/search" method="GET" id="searchM">
+                <div id="mainBlock" style="display: none; width: 829px;padding: 15px">
+                <input type="text" name="expType" id="expType" value="0" style="display: none"/>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label for="govAgencyId">Владелец</label>
+                            <select class="form-control" name="govAgencyId" id="govAgencyId">
+                                <option value="">Не указано</option>
+                                
+                            </select>
+                            <label for="category">Категории</label>
+                            <select class="form-control" name="category">
+                                <option value="">Не указано</option>
+                                
+                                <option value="AVS-EI0B99eXTcgzfxyo">Государственный сектор</option>
+                                
+                                <option value="AVHs8sbVNUjQC95Q0cm9">Здравоохранение</option>
+                                
+                                <option value="AX0OQPoNG0QrlYMCh_Ui">Инновации и связь</option>
+                                
+                                <option value="AXBYBzt4GpHoG9G1U8bl">Культура. Информация.</option>
+                                
+                                <option value="AXBYDCDMGpHoG9G1U8b7">Население и общество</option>
+                                
+                                <option value="AVHs80ZbNUjQC95Q0cri">Образование и наука</option>
+                                
+                                <option value="AVHs-IzUNUjQC95Q0d0s">Правовая система и общественная безопасность</option>
+                                
+                                <option value="AVUumIGU99eXTcgzf6YQ">Промышленность</option>
+                                
+                                <option value="AVUGiYXo99eXTcgzf4b8">Сельское, лесное, охотничье и рыбное хозяйства</option>
+                                
+                                <option value="AVSkW4E-99eXTcgzeLZt">Строительство и жилищно-коммунальное хозяйство</option>
+                                
+                                <option value="AVWfvGzsv7qpUunhUQ9U">Торговля</option>
+                                
+                                <option value="AVHs9wRnNUjQC95Q0dd2">Транспорт</option>
+                                
+                                <option value="AVHs8-bUNUjQC95Q0c0r">Труд, занятость и социальное обеспечение</option>
+                                
+                                <option value="AVWWoCRhv7qpUunhUOSf">Туризм и спорт</option>
+                                
+                                <option value="AVHs9e09NUjQC95Q0dQH">Финансы</option>
+                                
+                                <option value="AVHs-SziNUjQC95Q0d92">Экология, окружающая среда и гражданская защита</option>
+                                
+                                <option value="AVS9OWO599eXTcgzfxvi">Экономика</option>
+                                
+                                <option value="AVWQUcRBv7qpUunhTlT9">Энергетика</option>
+                                
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label for="statusType">Статус актуальности</label>
+                            <select class="form-control" name="statusType">
+                                <option value="">Не указано</option>
+                                <option value="1">Да</option>
+                                <option value="0">Нет</option>
+                            </select>
+                            <label for="actualType">Тип актуализации</label>
+                            <select class="form-control" name="actualType">
+                                <option value="">Не указано</option>
+                                <option value="DAILY">Ежедневно</option>
+                                <option value="WEEKLY">Еженедельно</option>
+                                <option value="MONTHLY">Ежемесячно</option>
+                                <option value="QUARTERLY">Ежеквартально</option>
+                                <option value="YEARLY">Ежегодно</option>
+                                <option value="CONSTANTLY">Постоянно</option>
+                                <option value="TWO_TIMES_A_YEAR">2 раза в год</option>
+                                <option value="ONCE_EVERY_SIX_MONTHS">1 раз в полгода</option>
+                                <option value="ONCE_EVERY_THREE_YEARS">1 раз в 3 года</option>
+                                <option value="ONCE_EVERY_FOUR_YEARS">1 раз в 4 года</option>
+                                <option value="ONCE_EVERY_FIVE_YEARS">1 раз в 5 лет</option>
+
+                                <option value="AS_NEEDED">По мере необходимости</option>
+                            </select>
+                            <label class="control-label">Сортировать&nbsp;По:</label>
+                            <select class="form-control" name="datasetSortSelect">
+                                <option value="createdDateAsc">Дате создания (По возрастанию)</option>
+                                <option value="createdDateDesc"
+                                        selected="selected">Дате создания (По убыванию)</option>
+                                <option value="modifiedDateAsc">Дате обновления (По возрастанию)</option>
+                                <option value="modifiedDateDesc">Дате обновления (По убыванию)</option>
+                            </select>
+                            <div class="date-extended-search">
+                                <label for="pDateBeg" style="font-size: 13px;">Период публикации</label>
+                                <div class="form-control" style="border: none!important;">
+                                    <span class="input-wrapper"><input type="date" name="pDateBeg"/></span>
+                                    <span class="input-wrapper"><input type="date" name="pDateEnd"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="extended-search-footer-button">
+                        <button type="button" class="btn btn-danger" onclick="mainReset()">Сбросить</button>
+                    </div>
+                    <div class="extended-search-footer-button">
+                        <button type="submit" class="btn btn-success">Искать</button>
+                    </div>
+                </div>
+                    <input type="hidden" name="text" id="mobile-text-field" />
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/public/assets/global/plugins/jquery-1.11.0.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/bvi/js/js.cookie.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/bvi/js/bvi-init.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/bvi/js/bvi.min.js" type="text/javascript"></script>
+<input type="hidden" name="authenticityToken" value="2749888568cd96b594218506713f57eb0150bffb"/>
+
+
+
+<div class="resize main-wrapper">
+    <div id="main_1" class="mainblock">
+
+        <div id="search">
+            <form action="/datasets/search" method="get" accept-charset="utf-8" enctype="application/x-www-form-urlencoded" >            <input type="text" name="text" class="text" placeholder="Искать среди 3894 наборов" /><input type="submit" name="ok" class="button" value="Искать" />
+            
+</form>        </div>
+
+
+        
+
+<ul class="breadcrumb">
+    <li><a href="/">Главная</a></li>
+    <li><a href="/datasets/listbygovagency">Данные</a></li>
+    <li class="active">Просмотр набора данных</li>
+</ul>
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<link rel="stylesheet" type="text/css" href="/public/assets/global/plugins/select2/select2.css"/>
+<link rel="stylesheet" type="text/css" href="/public/assets/global/plugins/datatables/extensions/Scroller/css/dataTables.scroller.min.css"/>
+<link rel="stylesheet" type="text/css" href="/public/assets/global/plugins/datatables/extensions/ColReorder/css/dataTables.colReorder.min.css"/>
+<link rel="stylesheet" type="text/css" href="/public/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css"/>
+<link rel="stylesheet" href="/public/css/style.css" />
+<style>
+    .dataset-rating-panel {
+        max-width: 620px;
+        margin-bottom: 35px;
+        padding: 24px 26px;
+        background: #f8fafc;
+        border: 1px solid #d8e3ee;
+    }
+
+    .dataset-rating-title {
+        margin: 0 0 18px;
+        font-size: 14px;
+        line-height: 1.35;
+        color: #4f5964;
+    }
+
+    .dataset-rating-options {
+        display: flex;
+        flex-wrap: wrap;
+        grid-gap: 12px;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .dataset-rating-option {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        color: #6c7a89;
+        border: 1px solid #cdd7e1;
+        background: #fff;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .dataset-rating-option:hover,
+    .dataset-rating-option:focus {
+        text-decoration: none;
+        color: #1f6fb2;
+        border-color: #1f8dd6;
+    }
+
+    .dataset-rating-option.active {
+        color: #fff;
+        border-color: #1f8dd6;
+        background: #1f8dd6;
+    }
+
+    .dataset-rating-option-disabled {
+        pointer-events: none;
+        opacity: 0.65;
+    }
+
+    .dataset-rating-option i {
+        font-size: 22px;
+    }
+
+    .dataset-rating-summary-row {
+        display: flex;
+        align-items: center;
+        grid-gap: 12px;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+
+    .dataset-rating-summary-label {
+        width: 150px;
+        color: #6c7a89;
+    }
+
+    .dataset-rating-summary-bar {
+        position: relative;
+        flex: 1;
+        height: 10px;
+        background: #dfe8f0;
+        overflow: hidden;
+    }
+
+    .dataset-rating-summary-fill {
+        height: 100%;
+        background: #1f8dd6;
+    }
+
+    .dataset-rating-summary-value {
+        min-width: 86px;
+        color: #6c7a89;
+        text-align: right;
+    }
+
+    .dataset-rating-total {
+        margin-top: 18px;
+        color: #6c7a89;
+        font-size: 14px;
+    }
+
+    .dataset-rating-reason-hint {
+        color: #8b95a1;
+        font-size: 12px;
+    }
+
+    @media (max-width: 767px) {
+        .dataset-rating-panel {
+            padding: 18px 16px;
+        }
+
+        .dataset-rating-title {
+            font-size: 14px;
+        }
+
+        .dataset-rating-options {
+            flex-direction: column;
+        }
+
+        .dataset-rating-summary-row {
+            flex-direction: column;
+            align-items: stretch;
+            grid-gap: 6px;
+            gap: 6px;
+        }
+
+        .dataset-rating-summary-label,
+        .dataset-rating-summary-value {
+            width: auto;
+            min-width: 0;
+            text-align: left;
+        }
+    }
+</style>
+<ul class="nav nav-tabs datasets-buttons-warpper-web">
+    <li class="active" id="firstTab">
+        <a href="#metaTab" data-toggle="tab">
+            Паспорт </a>
+    </li>
+
+    
+    <li>
+        <a href="#dataTab" data-toggle="tab" onclick="checkCaptcha()">
+            Данные</a>
+    </li>
+
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        Скачать <i class="fa fa-angle-down"></i>
+        </a>
+        <ul class="dropdown-menu" role="menu">
+            <li>
+                <a id="exportExcel" tabindex="-1" data-toggle="tab" onclick="checkCaptcha()">
+                    Excel </a>
+            </li>
+            <li>
+                <a id="exportJson" tabindex="-1" data-toggle="tab" onclick="checkCaptcha()">
+                    JSON </a>
+            </li>
+        </ul>
+    </li>
+
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        Версия  <i class="fa fa-angle-down"></i>
+        </a>
+        <ul class="dropdown-menu" role="menu">
+            
+                <li>
+                    <a class="version" tabindex="-1" type="v1" data-toggle="tab">
+                        v1</a>
+                </li>
+            
+                <li>
+                    <a class="version" tabindex="-1" type="v2" data-toggle="tab">
+                        v2</a>
+                </li>
+            
+                <li>
+                    <a class="version" tabindex="-1" type="v3" data-toggle="tab">
+                        v3</a>
+                </li>
+            
+        </ul>
+    </li>
+    
+
+    
+
+    
+</ul>
+<div class="tab-content passport">
+    
+
+    <div class="tab-pane " id="dataTab">
+        <div class="row columns margin-bottom-10" >
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <div class="actions ">
+                        <div class="btn-group">
+                            <a class="btn default" href="#" data-toggle="dropdown">
+                            Колонки <i class="fa fa-angle-down"></i>
+                            </a>
+                            <div id="dataset_column_toggler" class="dropdown-menu hold-on-click dropdown-checkboxes pull-right">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="searchFilter">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div class="dataTables_length">
+                        <label>
+                            <select name="sample_1_length" id="datasetCount" aria-controls="sample_1" class="form-control input-xsmall input-inline">
+                                <option value="5">5</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select> записей
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div  class="dataTables_filter">
+                        <label>Искать:<input type="search" class="form-control input-small input-inline" aria-controls="sample_1" id="datasetFilter"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-striped table-bordered table-hover" id="dataTable">
+        </table>
+
+    </div>
+
+    <div class="tab-pane active" id="metaTab">
+
+        <table class="table table-striped table-bordered table-advance table-hover">
+            <thead>
+            <tr>
+                <th class="col-md-3">
+                    <i class="fa fa-briefcase hide-mobile"></i> Название поля паспорта
+                </th>
+                <th>
+                Значение поля паспорта
+                </th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>
+                    <b>
+                    Название </b>
+                </td>
+                <td id="versionName">
+                Единая Товарная номенклатура внешнеэкономической деятельности Евразийского экономического союза и Единый таможенный тариф Евразийского экономического союза</td>
+            </tr>
+            <tr>
+                <td>
+                    <b>
+                    Описание </b>
+                </td>
+                <td id="versionDescription">
+                В этом наборе содержaтся коды ТН ВЭД ЕАЭС</td>
+            </tr>
+            
+                <tr>
+                    <td>
+                        <b>
+                        Владелец </b>
+                    </td>
+                    <td id="versionOwner">
+                    Министерство финансов РК</td>
+                </tr>
+            
+            <tr>
+                <td>
+                    <b>
+                    Категория </b>
+                </td>
+                <td>
+                    
+                        
+                            <span class="fa fa-tags category-icon"></span> Культура. Информация.<br>
+                        
+
+                    
+                </td>
+            </tr>
+
+            
+            <tr>
+                <td>
+                    <b>
+                    Государственный орган </b>
+                </td>
+                <td>
+                    
+                    
+                        Министерство финансов РК
+                    
+                </td>
+            </tr>
+            
+
+            <tr id="versionKeywordsBlock" >
+                <td>
+                    <b>
+                    Ключевые слова </b>
+                </td>
+                <td>
+
+                    <div class="blog-tags">
+                        <ul id="versionKeywords">
+                            
+                                
+                                    <li><a href="/datasets/search?text=%D0%95%D0%90%D0%AD%D0%9E+%D0%A1%D0%AD%D2%9A+%D0%A2%D0%9D+%D0%BA%D0%BE%D0%B4%D1%82%D0%B0%D1%80%D1%8B"><i class="fa fa-tags"></i>ЕАЭО СЭҚ ТН кодтары</a></li>
+                                
+                                    <li><a href="/datasets/search?text=%D0%BA%D0%BE%D0%B4%D1%8B+%D0%A2%D0%9D+%D0%92%D0%AD%D0%94+%D0%95%D0%90%D0%AD%D0%A1"><i class="fa fa-tags"></i>коды ТН ВЭД ЕАЭС</a></li>
+                                
+                            
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+
+            
+
+            
+            <tr>
+                <td>
+                    <b>
+                    Тип актуализации </b>
+                </td>
+                <td>
+                По мере необходимости
+                </td>
+            </tr>
+            
+
+            
+            <tr>
+                <td>
+                    <b>
+                    Статус актуальности </b>
+                </td>
+                <td>
+                Да
+                </td>
+            </tr>
+            
+
+            <tr>
+                <td>
+                    <b>
+                    Дата размещения </b>
+                </td>
+
+                <td id="createdDate">
+                    10.01.2020 16:03
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <b>
+                    Дата обновления </b>
+                </td>
+                <td id="modifiedDate">
+                    08.05.2026 09:56
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <b>
+                    Ссылка на данные </b>
+                </td>
+                <td id="dataLink">
+
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <b>
+                    Ссылка на мета информацию </b>
+                </td>
+                <td id="metaLink">
+
+                </td>
+            </tr>
+
+            
+            
+
+            <tr>
+                <td>
+                    <b>
+                    Статус </b>
+                </td>
+                <td>
+                    
+                    
+                    
+                    
+                    Опубликован
+                    
+                    
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+        <br>
+
+        <div class="dataset-rating-panel">
+            <h3 class="dataset-rating-title"><b>Оцените насколько полезен данный набор данных?</b></h3>
+            
+            <div class="dataset-rating-options">
+                <a href="javascript:void(0)" class="dataset-rating-option " data-value="useful">
+                    <i class="fa fa-thumbs-o-up"></i>
+                    <span>Полезно</span>
+                </a>
+                <a href="javascript:void(0)" class="dataset-rating-option " data-value="partially_useful">
+                    <i class="fa fa-minus"></i>
+                    <span>Частично полезно</span>
+                </a>
+                <a href="javascript:void(0)" class="dataset-rating-option " data-value="not_useful">
+                    <i class="fa fa-thumbs-o-down"></i>
+                    <span>Не полезно</span>
+                </a>
+            </div>
+            
+            
+
+            <div class="dataset-rating-summary">
+                <div class="dataset-rating-summary-row">
+                    <span class="dataset-rating-summary-label">Полезно</span>
+                    <div class="dataset-rating-summary-bar">
+                        <div class="dataset-rating-summary-fill" id="datasetRatingUsefulBar" style="width: 0%"></div>
+                    </div>
+                    <span class="dataset-rating-summary-value" id="datasetRatingUsefulValue">0% (0)</span>
+                </div>
+                <div class="dataset-rating-summary-row">
+                    <span class="dataset-rating-summary-label">Частично полезно</span>
+                    <div class="dataset-rating-summary-bar">
+                        <div class="dataset-rating-summary-fill" id="datasetRatingPartiallyUsefulBar" style="width: 0%"></div>
+                    </div>
+                    <span class="dataset-rating-summary-value" id="datasetRatingPartiallyUsefulValue">0% (0)</span>
+                </div>
+                <div class="dataset-rating-summary-row">
+                    <span class="dataset-rating-summary-label">Не полезно</span>
+                    <div class="dataset-rating-summary-bar">
+                        <div class="dataset-rating-summary-fill" id="datasetRatingNotUsefulBar" style="width: 0%"></div>
+                    </div>
+                    <span class="dataset-rating-summary-value" id="datasetRatingNotUsefulValue">0% (0)</span>
+                </div>
+            </div>
+
+            <div class="dataset-rating-total" id="datasetRatingTotalCount">
+                <b>Оценили: 0 пользователей</b>
+            </div>
+        </div>
+
+        <div class="padding-top-40">
+            <ul class="nav nav-tabs hide-mobile comment-tabs">
+                <li class="active">
+                    <a href="#tab_5_1" data-toggle="tab">
+                        Оставить комментарий </a>
+                </li>
+                <li>
+                    <a href="#tab_5_2" data-toggle="tab">
+                        Оставить заявку </a>
+                </li>
+
+            </ul>
+            <ul class="nav nav-tabs leave-comment-mobile">
+                <li class="active col-xs-6">
+                    <a href="#tab_5_1" data-toggle="tab">
+                    Оставить комментарий </a>
+                </li>
+                <li class="col-xs-6">
+                    <a href="#tab_5_2" data-toggle="tab">
+                    Оставить заявку </a>
+                </li>
+
+            </ul>
+            <div class="tab-content comments-mobile">
+                <div class="tab-pane active" id="tab_5_1">
+                
+
+                
+                    Для добавления комментария Вам необходимо осуществить <a href="/security/login">авторизацию</a> или <a href="https://idp.egov.kz/idp/register.jsp">зарегистрироваться</a> 
+                
+                    <hr class="blog-post-sep">
+
+
+                    <h2>Комментарии</h2>
+                    <div class="comments" id="comments">
+                    
+                    </div>
+
+                </div>
+                <div class="tab-pane" id="tab_5_2">
+                
+                
+                    Для добавления заявки Вам необходимо осуществить <a href="/security/login">авторизацию</a> или <a href="https://idp.egov.kz/idp/register.jsp">зарегистрироваться</a> 
+                
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="datasetRatingReasonModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" style="z-index: 99999">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Пожалуйста, укажите причину</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <textarea class="form-control" rows="4" id="datasetRatingReasonText" placeholder="Пожалуйста, укажите причину"></textarea>
+                    <div class="help-block dataset-rating-reason-hint">Минимальное количество символов: 10</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn default">Отмена</button>
+                <button type="button" class="btn green" id="submitDatasetRatingReason">Отправить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="downloadModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" style="z-index: 99999">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Выберите диапазон</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="downloadOffset" class="col-md-5 control-label">Начиная с:</label>
+                        <div class="col-md-5">
+                            <input type="number" class="form-control" id="downloadOffset" placeholder="1" min="1" data-bind="value:replyNumber" value="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="downloadCount" class="col-md-5 control-label">Количество:</label>
+                        <div class="col-md-5">
+                            <input type="number" class="form-control" id="downloadCount" placeholder="100" min="1" max="100" data-bind="value:replyNumber" value="100">
+                            <div class="help-block">
+                                Не может превышать 100
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-5 control-label">Будут скачаны наборы:</label>
+                        <div class="col-md-5">
+                            <p class="form-control-static" id="downloadHelpText">
+                            </p>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn default">Отмена</button>
+                <button type="button" data-dismiss="modal" class="btn green" id="downloadDataset">Скачать</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="captchaModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" style="z-index: 99999">
+        <div class="modal-content">
+            <div class="modal-body content-center">
+                <div class="g-recaptcha" data-sitekey="6LdvAB8kAAAAAG5LJcs_QrOllrySCZ2w7DSp9E-S"></div>
+            </div>
+            <div class="modal-footer content-center">
+                <button type="button" data-dismiss="modal" class="btn green" id="captchaSuccess">Готово</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/public/assets/global/plugins/jquery-1.11.0.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+
+<script>
+
+    var parentCommentId;
+    var parentCommentAuthor;
+    var datasetRatingCurrentValue = "";
+    var datasetRatingCurrentComment = "";
+    var datasetRatingAllowed = true;
+
+    function stringStartsWith (string, prefix) {
+        return string.slice(0, prefix.length) == prefix;
+    }
+
+    function setDatasetRatingLoading(isLoading) {
+        if (isLoading) {
+            $(".dataset-rating-option").addClass("dataset-rating-option-disabled");
+            $("#submitDatasetRatingReason").attr("disabled", true);
+            $("#datasetRatingReasonText").attr("disabled", true);
+        } else {
+            $(".dataset-rating-option").removeClass("dataset-rating-option-disabled");
+            $("#submitDatasetRatingReason").removeAttr("disabled");
+            $("#datasetRatingReasonText").removeAttr("disabled");
+        }
+    }
+
+    function updateDatasetRatingSelection(value) {
+        $(".dataset-rating-option").removeClass("active");
+        $('.dataset-rating-option[data-value="' + value + '"]').addClass("active");
+        datasetRatingCurrentValue = value;
+    }
+
+    function updateDatasetRatingSummary(data) {
+        $("#datasetRatingUsefulBar").css("width", data.usefulPercent + "%");
+        $("#datasetRatingUsefulValue").text(data.usefulPercent + "% (" + data.usefulCount + ")");
+        $("#datasetRatingPartiallyUsefulBar").css("width", data.partiallyUsefulPercent + "%");
+        $("#datasetRatingPartiallyUsefulValue").text(data.partiallyUsefulPercent + "% (" + data.partiallyUsefulCount + ")");
+        $("#datasetRatingNotUsefulBar").css("width", data.notUsefulPercent + "%");
+        $("#datasetRatingNotUsefulValue").text(data.notUsefulPercent + "% (" + data.notUsefulCount + ")");
+        $("#datasetRatingTotalCount").text("Оценили: " + data.totalCount + " пользователей");
+        updateDatasetRatingSelection(data.currentValue);
+        datasetRatingCurrentComment = data.currentComment || "";
+    }
+
+    function submitDatasetRating(value, comment, onSuccess) {
+        if (!datasetRatingAllowed) {
+            toastr['error']("Для архивных наборов голосование недоступно", "Операция неудачна");
+            return false;
+        }
+
+        var token = $("input[name = authenticityToken]").val();
+        setDatasetRatingLoading(true);
+
+        $.ajax({
+            url: "/datasets/saverating?index=euraziyalyk_ekonomikalyk_odakt",
+            method: "POST",
+            data: {
+                authenticityToken: token,
+                value: value,
+                comment: comment
+            }
+        }).done(function(data) {
+            updateDatasetRatingSummary(data);
+            toastr['success'](data.message, "Операция успешна");
+            if (onSuccess) {
+                onSuccess(data);
+            }
+        }).error(function(xhr) {
+            var errorText = xhr && xhr.responseText ? xhr.responseText : "Не удалось сохранить оценку, попробуйте позже";
+            toastr['error'](errorText, "Операция неудачна");
+        }).always(function() {
+            setDatasetRatingLoading(false);
+        });
+    }
+
+    $(".replyButton").click(function() {
+        var commentId = $(this).attr('comment-id');
+        var commentAuthor = $(this).attr('comment-author');
+        var text = $("#text").val();
+        if (parentCommentId != null && parentCommentId != 'undefined') {
+            if (stringStartsWith(text, parentCommentAuthor) == true) {
+                text = text.substring(parentCommentAuthor.length + 2);
+            }
+        }
+        text = commentAuthor+", "+text;
+        $("#text").val(text);
+
+        parentCommentId = commentId;
+        parentCommentAuthor = commentAuthor;
+
+        $("#text").focus();
+    });
+
+    $("#text").keyup(function() {
+        var text = $("#text").val();
+        if (parentCommentId != null && parentCommentId != 'undefined') {
+            if (stringStartsWith(text, parentCommentAuthor) == false) {
+                parentCommentId = null;
+            }
+        }
+    });
+
+    $("#sendComment").click(function() {
+        var text = $("#text").val();
+        var token = $("input[name = authenticityToken]").val();
+        if (text != null && text.trim().length > 0 ) {
+            $("#sendComment").attr("disabled", true);
+            $("#text").attr("disabled", true);
+            $.ajax({
+                url:"/datasets/addcomment?index=euraziyalyk_ekonomikalyk_odakt",
+                data: {
+                    authenticityToken : token,
+                    text : text,
+                    parent: parentCommentId
+                },
+                method:"POST"
+
+            }).success(function() {
+                toastr['success']("Комментарий успешно добавлен", "Операция успешна");
+                $("#text").val('');
+                $("#sendComment").removeAttr("disabled");
+                $("#text").removeAttr("disabled");
+            }).error(function(event) {
+                $("#sendComment").removeAttr("disabled");
+                $("#text").removeAttr("disabled");
+            });
+        } else {
+            toastr['error']("Заполните все поля", "Операция неудачна");
+        }
+
+    });
+
+    $("#sendProposalFromView").click(function() {
+        var category = 'AXBYBzt4GpHoG9G1U8bl';
+        var dataset = 'euraziyalyk_ekonomikalyk_odakt';
+        var reason = $('#actualViewReason').val();
+        var text = $('#actualViewText').val();
+        var token = $("input[name = authenticityToken]").val();
+
+        $.ajax({
+            url: "/proposals/saveactualproposal",
+            context: document.body,
+            data: {
+                authenticityToken : token,
+                text : text,
+                category : category,
+                dataset : dataset,
+                reason : reason
+            }
+        }).done(function() {
+            toastr['success']("Спасибо за ваше участие! Ваша заявка успешно отправлена на обработку. При любых изменениях статуса Вашей заявки, вы будете получать уведомления в Личном кабинете", "Операция успешна")
+        });
+        $('#actualViewReason').val('outdated');
+        $('#actualViewText').val('');
+    });
+
+    $(".dataset-rating-option").click(function() {
+        var value = $(this).data("value");
+
+        if (!datasetRatingAllowed) {
+            toastr['error']("Для архивных наборов голосование недоступно", "Операция неудачна");
+            return false;
+        }
+
+        if (!isAuthenticatedUser) {
+            toastr['error']("Для выставления оценки необходимо авторизоваться", "Операция неудачна");
+            return false;
+        }
+
+        if (value === "not_useful") {
+            $("#datasetRatingReasonText").val("");
+            $("#datasetRatingReasonModal").modal("show");
+            return false;
+        }
+
+        submitDatasetRating(value, "", null);
+        return false;
+    });
+
+    $("#submitDatasetRatingReason").click(function() {
+        if (!datasetRatingAllowed) {
+            toastr['error']("Для архивных наборов голосование недоступно", "Операция неудачна");
+            return false;
+        }
+
+        var comment = $.trim($("#datasetRatingReasonText").val());
+
+        if (comment.length < 10) {
+            toastr['error']("Заполните обязательное поле причина", "Операция неудачна");
+            return false;
+        }
+
+        submitDatasetRating("not_useful", comment, function() {
+            $("#datasetRatingReasonModal").modal("hide");
+        });
+        return false;
+    });
+
+    $(document).ready(function() {
+        datasetRatingCurrentValue = $.trim($("#datasetRatingSavedValue").text());
+        datasetRatingCurrentComment = $("#datasetRatingSavedComment").text();
+    });
+
+</script>
+<!-- BEGIN PAGE LEVEL SCRIPTS -->
+
+<div id="datasetRatingSavedValue" style="display:none;"></div>
+<div id="datasetRatingSavedComment" style="display:none;"></div>
+
+<script>
+
+    var currentVersion = 'v3';
+    var currentIndex = 'euraziyalyk_ekonomikalyk_odakt';
+    var elasticHost = '';
+    var entityId = 'euraziyalyk_ekonomikalyk_odakt';
+    var globalFields = [];
+    var page = 1;
+    var totalPages = 1;
+    var count = 5;
+    var text = '';
+    var column = '';
+    var order = '';
+    var lang = 'ru';
+    var dataLoaded = false;
+    var afterDataLoadedText = '';
+    var format = "json";
+    var downloadTotalCount = 0;
+    var downloadOffset = 1;
+    var downloadTo = 100;
+    var downloadCount = 100;
+    var isAuthenticatedUser = false;
+    
+
+    function initVars() {
+        page = 1;
+        count = 5;
+        order = '';
+        column = '';
+        text = '';
+        totalPages = 1;
+        $("#datasetFilter").val('');
+    }
+
+    function isCaptchaReady() {
+        return window.grecaptcha && typeof window.grecaptcha.getResponse === "function";
+    }
+
+    function hasCaptchaResponse() {
+        return isCaptchaReady() && window.grecaptcha.getResponse().length > 0;
+    }
+
+    function shouldRequireCaptcha() {
+        return !isAuthenticatedUser && isCaptchaReady() && !hasCaptchaResponse();
+    }
+
+    function checkCaptcha() {
+        if (shouldRequireCaptcha()) {
+            $('#captchaModal').modal('show');
+        }
+    };
+
+    $(document).ready(function() {
+        $('#captchaSuccess').click(function () {
+            if(shouldRequireCaptcha()) {
+                alert('Вы не прошли проверку CAPTCHA должным образом');
+                return false;
+            }
+        });
+
+        isSubscribed('OPENDATA','DATASET',entityId, function(data) {
+            if (data && data.response && data.response.subscribed == true) {
+                $("#unsubscribeButton").show();
+            } else {
+                $("#subscribeButton").show();
+            }
+        });
+
+        $("#subscribeButton").click(function(){
+            var title = 'Единая Товарная номенклатура внешнеэкономической деятельности Евразийского экономического союза и Единый таможенный тариф Евразийского экономического союза';
+            var href = 'https://data.egov.kz/datasets/view?index=euraziyalyk_ekonomikalyk_odakt';
+            subscribe('OPENDATA','DATASET',entityId,title,href, function(data) {
+                if (data && data.status == 200) {
+                    toastr['success']("Вы успешно подписались", "Операция успешна");
+                    $("#unsubscribeButton").show();
+                    $("#subscribeButton").hide();
+                } else {
+                    toastr['error']("Не удалось подписаться, попробуйте позже", "Операция неудачна");
+                }
+            });
+        });
+
+        $("#unsubscribeButton").click(function(){
+            unsubscribe('OPENDATA','DATASET',entityId, function(data) {
+                if (data && data.status == 200) {
+                    toastr['success']("Вы успешно отписались", "Операция успешна");
+                    $("#unsubscribeButton").hide();
+                    $("#subscribeButton").show();
+                } else {
+                    toastr['error']("Не удалось отписаться, попробуйте позже", "Операция неудачна");
+                }
+            });
+        });
+
+        $("#downloadDataset").click(function() {
+            if(shouldRequireCaptcha()) {
+                checkCaptcha();
+            } else {
+                var from = $("#downloadOffset").val();
+                var count = $("#downloadCount").val();
+                if (format == 'json') {
+                    window.location.href = '/datasets/exportjson?index=' + currentIndex + '&version=' + currentVersion + '&from=' + from + '&count=' + count;
+                }
+                if (format == 'excel') {
+                    window.location.href = '/datasets/exportexcel?index=' + currentIndex + '&version=' + currentVersion + '&from=' + from + '&count=' + count;
+                }
+            }
+        });
+
+        $("#exportJson").click(function() {
+            format = "json";
+            if(shouldRequireCaptcha()) {
+                checkCaptcha();
+            } else {
+                $("#downloadModal").modal('show');
+            }
+        });
+        $("#exportExcel").click(function() {
+            format = "excel";
+            if(shouldRequireCaptcha()) {
+                checkCaptcha();
+            } else {
+                $("#downloadModal").modal('show');
+            }
+        });
+
+        var oTable;
+
+        var initDataTable = function () {
+            var fields = globalFields;
+            var table = $('#dataTable');
+            /* Formatting function for row details */
+            function fnFormatDetails(oTable, nTr) {
+                var aData = oTable.fnGetData(nTr);
+                var i = 1;
+                var sOut = '<table>';
+                for (var field in fields) {
+                    sOut += '<tr><td>'+fields[field]+'</td><td>' + aData[i++] + '</td></tr>';
+                }
+                sOut += '</table>';
+
+                return sOut;
+            }
+
+            /*
+             * Insert a 'details' column to the table
+             */
+            var nCloneTh = document.createElement('th');
+            nCloneTh.className = "table-checkbox";
+
+            var nCloneTd = document.createElement('td');
+            nCloneTd.innerHTML = '<span class="row-details row-details-close"></span>';
+
+            table.find('thead tr').each(function () {
+                this.insertBefore(nCloneTh.cloneNode(true), this.childNodes[0]);
+            });
+
+            table.find('tbody tr').each(function () {
+                this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
+            });
+
+            var col = 0;
+            var found = false;
+            var direction = 'asc';
+            for (var field in fields) {
+                if (field == column) {
+                    found = true;
+                    if (order != 'ascending') direction = 'desc';
+                    break;
+                }
+                col++;
+            }
+
+            if (!found) {
+                col = 0;
+            }
+            col++;
+
+            oTable = table.dataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [0]
+                }],
+                "order": [
+                    [col, direction]
+                ],
+                "lengthMenu": [
+                    [5, 15, 20,],
+                    [5, 15, 20] // change per page values here
+                ],
+                // set the initial value
+                "pageLength": 10,
+                "paging": false,
+                "info":false,
+                "bFilter":false,
+
+                "language": {
+                    "processing": "table.lang.processing ",
+                    "search": "Поиск:",
+                    "lengthMenu": " | Показать _MENU_ данных ",
+                    "info": " | Данные  с _START_ по _END_ из _TOTAL_ данных",
+                    "infoEmpty": "Данные с 0 по 0 из 0 данных",
+                    "infoFiltered": "(отфильтровано из _MAX_ по)",
+                    "infoPostFix": "",
+                    "loadingRecords": "Загрузка",
+                    "zeroRecords": "Данные отсутствуют",
+                    "emptyTable": "Данные отсутствуют",
+                    "paginate": {
+                        "page":"Страница",
+                        "first": "Первая",
+                        "previous": "Предыдущая",
+                        "next": "Следующая",
+                        "last": "Последняя"
+                    },
+                    "aria": {
+                        "sortAscending": ": активировать для сортировки столбца по возрастанию",
+                        "sortDescending": ": активировать для сортировки столбца по убыванию"
+                    }
+                }
+            });
+
+
+            var tableWrapper = $('#sample_3_wrapper'); // datatable creates the table wrapper by adding with id {your_table_jd}_wrapper
+
+            tableWrapper.find('.dataTables_length select').select2(); // initialize select2 dropdown
+
+            /* Add event listener for opening and closing details
+             * Note that the indicator for showing which row is open is not controlled by DataTables,
+             * rather it is done here
+             */
+            table.on('click', ' tbody td .row-details', function () {
+                var nTr = $(this).parents('tr')[0];
+                if (oTable.fnIsOpen(nTr)) {
+                    /* This row is already open - close it */
+                    $(this).addClass("row-details-close").removeClass("row-details-open");
+                    oTable.fnClose(nTr);
+                } else {
+                    /* Open this row */
+                    $(this).addClass("row-details-open").removeClass("row-details-close");
+                    oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
+                }
+            });
+
+            var tableColumnToggler = $('#dataset_column_toggler');
+            $('input[type="checkbox"]', tableColumnToggler).each(function () {
+                var checked = $(this).is(":checked");
+                var iCol = parseInt($(this).attr("data-column"));
+
+                oTable.fnSetColumnVis(iCol, checked);
+            });
+
+
+
+            dataLoaded = true;
+            if(shouldRequireCaptcha()) {
+                checkCaptcha();
+            } else {
+                afterDataLoaded();
+            }
+
+        };
+
+        $(".version").click(function() {
+           currentVersion = $(this).attr("type");
+            versionSelected();
+        });
+
+        function redrawDownloadHelpText() {
+            if (lang == 'kk') {
+                $("#downloadHelpText").text('Данные '+downloadOffset+' с '+downloadTo+' по  из '+downloadTotalCount+' данных');
+            } else {
+                $("#downloadHelpText").text('Данные  с '+downloadOffset+' по '+downloadTo+' из '+downloadTotalCount+' данных');
+            }
+        }
+
+        $("#downloadOffset").change(function() {
+            downloadOffset = $(this).val();
+            downloadTo = Math.min(downloadTotalCount, parseInt(downloadOffset) + parseInt(downloadCount) - 1);
+            redrawDownloadHelpText();
+        });
+
+        $("#downloadCount").change(function() {
+            downloadCount = $(this).val();
+            downloadTo = Math.min(downloadTotalCount, parseInt(downloadOffset) + parseInt(downloadCount) - 1);
+            redrawDownloadHelpText();
+        });
+
+        function createDownloadModal(totalCount) {
+            downloadTotalCount = totalCount;
+            redrawDownloadHelpText();
+        }
+
+        function hasFields(fields) {
+            for (var field in fields) {
+                if (fields.hasOwnProperty(field)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function bindColumnTogglerHandler() {
+            var tableColumnToggler = $('#dataset_column_toggler');
+            $('input[type="checkbox"]', tableColumnToggler).off('change').on('change', function () {
+                if (!oTable || !oTable.fnSettings) {
+                    return;
+                }
+                var iCol = parseInt($(this).attr("data-column"));
+                var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
+                oTable.fnSetColumnVis(iCol, (bVis ? false : true));
+            });
+        }
+
+        function applyFields(fields) {
+            var thead  = $("<thead></thead>");
+            var tr  = $("<tr></tr>");
+            var num = 1;
+
+            $('#dataset_column_toggler').empty();
+            $("#dataTable thead").remove();
+
+            for (var field in fields) {
+                if (fields.hasOwnProperty(field)) {
+                    var label = fields[field];
+                    $('#dataset_column_toggler').append('<label><input type="checkbox" checked data-column="'+num+'">'+label+'</label>');
+                    tr.append("<th>"+label+"</th>");
+                    num++;
+                }
+            }
+
+            $('input[type="checkbox"]').uniform();
+
+            thead.append(tr);
+            $("#dataTable").append(thead);
+            globalFields = fields;
+
+            bindColumnTogglerHandler();
+        }
+
+
+        function versionSelected() {
+
+            var columns = $("#dataTab").find(".columns").clone();
+            var searchFilter = $("#dataTab").find(".searchFilter").clone();
+            $("#dataTab").empty();
+            $("#dataTab").append(columns);
+            $("#dataTab").append(searchFilter);
+            $("#dataTab").append('<table class="table table-striped table-bordered table-hover" id="dataTable"></table>');
+
+            $("#metaLink").empty();
+
+            $("#dataLink").empty();
+            $("#metaLink").append("<a target='_blank' href='https://data.egov.kz/meta/"+currentIndex+"/"+currentVersion+"?pretty'>https://data.egov.kz/meta/"+currentIndex+"/"+currentVersion+"</a>");
+            $("#dataLink").append("<a target='_blank' href='https://data.egov.kz/api/v4/"+currentIndex+"/"+currentVersion+"?apiKey=yourApiKey'>https://data.egov.kz/api/v4/"+currentIndex+"/"+currentVersion+"?apiKey=yourApiKey"+"</a>");
+
+            reloadMeta();
+        }
+
+        function reloadMeta() {
+            initVars();
+            globalFields = [];
+            $('#dataset_column_toggler').empty();
+
+            $.ajax({
+                url: "/meta/"+currentIndex+"/"+currentVersion,
+                context: document.body
+            }).success(function(data) {
+                if (!data || typeof data !== 'object') {
+                    data = {};
+                }
+
+                if (data.hasOwnProperty('nameRu')) {
+                    $("#versionName").empty();
+                    var versionName = data.nameRu;
+
+                    if (lang == 'kk' && data.hasOwnProperty('nameKk')) {
+                        versionName = data.nameKk;
+                    } else
+                    if (lang == 'en' && data.hasOwnProperty('nameEn')) {
+                        versionName = data.nameEn;
+                    }
+                    $("#versionName").append(versionName);
+                }
+                //Описание набора
+                if (data.hasOwnProperty('descriptionRu')) {
+                    $("#versionDescription").empty();
+                    var versionDescription = data.descriptionRu;
+
+                    if (lang == 'kk' && data.hasOwnProperty('descriptionKk')) {
+                        versionDescription = data.descriptionKk;
+                    } else
+                    if (lang == 'en' && data.hasOwnProperty('descriptionEn')) {
+                        versionDescription = data.descriptionEn;
+                    }
+                    $("#versionDescription").append(versionDescription);
+                }
+
+                //Дата модификации
+                if (data.hasOwnProperty('modifiedDate')) {
+                    $("#modifiedDate").empty();
+                    var modifiedDate = Date.parse(data.modifiedDate);
+                    var newDate = new Date(modifiedDate);
+                    var yyyy = newDate.getFullYear().toString();
+                    var mm = (newDate.getMonth()+1).toString();
+                    var dd = newDate.getDate().toString();
+                    var hours = newDate.getHours().toString();
+                    var minutes = newDate.getMinutes().toString();
+
+                    var mmChars = mm.split('');
+                    var ddChars = dd.split('');
+                    var miChars = minutes.split('');
+                    var hhChars = hours.split('');
+
+                    $("#modifiedDate").append((ddChars[1]?dd:"0"+ddChars[0])+'.'+(mmChars[1]?mm:"0"+mmChars[0])+'.'+yyyy+' '+(hhChars[1]?hours:"0"+hhChars[0])+':'+(miChars[1]?minutes:"0"+miChars[0]));
+                }
+
+                if (data.hasOwnProperty('owner') && data.owner.hasOwnProperty('fullnameRu')) {
+                    $("#versionOwner").empty();
+                    var versionOwner = data.owner.fullnameRu;
+                    if (lang == 'kk' && data.owner.hasOwnProperty('fullnameKk')) {
+                        var versionOwner = data.owner.fullnameKk;
+                    } else
+                    if (lang == 'en' && data.owner.hasOwnProperty('fullnameEn')) {
+                        var versionOwner = data.owner.fullnameEn;
+                    }
+                    $("#versionOwner").append(versionOwner);
+                }
+
+                if (data.hasOwnProperty('keywords')) {
+                    $("#versionKeywordsBlock").show();
+                    $("#versionKeywords").empty();
+
+                    for (var index in data.keywords) {
+                        $("#versionKeywords").append('<li><a href="/datasets/search?text=' + data.keywords[index] + '"><i class="fa fa-tags"></i>' + data.keywords[index] + '</a></li>');
+                    }
+                } else {
+                    $("#versionKeywordsBlock").hide();
+                }
+
+                var fields = [];
+                var arr = [];
+                var metaFields = data.fields;
+
+                if (metaFields && typeof metaFields === 'object') {
+                    $.each(metaFields, function(key, value) {
+                        if (key != null && key.trim().length > 0 && value) {
+                            var newObject = {
+                                name : key,
+                                orderNumber: value.orderNumber
+                            };
+
+                            if (value.pk == true) {
+                                column = key;
+                                order = "ascending";
+                            }
+
+                            if ((!column || column.length == 0) && key.toLowerCase() == "id") {
+                                column = key;
+                                order = "ascending";
+                            }
+
+                            arr.push(newObject);
+                        }
+                    });
+
+                    arr = arr.sort(function compare(a,b) {
+                        if (a.orderNumber < b.orderNumber)
+                            return -1;
+                        if (a.orderNumber > b.orderNumber)
+                            return 1;
+                        return 0;
+                    });
+
+                    for (var i = 0; i < arr.length; i++) {
+
+                        var field = arr[i].name;
+                        var fieldMeta = metaFields[field];
+                        if (!fieldMeta) {
+                            continue;
+                        }
+
+                        var label = fieldMeta['labelRu'];
+                        if (lang == 'kk') {
+                            label = fieldMeta['labelKk'];
+                        } else
+                        if (lang == 'en') {
+                            label = fieldMeta['labelEn'];
+                        }
+
+                        if (label == null || label == undefined || label.trim() == '') {
+                            label = fieldMeta['labelKk'];
+                        }
+
+                        fields[field] = label;
+                    }
+                }
+
+                if (hasFields(fields)) {
+                    applyFields(fields);
+                }
+
+                reloadData();
+            }).error(function() {
+                reloadData();
+            });
+        }
+
+
+        function afterDataLoaded() {
+            if (afterDataLoadedText!=null && afterDataLoadedText.length > 0) {
+                text = afterDataLoadedText;
+                afterDataLoadedText = '';
+                filterChanged();
+            }
+        }
+
+
+        $(document).on('keyup', '#datasetFilter', function() {
+            var oldText = text;
+            text = $("#datasetFilter").val();
+            if (oldText != text) {
+                if (dataLoaded) {
+                    filterChanged();
+                } else {
+                    afterDataLoadedText = text;
+                }
+            }
+        });
+
+        $(document).on('change', '#datasetCount', function() {
+            count = parseInt($(this).val());
+            filterChanged();
+        });
+
+        $(document).on('click','th', function() {
+            var index = parseInt($(this).index());
+            if (index > 0) {
+                order = $(this).attr('aria-sort');
+                var num = 1;
+                for (var field in globalFields) {
+                    if (num == index) {
+                        column = field;
+                    }
+                    num++;
+                }
+            }
+            filterChanged();
+
+        });
+
+
+        $(document).on('click', '.paginateButton', function() {
+
+            var pageMin = (parseInt((page - 1) / 5) * 5) + 1;
+
+            if ($(this).parent().hasClass('first')) {
+                if (page > 1) {
+                    page = 1;
+                    filterChanged();
+                }
+            } else
+            if ($(this).parent().hasClass('last')) {
+                if (page < totalPages) {
+                    page = totalPages;
+                    filterChanged();
+                }
+            } else
+            if ($(this).parent().hasClass('prev')) {
+                if (pageMin>5) {
+                    page = pageMin - 1;
+                    filterChanged();
+                }
+            } else
+            if ($(this).parent().hasClass('next')) {
+                if (pageMin+5<=totalPages) {
+                    page = pageMin + 5;
+                    filterChanged();
+                }
+            } else {
+                var newPage = parseInt($(this).text());
+                if (newPage != page && newPage<=totalPages) {
+                    page = newPage;
+                    filterChanged();
+                }
+            }
+        });
+
+        function redrawPagination(totalCount) {
+
+            var pageMin = (parseInt((page - 1) / 5) * 5) + 1;
+            var start = ((page - 1) * count) + 1;
+            start = Math.max(0, start);
+            var finish = Math.min(start + count - 1, totalCount);
+
+            var text = '<div class="row paginateFooter">' +
+                    '       <div class="col-md-5 col-sm-12">' +
+                    '           <div class="dataTables_info" role="status" aria-live="polite">Записи с '+start+' по '+finish+' из '+totalCount+' записей</div>' +
+                    '       </div>' +
+                    '       <div class="col-md-7 col-sm-12">' +
+                    '           <div class="dataTables_paginate paging_bootstrap_full_number">' +
+                    '               <ul class="pagination" style="visibility: visible;">' +
+                    '                   <li class="first '+(pageMin>1?'':'disabled')+'"><a class="paginateButton">Перв.</a></li>' +
+                    '                   <li class="prev '+(pageMin>5?'':'disabled')+'"><a class="paginateButton">Пред.</a></li>' +
+                    ((pageMin>totalPages)?'':'<li class="'+(page == (pageMin)?" active":"")+'"><a class="paginateButton">'+(pageMin)+'</a></li>') +
+                    ((pageMin+1>totalPages)?'':'<li class="'+(page == (pageMin+1)?" active":"")+'"><a class="paginateButton">'+(pageMin+1)+'</a></li>') +
+                    ((pageMin+2>totalPages)?'':'<li class="'+(page == (pageMin+2)?" active":"")+'"><a class="paginateButton">'+(pageMin+2)+'</a></li>') +
+                    ((pageMin+3>totalPages)?'':'<li class="'+(page == (pageMin+3)?" active":"")+'"><a class="paginateButton">'+(pageMin+3)+'</a></li>') +
+                    ((pageMin+4>totalPages)?'':'<li class="'+(page == (pageMin+4)?" active":"")+'"><a class="paginateButton">'+(pageMin+4)+'</a></li>') +
+                    '                   <li class="next '+(pageMin+5<=totalPages?'':'disabled')+'"><a class="paginateButton">След.</a></li>' +
+                    '                   <li class="last '+(pageMin<totalPages?'':'disabled')+'"><a class="paginateButton">Посл.</a></li>' +
+                    '               </ul>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '   </div>';
+
+            $("#dataTab").append(text)
+        }
+
+        function filterChanged() {
+            $("#dataTable").remove();
+            $("#dataTable_wrapper").remove();
+            $(".paginateFooter").remove();
+            $("#dataTab").append('<table class="table table-striped table-bordered table-hover" id="dataTable"></table>');
+
+            var thead  = $("<thead></thead>");
+            var tr  = $("<tr></tr>");
+
+            for (var field in globalFields) {
+                var label = globalFields[field];
+
+                tr.append("<th>"+label+"</th>");
+            }
+
+
+            thead.append(tr);
+            $("#dataTable").append(thead);
+
+            reloadData();
+        }
+
+        function reloadData() {
+            dataLoaded = false;
+
+            $.ajax({
+                url: "/datasets/getdata?index="+currentIndex+"&version="+currentVersion,
+                method:"GET",
+                data:{
+                    page: page,
+                    count: count,
+                    text: text,
+                    column: column,
+                    order: order
+                },
+                context: document.body
+            }).success(function(response) {
+                var data = response.elements;
+                totalPages = parseInt(response.totalPages);
+                var totalCount = parseInt(response.totalCount);
+                page = parseInt(response.currentPage);
+                redrawPagination(totalCount);
+
+                if (!hasFields(globalFields) && data && data.length > 0) {
+                    var fallbackFields = [];
+                    var firstElement = data[0];
+                    for (var key in firstElement) {
+                        if (firstElement.hasOwnProperty(key) && key != null && key.trim().length > 0) {
+                            fallbackFields[key] = key;
+                        }
+                    }
+
+                    if (hasFields(fallbackFields)) {
+                        if ((!column || column.length == 0) && fallbackFields['id']) {
+                            column = 'id';
+                            order = "ascending";
+                        }
+                        applyFields(fallbackFields);
+                    }
+                }
+
+                var tbody  = $("<tbody></tbody>");
+                var found = false;
+                for (var i=0;i<data.length;i++) {
+                    var tr  = $("<tr></tr>");
+                    var found = false;
+                    for (var field in globalFields) {
+                        var value = data[i][field];
+                        if (typeof value === 'object') {
+                            value = "Объект. Невозможно отобразить";
+                        }
+                        if (value != null && value != undefined) {
+                            found = true;
+                        } else {
+                            value = "Пусто. Нет значения";
+                        }
+
+                        tr.append("<td>"+value+"</td>");
+                    }
+                    if (found) {
+
+                        tbody.append(tr);
+                    }
+
+
+                }
+                $("#dataTable").append(tbody);
+                initDataTable();
+                createDownloadModal(totalCount);
+            });
+        }
+        versionSelected();
+
+    });
+</script>
+    </div>
+</div>
+
+<div class="clear"></div>
+
+
+<iframe src="https://open.egov.kz/widgets/light-components" scrolling="no" class="col-md-12 block-portal-statistic" width="100%" height="323" frameborder="0"></iframe>
+
+<div class="clear"></div>
+
+
+<div id="footer">
+    <div class="inblock">
+        <div class="footer_1 footer" style="background-color: #313030">
+            <h4>О нас</h4>
+            <li><a href="/pages/about">О портале</a></li>
+            <!--<li><a href="/news/list">Новости</a></li>-->
+            <li><a href="/contests/list">Конкурсы</a></li>
+            
+            <li><a href="https://www.gov.kz/memleket/entities/mdai/about?lang=ru" target="_blank"><span>Руководитель по развитию сферы ИКТ</span></a></li>
+            
+            
+            
+            
+            <li><a href="http://adilet.zan.kz/rus/docs/P1500000234" target="_blank"><span>Меры антикоррупционной деятельности</span></a></li>
+            
+            
+            
+            <li><a href="http://egov.kz/cms/ru/articles/development_goals" target="_blank">Цели устойчивого развития</a></li>
+            <li><a href="https://screenreader.tilqazyna.kz/#download" target="_blank">Экранный диктор</a></li>
+            <li><a href="https://open.egov.kz/privacypolicycontroller/index" target="_blank">Политика конфиденциальности</a></li>
+            
+            <li><a href="https://adilet.zan.kz/rus/docs/V2500035957" target="_blank">Правила размещения информации на портале</a></li>
+            
+            
+            
+            <div class="copyright">
+                <p>2018 © Открытые данные</p>
+            </div>
+        </div>
+        <div class="footer_2 footer" style="background-color: #313030">
+            <h4>Открытые данные</h4>
+            <ul style="float: left; padding-right: 10px;">
+            <li><a href="/datasets/listbygovagency">По ГО/организациям</a></li>
+            <li><a href="/datasets/listbycategory">По категориям</a></li>
+            <li><a href="/datasets/archive">Архивы</a></li>
+            <li><a href="https://open.egov.kz/subscribes/OPENDATA">Подписки</a></li>
+            </ul>
+            <ul>
+            <li><a href="/proposals/actualize">Заявки на публикацию/актуализацию</a></li>
+            <li><a href="/pages/samples">Описание API</a></li>
+            <li><a href="/pages/format">Формат данных</a></li>
+            <li><a href="/services/sample">Примеры сервисов</a></li>
+            <li><a href="/apps/list">Приложения</a></li>
+            <li><a href="/pages/faq">FAQ</a></li>
+                <li class="show-mobile"><a class="full-version for-mobile" href="javascript:void(0)">Полная версия сайта</a></li>
+            </ul>
+        </div>
+        <div class="footer_3 footer" style="background-color: #313030">
+            <h4>Контакты</h4>
+            <p><strong>Адрес</strong>: г. Астана, проспект Мангилик Ел, здание 55/15</p><p><strong>Единый контакт-центр</strong>: 1414, +7-7172-906-984</p><p><strong>E-mail</strong>: support@goscorp.kz</p>
+
+            <p><a href="https://www.facebook.com/OpenGovernment.KZ/" class="contact"><img src="/public/img/foot_fb.png" /></a> <a href="https://vk.com/opengovkz" class="contact"><img src="/public/img/foot_vk.png" /></a> <a href="https://twitter.com/OpenGov_kz" class="contact"><img src="/public/img/foot_tw.png" /></a></p>
+            <div class="informer">
+                <!-- Yandex.Metrika informer -->
+                <a href="https://metrika.yandex.kz/stat/?id=51837473&amp;from=informer" target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/51837473/3_1_FFFFFFFF_EFEFEFFF_0_pageviews" style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="51837473" data-lang="ru" /></a>
+                <!-- /Yandex.Metrika informer -->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script src="/public/javascripts/prolongate.js" type="text/javascript"></script>
+
+
+<!-- Load javascripts at bottom, this will reduce page load time -->
+<!-- BEGIN CORE PLUGINS (REQUIRED FOR ALL PAGES) -->
+<!--[if lt IE 9]>
+<script src="/public/assets/global/plugins/respond.min.js"></script>
+<![endif]-->
+<script src="/public/assets/global/plugins/jquery-1.11.0.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+
+<script src="/public/assets/global/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/public/assets/frontend/layout/scripts/back-to-top.js" type="text/javascript"></script>
+<!-- END CORE PLUGINS -->
+
+<!-- BEGIN PAGE LEVEL JAVASCRIPTS (REQUIRED ONLY FOR CURRENT PAGE) -->
+<script src="/public/assets/global/plugins/fancybox/source/jquery.fancybox.pack.js" type="text/javascript"></script><!-- pop up -->
+<script src="/public/assets/global/plugins/carousel-owl-carousel/owl-carousel/owl.carousel.min.js" type="text/javascript"></script><!-- slider for products -->
+<script src="/public/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript" ></script>
+<script src="/public/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/jquery.cokie.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
+
+
+<script src="/public/assets/global/plugins/bootbox/bootbox.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/ion.rangeslider/js/ion-rangeSlider/ion.rangeSlider.min.js"></script>
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+
+<script type="text/javascript" src="/public/assets/global/plugins/bootstrap-select/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="/public/assets/global/plugins/select2/select2.min.js"></script>
+<script type="text/javascript" src="/public/assets/global/plugins/jquery-multi-select/js/jquery.multi-select.js"></script>
+
+<script type="text/javascript" src="/public/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/public/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="/public/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<!-- END PAGE LEVEL PLUGINS -->
+<!-- BEGIN RevolutionSlider -->
+
+<script src="/public/assets/global/plugins/slider-revolution-slider/rs-plugin/js/jquery.themepunch.plugins.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/slider-revolution-slider/rs-plugin/js/jquery.themepunch.revolution.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/slider-revolution-slider/rs-plugin/js/jquery.themepunch.tools.min.js" type="text/javascript"></script>
+<script src="/public/assets/frontend/pages/scripts/revo-slider-init.js" type="text/javascript"></script>
+<!-- END RevolutionSlider -->
+<script src="/public/assets/global/plugins/bootstrap-toastr/toastr.min.js"></script>
+<!-- END PAGE LEVEL SCRIPTS -->
+
+<script src="/public/assets/admin/pages/scripts/ui-toastr.js"></script>
+<script src="/public/assets/global/scripts/metronic.js" type="text/javascript"></script>
+<script src="/public/assets/global/scripts/datatable.js"></script>
+<script src="/public/assets/frontend/layout/scripts/layout.js" type="text/javascript"></script>
+<script src="/public/javascripts/moment.min.js"></script>
+<script src="/public/javascripts/datepicker-locales.js"></script>
+
+<script src="/public/assets/global/plugins/typeahead/handlebars.min.js" type="text/javascript"></script>
+<script src="/public/assets/global/plugins/typeahead/typeahead.bundle.min.js" type="text/javascript"></script>
+
+<!-- tabs -->
+<script type="text/javascript" src="/public/js/addclasskillclass.js"></script>
+<script type="text/javascript" src="/public/js/attachevent.js"></script>
+<script type="text/javascript" src="/public/js/addcss.js"></script>
+<script type="text/javascript" src="/public/js/tabtastic.js"></script>
+<!-- /tabs -->
+
+<!-- diagram -->
+
+<script>
+    var openEgovUrl = 'https://open.egov.kz';
+    window.idpUrl = "https://idp.egov.kz/idp/";
+    function subscribe(component, type, id, title, href,  callbackFunction) {
+        $.ajax({
+            url : openEgovUrl+"/rest/subscribe",
+            data : {
+                component: component,
+                type : type,
+                id : id,
+                title : title,
+                link : href
+            },
+            method: 'GET',
+            xhrFields: {
+                withCredentials: true
+            }
+        }).done(function(data) {
+            callbackFunction(data);
+        })
+    }
+
+    function unsubscribe(component, type, id, callbackFunction) {
+        $.ajax({
+            url : openEgovUrl+"/rest/unsubscribe",
+            data : {
+                component: component,
+                type : type,
+                id : id,
+            },
+            method: 'GET',
+            xhrFields: {
+                withCredentials: true
+            }
+        }).done(function(data) {
+            callbackFunction(data);
+        })
+    }
+
+    function isSubscribed(component, type, id, callbackFunction) {
+        $.ajax({
+            url : openEgovUrl+"/rest/issubscribed",
+            data : {
+                component: component,
+                type : type,
+                id : id
+            },
+            method: 'GET',
+            xhrFields: {
+                withCredentials: true
+            }
+        }).done(function(data) {
+            callbackFunction(data);
+        })
+    }
+
+</script>
+
+
+<script src="/public/djs/highcharts.js"></script>
+<script src="/public/js/jquery.tagcanvas.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/public/js/jquery.jcarousel.min.js"></script>
+
+
+<script type="text/javascript" src="/public/js/jquery.jcarousel.min.js"></script>
+<script src="/public/djs/map.js"></script>
+<script src="/public/djs/kz-all.js"></script>
+
+<script src="/public/js/jquery.slides.min.js"></script>
+
+
+<script type="text/javascript">
+
+    jQuery(document).ready(function() {
+
+
+        Metronic.init();
+        Layout.init();
+        Layout.initOWL();
+        RevosliderInit.initRevoSlider();
+        Layout.initUniform();
+        Layout.initTwitter();
+        ssopinger.init();
+        //Layout.initFixHeaderWithPreHeader(); /* Switch On Header Fixing (only if you have pre-header) */
+        //Layout.initNavScrolling();
+
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "positionClass": "toast-top-right",
+            "showDuration": "1000",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+    });
+
+
+</script>
+
+<script type="text/javascript" src="/public/slick/slick.min.js"></script>
+
+<script src="/public/mobile/mobile.js"></script>
+<script src="/public/spec/spec.js"></script>
+
+<script src="/public/assets/admin/pages/scripts/components-dropdowns.js"></script>
+<script>
+    jQuery(document).ready(function() {
+        ComponentsDropdowns.init();
+
+        if($('#datasetToSendCategorySelect').length > 0){
+            $('#datasetToSendCategorySelect').select2({
+                placeholder: "Не выбрано",
+                allowClear: true
+            });
+        }
+
+    });
+
+    if($('#datasetToSendCategorySelect').length > 0){
+        $.extend($.fn.select2.defaults, {
+            formatMatches: function (matches) { return matches + " results are available, use up and down arrow keys to navigate."; },
+            formatNoMatches: function () { return "Данные отсутствуют"; },
+            formatInputTooShort: function (input, min) { var n = min - input.length; return "Please enter " + n + " more character" + (n == 1 ? "" : "s"); },
+            formatInputTooLong: function (input, max) { var n = input.length - max; return "Please delete " + n + " character" + (n == 1 ? "" : "s"); },
+            formatSelectionTooBig: function (limit) { return "You can only select " + limit + " item" + (limit == 1 ? "" : "s"); },
+            formatLoadMore: function (pageNumber) { return "Loading more results…"; },
+            formatSearching: function () { return "Searching…"; }
+        });
+    }
+
+    $("#newPublishProposal").change(function() {
+        var checked = $(this).is(':checked');
+        if (checked == true) {
+            $("#publishProposalBlock").show();
+        } else {
+            $("#publishProposalBlock").hide();
+        }
+    });
+
+
+    $("#submitData").click(function() {
+        var govAgency = $("#datasetToSendGovAgencySelect").val();
+        var categories = $("#datasetToSendCategorySelect").val();
+        var token = $("input[name = authenticityToken]").val();
+        var file = $("#fileSelect").prop("files")[0];
+        if (typeof file == 'undefined') {
+            toastr['error']("Отсутвует файл", "Операция неудачна");
+            return false;
+        } else {
+            var data = new FormData();
+            data.append("categories", categories);
+            data.append("govAgency", govAgency);
+            data.append("authenticityToken", token);
+            data.append("datasetFile", file);
+
+            toastr['info']("Файл отправлен на проверку, это может занять какое-то время", "Информация");
+
+            try {
+                $("#submitData").attr("disabled", true);
+
+                $.ajax({
+                    url: "/apicontroller/validateandparsedatasetbyexternaluser",
+                    data: data,
+                    type: 'POST',
+                    cache: false,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    context: document.body,
+                }).done(function(data) {
+                    if (data.code == 0) {
+                        toastr['success']("Спасибо за ваше участие! Ваш набор открытых данных отправлен на модерацию. При любых изменениях, вы будете получать уведомления в Личном кабинете", "Операция успешна");
+                        $("#dataText").val('');
+                        $("#datasetToSendGovAgencySelect").val('');
+                        $("#datasetToSendCategorySelect").val([]);
+                        $('.bs-select').selectpicker('refresh');
+                        $(".select2-search-choice").remove();
+                    } else
+                    if (data.code == 1) {
+                        toastr['error']("Отсутвует файл", "Операция неудачна")
+                    } else
+                    if (data.code == 2) {
+                        toastr['error']("Набор с таким индексом уже существует", "Операция неудачна")
+                    } else
+                    if (data.code == 3) {
+                        toastr['error']("Ошибка формата", "Операция неудачна")
+                    } else
+                    if (data.code == 4) {
+                        toastr['error']("Внутренняя ошибка сервера", "Операция неудачна")
+                    } else
+                    if (data.code == 5) {
+                        toastr['error']("Файл превышает размер", "Операция неудачна")
+                    } else
+                    if (data.code == 6) {
+                        toastr['error']("Неподдерживаемый формат", "Операция неудачна")
+                    }  else
+                    if (data.code == 7) {
+                        toastr['error']("dataset.failed.upload.excel.structure.error", "Операция неудачна")
+                    }
+
+
+                }).always(function() {
+                    $("#submitData").removeAttr("disabled");
+                });
+                return false;
+            } catch (e) {
+                toastr['error']("Внутренняя ошибка сервера", "Операция неудачна")
+                console.log(e);
+                return false;
+            }
+        }
+    });
+
+    $("#actualCategory").change(function() {
+        $("#datasetsLoading").show();
+        $("#actualDataset").hide();
+        $("#actualDatasetSelect").val('');
+        $("#actualDataset").find('.select2-chosen').empty();
+        $("#actualDatasetSelect").empty();
+        $("#actualDatasetSelect").attr("disabled", "disabled");
+        var token = $("input[name = authenticityToken]").val();
+        $.ajax({
+            type: 'POST',
+            url: "/datasets/getdatasetsbycategoryidajax",
+            context: document.body,
+            data: {
+                authenticityToken : token,
+                categoryId : $(this).val()
+            }
+        }).success(function(data) {
+
+            $("#actualDatasetSelect").append("<option></option>");
+            var lang = "ru";
+
+            var name = 'nameKk';
+            if (lang == 'en') {
+                name = 'nameEn';
+            } else
+            if (lang == 'ru') {
+                name = 'nameRu';
+            }
+            for (var i in data) {
+
+                var option = $("<option value='"+data[i].id+"'><b>"+data[i][name]+"</b></option>");
+                $("#actualDatasetSelect").append(option);
+
+            }
+            $("#actualDatasetSelect").removeAttr("disabled");
+            $("#datasetsLoading").hide();
+            $("#actualDataset").show();
+        });
+    })
+
+    function isEmptyField(field) {
+        if (field == null || field == undefined || field =='') return true; else return false;
+    }
+
+    $("#submitProposal").click(function() {
+
+        var actualTab = $("#actualTab").hasClass("active");
+
+        if (actualTab) {
+            var category = $("#actualCategory").val();
+            var reason = $("#actualReason").val();
+            var dataset = $("#actualDatasetSelect").val();
+            var text = $("#actualText").val();
+            var token = $("input[name = authenticityToken]").val();
+
+            if (!isEmptyField(category) && !isEmptyField(reason) && !isEmptyField(dataset) && !isEmptyField(text)) {
+                $.ajax({
+                    url: "/proposals/saveactualproposal",
+                    type: 'POST',
+                    context: document.body,
+                    data: {
+                        authenticityToken : token,
+                        text : text,
+                        category : category,
+                        dataset : dataset,
+                        reason : reason
+                    }
+                }).done(function() {
+                    toastr['success']("Спасибо за ваше участие! Ваша заявка успешно отправлена на обработку. При любых изменениях статуса Вашей заявки, вы будете получать уведомления в Личном кабинете", "Операция успешна");
+                    $("#actualText").val('');
+                    $("#actualCategory").val('');
+                    $("#actualDatasetSelect").empty();
+                    $("#actualDatasetSelect").val('');
+                    $("#actualDatasetSelect").attr("disabled", "disabled");
+                    $("#actualDataset").find('.select2-chosen').empty();
+                    $("#actualReason").val('');
+                }).always(function() {
+                });
+            } else {
+                toastr['error']("Заполните все поля", "Операция неудачна");
+                return false;
+            }
+
+
+        } else {
+
+            var category = $("#publishCategory").val();
+            var dataset = $("#publishDataset").val();
+            var description = $("#publishDatasetDescription").val();
+            var govAgency = $("#publishGovAgency").val();
+            var justification = $("#publishJustification").val();
+            var text = $("#publishText").val();
+            var token = $("input[name = authenticityToken]").val();
+
+            console.log("category");
+            console.log(category);
+            console.log("dataset");
+            console.log(dataset);
+            console.log("description");
+            console.log(description);
+            console.log("govAgency");
+            console.log(govAgency);
+
+            if (!isEmptyField(category) && !isEmptyField(dataset) && !isEmptyField(description) && !isEmptyField(govAgency)) {
+            // if (!isEmptyField(category) && !isEmptyField(dataset) && !isEmptyField(description) && ((!isOtherJurPerson && !isEmptyField(govAgency)) || (isOtherJurPerson && !isEmptyField(otherJurPerson)))) {
+                $.ajax({
+                    url: "/proposals/savepublishproposal",
+                    context: document.body,
+                    type: 'POST',
+                    data: {
+                        authenticityToken : token,
+                        text : text,
+                        dataset : dataset,
+                        description : description,
+                        govAgency : govAgency,
+                        isOtherJurPerson : null,
+                        otherJurPerson : null,
+                        justification : justification,
+                        category : category
+                    }
+                }).done(function() {
+                    toastr['success']("Спасибо за ваше участие! Ваша заявка успешно отправлена на обработку. При любых изменениях статуса Вашей заявки, вы будете получать уведомления в Личном кабинете", "Операция успешна");
+                    $("#publishCategory").val('');
+                    $("#publishDataset").val('');
+                    $("#publishDatasetDescription").val('');
+                    $("#publishText").val('');
+                    $("#publishGovAgency").val('');
+                    $('.bs-select').selectpicker('refresh');
+                    $("#publishJustification").val('');
+                    $("#newPublishProposal").prop('checked', false);
+                    $("#publishProposalBlock").hide();
+                    $("#selectGovAgencyBlock").show();
+                    $.uniform.update();
+                }).always(function() {
+                });
+            } else {
+                toastr['error']("Заполните все поля", "Операция неудачна");
+                return false;
+            }
+
+        }
+    });
+
+    
+
+</script>
+
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter34601895 = new Ya.Metrika({
+                    id:34601895,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    webvisor:true
+                });
+            } catch(e) { }
+        });
+
+        var n = d.getElementsByTagName("script")[0],
+                s = d.createElement("script"),
+                f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/34601895" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+
+
+<!-- Google.Analytics counter-->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-36444139-2', 'auto');
+
+    var langValue = 'ru';
+    ga('set', 'dimension1', langValue);
+
+
+    
+    ga('send', 'pageview');
+</script>
+<!-- /Google.Analytics counter-->
+
+<script>
+    $(document).ready(function() {
+        var langKey = $("html").attr("lang");
+        if (langKey == "kz") {langKey = "kk"};
+        $(".b-header__link[data-lang]").each(function(){
+            var lang = $(this).attr("data-lang");
+            if(langKey == lang){
+                $(this).addClass("b-header__link--active")
+            } else {
+                $(this).removeClass("b-header__link--active")
+            }
+        });
+
+        //header's events
+        $('.js_toogleDropdown').hover(function() {
+            $(this).find('.js_dropdown').toggleClass('is_show');
+        });
+
+        $(document).on('click', '.js_showHeaderMenu', function(e){
+            e.preventDefault();
+            $('.js_headerMenu').toggleClass('is_show');
+            $(this).toggleClass('is_active');
+        });
+
+        $(window).resize(function(){
+            if ( $(document).width() >= 992) {
+                $('.js_headerMenu').removeClass('is_show');
+            }
+        });
+            });
+
+    function avatarCallback(result) {
+        if (result !== null && result !== undefined && result !== "" && result.responseInfo.code == "100") {
+            $("img[alt='user avatar']").attr("src", "data:image/jpg;base64,"+result.imageBase64);
+        }
+    }
+
+    function notificationsCallback(result) {
+        if (result !== null && result !== undefined && result !== "" && result.responseInfo.code == "100") {
+            $("#unread-notifications-count").text(result.indicators.notification.unread);
+            $("#unread-requests-count").text(result.indicators.history.unread);
+
+            var notificationsBoxDom = $("#notifications-box");
+            var lang = 'ru';
+            if (result.indicators.notification.content.length > 0) {
+                $("#empty-notifications").hide();
+            }
+            result.indicators.notification.content.forEach(function(ndata){
+                notificationsBoxDom.append(
+                        '<a href="'+ndata.url+'" class="b-header__user-link '+(ndata.read?"":"b-header__user-link--active")+'">'+ndata.name[lang+"Text"]+
+                        '<span class="b-header__user-link-info">'+(moment(ndata.date).format('HH:mm'))+'</span></a>'
+                );
+            });
+
+            if (result.indicators.history.content.length > 0) {
+                $("#empty-requests").hide();
+            }
+            var requestsBoxDom = $("#requests-box");
+            result.indicators.history.content.forEach(function(rdata){
+                requestsBoxDom.append(
+                        '<a href="'+rdata.url+'" class="b-header__user-link '+(rdata.read?"":"b-header__user-link--active")+'">'+rdata.name[lang+"Text"]+
+                        '<span class="b-header__user-link-info">'+(moment(rdata.date).format('DD.MM.YYYY HH:mm'))+'</span></a>'
+                );
+            });
+        }
+    }
+</script>
+
+
+
+</body>
+</html>

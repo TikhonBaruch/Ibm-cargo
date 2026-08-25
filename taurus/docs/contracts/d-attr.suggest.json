@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-attr.suggest.json",
+  "title": "D-ATTR suggest (fill-stage chips)",
+  "description": "Session POST. UI never calls LLM. Heuristic attrs; hsHint may overlay classify fail-open.",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": ["POST /v1/calculations/attr-suggest"],
+  "definitions": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "name": { "type": "string" },
+        "country": { "type": "string" },
+        "existing": { "type": "object" }
+      }
+    },
+    "response": {
+      "type": "object",
+      "required": ["engine", "attrs", "notes"],
+      "properties": {
+        "engine": { "type": "string" },
+        "attrs": { "type": "object" },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "examples": {
+    "request": { "name": "майка", "title": "Партия маек" },
+    "response": {
+      "engine": "heuristic-v1",
+      "attrs": {
+        "material": "трикотаж",
+        "composition": "хлопок (уточните %)",
+        "purpose": "предмет одежды, верх",
+        "hsHint": "6109 10 000 0",
+        "extra": { "color": "уточните цвет", "ageGroup": "взрослый (уточните, если детский)" }
+      },
+      "notes": ["Для ТН ВЭД важны состав, трикотаж/ткань, возраст и пол."]
+    }
+  }
+}

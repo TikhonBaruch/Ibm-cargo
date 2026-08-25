@@ -1,0 +1,13 @@
+---
+description: UI — reuse recognized patterns (D32); no second visual language
+alwaysApply: true
+---
+
+# UI patterns (D32)
+
+Canon: `docs/knowledge/design-patterns.md` · skill `.cursor/skills/ved-ui`.
+
+Reuse first: `VedShell`, `VedToast`, `VedEmptyState`, `VedDetailDrawer`, `StatusPill`.  
+No second sidebar / toast / drawer / shell. Cmd+K hold unless `design-parity.md` asks.
+
+Before a screen: name the pattern (combobox, slide-over, empty+one CTA). Cover default / loading / empty / error / success.

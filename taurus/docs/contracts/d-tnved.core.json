@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-tnved.core.json",
+  "title": "D-TNVED core reference directory",
+  "description": "TN VED (HS) nomenclature tree + duty hints (D24). GET :code returns the opendata card envelope (layers A–G). Lookup/import; broker still edits item HS text until directory is authoritative.",
+  "x-contractVersion": 2,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "GET /v1/tnved/search",
+    "GET /v1/tnved/:code",
+    "POST /v1/tnved/import (admin)"
+  ],
+  "definitions": {
+    "tnvedCode": {
+      "type": "object",
+      "required": ["code", "codeDisplay", "level", "titleRu"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^\\d{2}(\\d{2}){0,4}$",
+          "description": "Digits only; length 2|4|6|8|10"
+        },
+        "codeDisplay": { "type": "string" },
+        "level": { "type": "integer", "enum": [2, 4, 6, 8, 10] },
+        "parentCode": { "type": ["string", "null"] },
+        "titleRu": { "type": "string" },
+        "titleEn": { "type": ["string", "null"] },
+        "isLeaf": { "type": "boolean" },
+        "isActive": { "type": "boolean" }
+      }
+    },
+    "tnvedDutyRate": {
+      "type": "object",
+      "required": ["code", "dutyKind"],
+      "properties": {
+        "code": { "type": "string" },
+        "dutyKind": { "type": "string", "enum": ["AD_VALOREM", "SPECIFIC", "COMBINED"] },
+        "dutyPct": { "type": ["number", "null"] },
+        "dutyRubPerUnit": { "type": ["number", "null"] },
+        "vatPct": { "type": ["number", "null"] },
+        "feeHintRub": { "type": ["integer", "null"] }
+      }
+    },
+    "searchResponse": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/tnvedCode" }
+        }
+      }
+    },
+    "tnvedCard": {
+      "type": "object",
+      "required": [
+        "code",
+        "codeDisplay",
+        "titleRu",
+        "ancestors",
+        "paymentsHint",
+        "sources",
+        "disclaimer"
+      ],
+      "properties": {
+        "code": { "type": "string" },
+        "codeDisplay": { "type": "string" },
+        "titleRu": { "type": "string" },
+        "titleEn": { "type": ["string", "null"] },
+        "level": { "type": "integer" },
+        "isLeaf": { "type": "boolean" },
+        "notes": { "type": ["string", "null"] },
+        "ancestors": { "type": "array" },
+        "rate": { "type": ["object", "null"] },
+        "paymentsHint": {
+          "type": "object",
+          "required": ["vatPct", "feeRule"],
+          "properties": {
+            "vatPct": { "type": "number" },
+            "feeRule": { "type": "string" }
+          }
+        },
+        "sources": { "type": "array" },
+        "disclaimer": { "type": "string" }
+      }
+    }
+  },
+  "examples": {
+    "tnvedCode": {
+      "code": "8471300000",
+      "codeDisplay": "8471 30 000 0",
+      "level": 10,
+      "parentCode": "84713000",
+      "titleRu": "Машины вычислительные портативные",
+      "titleEn": "Portable digital automatic data processing machines",
+      "isLeaf": true,
+      "isActive": true
+    },
+    "tnvedDutyRate": {
+      "code": "8471300000",
+      "dutyKind": "AD_VALOREM",
+      "dutyPct": 0,
+      "vatPct": 22,
+      "feeHintRub": 12000
+    },
+    "tnvedCard": {
+      "code": "8471300000",
+      "codeDisplay": "8471 30 000 0",
+      "titleRu": "машины вычислительные портативные массой не более 10 кг",
+      "titleEn": null,
+      "ancestors": [
+        {
+          "code": "84",
+          "codeDisplay": "84",
+          "titleRu": "РЕАКТОРЫ ЯДЕРНЫЕ, КОТЛЫ, ОБОРУДОВАНИЕ И МЕХАНИЧЕСКИЕ УСТРОЙСТВА; ИХ ЧАСТИ",
+          "level": 2
+        }
+      ],
+      "rate": null,
+      "paymentsHint": { "vatPct": 22, "feeRule": "ПП 1637" },
+      "sources": [
+        {
+          "layer": "A",
+          "title": "ФНС: классификатор ТН ВЭД (TNVED.ZIP)",
+          "url": "https://www.nalog.gov.ru/rn77/program/5961290/",
+          "asOf": "2026-04-27"
+        }
+      ],
+      "disclaimer": "Рекомендация справочника, не решение таможенного органа. Финальный код подтверждает брокер."
+    },
+    "searchResponse": {
+      "items": [
+        {
+          "code": "8471300000",
+          "codeDisplay": "8471 30 000 0",
+          "level": 10,
+          "parentCode": "84713000",
+          "titleRu": "Машины вычислительные портативные",
+          "isLeaf": true,
+          "isActive": true
+        }
+      ]
+    }
+  },
+  "x-invariants": [
+    "D15 mapping truth remains CalculationItem hsCodeFinal — directory validates/looks up, does not replace approve",
+    "No FK from CalculationItem to TnvedCode until import coverage is complete",
+    "Card rate is ETT only — null if source missing; VAT/fee are RF paymentsHint, never FNS dump"
+  ]
+}

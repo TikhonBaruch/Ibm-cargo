@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-job.worker.json",
+  "title": "D-JOB worker→core",
+  "description": "Background jobs. Live path: durable BackgroundJob in Postgres (D26) + SLA_TICK → api /v1/internal/sla-tick (fallback web). OUTBOX_DRAIN drains ServiceOutbox. Vercel Pro: GET|POST /api/v1/internal/jobs-tick cron every 15m (SLA + outbox + AI_DRAIN claim).",
+  "x-contractVersion": 2,
+  "x-owner": "containers/worker",
+  "x-transport": [
+    "POST /v1/jobs",
+    "GET /v1/jobs",
+    "POST /v1/internal/sla-tick",
+    "GET|POST /api/v1/internal/jobs-tick",
+    "POST /v1/internal/jobs",
+    "POST /v1/internal/outbox/drain"
+  ],
+  "definitions": {
+    "enqueueRequest": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["SLA_TICK", "OUTBOX_DRAIN", "AI_DRAIN", "LEDGER_RECONCILE", "LOGISTICS_TRACK"]
+        },
+        "payload": { "type": "object", "additionalProperties": true }
+      }
+    },
+    "jobStatus": {
+      "type": "string",
+      "enum": ["QUEUED", "RUNNING", "DONE", "FAILED", "DEAD", "queued", "done", "failed"]
+    },
+    "slaTickResult": {
+      "type": "object",
+      "properties": {
+        "escalated": { "type": "integer", "minimum": 0 },
+        "releasedPreferred": { "type": "integer", "minimum": 0 },
+        "at": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "examples": {
+    "enqueue": { "kind": "SLA_TICK", "payload": {} },
+    "enqueueOutboxDrain": { "kind": "OUTBOX_DRAIN", "payload": { "limit": 20 } },
+    "slaTickResult": { "escalated": 1, "releasedPreferred": 0, "at": "2026-08-03T15:00:00.000Z" }
+  },
+  "x-notes": [
+    "Durable store: background_jobs + service_outbox (D26 / d-orch.core.json)",
+    "Redis may still be wired in compose; dequeue uses Postgres first"
+  ]
+}

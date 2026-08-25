@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --kb-blue: #2b72f4;
+  --kb-blue-2: #1a5fd4;
+  --kb-bg: #f5f7fa;
+  --kb-ink: #0f172a;
+  --kb-muted: #7a7f89;
+  --kb-ok: #16a34a;
+  --kb-danger: #dc2626;
+  --kb-warn: #c2410c;
+  --kb-radius: 28px;
+  --kb-font-ui: "Manrope", system-ui, sans-serif;
+  --kb-font-display: "Nunito", "Manrope", system-ui, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply antialiased;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(43, 114, 244, 0.05), transparent 50%),
+    var(--kb-bg);
+  color: var(--kb-ink);
+  font-family: var(--kb-font-ui);
+}
+
+.font-display {
+  font-family: var(--kb-font-display);
+}

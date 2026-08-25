@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-sku.catalog.json",
+  "title": "D-SKU published catalog (client pick)",
+  "description": "CLIENT/BROKER read of PUBLISHED manufacturer SKUs. No INN/users. Snapshot into CalculationItem.manufacturerSkuId + attrs on create. HS final remains broker (D15).",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "GET /v1/catalog/skus",
+    "GET /v1/catalog/skus/:id",
+    "POST /v1/calculations (items[].manufacturerSkuId)"
+  ],
+  "definitions": {
+    "catalogSkuCard": {
+      "type": "object",
+      "required": ["id", "sku", "name", "company"],
+      "properties": {
+        "id": { "type": "string" },
+        "sku": { "type": "string" },
+        "name": { "type": "string" },
+        "brand": { "type": ["string", "null"] },
+        "originCountry": { "type": ["string", "null"] },
+        "netWeightKg": { "type": ["number", "null"] },
+        "hsHint": { "type": ["string", "null"] },
+        "moq": { "type": ["integer", "null"] },
+        "packMultiple": { "type": ["integer", "null"] },
+        "openPool": {
+          "type": ["object", "null"],
+          "properties": {
+            "qtyTotal": { "type": "integer" },
+            "targetQty": { "type": ["integer", "null"] }
+          }
+        },
+        "company": {
+          "type": "object",
+          "required": ["id", "name"],
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" }
+          }
+        },
+        "clientPreview": { "type": "object" }
+      }
+    }
+  },
+  "examples": {
+    "catalogSkuCard": {
+      "id": "sku1",
+      "sku": "NB-T14-16",
+      "name": "Ноутбук ThinkPad T14",
+      "brand": "Lenovo",
+      "originCountry": "CN",
+      "netWeightKg": 1.4,
+      "hsHint": "8471",
+      "company": { "id": "co-mfg", "name": "Demo Factory" },
+      "clientPreview": {
+        "name": "Ноутбук ThinkPad T14",
+        "attrs": { "brand": "Lenovo", "originCountry": "CN", "extra": { "sku": "NB-T14-16" } }
+      }
+    }
+  }
+}

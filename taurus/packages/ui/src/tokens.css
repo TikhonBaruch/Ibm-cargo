@@ -1,0 +1,79 @@
+/* LBM Брокер — design tokens (канон docs/design/refs) */
+:root {
+  --kb-blue: #2b72f4;
+  --kb-blue-2: #1a5fd4;
+  --kb-bg: #f5f7fa;
+  --kb-ink: #0f172a;
+  --kb-text: #1a1a1a;
+  --kb-muted: #7a7f89;
+  --kb-ok: #16a34a;
+  --kb-danger: #dc2626;
+  --kb-warn: #c2410c;
+  --kb-star: #ffcc00;
+  --kb-card: #ffffff;
+  --kb-border: #e5e7eb;
+  --kb-radius: 28px;
+  --kb-radius-sm: 14px;
+  --kb-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+  --kb-font-ui: "Manrope", system-ui, sans-serif;
+  --kb-font-display: "Nunito", "Manrope", system-ui, sans-serif;
+}
+
+.kb-page {
+  background: radial-gradient(1200px 600px at 10% -10%, rgba(43, 114, 244, 0.12), transparent 55%),
+    var(--kb-bg);
+  color: var(--kb-ink);
+  font-family: var(--kb-font-ui);
+  min-height: 100dvh;
+}
+
+.kb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.7rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.kb-btn:active {
+  transform: scale(0.98);
+}
+
+.kb-btn-primary {
+  background: var(--kb-blue);
+  color: #fff;
+}
+
+.kb-btn-primary:hover {
+  background: var(--kb-blue-2);
+}
+
+.kb-btn-ghost {
+  background: #fff;
+  color: var(--kb-ink);
+  border: 1px solid var(--kb-border);
+}
+
+.kb-card {
+  background: var(--kb-card);
+  border-radius: var(--kb-radius);
+  box-shadow: var(--kb-shadow);
+  border: 1px solid rgba(15, 23, 42, 0.04);
+}
+
+.kb-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(43, 114, 244, 0.1);
+  color: var(--kb-blue-2);
+}

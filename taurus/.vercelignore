@@ -1,0 +1,15 @@
+# Heavy / non-runtime — keep deploy upload small
+new_desing
+docs/design/refs
+Таурус
+.git
+.vercel
+.next
+node_modules
+coverage
+*.md
+!README.md
+tsconfig.tsbuildinfo
+.env
+.env.local
+.env*.local

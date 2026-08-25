@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LBM Брокер — AI-платформа для импорта</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1220;
+    --navy-900:#0d1830;
+    --navy-800:#132145;
+    --navy-700:#1a2b56;
+    --blue-500:#2f6bff;
+    --blue-600:#2456e0;
+    --blue-050:#eaf0ff;
+    --green-500:#22c55e;
+    --green-050:#e9f9ef;
+    --red-500:#ef4444;
+    --red-050:#fdecec;
+    --amber-500:#f59e0b;
+    --ink-900:#0f1a2e;
+    --ink-700:#334159;
+    --ink-500:#64748b;
+    --ink-300:#94a3b8;
+    --line:#e6eaf2;
+    --bg:#f5f7fb;
+    --white:#ffffff;
+    --radius-lg:18px;
+    --radius-md:12px;
+    --radius-sm:8px;
+    --shadow-card:0 1px 2px rgba(15,26,46,.04), 0 12px 32px -12px rgba(15,26,46,.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    color:var(--ink-900);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:'Manrope','Inter',sans-serif; letter-spacing:-0.02em;}
+  a{text-decoration:none; color:inherit;}
+  img{max-width:100%; display:block;}
+  ul{list-style:none;}
+  button{font-family:inherit; cursor:pointer; border:none;}
+  .wrap{max-width:1240px; margin:0 auto; padding:0 32px;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:600; letter-spacing:.02em;
+    padding:7px 14px; border-radius:999px;
+  }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:12px 22px; border-radius:10px; font-size:14.5px; font-weight:600;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    white-space:nowrap;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--blue-500); color:#fff; box-shadow:0 8px 20px -8px rgba(47,107,255,.6);}
+  .btn-primary:hover{background:var(--blue-600);}
+  .btn-ghost-dark{background:rgba(255,255,255,.06); color:#fff; border:1px solid rgba(255,255,255,.16);}
+  .btn-ghost-dark:hover{background:rgba(255,255,255,.12);}
+  .btn-outline{background:#fff; color:var(--ink-900); border:1px solid var(--line);}
+  .btn-outline:hover{border-color:var(--blue-500); color:var(--blue-600);}
+  .btn-sm{padding:9px 16px; font-size:13.5px; border-radius:8px;}
+  .section-tag{
+    font-size:12.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--blue-600); margin-bottom:10px; display:block;
+  }
+  .section-title{font-size:32px; font-weight:800; color:var(--ink-900); line-height:1.2;}
+  .section-sub{font-size:15.5px; color:var(--ink-500); margin-top:10px; max-width:560px;}
+  .section-head{margin-bottom:44px;}
+  .section-head.center{text-align:center;}
+  .section-head.center .section-sub{margin-left:auto; margin-right:auto;}
+
+  /* ===== HEADER ===== */
+  header{
+    background:var(--navy-950);
+    position:sticky; top:0; z-index:50;
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    height:76px;
+  }
+  .brand{display:flex; align-items:center; gap:11px;}
+  .brand-mark{
+    width:38px; height:38px; border-radius:10px;
+    background:linear-gradient(135deg, var(--blue-500), #6f8fff);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:800; font-size:15px; font-family:'Manrope',sans-serif;
+    flex-shrink:0;
+  }
+  .brand-text{line-height:1.15;}
+  .brand-title{color:#fff; font-weight:700; font-size:14.5px; letter-spacing:.01em;}
+  .brand-sub{color:var(--ink-300); font-size:11.5px; margin-top:2px;}
+  .nav-links{display:flex; align-items:center; gap:34px;}
+  .nav-links a{color:#c9d2e3; font-size:14px; font-weight:500; transition:color .15s;}
+  .nav-links a:hover{color:#fff;}
+  .nav-actions{display:flex; align-items:center; gap:12px;}
+  .link-login{color:#e2e6f0; font-size:14px; font-weight:600; padding:10px 8px;}
+
+  /* ===== HERO ===== */
+  .hero{
+    background:
+      radial-gradient(900px 500px at 12% -10%, rgba(47,107,255,.20), transparent 60%),
+      radial-gradient(700px 500px at 100% 0%, rgba(111,143,255,.14), transparent 55%),
+      linear-gradient(180deg, var(--navy-950), var(--navy-900) 60%, var(--navy-800));
+    padding:76px 0 96px;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1fr 1.05fr; gap:56px; align-items:center;
+  }
+  .hero-badge{
+    background:rgba(47,107,255,.14); color:#b9cbff; border:1px solid rgba(111,143,255,.3);
+  }
+  .hero h1{
+    color:#fff; font-size:44px; line-height:1.15; font-weight:800; margin-top:22px;
+    letter-spacing:-0.02em;
+  }
+  .hero h1 .hl{color:#7ea0ff;}
+  .hero-sub{color:#aab6cc; font-size:16.5px; line-height:1.6; margin-top:20px; max-width:480px;}
+  .hero-ctas{display:flex; gap:14px; margin-top:30px;}
+  .btn-icon{display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px;}
+  .hero-mini{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:44px;
+  }
+  .mini-feat{display:flex; flex-direction:column; gap:10px;}
+  .mini-feat .ico{
+    width:34px; height:34px; border-radius:9px; background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.1);
+    display:flex; align-items:center; justify-content:center; color:#8fa8ff;
+  }
+  .mini-feat span{color:#cdd5e6; font-size:12.5px; font-weight:500; line-height:1.4;}
+
+  /* ===== DASHBOARD MOCK ===== */
+  .dash{
+    background:#fff; border-radius:20px; overflow:hidden;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06);
+    display:grid; grid-template-columns:168px 1fr;
+    transform:perspective(1400px) rotateY(-2deg);
+  }
+  .dash-side{
+    background:#0d1526; padding:18px 14px; display:flex; flex-direction:column; gap:2px;
+  }
+  .dash-brand{
+    color:#fff; font-size:11px; font-weight:800; letter-spacing:.04em;
+    display:flex; align-items:center; gap:7px; padding:4px 8px 16px;
+  }
+  .dash-brand .dot{width:16px; height:16px; border-radius:5px; background:var(--blue-500); flex-shrink:0;}
+  .dash-nav-item{
+    display:flex; align-items:center; gap:9px; padding:8px 9px; border-radius:8px;
+    color:#8fa0c2; font-size:11.5px; font-weight:500;
+  }
+  .dash-nav-item .dsq{width:14px; height:14px; border-radius:4px; background:currentColor; opacity:.35; flex-shrink:0;}
+  .dash-nav-item.active{background:rgba(47,107,255,.18); color:#fff;}
+  .dash-nav-item.active .dsq{background:#7ea0ff; opacity:1;}
+  .dash-new-btn{
+    margin-top:auto; background:var(--blue-500); color:#fff; font-size:11px; font-weight:700;
+    text-align:center; padding:9px; border-radius:8px;
+  }
+  .dash-main{padding:20px 22px 22px; background:#fafbfd;}
+  .dash-topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;}
+  .dash-title-row{display:flex; align-items:center; gap:10px;}
+  .dash-title-row h4{font-size:15px; font-weight:700; color:var(--ink-900);}
+  .badge-done{
+    background:var(--green-050); color:#1a9a4c; font-size:10.5px; font-weight:700;
+    padding:3px 9px; border-radius:999px;
+  }
+  .dash-top-actions{display:flex; align-items:center; gap:10px;}
+  .dash-pdf-btn{
+    font-size:11px; font-weight:600; color:var(--ink-700); border:1px solid var(--line);
+    padding:7px 11px; border-radius:7px; display:flex; align-items:center; gap:6px;
+  }
+  .avatar{width:30px; height:30px; border-radius:999px; background:linear-gradient(135deg,#ffb37e,#ff7e9d); flex-shrink:0;}
+
+  .cost-card{
+    background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:14px;
+  }
+  .cost-top{display:grid; grid-template-columns:1fr 1fr; gap:18px; padding-bottom:16px; border-bottom:1px solid var(--line); margin-bottom:14px;}
+  .cost-top .lbl{font-size:10.5px; color:var(--ink-500); font-weight:600; text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px;}
+  .cost-top .val{font-size:20px; font-weight:800; color:var(--ink-900);}
+  .cost-top .code-val{font-size:17px; font-weight:800; color:var(--ink-900);}
+  .found-badge{
+    display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:700;
+    color:#1a9a4c; margin-top:7px;
+  }
+  .found-badge::before{content:''; width:6px; height:6px; border-radius:999px; background:#1a9a4c;}
+  .cost-lines{display:flex; flex-direction:column; gap:9px; font-size:12px; color:var(--ink-700);}
+  .cost-lines .row{display:flex; justify-content:space-between;}
+  .cost-lines .row.total{font-weight:800; color:var(--ink-900); font-size:13px; padding-top:8px; margin-top:2px; border-top:1px dashed var(--line);}
+  .cost-links{display:flex; justify-content:space-between; margin-top:12px;}
+  .cost-links a{font-size:11px; color:var(--blue-600); font-weight:600;}
+
+  .dash-bottom-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:14px;}
+  .panel{background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 18px;}
+  .panel h5{font-size:11.5px; font-weight:700; color:var(--ink-900); margin-bottom:12px;}
+  .doc-row{display:flex; align-items:center; justify-content:space-between; padding:7px 0; font-size:11.5px; color:var(--ink-700);}
+  .doc-row + .doc-row{border-top:1px solid #f1f3f8;}
+  .doc-name{display:flex; align-items:center; gap:7px;}
+  .doc-ico{width:14px; height:14px; border-radius:3px; background:#eef1f8; flex-shrink:0;}
+  .doc-status{display:flex; align-items:center; gap:5px; color:#1a9a4c; font-weight:700; font-size:11px;}
+  .broker-card{text-align:left;}
+  .broker-top{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .broker-name{font-size:12.5px; font-weight:700; color:var(--ink-900);}
+  .broker-role{font-size:10.5px; color:var(--ink-500);}
+  .broker-tag{font-size:10.5px; color:var(--ink-700); margin-bottom:6px;}
+  .stars{color:#f5a623; font-size:11.5px; letter-spacing:1px;}
+  .stars span{color:var(--ink-500); font-weight:600; margin-left:4px;}
+
+  /* ===== HOW IT WORKS ===== */
+  .how{background:#fff; padding:88px 0;}
+  .how-row{
+    display:grid; grid-template-columns:repeat(6,1fr); gap:0; align-items:start; position:relative;
+  }
+  .how-step{display:flex; flex-direction:column; align-items:center; text-align:center; padding:0 8px; position:relative;}
+  .how-step .num-circle{
+    width:60px; height:60px; border-radius:999px; background:var(--blue-050); color:var(--blue-600);
+    display:flex; align-items:center; justify-content:center; margin-bottom:16px; position:relative; z-index:2;
+    border:1px solid #dbe6ff;
+  }
+  .how-step p{font-size:12.5px; color:var(--ink-700); line-height:1.5; font-weight:500;}
+  .how-connector{
+    position:absolute; top:30px; left:calc(50% + 40px); width:calc(100% - 80px); height:0;
+    border-top:2px dashed #d6dfef; z-index:1;
+  }
+
+  /* ===== CAPABILITIES ===== */
+  .capabilities{background:var(--bg); padding:88px 0;}
+  .cap-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  .cap-card{
+    background:#fff; border:1px solid var(--line); border-radius:16px; padding:26px 24px;
+    transition:box-shadow .15s, transform .15s;
+  }
+  .cap-card:hover{box-shadow:var(--shadow-card); transform:translateY(-2px);}
+  .cap-ico{
+    width:46px; height:46px; border-radius:12px; background:var(--blue-050); color:var(--blue-600);
+    display:flex; align-items:center; justify-content:center; margin-bottom:16px;
+  }
+  .cap-card h4{font-size:15.5px; font-weight:700; margin-bottom:8px;}
+  .cap-card p{font-size:13.5px; color:var(--ink-500); line-height:1.55;}
+
+  /* ===== BEFORE/AFTER ===== */
+  .compare{background:#fff; padding:88px 0;}
+  .compare-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start;}
+  .compare-cols{display:grid; grid-template-columns:1fr auto 1fr; gap:18px; align-items:center;}
+  .compare-card{border-radius:16px; padding:24px 22px; border:1px solid var(--line);}
+  .compare-card.before{background:#fdf7f5;}
+  .compare-card.after{background:var(--green-050); border-color:#cdeeda;}
+  .compare-card h5{font-size:13px; font-weight:700; margin-bottom:16px; text-transform:uppercase; letter-spacing:.03em;}
+  .compare-card.before h5{color:#c94a3a;}
+  .compare-card.after h5{color:#1a9a4c;}
+  .compare-list li{display:flex; align-items:center; gap:9px; font-size:13.5px; color:var(--ink-700); padding:6px 0; font-weight:500;}
+  .compare-list .mark{width:16px; height:16px; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .compare-time{font-size:26px; font-weight:800; margin-top:16px;}
+  .before .compare-time{color:#c94a3a;}
+  .after .compare-time{color:#1a9a4c;}
+  .compare-arrow{
+    width:38px; height:38px; border-radius:999px; background:var(--blue-050); color:var(--blue-600);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .quote-card{
+    background:#fff; border:1px solid var(--line); border-radius:16px; padding:22px 24px; box-shadow:var(--shadow-card);
+  }
+  .quote-card h5{font-size:13px; font-weight:700; color:var(--ink-900); margin-bottom:16px;}
+  .quote-row{display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #f1f3f8;}
+  .quote-row .k{color:var(--ink-500);}
+  .quote-row .v{font-weight:600; color:var(--ink-900);}
+  .quote-total{display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:14px; border-top:1px solid var(--line);}
+  .quote-total .k{font-size:13.5px; font-weight:600; color:var(--ink-700);}
+  .quote-total .v{font-size:22px; font-weight:800; color:var(--blue-600);}
+
+  /* ===== DOCS + MARKETPLACE ===== */
+  .docmark{background:var(--bg); padding:88px 0;}
+  .docmark-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:24px;}
+  .card h4{font-size:15.5px; font-weight:700; margin-bottom:16px;}
+  .dropzone{
+    border:1.5px dashed #c7d3ea; border-radius:12px; padding:22px; text-align:center;
+    color:var(--ink-500); font-size:12.5px; font-weight:500; margin-bottom:16px; background:#fafbfd;
+  }
+  .file-row{display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid #f1f3f8; font-size:13px;}
+  .file-row .name{display:flex; align-items:center; gap:8px; color:var(--ink-700); font-weight:500;}
+  .file-dot{width:16px; height:16px; border-radius:4px; background:#eef1f8; flex-shrink:0;}
+  .err-list{margin-top:14px; background:var(--red-050); border-radius:10px; padding:14px 16px;}
+  .err-list .err-title{font-size:12px; font-weight:700; color:#c0392b; margin-bottom:8px;}
+  .err-list li{font-size:12px; color:#c0392b; padding:3px 0; display:flex; gap:7px; align-items:flex-start;}
+  .mk-block + .mk-block{margin-top:22px; padding-top:22px; border-top:1px solid var(--line);}
+  .mk-row{display:flex; align-items:center; justify-content:space-between; padding:11px 0;}
+  .mk-entity{display:flex; align-items:center; gap:11px;}
+  .mk-avatar{width:34px; height:34px; border-radius:9px; background:var(--blue-050); flex-shrink:0;}
+  .mk-name{font-size:13px; font-weight:700; color:var(--ink-900);}
+  .mk-loc{font-size:11.5px; color:var(--ink-500);}
+  .mk-stat{text-align:right; font-size:12px;}
+  .mk-rating{color:#f5a623; font-weight:700;}
+  .mk-sub{color:var(--ink-500); font-size:11px;}
+  .mk-all{display:block; text-align:center; margin-top:14px; font-size:12.5px; font-weight:600; color:var(--blue-600); border:1px solid var(--line); border-radius:9px; padding:10px;}
+
+  /* ===== TRACKING ===== */
+  .tracking{background:#fff; padding:88px 0;}
+  .track-wrap{display:grid; grid-template-columns:1fr 1.3fr; gap:20px; align-items:stretch;}
+  .track-steps{background:#fafbfd; border:1px solid var(--line); border-radius:16px; padding:28px 22px; display:flex; justify-content:space-between; position:relative;}
+  .track-step{display:flex; flex-direction:column; align-items:center; text-align:center; gap:9px; flex:1; position:relative; z-index:2;}
+  .track-ico{
+    width:42px; height:42px; border-radius:999px; display:flex; align-items:center; justify-content:center;
+    background:var(--green-050); color:#1a9a4c; border:1px solid #cdeeda;
+  }
+  .track-step.pending .track-ico{background:#eef1f8; color:var(--ink-500); border-color:var(--line);}
+  .track-step .t1{font-size:12px; font-weight:700; color:var(--ink-900);}
+  .track-step .t2{font-size:10.5px; color:var(--ink-500);}
+  .track-line{position:absolute; top:49px; left:44px; right:44px; height:2px; background:#cdeeda; z-index:1;}
+  .map-card{
+    border-radius:16px; overflow:hidden; position:relative; border:1px solid var(--line);
+    background:
+      linear-gradient(120deg, #dfe9ff 0%, #eef3ff 40%, #e3f0ea 100%);
+    min-height:100%;
+  }
+  .map-route{position:absolute; inset:0;}
+  .map-pin{
+    position:absolute; width:14px; height:14px; border-radius:999px; background:var(--blue-500);
+    border:3px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.25);
+  }
+  .map-float{
+    position:absolute; left:20px; bottom:20px; background:#fff; border-radius:12px; padding:12px 16px;
+    box-shadow:var(--shadow-card); font-size:12px;
+  }
+  .map-float .t1{font-weight:700; color:var(--ink-900);}
+  .map-float .t2{color:var(--ink-500); margin-top:2px;}
+
+  /* ===== SAVINGS ===== */
+  .savings{background:var(--bg); padding:88px 0;}
+  .savings-card{
+    background:linear-gradient(135deg, var(--navy-950), var(--navy-800));
+    border-radius:20px; padding:44px 48px; display:grid; grid-template-columns:1fr auto; gap:40px; align-items:center;
+    color:#fff;
+  }
+  .savings-left h3{font-size:24px; font-weight:800; margin-bottom:6px;}
+  .savings-left p{color:#aab6cc; font-size:13.5px; max-width:320px;}
+  .savings-inputs{display:grid; grid-template-columns:repeat(3,1fr) auto 1fr; gap:14px; align-items:end;}
+  .sv-field label{display:block; font-size:11.5px; color:#aab6cc; margin-bottom:8px; font-weight:500;}
+  .sv-field input{
+    width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16);
+    border-radius:10px; padding:11px 13px; color:#fff; font-size:14px; font-weight:600; font-family:inherit;
+  }
+  .sv-arrow{
+    width:38px; height:38px; border-radius:999px; background:rgba(255,255,255,.1);
+    display:flex; align-items:center; justify-content:center; color:#fff; margin-bottom:2px;
+  }
+  .sv-result{
+    background:var(--green-050); border-radius:14px; padding:16px 18px; text-align:center;
+  }
+  .sv-result .lbl{font-size:11px; color:#1a9a4c; font-weight:700;}
+  .sv-result .val{font-size:22px; font-weight:800; color:#12793c; margin:4px 0 2px;}
+  .sv-result .per{font-size:11px; color:#1a9a4c; font-weight:600;}
+
+  /* ===== FOOTER CTA ===== */
+  .final-cta{background:var(--navy-950); padding:56px 0 0;}
+  .cta-inner{
+    display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;
+    padding-bottom:44px; border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .cta-inner h3{color:#fff; font-size:24px; font-weight:800; max-width:420px; line-height:1.3;}
+  .cta-feats{display:flex; gap:22px; margin-top:14px; flex-wrap:wrap;}
+  .cta-feat{display:flex; align-items:center; gap:7px; font-size:12.5px; color:#aab6cc; font-weight:500;}
+  .cta-right{display:flex; flex-direction:column; align-items:flex-end; gap:10px;}
+  .cta-right a.contact{font-size:12.5px; color:#8fa8ff; font-weight:600;}
+  footer .bottom-bar{
+    display:flex; align-items:center; justify-content:space-between; padding:22px 0; flex-wrap:wrap; gap:12px;
+  }
+  .bottom-bar p{color:var(--ink-300); font-size:12.5px;}
+  .bottom-links{display:flex; gap:24px;}
+  .bottom-links a{color:var(--ink-300); font-size:12.5px;}
+  .bottom-links a:hover{color:#fff;}
+
+  @media(max-width:980px){
+    .nav-links{display:none;}
+    .hero-grid{grid-template-columns:1fr;}
+    .dash{transform:none;}
+    .hero h1{font-size:34px;}
+    .hero-mini{grid-template-columns:repeat(2,1fr);}
+    .how-row{grid-template-columns:repeat(3,1fr); row-gap:36px;}
+    .how-connector{display:none;}
+    .cap-grid{grid-template-columns:repeat(2,1fr);}
+    .compare-grid{grid-template-columns:1fr;}
+    .docmark-grid{grid-template-columns:1fr;}
+    .track-wrap{grid-template-columns:1fr;}
+    .savings-card{grid-template-columns:1fr;}
+    .savings-inputs{grid-template-columns:1fr 1fr; row-gap:16px;}
+    .sv-arrow{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header>
+  <div class="wrap nav">
+    <div class="brand">
+      <div class="brand-mark">LBM</div>
+      <div class="brand-text">
+        <div class="brand-title">LBM БРОКЕР</div>
+        <div class="brand-sub">AI-платформа для импорта</div>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a href="#capabilities">Возможности</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#tracking">Перевозка</a>
+      <a href="#marketplace">Брокеры</a>
+      <a href="#about">О нас</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="#" class="link-login">Войти</a>
+      <a href="#" class="btn btn-primary btn-sm">Начать бесплатно</a>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow hero-badge">✦ AI + Экспертиза брокеров</span>
+      <h1>Импортируйте товары без <span class="hl">ошибок</span>, лишних расходов и ожидания</h1>
+      <p class="hero-sub">AI рассчитывает таможенные платежи, определяет код ТН ВЭД, проверяет документы и предлагает перевозчиков. Брокер подтверждает результат и консультирует.</p>
+      <div class="hero-ctas">
+        <a href="#" class="btn btn-primary">Рассчитать стоимость импорта</a>
+        <a href="#" class="btn btn-ghost-dark"><span class="btn-icon">▶</span> Демо за 2 минуты</a>
+      </div>
+      <div class="hero-mini">
+        <div class="mini-feat">
+          <div class="ico">⚡</div>
+          <span>AI расчёт за 1–3 минуты</span>
+        </div>
+        <div class="mini-feat">
+          <div class="ico">✓</div>
+          <span>Проверка брокером</span>
+        </div>
+        <div class="mini-feat">
+          <div class="ico">▤</div>
+          <span>PDF отчёт и документы</span>
+        </div>
+        <div class="mini-feat">
+          <div class="ico">▸</div>
+          <span>Перевозка в 1 клик</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD MOCK -->
+    <div class="dash">
+      <div class="dash-side">
+        <div class="dash-brand"><span class="dot"></span> LBM БРОКЕР</div>
+        <div class="dash-nav-item active"><span class="dsq"></span> Dashboard</div>
+        <div class="dash-nav-item"><span class="dsq"></span> Расчёты</div>
+        <div class="dash-nav-item"><span class="dsq"></span> Документы</div>
+        <div class="dash-nav-item"><span class="dsq"></span> Перевозчики</div>
+        <div class="dash-nav-item"><span class="dsq"></span> Брокеры</div>
+        <div class="dash-nav-item"><span class="dsq"></span> Поставки</div>
+        <div class="dash-nav-item"><span class="dsq"></span> История</div>
+        <div class="dash-nav-item"><span class="dsq"></span> Аналитика</div>
+        <div class="dash-nav-item"><span class="dsq"></span> Настройки</div>
+        <div class="dash-new-btn">+ Новая заявка</div>
+      </div>
+      <div class="dash-main">
+        <div class="dash-topbar">
+          <div class="dash-title-row">
+            <h4>Расчёт #47892</h4>
+            <span class="badge-done">Завершён</span>
+          </div>
+          <div class="dash-top-actions">
+            <div class="dash-pdf-btn">⬇ Скачать PDF</div>
+            <div class="avatar"></div>
+          </div>
+        </div>
+
+        <div class="cost-card">
+          <div class="cost-top">
+            <div>
+              <div class="lbl">Стоимость поставки</div>
+              <div class="val">1 248 700 ₽</div>
+            </div>
+            <div>
+              <div class="lbl">Код ТН ВЭД</div>
+              <div class="code-val">8471 30 000 0</div>
+              <div class="found-badge">Найден AI</div>
+            </div>
+          </div>
+          <div class="cost-lines">
+            <div class="row"><span>Пошлина</span><span>327 000 ₽</span></div>
+            <div class="row"><span>НДС</span><span>584 000 ₽</span></div>
+            <div class="row"><span>Таможенный сбор</span><span>15 000 ₽</span></div>
+            <div class="row total"><span>Итого к оплате</span><span>1 248 700 ₽</span></div>
+          </div>
+          <div class="cost-links">
+            <a href="#">Подробнее</a>
+            <a href="#">Пояснение к коду</a>
+          </div>
+        </div>
+
+        <div class="dash-bottom-grid">
+          <div class="panel">
+            <h5>Проверка документов</h5>
+            <div class="doc-row">
+              <div class="doc-name"><span class="doc-ico"></span>Инвойс.pdf</div>
+              <div class="doc-status">✓ Готово</div>
+            </div>
+            <div class="doc-row">
+              <div class="doc-name"><span class="doc-ico"></span>Packing List.pdf</div>
+              <div class="doc-status">✓ Готово</div>
+            </div>
+            <div class="doc-row">
+              <div class="doc-name"><span class="doc-ico"></span>Контракт.pdf</div>
+              <div class="doc-status">✓ Готово</div>
+            </div>
+            <div class="doc-row">
+              <div class="doc-name"><span class="doc-ico"></span>Сертификат происхождения.pdf</div>
+              <div class="doc-status">✓ Готово</div>
+            </div>
+          </div>
+          <div class="panel broker-card">
+            <h5>Статус брокера</h5>
+            <div class="broker-top">
+              <div class="avatar"></div>
+              <div>
+                <div class="broker-name">Иван Петров</div>
+                <div class="broker-role">Таможенный брокер</div>
+              </div>
+            </div>
+            <div class="broker-tag">Проверил расчёт</div>
+            <div class="stars">★★★★★ <span>4.9</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="section-tag">Процесс</span>
+      <h2 class="section-title">Как работает сервис</h2>
+    </div>
+    <div class="how-row">
+      <div class="how-connector"></div>
+      <div class="how-step">
+        <div class="num-circle">📄</div>
+        <p>Вы описываете товар или загружаете документы</p>
+      </div>
+      <div class="how-step">
+        <div class="num-circle">🧠</div>
+        <p>AI анализирует данные и находит код ТН ВЭД</p>
+      </div>
+      <div class="how-step">
+        <div class="num-circle">🧮</div>
+        <p>AI рассчитывает платежи и проверяет документы</p>
+      </div>
+      <div class="how-step">
+        <div class="num-circle">🧑‍💼</div>
+        <p>Брокер проверяет и подтверждает расчёт</p>
+      </div>
+      <div class="how-step">
+        <div class="num-circle">📑</div>
+        <p>Вы получаете готовый отчёт и рекомендации</p>
+      </div>
+      <div class="how-step">
+        <div class="num-circle">🚚</div>
+        <p>Заказываете перевозку или оформление</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAPABILITIES ================= -->
+<section class="capabilities" id="capabilities">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="section-tag">Возможности</span>
+      <h2 class="section-title">Что умеет AI LBM Брокер</h2>
+      <p class="section-sub">Шесть AI-модулей закрывают весь путь от товара до готового расчёта — эксперт-брокер подтверждает и дополняет результат.</p>
+    </div>
+    <div class="cap-grid">
+      <div class="cap-card">
+        <div class="cap-ico">🧠</div>
+        <h4>AI классификация</h4>
+        <p>Определяет код ТН ВЭД по описанию, фото и документам</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-ico">🔎</div>
+        <h4>AI OCR</h4>
+        <p>Извлекает данные из инвойсов, упаковочных листов и сертификатов</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-ico">💬</div>
+        <h4>AI Broker</h4>
+        <p>Объясняет требования и отвечает на вопросы в чате 24/7</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-ico">🛡️</div>
+        <h4>AI Risk</h4>
+        <p>Показывает риски, ограничения и вероятность досмотра</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-ico">🚢</div>
+        <h4>AI Logistics</h4>
+        <p>Подбирает оптимальные маршруты и перевозчиков по цене и срокам</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-ico">📋</div>
+        <h4>AI Documents</h4>
+        <p>Проверяет документы и находит ошибки до подачи в таможню</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BEFORE / AFTER ================= -->
+<section class="compare">
+  <div class="wrap compare-grid">
+    <div>
+      <span class="section-tag">Сравнение</span>
+      <h2 class="section-title" style="margin-bottom:24px;">До и после<br>с LBM Брокер</h2>
+      <div class="compare-cols">
+        <div class="compare-card before">
+          <h5>До</h5>
+          <ul class="compare-list">
+            <li><span class="mark">✕</span> Искать брокера</li>
+            <li><span class="mark">✕</span> Звонить и ждать</li>
+            <li><span class="mark">✕</span> Читать ТН ВЭД самому</li>
+            <li><span class="mark">✕</span> Искать ставки пошлин</li>
+            <li><span class="mark">✕</span> Делать расчёты в Excel</li>
+            <li><span class="mark">✕</span> Ошибаться в коде</li>
+          </ul>
+          <div class="compare-time">3–5 дней</div>
+        </div>
+        <div class="compare-arrow">→</div>
+        <div class="compare-card after">
+          <h5>После</h5>
+          <ul class="compare-list">
+            <li><span class="mark">✓</span> 1 заявка в приложении</li>
+            <li><span class="mark">✓</span> AI анализ</li>
+            <li><span class="mark">✓</span> Проверка брокером</li>
+            <li><span class="mark">✓</span> Готовый PDF-отчёт</li>
+            <li><span class="mark">✓</span> Документы и перевозка</li>
+            <li><span class="mark">✓</span> Экономия времени и денег</li>
+          </ul>
+          <div class="compare-time">30 минут</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-card">
+      <h5>Пример расчёта</h5>
+      <div class="quote-row"><span class="k">Товар</span><span class="v">Ноутбуки Lenovo</span></div>
+      <div class="quote-row"><span class="k">Цена</span><span class="v">18 000 $</span></div>
+      <div class="quote-row"><span class="k">Страна</span><span class="v">Китай</span></div>
+      <div class="quote-row"><span class="k">Пошлина 7%</span><span class="v">327 000 ₽</span></div>
+      <div class="quote-row"><span class="k">НДС 20%</span><span class="v">584 000 ₽</span></div>
+      <div class="quote-row" style="border-bottom:none;"><span class="k">Таможенный сбор</span><span class="v">15 000 ₽</span></div>
+      <div class="quote-total"><span class="k">Итого к оплате</span><span class="v">1 248 700 ₽</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DOCS + MARKETPLACE ================= -->
+<section class="docmark" id="marketplace">
+  <div class="wrap docmark-grid">
+    <div class="card">
+      <h4>Проверка документов</h4>
+      <div class="dropzone">Перетащите документы сюда<br>или нажмите для выбора файлов</div>
+      <div class="file-row"><div class="name"><span class="file-dot"></span>Invoice.pdf</div><span>···</span></div>
+      <div class="file-row"><div class="name"><span class="file-dot"></span>Packing List.pdf</div><span>···</span></div>
+      <div class="file-row"><div class="name"><span class="file-dot"></span>Contract.pdf</div><span>···</span></div>
+      <div class="file-row" style="border-bottom:none;"><div class="name"><span class="file-dot"></span>Certificate.pdf</div><span>···</span></div>
+      <div class="err-list">
+        <div class="err-title">✕ Найдены ошибки</div>
+        <li>✕ Не заполнен пункт 16</li>
+        <li>✕ Отсутствует сертификат</li>
+        <li>✕ Неверный вес в инвойсе</li>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>Маркетплейс услуг</h4>
+      <div class="mk-block">
+        <h5 style="font-size:12.5px; color:var(--ink-500); font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px;">Лучшие брокеры</h5>
+        <div class="mk-row">
+          <div class="mk-entity"><div class="mk-avatar"></div><div><div class="mk-name">ВЭД Эксперт</div><div class="mk-loc">Москва</div></div></div>
+          <div class="mk-stat"><div class="mk-rating">★ 4.9</div><div class="mk-sub">95% успешных сделок</div></div>
+        </div>
+        <div class="mk-row">
+          <div class="mk-entity"><div class="mk-avatar"></div><div><div class="mk-name">Таможня Про</div><div class="mk-loc">Санкт-Петербург</div></div></div>
+          <div class="mk-stat"><div class="mk-rating">★ 4.8</div><div class="mk-sub">127 сделок</div></div>
+        </div>
+        <div class="mk-row">
+          <div class="mk-entity"><div class="mk-avatar"></div><div><div class="mk-name">Глобал Брокер</div><div class="mk-loc">Владивосток</div></div></div>
+          <div class="mk-stat"><div class="mk-rating">★ 4.7</div><div class="mk-sub">89% успешных сделок</div></div>
+        </div>
+        <a href="#" class="mk-all">Все брокеры</a>
+      </div>
+      <div class="mk-block">
+        <h5 style="font-size:12.5px; color:var(--ink-500); font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px;">Лучшие перевозчики</h5>
+        <div class="mk-row">
+          <div class="mk-entity"><div class="mk-avatar"></div><div><div class="mk-name">China Cargo Line</div><div class="mk-loc">Китай</div></div></div>
+          <div class="mk-stat"><div class="mk-rating">от 2300 $</div><div class="mk-sub">18 дней</div></div>
+        </div>
+        <div class="mk-row">
+          <div class="mk-entity"><div class="mk-avatar"></div><div><div class="mk-name">Global Transit</div><div class="mk-loc">Турция</div></div></div>
+          <div class="mk-stat"><div class="mk-rating">от 2800 $</div><div class="mk-sub">22 дня</div></div>
+        </div>
+        <div class="mk-row">
+          <div class="mk-entity"><div class="mk-avatar"></div><div><div class="mk-name">Eurasia Logistics</div><div class="mk-loc">Казахстан</div></div></div>
+          <div class="mk-stat"><div class="mk-rating">от 1900 $</div><div class="mk-sub">15 дней</div></div>
+        </div>
+        <a href="#" class="mk-all">Все перевозчики</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TRACKING ================= -->
+<section class="tracking" id="tracking">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">Логистика</span>
+      <h2 class="section-title">Отслеживание груза</h2>
+    </div>
+    <div class="track-wrap">
+      <div class="track-steps">
+        <div class="track-line"></div>
+        <div class="track-step">
+          <div class="track-ico">📦</div>
+          <div class="t1">Китай</div><div class="t2">Забор груза</div>
+        </div>
+        <div class="track-step">
+          <div class="track-ico">🚚</div>
+          <div class="t1">Казахстан</div><div class="t2">В пути</div>
+        </div>
+        <div class="track-step">
+          <div class="track-ico">🛃</div>
+          <div class="t1">Россия</div><div class="t2">Таможня</div>
+        </div>
+        <div class="track-step pending">
+          <div class="track-ico">🏬</div>
+          <div class="t1">Склад</div><div class="t2">Хранение</div>
+        </div>
+        <div class="track-step pending">
+          <div class="track-ico">📍</div>
+          <div class="t1">Получатель</div><div class="t2">Доставлено</div>
+        </div>
+      </div>
+      <div class="map-card">
+        <svg class="map-route" viewBox="0 0 600 320" preserveAspectRatio="none" style="width:100%; height:100%; position:absolute; inset:0;">
+          <path d="M 60 90 C 180 40, 260 220, 340 160 S 500 60, 540 230" fill="none" stroke="#2f6bff" stroke-width="3" stroke-dasharray="8 8" opacity="0.6"/>
+        </svg>
+        <div class="map-pin" style="left:56px; top:84px;"></div>
+        <div class="map-pin" style="left:530px; top:224px;"></div>
+        <div class="map-float">
+          <div class="t1">Груз в пути</div>
+          <div class="t2">Прибытие на склад — 03.08.2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SAVINGS CALCULATOR ================= -->
+<section class="savings">
+  <div class="wrap">
+    <div class="savings-card">
+      <div class="savings-left">
+        <h3>Посчитайте свою экономию</h3>
+        <p>Узнайте, сколько вы можете сэкономить времени и денег с LBM Брокер</p>
+      </div>
+      <div class="savings-inputs">
+        <div class="sv-field">
+          <label>Сколько поставок в месяц?</label>
+          <input type="text" value="12" id="sv1">
+        </div>
+        <div class="sv-field">
+          <label>Сколько менеджеров занято импортом?</label>
+          <input type="text" value="4" id="sv2">
+        </div>
+        <div class="sv-field">
+          <label>Средняя стоимость ошибки?</label>
+          <input type="text" value="250 000 ₽" id="sv3">
+        </div>
+        <div class="sv-arrow">→</div>
+        <div class="sv-result">
+          <div class="lbl">Ваша экономия</div>
+          <div class="val" id="svResult">4 820 000 ₽</div>
+          <div class="per">в год</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FINAL CTA / FOOTER ================= -->
+<footer class="final-cta">
+  <div class="wrap">
+    <div class="cta-inner">
+      <div>
+        <h3>Начните импортировать умнее уже сегодня</h3>
+        <div class="cta-feats">
+          <div class="cta-feat">⚡ Быстрый старт</div>
+          <div class="cta-feat">💳 Прозрачные цены</div>
+          <div class="cta-feat">🎧 Экспертная поддержка</div>
+        </div>
+        <p style="color:#7c8aa8; font-size:12.5px; margin-top:10px;">AI, брокеры и логистика в одном приложении</p>
+      </div>
+      <div class="cta-right">
+        <a href="#" class="btn btn-primary">Начать бесплатно</a>
+        <a href="#" class="contact">Связаться с нами →</a>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <p>© 2026 LBM Брокер. Все права защищены.</p>
+      <div class="bottom-links">
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Пользовательское соглашение</a>
+        <a href="#">Контакты</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function calcSavings(){
+    var deliveries = parseFloat(document.getElementById('sv1').value) || 0;
+    var managers = parseFloat(document.getElementById('sv2').value) || 0;
+    var errCostRaw = document.getElementById('sv3').value.replace(/[^\d]/g,'');
+    var errCost = parseFloat(errCostRaw) || 0;
+    // simplified illustrative model: monthly deliveries * error-cost fraction saved + manager time value, annualized
+    var monthly = (deliveries * errCost * 0.35) + (managers * 45000);
+    var annual = Math.round(monthly * 12);
+    document.getElementById('svResult').textContent = annual.toLocaleString('ru-RU') + ' ₽';
+  }
+  ['sv1','sv2','sv3'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', calcSavings);
+  });
+</script>
+
+</body>
+</html>

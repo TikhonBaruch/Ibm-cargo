@@ -1,0 +1,26 @@
+{
+  "name": "@kargo/manufacturer",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3004",
+    "build": "next build",
+    "start": "next start -p 3004",
+    "health": "node -e \"fetch('http://127.0.0.1:3004/health').then(r=>r.json()).then(console.log)\""
+  },
+  "dependencies": {
+    "next": "16.1.6",
+    "next-auth": "^4.24.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.5.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.0.0"
+  }
+}

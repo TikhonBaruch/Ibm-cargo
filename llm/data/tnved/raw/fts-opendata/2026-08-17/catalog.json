@@ -1,0 +1,162 @@
+{
+  "meta": {
+    "source": "fts-opendata",
+    "fetchedAt": "2026-08-17T15:45:06.830Z",
+    "downloaded": 0,
+    "catalogSize": 16,
+    "tnvedKeywordHits": 0,
+    "status": "ok",
+    "gap": "FTS open-data list.csv has no TN VED/ETT duty classifier dataset (registries & vacancies dominate). Codes/rates remain EEC NSI/ETT; set FTS_DATASET_URL for overlays.",
+    "dropIn": "data/tnved/raw/fts-opendata/2026-08-17/datasets/",
+    "attempts": [
+      {
+        "url": "https://customs.gov.ru/opendata/list.csv",
+        "finalUrl": "https://customs.gov.ru/opendata/list.csv",
+        "contentType": "text/csv; charset=UTF-8",
+        "ok": true,
+        "bytes": 9185,
+        "hits": 36,
+        "catalogHits": 0
+      },
+      {
+        "url": "https://customs.gov.ru/opendata",
+        "finalUrl": "https://customs.gov.ru/opendata",
+        "contentType": "text/html; charset=UTF-8",
+        "ok": true,
+        "bytes": 1005290,
+        "hits": 1,
+        "catalogHits": 0
+      },
+      {
+        "url": "https://data.customs.gov.ru/",
+        "ok": false,
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://data.customs.ru/",
+        "ok": false,
+        "error": "fetch failed"
+      },
+      {
+        "url": "https://customs.gov.ru/",
+        "finalUrl": "https://customs.gov.ru/",
+        "contentType": "text/html; charset=UTF-8",
+        "ok": true,
+        "bytes": 853784,
+        "hits": 0,
+        "catalogHits": 0
+      },
+      {
+        "url": "https://edata.customs.ru/",
+        "finalUrl": "https://edata.customs.ru/FtsPersonalCabinetWeb/",
+        "contentType": "text/html; charset=utf-8",
+        "ok": true,
+        "bytes": 16510,
+        "hits": 0,
+        "catalogHits": 0
+      },
+      {
+        "url": "https://tnved.customs.ru/",
+        "ok": false,
+        "error": "fetch failed"
+      }
+    ]
+  },
+  "items": [
+    {
+      "title": "Реестр наборов",
+      "href": "https://customs.gov.ru/opendata/list.csv",
+      "score": 2
+    },
+    {
+      "title": "Версия методических рекомендаций",
+      "href": "http://opendata.gosmonitor.ru/standard/3.0",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Статистическая информация ФТС России по результатам проведенных плановых и внеплановых проверок",
+      "href": "https://customs.gov.ru/7730176610-p5statplanprov/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Места временного хранения (генеральные разрешения на временное хранение в пределах территории морского (речного) порта и железнодорожных станций)",
+      "href": "https://customs.gov.ru/7730176610-mestavh/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Перечень функционирующих таможенно-логистических терминалов, расположенных вблизи государственной границы Российской Федерации",
+      "href": "https://customs.gov.ru/7730176610-tltgranitsa/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Реестр владельцев магазинов беспошлинной торговли",
+      "href": "https://customs.gov.ru/7730176610-reestrmbt/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Реестр владельцев таможенных складов",
+      "href": "https://customs.gov.ru/7730176610-reestrvtamskl/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Сведения о вакантных должностях государственной гражданской службы Дальневосточного таможенного управления",
+      "href": "https://customs.gov.ru/7730176610-p6vakantdlzndvtu/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Сведения о вакантных должностях государственной гражданской службы ФТС России",
+      "href": "https://customs.gov.ru/7730176610-p6vakantdlznfts/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Сведения о вакантных должностях государственной гражданской службы Южного таможенного управления",
+      "href": "https://customs.gov.ru/7730176610-p6vakantdlznjutu/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Сведения о вакантных должностях государственной гражданской службы Центрального таможенного управления",
+      "href": "https://customs.gov.ru/7730176610-p6vakantdlznctu/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Сведения о вакантных должностях государственной гражданской службы Уральского таможенного управления",
+      "href": "https://customs.gov.ru/7730176610-p6vakantdlznutu/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Сведения о вакантных должностях государственной гражданской службы Сибирского таможенного управления",
+      "href": "https://customs.gov.ru/7730176610-p6vakantdlznstu/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Сведения о вакантных должностях государственной гражданской службы Северо-Западного таможенного управления",
+      "href": "https://customs.gov.ru/7730176610-p6vakantdlznsztu/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Сведения о вакантных должностях государственной гражданской службы Регионального таможенного управления радиоэлектронной безопасности объектов таможенной инфраструктуры",
+      "href": "https://customs.gov.ru/7730176610-p6vakantdlznreboti/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    },
+    {
+      "title": "Сведения о вакантных должностях государственной гражданской службы Центрального экспертно-криминалистического таможенного управления",
+      "href": "https://customs.gov.ru/7730176610-p6vakantdlzndcektu/meta.csv",
+      "score": 1,
+      "fromListCsv": true
+    }
+  ]
+}

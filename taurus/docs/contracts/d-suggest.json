@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-suggest.json",
+  "title": "D-SUGGEST precedent typeahead",
+  "description": "Session POST. Precedents from past company calcs + verified_determinations; local catalog fail-open tail. Query guard blocks SQL/script garbage.",
+  "x-contractVersion": 1,
+  "x-owner": "containers/precedents",
+  "x-transport": ["POST /v1/suggest/query"],
+  "definitions": {
+    "request": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "itemName",
+            "partyDescription",
+            "shipCountry",
+            "originCountry",
+            "material",
+            "brand",
+            "composition"
+          ]
+        },
+        "q": { "type": "string", "maxLength": 120 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 20 }
+      }
+    },
+    "response": {
+      "type": "object",
+      "required": ["engine", "items"],
+      "properties": {
+        "engine": { "const": "precedent-suggest-v1" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["value", "source"],
+            "properties": {
+              "value": { "type": "string" },
+              "label": { "type": "string" },
+              "source": { "enum": ["precedent", "past_calc", "local"] },
+              "score": { "type": "number" }
+            }
+          }
+        },
+        "rejected": { "type": "string" }
+      }
+    }
+  }
+}

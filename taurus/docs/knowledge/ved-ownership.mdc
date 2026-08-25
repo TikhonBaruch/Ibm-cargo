@@ -1,0 +1,29 @@
+---
+description: Ownership map — UI, domain, orch, mesh, AI matrix
+globs: src/components/ved/**/*,app/api/v1/**/*,app/cabinet/**/*,app/broker/**/*,containers/**/*,src/lib/ved/**
+alwaysApply: false
+---
+
+# VED ownership
+
+Canon: `docs/knowledge/branches.md` · `src/lib/ved/PACKAGES.md` · `plan-parallel-ownership.md`.
+
+| Area | Put code in |
+|------|-------------|
+| Client / broker / manufacturer panes | `src/components/ved/{client,broker,manufacturer}/*` |
+| Cabinets | orchestration only (`*Cabinet.tsx`) |
+| Session API | `app/api/v1/*` · domain extract `containers/api` |
+| domain / orch / mesh / draft | see `PACKAGES.md` |
+| `containers/llm` · `containers/ocr` | Compose **mirrors** of sibling `llm` repo — `npm run sync:ai-matrix` |
+
+## Multi-model
+
+- **Model ≠ container.** Vendors = `AI_CHAIN_ID` / env profiles (`llm/chains/*`).
+- **Capability = service** (classification, ocr, …). One HTTP envelope each.
+- UI never calls matrix URLs.
+
+## Forbidden
+
+- `@prisma/client` in `containers/{broker,client,admin,manufacturer}`
+- Parallel C3+C4 extracts in one change (D19)
+- Docker service per vendor

@@ -1,0 +1,28 @@
+{
+  "normalizedAt": "2026-08-11T07:01:55.958Z",
+  "codes": 30053,
+  "leaves10": 13294,
+  "notes": 313,
+  "stats": {
+    "nsi": 0,
+    "ettTabular": 0,
+    "ettGroups": 16,
+    "tws": 13306,
+    "ftsOverlay": 0,
+    "psnFallback": 0
+  },
+  "sources": {
+    "psn": "/home/andrey/llm/data/tnved/raw/eec-psn/2026-08-08",
+    "ett": "/home/andrey/llm/data/tnved/raw/eec-ett/2026-08-08",
+    "nsi": "/home/andrey/llm/data/tnved/raw/nsi-stnvedst/2026-08-08",
+    "tws": "/home/andrey/llm/data/tnved/raw/tws-tnved/2026-08-08",
+    "fts": "/home/andrey/llm/data/tnved/raw/fts-opendata/2026-08-08"
+  },
+  "candidateLinks": [
+    "https://nsi.eaeunion.org/portal?registryType=dictionary",
+    "https://opendata.eaeunion.org/odata/",
+    "https://opendata.eaeunion.org/opendata/",
+    "https://customs.gov.ru/opendata/list.csv"
+  ],
+  "gap": null
+}

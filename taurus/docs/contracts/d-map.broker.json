@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-map.broker.json",
+  "title": "D-MAP broker→core",
+  "description": "Broker mapping correction and approve. Edits item HS/duty/VAT/fee — not TariffPlan.priceRub (D15).",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "PATCH /v1/calculations/:id/items",
+    "POST /v1/calculations/:id/approve"
+  ],
+  "definitions": {
+    "mapItem": {
+      "type": "object",
+      "required": ["id", "hsCodeFinal"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "not": { "const": "synthetic" } },
+        "hsCodeFinal": { "type": "string", "minLength": 1 },
+        "dutyRub": { "type": "number" },
+        "vatRub": { "type": "number" },
+        "unitPrice": { "type": "number" },
+        "description": { "type": "string", "maxLength": 5000 },
+        "attrs": {
+          "type": "object",
+          "description": "Broker may send attrs; server applies fillEmptyProductAttrs only"
+        }
+      }
+    },
+    "patchRequest": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "hsCodeFinal": { "type": "string" },
+        "feeRub": { "type": "integer", "minimum": 0 },
+        "extraFeeRub": { "type": "integer", "minimum": 0 },
+        "extraFeeNote": { "type": "string", "maxLength": 500 },
+        "items": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/mapItem" } }
+      }
+    },
+    "approveRequest": {
+      "type": "object",
+      "required": ["hsCodeFinal"],
+      "properties": {
+        "hsCodeFinal": { "type": "string" },
+        "comment": { "type": "string" },
+        "feeRub": { "type": "number" },
+        "extraFeeRub": { "type": "number", "minimum": 0 },
+        "extraFeeNote": { "type": "string", "maxLength": 500 },
+        "items": { "type": "array", "items": { "$ref": "#/definitions/mapItem" } }
+      }
+    },
+    "approveResponse": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "type": "string", "const": "DONE" },
+        "pdfHtml": { "type": "string", "minLength": 1 },
+        "hsCodeFinal": { "type": "string" }
+      }
+    }
+  },
+  "examples": {
+    "patchRequest": {
+      "hsCodeFinal": "8471 50 000 0",
+      "feeRub": 13337,
+      "items": [
+        {
+          "id": "item_1",
+          "hsCodeFinal": "8471 50 000 0",
+          "dutyRub": 1111,
+          "vatRub": 2222,
+          "unitPrice": 2500
+        }
+      ]
+    },
+    "afterPatchStatus": "IN_REVIEW",
+    "approveResponse": { "status": "DONE", "pdfHtml": "<html>…</html>" }
+  },
+  "x-invariants": [
+    "No synthetic ids",
+    "Approve only from IN_REVIEW|SLA_RISK",
+    "No TariffPlan.priceRub edit",
+    "Calculation.description is client-owned (broker writes item.description only)",
+    "extraFeeNote required when extraFeeRub > 0",
+    "attrs: broker fill-empty only; existing client/factory keys win"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-draft.ai.json",
+  "title": "D-DRAFT ai",
+  "description": "Canonical AI draft boundary. api → containers/ai POST /v1/draft. Optional llmEnrich when AI called llm.",
+  "x-contractVersion": 1,
+  "x-owner": "containers/ai",
+  "x-transport": "POST /v1/draft",
+  "definitions": {
+    "request": {
+      "type": "object",
+      "required": [],
+      "anyOf": [{ "required": ["description"] }, { "required": ["title"] }],
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "country": { "type": "string" },
+        "shipmentValue": { "type": ["string", "number"] },
+        "docs": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "duties": {
+      "type": "object",
+      "required": ["customsDutyPercent", "vatPercent", "feeRub"],
+      "properties": {
+        "customsDutyPercent": { "type": "number" },
+        "vatPercent": { "type": "number" },
+        "feeRub": { "type": "number" },
+        "note": { "type": "string" }
+      }
+    },
+    "response": {
+      "type": "object",
+      "required": ["hsCode", "duties", "confidence", "disclaimer", "engine"],
+      "properties": {
+        "hsCode": { "type": "string", "minLength": 1 },
+        "duties": { "$ref": "#/definitions/duties" },
+        "documents": { "type": "array", "items": { "type": "string" } },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "disclaimer": { "type": "string" },
+        "inputPreview": { "type": "string" },
+        "engine": { "type": "string", "const": "heuristic-v1" },
+        "llmEnrich": { "type": "string", "description": "Present only when llm stub enriched draft" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "examples": {
+    "request": {
+      "title": "Ноутбук",
+      "description": "Ноутбук 16 дюймов",
+      "country": "CN",
+      "shipmentValue": 2500
+    },
+    "response": {
+      "hsCode": "8471 30 000 0",
+      "duties": {
+        "customsDutyPercent": 0,
+        "vatPercent": 22,
+        "feeRub": 13541,
+        "note": "heuristic-v1 · rule=laptop"
+      },
+      "documents": ["Инвойс", "Packing list"],
+      "confidence": 0.91,
+      "disclaimer": "Рекомендация AI (heuristic-v1).",
+      "engine": "heuristic-v1",
+      "llmEnrich": "llm-stub-v0"
+    }
+  }
+}

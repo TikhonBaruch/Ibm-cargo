@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-history.calc.json",
+  "title": "D-HISTORY calculation request events",
+  "description": "Append-only CalculationEvent trail (D24). Complements Calculation.status (D8); does not replace it.",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "GET /v1/calculations/:id/events"
+  ],
+  "definitions": {
+    "eventKind": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "AI_DRAFT",
+        "STATUS",
+        "PAID",
+        "CLAIMED",
+        "ITEM_MAPPED",
+        "APPROVED",
+        "NOTE"
+      ]
+    },
+    "eventPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "draft": { "type": "object" },
+        "items": { "type": "array", "items": { "type": "object" } },
+        "note": { "type": "string" },
+        "number": { "type": "string" }
+      }
+    },
+    "calculationEvent": {
+      "type": "object",
+      "required": ["id", "calculationId", "kind", "createdAt"],
+      "properties": {
+        "id": { "type": "string" },
+        "calculationId": { "type": "string" },
+        "kind": { "$ref": "#/definitions/eventKind" },
+        "actorUserId": { "type": ["string", "null"] },
+        "payload": { "oneOf": [{ "$ref": "#/definitions/eventPayload" }, { "type": "null" }] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "eventsResponse": {
+      "type": "object",
+      "required": ["events"],
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/calculationEvent" }
+        }
+      }
+    }
+  },
+  "examples": {
+    "calculationEvent": {
+      "id": "evt_1",
+      "calculationId": "calc_1",
+      "kind": "PAID",
+      "actorUserId": "user_client",
+      "payload": { "from": "AI_READY", "to": "QUEUED" },
+      "createdAt": "2026-08-05T10:00:00.000Z"
+    },
+    "eventsResponse": {
+      "events": [
+        {
+          "id": "evt_1",
+          "calculationId": "calc_1",
+          "kind": "CREATED",
+          "actorUserId": "user_client",
+          "payload": { "number": "#000042", "to": "AI_PROCESSING" },
+          "createdAt": "2026-08-05T09:00:00.000Z"
+        }
+      ]
+    }
+  },
+  "x-invariants": [
+    "Events are append-only",
+    "D8 status transitions still go through assertTransition; events mirror them"
+  ]
+}

@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Nunito:wght@700;800&display=swap");
+
+:root {
+  --kb-bg: #f5f7fa;
+  --kb-ink: #0f172a;
+  --kb-muted: #7a7f89;
+  --kb-font-ui: "Manrope", system-ui, sans-serif;
+  --kb-font-display: "Nunito", "Manrope", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--kb-bg);
+  color: var(--kb-ink);
+  font-family: var(--kb-font-ui);
+}

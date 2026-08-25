@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-ledger.json",
+  "title": "D-LEDGER",
+  "description": "Tariff charge on pay + company topup via payments. Only path into broker queue (D11/D13). Acquiring credits balance only.",
+  "x-contractVersion": 2,
+  "x-owner": "containers/api",
+  "x-relatedOwner": "containers/payments",
+  "x-transport": [
+    "POST /v1/calculations/:id/pay",
+    "POST /v1/company/topup",
+    "POST /v1/webhooks/payments",
+    "payments: POST /v1/checkout",
+    "payments: POST /v1/webhooks/yookassa"
+  ],
+  "definitions": {
+    "topupRequest": {
+      "type": "object",
+      "required": ["amountRub"],
+      "properties": {
+        "amountRub": { "type": "number", "exclusiveMinimum": 0 },
+        "method": {
+          "type": "string",
+          "enum": ["mock", "stub", "card", "sbp", "yookassa"]
+        }
+      }
+    },
+    "checkoutResponse": {
+      "type": "object",
+      "properties": {
+        "intent": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "provider": { "type": "string", "enum": ["stub", "yookassa"] },
+            "status": { "type": "string" },
+            "confirmUrl": { "type": "string" },
+            "providerPaymentId": { "type": ["string", "null"] }
+          }
+        },
+        "pending": { "type": "boolean" },
+        "confirmUrl": { "type": "string" }
+      }
+    },
+    "webhookPayments": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" },
+        "companyId": { "type": "string" },
+        "amountRub": { "type": "number" },
+        "intentId": { "type": "string" },
+        "provider": { "type": "string" },
+        "userId": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "ledgerEntry": {
+      "type": "object",
+      "properties": {
+        "kind": { "type": "string", "enum": ["TARIFF_CHARGE", "TOPUP", "PAYOUT"] },
+        "amountRub": { "type": "number" },
+        "balanceAfter": { "type": "number" },
+        "paymentIntentId": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "examples": {
+    "payCharge": { "kind": "TARIFF_CHARGE", "amountRub": -15000, "balanceAfter": 85000 },
+    "checkout": { "companyId": "co_1", "amountRub": 50000, "method": "card", "intentId": "pi_1" },
+    "checkoutPending": {
+      "intent": {
+        "id": "pi_1",
+        "provider": "yookassa",
+        "status": "pending",
+        "confirmUrl": "https://yoomoney.ru/checkout/payments/v2/contract"
+      },
+      "pending": true
+    },
+    "webhook": { "type": "TOPUP", "companyId": "co_1", "amountRub": 50000, "intentId": "pi_1", "provider": "yookassa" }
+  },
+  "x-invariants": [
+    "Insufficient balance rejects pay",
+    "Mock topup blocked in production without ALLOW_MOCK_TOPUP",
+    "TOPUP idempotent on paymentIntentId",
+    "Tariff charge never goes direct to PSP"
+  ]
+}

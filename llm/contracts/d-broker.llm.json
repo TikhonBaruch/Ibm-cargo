@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://llm.local/contracts/d-broker.llm.json",
+  "title": "AI Broker advise",
+  "description": "Consult stub; escalate flag for human broker. UIs never call directly.",
+  "x-contractVersion": 1,
+  "x-owner": "services/broker",
+  "x-transport": ["POST /v1/advise", "GET /health"],
+  "definitions": {
+    "adviseRequest": {
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" },
+        "message": { "type": "string" },
+        "description": { "type": "string" },
+        "hsCode": { "type": "string" },
+        "context": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": true
+    },
+    "adviseResponse": {
+      "type": "object",
+      "properties": {
+        "engine": { "type": "string" },
+        "answer": { "type": "string" },
+        "escalate": { "type": "boolean" },
+        "topics": { "type": "array", "items": { "type": "string" } },
+        "disclaimer": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "examples": {
+    "adviseRequest": { "question": "Какой код ТН ВЭД у ноутбука?" },
+    "adviseResponse": {
+      "engine": "broker-stub-v0",
+      "answer": "Stub advice…",
+      "escalate": false,
+      "disclaimer": "Stub AI Broker."
+    }
+  }
+}

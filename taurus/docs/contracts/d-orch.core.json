@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-orch.core.json",
+  "title": "D-ORCH core orchestration",
+  "description": "Durable BackgroundJob, ServiceOutbox, ServiceCall (D26). Not a product FSM — complements Calculation/PaymentIntent/Shipping.",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "POST /v1/internal/jobs",
+    "GET /v1/internal/jobs",
+    "POST /v1/internal/outbox/drain",
+    "GET|POST /api/v1/internal/jobs-tick",
+    "GET /v1/internal/orch/health"
+  ],
+  "definitions": {
+    "backgroundJob": {
+      "type": "object",
+      "required": ["id", "kind", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["SLA_TICK", "OUTBOX_DRAIN", "AI_DRAIN", "LEDGER_RECONCILE", "LOGISTICS_TRACK"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["QUEUED", "RUNNING", "DONE", "FAILED", "DEAD"]
+        },
+        "payload": { "type": "object" },
+        "attempts": { "type": "integer", "minimum": 0 },
+        "calculationId": { "type": ["string", "null"] },
+        "paymentIntentId": { "type": ["string", "null"] }
+      }
+    },
+    "aiDrainPayload": {
+      "type": "object",
+      "required": ["calculationId"],
+      "properties": {
+        "calculationId": { "type": "string" },
+        "hasMedia": { "type": "boolean" }
+      }
+    },
+    "serviceOutbox": {
+      "type": "object",
+      "required": ["id", "template", "to", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "channel": { "type": "string", "enum": ["email", "sms", "push", "webhook"] },
+        "template": {
+          "type": "string",
+          "enum": ["generic", "calc.approved", "calc.sla_risk", "ledger.topup"]
+        },
+        "to": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "SENDING", "DELIVERED", "FAILED", "DEAD"]
+        },
+        "payload": { "type": "object" },
+        "calculationId": { "type": ["string", "null"] }
+      }
+    },
+    "serviceCall": {
+      "type": "object",
+      "required": ["id", "service", "operation", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "service": {
+          "type": "string",
+          "enum": ["ai", "llm", "ocr", "payments", "notify", "logistics", "worker", "api"]
+        },
+        "operation": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "OK", "FAILED", "TIMEOUT"] },
+        "correlationId": { "type": ["string", "null"] },
+        "durationMs": { "type": ["integer", "null"] }
+      }
+    },
+    "outboxDrainResult": {
+      "type": "object",
+      "required": ["claimed", "delivered", "failed"],
+      "properties": {
+        "claimed": { "type": "integer", "minimum": 0 },
+        "delivered": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "orchHealth": {
+      "type": "object",
+      "required": ["ok", "windowMinutes", "calls", "outbox", "deps"],
+      "properties": {
+        "ok": { "type": "boolean" },
+        "windowMinutes": { "type": "integer", "minimum": 1 },
+        "since": { "type": "string" },
+        "calls": {
+          "type": "object",
+          "required": ["total", "byStatus", "byService"],
+          "properties": {
+            "total": { "type": "integer", "minimum": 0 },
+            "byStatus": { "type": "object" },
+            "byService": { "type": "object" },
+            "recentFailures": { "type": "array" }
+          }
+        },
+        "outbox": {
+          "type": "object",
+          "properties": {
+            "pending": { "type": "integer" },
+            "sending": { "type": "integer" },
+            "failed": { "type": "integer" },
+            "dead": { "type": "integer" }
+          }
+        },
+        "deps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["service", "configured"],
+            "properties": {
+              "service": { "type": "string" },
+              "configured": { "type": "boolean" },
+              "ok": { "type": ["boolean", "null"] },
+              "latencyMs": { "type": "integer" },
+              "error": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": {
+    "backgroundJob": {
+      "id": "job_1",
+      "kind": "AI_DRAIN",
+      "status": "QUEUED",
+      "payload": { "calculationId": "calc_1", "hasMedia": true },
+      "attempts": 0,
+      "calculationId": "calc_1"
+    },
+    "aiDrainPayload": { "calculationId": "calc_1", "hasMedia": true },
+    "serviceOutbox": {
+      "id": "obx_1",
+      "channel": "email",
+      "template": "calc.approved",
+      "to": "client@example.com",
+      "status": "PENDING",
+      "payload": { "calculationId": "calc_1", "number": "#00042" },
+      "calculationId": "calc_1"
+    },
+    "serviceCall": {
+      "id": "sc_1",
+      "service": "ai",
+      "operation": "draft",
+      "status": "OK",
+      "correlationId": "calc_1",
+      "durationMs": 120
+    },
+    "outboxDrainResult": { "claimed": 2, "delivered": 2, "failed": 0 },
+    "orchHealth": {
+      "ok": true,
+      "windowMinutes": 15,
+      "since": "2026-08-05T12:00:00.000Z",
+      "calls": {
+        "total": 2,
+        "byStatus": { "OK": 1, "TIMEOUT": 1 },
+        "byService": {
+          "payments": {
+            "total": 2,
+            "ok": 1,
+            "failed": 0,
+            "timeout": 1,
+            "pending": 0,
+            "avgDurationMs": 4020
+          }
+        },
+        "recentFailures": []
+      },
+      "outbox": { "pending": 0, "sending": 0, "failed": 0, "dead": 0 },
+      "deps": [
+        { "service": "payments", "configured": true, "ok": true, "latencyMs": 12 },
+        { "service": "llm", "configured": false, "ok": null }
+      ]
+    }
+  },
+  "x-notes": [
+    "Postgres is source of truth; Redis optional later",
+    "Do not duplicate CalculationStatus here",
+    "orch/health: 503 when ok=false (dep down, failure spike, or outbox backlog)"
+  ]
+}

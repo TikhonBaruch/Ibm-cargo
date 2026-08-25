@@ -1,0 +1,44 @@
+{
+  "schema": "lbm.tnved.layer-g/v1",
+  "asOf": "2026-01-01",
+  "note": "Official NPA prefixes only. Flags mean «possibly applies» — not a rate. No Alta/TKS.",
+  "rules": [
+    {
+      "flag": "excisePossible",
+      "source": "НК РФ ст. 181",
+      "url": "http://pravo.gov.ru/",
+      "prefixes": [
+        "2203",
+        "2204",
+        "2205",
+        "2206",
+        "2207",
+        "2208",
+        "2402",
+        "2403",
+        "2404",
+        "2710",
+        "8703",
+        "8711"
+      ]
+    },
+    {
+      "flag": "utilSborPossible",
+      "source": "ПП РФ № 1291 (колёсные ТС / шасси / прицепы)",
+      "url": "http://pravo.gov.ru/",
+      "prefixes": ["8701", "8702", "8703", "8704", "8705", "8706", "8716"]
+    },
+    {
+      "flag": "utilSborPossible",
+      "source": "ПП РФ № 81 (самоходные машины / прицепы)",
+      "url": "http://pravo.gov.ru/",
+      "prefixes": ["8429", "8430", "8709", "8427"]
+    },
+    {
+      "flag": "ntmPossible",
+      "source": "ЕЭК: единый перечень запретов и ограничений (триггер главы, не ставка)",
+      "url": "https://eec.eaeunion.org/",
+      "prefixes": ["01", "02", "03", "28", "29", "31", "38", "93"]
+    }
+  ]
+}

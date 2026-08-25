@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-order.consolidate.json",
+  "title": "D-ORDER consolidate (D34)",
+  "description": "Client qty requests against published factory SKU; manufacturer confirms into a сборный заказ. Isolated from Calculation D8 FSM.",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "GET|POST /v1/factory/requests",
+    "POST /v1/factory/requests/bulk",
+    "POST /v1/factory/requests/:id/cancel",
+    "POST /v1/factory/requests/:id/link-calc",
+    "GET /v1/manufacturer/order-requests",
+    "POST /v1/manufacturer/order-requests/:id/accept",
+    "POST /v1/manufacturer/order-requests/:id/reject",
+    "GET|POST /v1/manufacturer/pools",
+    "POST /v1/manufacturer/pools/:id/confirm",
+    "POST /v1/manufacturer/pools/:id/close"
+  ],
+  "definitions": {
+    "clientSegment": {
+      "type": "string",
+      "enum": ["SINGLE", "RETAIL_SMALL", "WHOLESALE"]
+    },
+    "requestStatus": {
+      "type": "string",
+      "enum": ["SUBMITTED", "REJECTED", "POOLED", "CANCELLED"]
+    },
+    "poolStatus": {
+      "type": "string",
+      "enum": ["OPEN", "CONFIRMED", "CLOSED", "CANCELLED"]
+    },
+    "clientRequestView": {
+      "type": "object",
+      "required": ["id", "qty", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "qty": { "type": "integer" },
+        "status": { "$ref": "#/definitions/requestStatus" },
+        "pool": {
+          "type": ["object", "null"],
+          "properties": {
+            "id": { "type": "string" },
+            "status": { "$ref": "#/definitions/poolStatus" },
+            "qtyTotal": { "type": ["integer", "null"] }
+          }
+        }
+      }
+    }
+  },
+  "examples": {
+    "createRequest": {
+      "manufacturerSkuId": "sku_nb_t14",
+      "qty": 8,
+      "note": "хвост май"
+    },
+    "clientRequestView": {
+      "id": "req1",
+      "qty": 8,
+      "status": "POOLED",
+      "pool": { "id": "pool1", "status": "OPEN", "qtyTotal": 24 }
+    }
+  },
+  "x-invariants": [
+    "Does not write Calculation.status (D8)",
+    "Client view has no other buyer company names or emails",
+    "Manufacturer sees company name/inn only (B2B), not user emails",
+    "Accept only SUBMITTED against PUBLISHED SKU owned by factory",
+    "Confirm only OPEN pool with at least one POOLED line"
+  ]
+}

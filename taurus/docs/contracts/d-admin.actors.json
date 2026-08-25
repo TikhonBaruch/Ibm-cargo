@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lbm.local/contracts/d-admin.actors.json",
+  "title": "D-ADMIN actors (company + broker cards)",
+  "description": "ADMIN edits importer/manufacturer company profile and broker profile fields. Balance only via ADJUSTMENT. clientSegment only for CLIENT companies (D34).",
+  "x-contractVersion": 1,
+  "x-owner": "containers/api",
+  "x-transport": [
+    "GET|PATCH /v1/company/:id",
+    "POST /v1/company/:id/adjust",
+    "GET /v1/company/list",
+    "GET|PATCH /v1/brokers"
+  ],
+  "definitions": {
+    "clientSegment": {
+      "type": "string",
+      "enum": ["SINGLE", "RETAIL_SMALL", "WHOLESALE"]
+    },
+    "companyPatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 200 },
+        "inn": { "type": "string", "maxLength": 20 },
+        "kpp": { "type": "string", "maxLength": 20 },
+        "legalAddress": { "type": "string", "maxLength": 400 },
+        "contactEmail": { "type": "string" },
+        "contactPhone": { "type": "string", "maxLength": 40 },
+        "clientSegment": { "$ref": "#/definitions/clientSegment" }
+      }
+    },
+    "brokerPatch": {
+      "type": "object",
+      "required": ["brokerProfileId"],
+      "additionalProperties": false,
+      "properties": {
+        "brokerProfileId": { "type": "string" },
+        "status": { "type": "string", "enum": ["APPROVED", "REJECTED", "PENDING"] },
+        "acceptingJobs": { "type": "boolean" },
+        "specialization": { "type": "string", "maxLength": 200 },
+        "languages": { "type": "string", "maxLength": 200 },
+        "about": { "type": "string", "maxLength": 4000 }
+      }
+    },
+    "manufacturerStats": {
+      "type": "object",
+      "required": ["skuTotal", "skuPublished", "skuDraft", "requestsSubmitted", "poolsOpen"],
+      "properties": {
+        "skuTotal": { "type": "integer" },
+        "skuPublished": { "type": "integer" },
+        "skuDraft": { "type": "integer" },
+        "requestsSubmitted": { "type": "integer" },
+        "poolsOpen": { "type": "integer" }
+      }
+    }
+  },
+  "examples": {
+    "patchImporter": {
+      "name": "ООО Импортёр",
+      "clientSegment": "WHOLESALE"
+    },
+    "patchBroker": {
+      "brokerProfileId": "bp_1",
+      "specialization": "Электроника",
+      "status": "APPROVED"
+    }
+  },
+  "x-invariants": [
+    "clientSegment rejected when company.kind is MANUFACTURER",
+    "Balance changes only via POST …/adjust → LedgerEntry ADJUSTMENT",
+    "No public manufacturer signup (D25/D31)"
+  ]
+}

@@ -1,0 +1,42 @@
+# Local override: Docker bridge → registry.npmjs often times out on this host.
+# Build RUN steps use host network. Do not commit if team prefers default.
+services:
+  api:
+    build:
+      network: host
+  ai:
+    build:
+      network: host
+  worker:
+    build:
+      network: host
+  payments:
+    build:
+      network: host
+  notify:
+    build:
+      network: host
+  llm:
+    build:
+      network: host
+  logistics:
+    build:
+      network: host
+  ocr:
+    build:
+      network: host
+  web:
+    build:
+      network: host
+  admin:
+    build:
+      network: host
+  broker:
+    build:
+      network: host
+  client:
+    build:
+      network: host
+  gateway:
+    build:
+      network: host

@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://llm.local/contracts/d-risk.llm.json",
+  "title": "AI Risk assess",
+  "description": "Inspection / red-flag stub before DT. Fail-open when wired into Taurus.",
+  "x-contractVersion": 1,
+  "x-owner": "services/risk",
+  "x-transport": ["POST /v1/assess", "GET /health"],
+  "definitions": {
+    "assessRequest": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "hsCode": { "type": "string" },
+        "country": { "type": "string" },
+        "attrs": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": true
+    },
+    "assessResponse": {
+      "type": "object",
+      "properties": {
+        "engine": { "type": "string" },
+        "score": { "type": "number" },
+        "flags": { "type": "array", "items": { "type": "string" } },
+        "inspectionLikelihood": { "type": "string" },
+        "disclaimer": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "examples": {
+    "assessRequest": { "description": "химический растворитель", "country": "CN" },
+    "assessResponse": {
+      "engine": "risk-stub-v0",
+      "score": 0.38,
+      "flags": ["chemical_control"],
+      "inspectionLikelihood": "baseline",
+      "disclaimer": "Stub AI Risk."
+    }
+  }
+}

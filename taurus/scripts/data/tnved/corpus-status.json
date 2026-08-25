@@ -1,0 +1,49 @@
+{
+  "verifiedAt": "2026-08-20",
+  "testCi": "PASS 347",
+  "asOf": "2026-08-17",
+  "nodes": 30051,
+  "leaves": 13293,
+  "loadedSweb": {
+    "codes": 30055,
+    "leaves": 13296,
+    "rates": 13239,
+    "host": "pg4.sweb.ru",
+    "note": "codes slightly above jsonl due to leftover seed ancestors; rates all source=tws-csv"
+  },
+  "psnGroupsWithText": 96,
+  "layerG": {
+    "excisePossibleLeaves": 633,
+    "utilSborPossibleLeaves": 662,
+    "ntmPossibleLeaves": 2108
+  },
+  "payments": { "vatPct": 22, "feeRule": "ПП 1637" },
+  "ettRates": {
+    "source": "tws-csv",
+    "overlayed": 13239,
+    "withPct": 12622,
+    "note": "Fill until NSI STNVEDST. Not official EEC XML. Loaded to sweb 2026-08-20."
+  },
+  "fetched": {
+    "ettPdfs": 101,
+    "psnPdfs": 97,
+    "classificationIndexLinks": 413,
+    "classificationPdfsDownloaded": 0,
+    "nsiStnvedst": "GAP anonymous",
+    "kzApiV4": "HTTP 403",
+    "ftsTnvedDataset": "GAP",
+    "ftsTnVedSngRar": "OK page 2025-08-07 (nomenclature+explanations RAR; not loaded — CIS not EAEU)"
+  },
+  "samples": {
+    "01": "ЖИВЫЕ ЖИВОТНЫЕ",
+    "8471300000": {
+      "titlePrefix": "- машины вычислительные портативные массой не более 10 кг",
+      "dutyPct": 0,
+      "vatPct": 22,
+      "source": "tws-csv"
+    }
+  },
+  "loadedLocalPostgres": true,
+  "loadedProd": true,
+  "repeat": "npm run tnved:compose && npm run tnved:load -- --full  (host .env = sweb; prefer resume if long run dies ~27k)"
+}
