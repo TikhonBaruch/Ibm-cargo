@@ -37,6 +37,7 @@
 | Параллельная ownership + multi-model (D35) | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`../../src/lib/ved/PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
 | Go-live MVP standalone (D27+D36) | [`plan-go-live-mvp.md`](./plan-go-live-mvp.md) · max без pay/logistics [`plan-max-standalone-mvp.md`](./plan-max-standalone-mvp.md) |
 | Изоляция / full split (**D36**) | [`decisions.md`](./decisions.md) D36 · [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) |
+| Backup taurus (**D37**) | [`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md) — read-only, не трогать |
 | Vision до classify (таймаут / gate) | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |
 | LLM на заполнении + удачные прецеденты | [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) |
 | Typeahead полей NewCalc | [`plan-field-suggest.md`](./plan-field-suggest.md) · precedents [`plan-precedent-suggest-service.md`](./plan-precedent-suggest-service.md) · fix [`plan-field-suggest-fix.md`](./plan-field-suggest-fix.md) |
@@ -122,7 +123,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 
 | Слой | Документы | Роль |
 |------|-----------|------|
-| Решение | [`decisions.md`](./decisions.md) | Канон статусов, оплаты, UI, extract, **D24** данные, **D25** signup, **D26** orch, **D27** фокус частник, **D28** ADMIN ops, **D29** стратегия, **D32** UI-паттерны, **D33** цикл фичи, **D35** ownership, **D36** zero coupling taurus/nested `./llm` |
+| Решение | [`decisions.md`](./decisions.md) | Канон статусов, оплаты, UI, extract, **D24** данные, **D25** signup, **D26** orch, **D27** фокус частник, **D28** ADMIN ops, **D29** стратегия, **D32** UI-паттерны, **D33** цикл фичи, **D35** ownership, **D36** zero coupling taurus/nested `./llm`, **D37** taurus backup read-only |
 | Продукт / vision | [`product.md`](./product.md), [`target-client.md`](./target-client.md), [`growth.md`](./growth.md) | Зачем продукт, тарифы, фокус MVP (D27), persona/ценность (D29), фаза E / P1b–P3 |
 | Структура данных | [`data-model.md`](./data-model.md), [`calculation-fields.md`](./calculation-fields.md) | Товары (`attrs`), ТН ВЭД, `CalculationEvent`; матрица полей × роли |
 | Справочники ВЭД (hold) | [`incoterms.md`](./incoterms.md), [`customs-payments.md`](./customs-payments.md) | Инкотермс; платежи (НДС/сбор канон, акциз/утиль hold) |
@@ -193,6 +194,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 6. **D24** — attrs на item; ТН ВЭД soft-lookup; `CalculationEvent` append-only ([`data-model.md`](./data-model.md)).
 7. **D33** — без письменного плана код не писать; без записи в KB задачу не закрывать ([`feature-cycle.md`](./feature-cycle.md)).
 8. **D36** — нулевая связка LBM с taurus/nested `./llm` ([`decisions.md`](./decisions.md) · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md)).
+9. **D37** — taurus-liart = backup ядра, read-only ([`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md)).
 
 CI: `npm run test:structure` требует наличие ключевых файлов KB (см. `scripts/verify-structure.cjs`).
 

@@ -33,7 +33,7 @@ docs/knowledge/           # ADR, branches, skeleton, testing, ops
 6. Seed-брокер claim → `IN_REVIEW`; approve → `DONE` + `pdfHtml`.
 7. Клиент видит статус и PDF из тех же полей Postgres.
 
-Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp`. Этот репозиторий: Preview URL, не `ibm-cargo.vercel.app`.
+Live smoke: `TEST_API_URL=<preview-ibm-cargo-url> npm run smoke:mvp` (не taurus — **D37** backup). Этот репозиторий: Preview URL проекта `ibm-cargo`, не `ibm-cargo.vercel.app`.
 
 ### Автономия вне taurus (D36)
 
@@ -109,7 +109,7 @@ MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ o
 | Product focus D27 | частник: ТН ВЭД → брокер-QC → PDF; «под ключ» отложено | [`product.md`](./product.md) · ADR D27 · polish без logistics/LLM/acquiring |
 | Dual-path / notify runbook | F17/F19 checklist | [`dual-path-parity.md`](./dual-path-parity.md) · [`runbook.md`](./runbook.md) |
 
-Прод UI: hostname `ibm-cargo.vercel.app` — **чужой** проект. Этот репозиторий: Vercel Preview `ibm-cargo` (Dashboard: Root `.`, Framework **Services**). Лог *no "functions" or "static"* = Other/Static builder, не Services · [`plan-vercel-services.md`](./plan-vercel-services.md) §9. Живой LBM: https://taurus-liart.vercel.app · merge register: ветка `cursor/gap-providers-c5` → `main` (2026-08-05).
+Прод UI: hostname `ibm-cargo.vercel.app` — **чужой** проект. Этот репозиторий: Vercel Preview `ibm-cargo`. **Backup ядра (D37):** https://taurus-liart.vercel.app — read-only, не deploy/smoke. Активный контур: Preview · local · Compose · VPS.
 
 ## В работе / не на `origin/main`
 

@@ -4,7 +4,7 @@
  * No UI changes; no live payments. Requires running app + seeded broker.
  *
  *   npm run smoke:standalone
- *   TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:standalone
+ *   TEST_API_URL=https://<preview-url> npm run smoke:standalone
  */
 import { spawnSync } from "node:child_process";
 import path from "node:path";

@@ -10,7 +10,7 @@
 1. HTML NextAuth **Server error / server configuration** = `Configuration` / `NO_SECRET`.
 2. После починки Configuration форма пишет **«Неверный email или пароль»** (`CredentialsSignin`) — `authorize` вернул `null`.
 
-**Hostname `ibm-cargo.vercel.app` — не этот продукт.** Это Production alias **другого** Vercel-проекта (статический IBM Cargo, Uganda). Curl туда отдаёт чужой сайт. Этот репозиторий (`TikhonBaruch/Ibm-cargo`) живёт как **Vercel Preview проекта `ibm-cargo`** (SSO). Живой LBM-ориентир: https://taurus-liart.vercel.app. Код не должен использовать `ibm-cargo.vercel.app` как origin.
+**Hostname `ibm-cargo.vercel.app` — не этот продукт.** Это Production alias **другого** Vercel-проекта (статический IBM Cargo, Uganda). Curl туда отдаёт чужой сайт. Этот репозиторий (`TikhonBaruch/Ibm-cargo`) живёт как **Vercel Preview проекта `ibm-cargo`** (SSO). **D37:** https://taurus-liart.vercel.app — **backup ядра (read-only)** — не deploy/smoke/migrate из ibm-cargo. Код не должен использовать `ibm-cargo.vercel.app` как origin.
 
 ## 2. Анализ
 

@@ -1,9 +1,8 @@
 # LBM (Ibm-cargo)
 
 Автономный продукт **LBM**. Репозиторий: `TikhonBaruch/Ibm-cargo`.  
-**Отделён** от taurus/llm (D36): нет nested `llm/`, нет sync; матрица только opt-in HTTP.
-
-Канон live: https://taurus-liart.vercel.app · Preview = Vercel project `ibm-cargo` (не `ibm-cargo.vercel.app`).
+**Отделён** от taurus/llm (D36): нет nested `llm/`, нет sync; матрица только opt-in HTTP.  
+**Backup ядра (D37):** https://taurus-liart.vercel.app — read-only, **не трогать**. Активный контур: Vercel Preview `ibm-cargo` · local · Compose.
 
 ## Структура
 
@@ -28,7 +27,7 @@ npm run dev            # http://localhost:3000
 
 - Кабинет: `/cabinet` · брокер: `/broker` · админ: `/admin`
 - Demo: `client@example.com` / `broker@example.com` / `admin@example.com` · `demo1234`
-- Проверка: `npm run test:ci` · live `TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp`
+- Проверка: `npm run test:ci` · smoke: `TEST_API_URL=<preview-url> npm run smoke:mvp` (не taurus — D37)
 
 MVP = heuristic ТН ВЭД → оплата → брокер-QC → PDF. **Без** LLM-сервиса и без taurus.
 

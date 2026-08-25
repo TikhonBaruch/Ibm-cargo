@@ -68,6 +68,7 @@ AGENTS.md                 # Правила для агентов
 13. **D32** — UI: сначала общепризнанный паттерн; не второй toast/drawer/shell ([`design-patterns.md`](./design-patterns.md)).
 14. **D33** — без письменного плана в `docs/knowledge/` код не писать; без записи в KB задачу не закрывать ([`feature-cycle.md`](./feature-cycle.md)).
 15. **D36** — нулевая связка с taurus/llm **и nested `./llm`**; свой `DATABASE_URL`; matrix только HTTP; `containers/{llm,ocr}` LBM-owned ([`decisions.md`](./decisions.md) D36 · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md)).
+16. **D37** — taurus-liart backup ядра: **не** deploy/smoke/migrate из ibm-cargo ([`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md)).
 
 ## Checklist перед фичей
 
@@ -82,6 +83,7 @@ AGENTS.md                 # Правила для агентов
 - [ ] Dual-path: Next + `containers/api`, если мутация domain?
 - [ ] `PROTECTED_V1_MUTATIONS` обновлён, если новая чувствительная мутация?
 - [ ] **D36:** нет связки с nested `./llm` / taurus (свой `DATABASE_URL`; только HTTP; не sync)?
+- [ ] **D37:** smoke/deploy **не** на taurus-liart (backup read-only)?
 - [ ] При смене данных — [`data-model.md`](./data-model.md) / contracts?
 - [ ] LLM enrich / corpus lookup / local uploads / **precedent БД-2** / CSV·XLSX·PDF import / broker reclassify — [`ai-pipeline.md`](./ai-pipeline.md) + [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) + [`runbook.md`](./runbook.md); smoke `smoke:chain-llm` / `smoke:precedent-csv` / `smoke:csv-import` / `smoke:pdf-import` / `smoke:reclassify` / `smoke:precedent-vector` (skip OK) при compose `scale`?
 - [ ] OCR vision (`imageBase64`) — только после ключа; hold D30 · [`plan-ocr-vision.md`](./plan-ocr-vision.md); не включать в CTA D27?

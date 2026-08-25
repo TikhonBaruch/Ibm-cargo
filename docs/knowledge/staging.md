@@ -8,8 +8,9 @@
 | Среда | Назначение | Как |
 |-------|------------|-----|
 | **Local** | ежедневная разработка | Mode A: `.env` → `prisma db push` → `npm run dev` ([`environments.md`](./environments.md)) |
-| **Preview** | PR / ветка перед prod | Vercel Preview Deployment |
-| **Prod** | канон LBM | https://taurus-liart.vercel.app |
+| **Backup ядра (D37)** | https://taurus-liart.vercel.app — **read-only, не трогать** | [`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md) |
+| **Preview (активный)** | PR / ветка | Vercel Preview проекта `ibm-cargo` |
+| **Prod (целевой)** | VPS + Compose / свой домен | Vercel — временный |
 | **Этот репозиторий** | PR Preview | Vercel project `ibm-cargo` (не hostname `ibm-cargo.vercel.app`) |
 
 Отдельный долгоживущий staging-стенд **не обязателен**, если каждый PR получает Vercel Preview. Осторожно: общая preview-БД = prod sweb → smoke пишет тестовые регистрации/топапы.

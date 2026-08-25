@@ -307,4 +307,17 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 
 **Проверка (2026-08-25):** MVP/CI без sibling; zero coupling tooling; **full split** — дерево `llm/` удалено из репо.
 
+## D37. taurus-liart — backup ядра (read-only, не трогать) — always
+
+**Контекст:** https://taurus-liart.vercel.app — отдельный Vercel-проект со **снимком** рабочего ядра LBM. Репозиторий `Ibm-cargo` развивается автономно; Vercel project `ibm-cargo` — временный контур до VPS/Compose.
+
+**Решение (жёстко, alwaysApply):**
+
+1. **Запрещено** из этого репо и агентских runbook: deploy в taurus, prod smoke/e2e с `TEST_API_URL=…taurus…` по умолчанию, migrate/push schema «на taurus», менять env проекта taurus, описывать taurus как «канон live» для новых фич.
+2. **Разрешено:** read-only reference (архив поведения UI/flow); упоминание в KB как backup.
+3. **Активный контур:** Preview проекта `ibm-cargo` · local · Compose `docker:full` · будущий VPS — см. [`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md).
+4. Не путать: `ibm-cargo.vercel.app` — чужой статический сайт; Preview `ibm-cargo-*` — этот git.
+
+Канон: [`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md) · [`staging.md`](./staging.md) · [`deploy.md`](./deploy.md) · [`ved-invariants.mdc`](./ved-invariants.mdc) · [`AGENTS.md`](../../AGENTS.md).
+
 

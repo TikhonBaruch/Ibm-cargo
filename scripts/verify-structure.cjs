@@ -70,6 +70,7 @@ const knowledgeRequired = [
   "docs/knowledge/plan-max-standalone-mvp.md",
   "docs/knowledge/plan-full-split-ibm-cargo.md",
   "docs/knowledge/plan-zero-llm-coupling.md",
+  "docs/knowledge/plan-taurus-backup-core.md",
   "docs/knowledge/containerization.md",
   "docs/knowledge/web-slim.md",
   "docs/knowledge/cabinets/README.md",
@@ -153,6 +154,10 @@ try {
   const decisions = read("docs/knowledge/decisions.md");
   if (!decisions.includes("D35")) errors.push("decisions.md missing D35");
   if (!decisions.includes("D36")) errors.push("decisions.md missing D36");
+  if (!decisions.includes("D37")) errors.push("decisions.md missing D37");
+  if (!/backup|read-only|не трогать/i.test(decisions)) {
+    errors.push("decisions.md D37 must state taurus backup read-only");
+  }
   if (!/нулев|zero coupling|nested \.\/llm/i.test(decisions)) {
     errors.push("decisions.md D36 must state zero coupling to nested ./llm");
   }
@@ -161,6 +166,18 @@ try {
   }
 } catch {
   errors.push("cannot read decisions.md for D35/D36");
+}
+
+try {
+  const agents = read("AGENTS.md");
+  if (/Канон live LBM:\s*https:\/\/taurus/i.test(agents)) {
+    errors.push("AGENTS.md must not list taurus as live canon (D37 backup)");
+  }
+  if (!/backup|D37|не трогать/i.test(agents)) {
+    errors.push("AGENTS.md must document D37 taurus backup read-only");
+  }
+} catch {
+  errors.push("cannot read AGENTS.md for D37");
 }
 
 try {

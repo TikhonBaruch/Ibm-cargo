@@ -24,7 +24,11 @@ Changes to **this** project (ibm-cargo / LBM) or **its** database must **not** a
 - databases, Docker volumes, or secrets belonging to that matrix project.
 
 Allowed: call matrix over HTTP (`*_SERVICE_URL`) only.  
-Forbidden: `sync:ai-matrix` copy; mount/build defaults on `./llm`; edit matrix sources; `prisma` against matrix DB; shared `DATABASE_URL`.
+Forbidden: `sync:ai-matrix` copy; mount/build defaults on `./llm`; edit matrix sources; `prisma` against matrix DB; shared `DATABASE_URL`; **deploy/smoke/migrate on taurus-liart** (D37 backup).
+
+## D37 — taurus-liart backup (always)
+
+`https://taurus-liart.vercel.app` = frozen **backup ядра**. From ibm-cargo: **no** deploy, default smoke, schema push, or env edits on taurus project. Active: Preview `ibm-cargo` · local · Compose · VPS — [`plan-taurus-backup-core.md`](../../docs/knowledge/plan-taurus-backup-core.md).
 
 ## Multi-model
 

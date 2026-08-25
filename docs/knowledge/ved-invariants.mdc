@@ -1,5 +1,5 @@
 ---
-description: VED product invariants (D8–D15, D24–D28, D32–D36) — do not violate
+description: VED product invariants (D8–D15, D24–D28, D32–D37) — do not violate
 alwaysApply: true
 ---
 
@@ -22,5 +22,6 @@ ADR: `docs/knowledge/decisions.md` · product: `docs/knowledge/product.md` (D27)
 - **D34:** factory pool ≠ D8; segments on `Company.clientSegment`.
 - **D35:** model ≠ container; UI never calls `LLM_SERVICE_URL` / `OCR_SERVICE_URL`.
 - **D36 (always):** LBM + **its** DB must **not** touch taurus/llm. Nested `./llm` **not in this git repo** (full split). Matrix = **HTTP only**. `containers/{llm,ocr}` LBM-owned — no sync from matrix tree.
+- **D37 (always):** **taurus-liart.vercel.app** = **backup ядра (read-only)** — no deploy/smoke/migrate/env changes against taurus from ibm-cargo. Active: Preview `ibm-cargo` · local · Compose · VPS (`plan-taurus-backup-core.md`).
 
 After domain changes: `npm run test:ci`.
