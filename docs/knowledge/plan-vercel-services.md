@@ -191,7 +191,7 @@ Dashboard **нельзя** выставить из агента / `vercel.json` 
 |---------|---------|----------------|
 | *No Next.js version detected* | Root Directory = `app` (или другая папка без `"next"`) | Класть `package.json` в `app/` — сломает пути (`app/app`, нет `next.config` / `src` / `prisma`) |
 | Тот же текст при Framework=Next.js | Preset Next.js + `vercel.json` `services` / неверный root | Ставить `"framework": "nextjs"` **на корне** `vercel.json` — перебьёт Services |
-| *no services declared* | Framework=Services, в json нет `services` | Убирать блок `services` |
+| *no services declared* | Framework=Services, билдер **не видит** `services` (не тот root/commit) | Убирать блок `services` из json этой ветки. Разбор: **§10** |
 | *project-configuration* / unknown `rootDirectory` | `"rootDirectory"` в `vercel.json` | Повторять коммит `9ce7f7f` |
 
 Код-сторона (уже в репо): `services.frontend.root` = `"."`, `framework` = `"nextjs"`, `backend` = `Dockerfile.vercel`. Это относительно Dashboard Root Directory: при Root = `.` билдер видит корневой `package.json` с `"next"`.
@@ -244,7 +244,7 @@ WARNING! Build output contains no "functions" or "static" directory; the build m
 
 | Строка | Смысл |
 |--------|--------|
-| `package.json#prisma is deprecated` | Prisma 6.19: seed перенесён в `prisma.config.ts` (`defineConfig` из `prisma/config`). Схему URL не трогаем (`env("DATABASE_URL")` в `prisma/schema.prisma`). Prisma 7 не поднимаем. |
+| `package.json#prisma is deprecated` | Prisma 6.19: seed перенесён в `prisma.config.ts` (`defineConfig` из `prisma/config`). Схему URL не трогаем (`env("DATABASE_URL")` в `prisma/schema.prisma`). Файл конфига сам читает `.env` / `prisma/.env` (CLI больше не грузит их). Prisma 7 не поднимаем. |
 | `npm warn allow-scripts … not yet covered` | Advisory npm 11.16+. В `package.json` есть `allowScripts` (имя + pin из lockfile: Prisma 6.19.3, sharp **0.35.3**, tesseract.js 7.0.0, unrs-resolver 1.11.1). Лог с `sharp@0.34.5` = старый tree / другой деплой. Не `ignore-scripts`. |
 | нет `functions` / `static` | **Фатально:** Framework = Other/Static, Root Directory ≠ `.`, или **чужой Vercel-проект**. |
 
@@ -277,3 +277,61 @@ WARNING! Build output contains no "functions" or "static" directory; the build m
 - Build log: нет empty `functions`/`static`; есть Next frontend + container `backend`.
 - `npx prisma validate` / `npm run db:seed` читают `prisma.config.ts`, не `package.json#prisma`.
 - `npm run test:ci` (гейт prisma.config + allowScripts + services).
+
+## 10. Диагностика: «no services are declared» (D33)
+
+**Точная ошибка Vercel:**
+
+```text
+Build Failed
+Project framework is set to "services", but no services are declared. Add `services` to vercel.json with at least one service, or change the project framework setting.
+```
+
+### Идея
+
+Dashboard **Framework Preset = Services** уже верный. Билдер читает `vercel.json` **только из Dashboard Root Directory**. Если в том каталоге нет ключа `services` (или файла нет) — эта ошибка за 0 ms, без Next compile.
+
+На **этой** ветке (`cursor/ibm-cargo-vercel-root-ea2b`) корневой `vercel.json` **уже** содержит `services.frontend` + `services.backend` (канон `vercel.services.bff.json`). GitHub Preview этого PR на project [ibm-cargo](https://vercel.com/tikhonbaruchs-projects/ibm-cargo) с этим json **уже собирался Ready** (пример: deployment `51aJMpKJXZ3dXMSJZVMJZvxTqFR3`). Не убирать `services`. Не ставить `"rootDirectory"` в json. Не переключать Preset на Next.js / Other, пока json с `services`.
+
+`https://ibm-cargo.vercel.app` — чужой статический проект; туда этот git не деплоить.
+
+### Анализ
+
+Vercel **не** «не видит» ключ из-за опечатки в этом PR. Он собрал **другое дерево**, чем корень этой ветки:
+
+| Что собрали | Где лежит `vercel.json` | Root Directory | Результат |
+|-------------|-------------------------|----------------|-----------|
+| Эта ветка (Next в корне репо) | `./vercel.json` с `services` | `.` (пустое поле) | Ready: frontend Next + container backend |
+| Эта ветка | нет файла в `app/` (`app/` = App Router) | `app` | **no services declared** |
+| Production / branch `main` (ещё nested `app/` = пакет Next) | только `app/vercel.json` | `.` | **no services declared** (в корне `main` файла нет) |
+| `main` | `app/vercel.json` с `services` | `app` | Services на **старой** вложенной вёрстке, не этот PR |
+| Чужой проект / старый commit без `services` | нет блока | Services | **no services declared** |
+
+Соседний лог `WARNING! Build output contains no "functions" or "static"` (§9) — тот же класс: билдер не вошёл в режим Services (нет `services` в прочитанном json) и упал в generic static.
+
+Не чинить это `experimentalServices`, пустыми `functions/`, `output: "export"` или копией `vercel.json` в `app/` на этой ветке (`frontend.root: "."` тогда укажет на App Router без `"next"` → *No Next.js version detected*).
+
+### Структурирование
+
+| Фаза | Что |
+|------|-----|
+| E1 | Unit + `test:structure`: корневой `vercel.json` имеет `services`; **нет** `app/vercel.json` / `app/package.json` |
+| E2 | KB: эта секция |
+| E3 | Человек: клики ниже. Агент Dashboard не меняет |
+
+### Клики в Vercel Dashboard (человек)
+
+Проект: [ibm-cargo](https://vercel.com/tikhonbaruchs-projects/ibm-cargo) (комментарий Vercel на PR #4). **Не** сайт `ibm-cargo.vercel.app`.
+
+1. **Settings** → **General** → **Framework Preset** = **Services** (уже). Не менять на Next.js.
+2. **Root Directory** → **Edit** → **пусто** или **`.`**. Не `app`, не `lint`. **Save**.
+3. **Не** Redeploy **Production** с ветки `main`, пока этот PR не влит: на `main` нет корневого `vercel.json`.
+4. **Deployments** → деплой ветки `cursor/ibm-cargo-vercel-root-ea2b` (preview PR #4) → **Redeploy** без stale cache. Либо новый push в эту ветку.
+5. Открывать Preview URL вида `ibm-cargo-git-cursor-ibm-cargo-ve-…vercel.app` (SSO), не production alias другого проекта.
+
+После merge в `main` Production начнёт видеть корневой `vercel.json` с `services`. До merge Framework=Services + Redeploy Production = эта ошибка.
+
+### Проверка
+
+- Build log: нет *no services are declared*; есть сборка `frontend` (Next) и `backend` (`Dockerfile.vercel`).
+- `npm run test:ci` (гейт корневого `services`, нет `app/vercel.json`).
