@@ -28,6 +28,27 @@ const TEMPLATES: Record<
       `На баланс компании зачислено ${p.amountRub || 0} ₽.\n` +
       (p.intentId ? `Intent: ${p.intentId}\n` : ""),
   },
+  "chat.message": {
+    subject: (p) => `Новое сообщение · ${p.number || p.calculationId || "заявка"}`,
+    body: (p) =>
+      `Новое сообщение по заявке ${p.number || ""}.\n` +
+      `${p.preview || ""}\n\n` +
+      `Откройте кабинет для ответа.`,
+  },
+  "chat.support_new": {
+    subject: (p) => `Support · ${p.subject || "новое обращение"}`,
+    body: (p) =>
+      `Новое обращение в поддержку: ${p.subject || ""}\n` +
+      `${p.preview || ""}\n\n` +
+      `Thread: ${p.threadId || ""}`,
+  },
+  "chat.support_reply": {
+    subject: (p) => `Ответ поддержки · ${p.subject || ""}`,
+    body: (p) =>
+      `Ответ по обращению «${p.subject || ""}»:\n` +
+      `${p.preview || ""}\n\n` +
+      `Откройте /cabinet/support`,
+  },
 };
 
 const LEGACY: Record<string, string> = {

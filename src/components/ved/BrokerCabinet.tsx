@@ -140,13 +140,17 @@ export function BrokerCabinet() {
   }, []);
 
   useEffect(() => {
+    const ms = pane === "work" || pane === "chat" ? 12_000 : 45_000;
     const id = window.setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       reload().catch(() => undefined);
       if (pane === "chat") loadChatThreads().catch(() => undefined);
-      if (selected?.id) loadChat(selected.id).catch(() => undefined);
-    }, 45_000);
+      if (selected?.id && (pane === "work" || pane === "chat")) {
+        loadChat(selected.id).catch(() => undefined);
+      }
+    }, ms);
     return () => window.clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- soft poll; pane/selected read from closure
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- soft poll; interval varies by pane
   }, [pane, selected?.id]);
 
   useEffect(() => {
@@ -353,17 +357,25 @@ export function BrokerCabinet() {
     if (!selected) return;
     const body = chatMsg.trim() || (attachmentUrl ? "Вложение" : "");
     if (!body && !attachmentUrl) return;
-    await api("/api/v1/chat", {
-      method: "POST",
-      body: JSON.stringify({
-        calculationId: selected.id,
-        body,
-        attachmentUrl,
-      }),
-    });
-    setChatMsg("");
-    await loadChat(selected.id);
-    if (pane === "chat") await loadChatThreads().catch(() => undefined);
+    try {
+      await api("/api/v1/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          calculationId: selected.id,
+          body,
+          attachmentUrl,
+        }),
+      });
+      setChatMsg("");
+      await loadChat(selected.id);
+      if (pane === "chat") await loadChatThreads().catch(() => undefined);
+      toast("Сообщение отправлено", { variant: "ok" });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Не удалось отправить";
+      setError(msg);
+      toast(msg, { variant: "error" });
+      throw e;
+    }
   };
 
   const requestDossier = async (message: string) => {

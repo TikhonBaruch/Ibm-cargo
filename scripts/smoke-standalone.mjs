@@ -20,6 +20,8 @@ const steps = [
   { name: "smoke:client", script: "smoke-client-path.mjs" },
   { name: "smoke:broker", script: "smoke-broker-path.mjs" },
   { name: "smoke:full", script: "smoke-full-path.mjs" },
+  { name: "smoke:chat", script: "smoke-chat-path.mjs" },
+  { name: "smoke:support", script: "smoke-support-path.mjs" },
 ];
 
 console.log(`[smoke:standalone] base=${base}`);

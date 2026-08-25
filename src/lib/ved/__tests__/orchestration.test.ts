@@ -67,6 +67,9 @@ describe("D26 orchestration constants", () => {
   it("exposes known templates and job kinds", () => {
     expect(OUTBOX_TEMPLATES).toContain("calc.approved");
     expect(OUTBOX_TEMPLATES).toContain("ledger.topup");
+    expect(OUTBOX_TEMPLATES).toContain("chat.message");
+    expect(OUTBOX_TEMPLATES).toContain("chat.support_new");
+    expect(OUTBOX_TEMPLATES).toContain("chat.support_reply");
     expect(JOB_KINDS).toContain("SLA_TICK");
     expect(JOB_KINDS).toContain("OUTBOX_DRAIN");
     expect(JOB_KINDS).toContain("AI_DRAIN");

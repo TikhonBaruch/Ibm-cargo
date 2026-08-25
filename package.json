@@ -36,6 +36,7 @@
     "smoke:broker": "node scripts/smoke-broker-path.mjs",
     "smoke:client": "node scripts/smoke-client-path.mjs",
     "smoke:chat": "node scripts/smoke-chat-path.mjs",
+    "smoke:support": "node scripts/smoke-support-path.mjs",
     "smoke:sla": "node scripts/smoke-sla-path.mjs",
     "smoke:shipping": "node scripts/smoke-shipping-reject.mjs",
     "smoke:gateway": "node scripts/smoke-gateway-auth.mjs",

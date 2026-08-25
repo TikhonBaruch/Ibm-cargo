@@ -635,12 +635,20 @@ function ClientCabinetInner() {
     if (!selected) return;
     const body = chatMsg.trim() || (attachmentUrl ? "Вложение" : "");
     if (!body && !attachmentUrl) return;
-    await api("/api/v1/chat", {
-      method: "POST",
-      body: JSON.stringify({ calculationId: selected.id, body, attachmentUrl }),
-    });
-    setChatMsg("");
-    await loadChat(selected.id);
+    try {
+      await api("/api/v1/chat", {
+        method: "POST",
+        body: JSON.stringify({ calculationId: selected.id, body, attachmentUrl }),
+      });
+      setChatMsg("");
+      await loadChat(selected.id);
+      toast("Сообщение отправлено", { variant: "ok" });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Не удалось отправить";
+      setError(msg);
+      toast(msg, { variant: "error" });
+      throw e;
+    }
   };
 
   const doTopup = async () => {

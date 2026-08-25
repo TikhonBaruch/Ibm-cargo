@@ -36,6 +36,7 @@
 | Журнал AI-цепочки + online probes | [`plan-chain-run-log.md`](./plan-chain-run-log.md) |
 | Параллельная ownership + multi-model (D35) | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`../../src/lib/ved/PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
 | Go-live MVP standalone (D27+D36) | [`plan-go-live-mvp.md`](./plan-go-live-mvp.md) · max без pay/logistics [`plan-max-standalone-mvp.md`](./plan-max-standalone-mvp.md) |
+| Chat partial (notify + smoke + UX) | [`plan-chat-partial.md`](./plan-chat-partial.md) |
 | Изоляция / full split (**D36**) | [`decisions.md`](./decisions.md) D36 · [`plan-full-split-ibm-cargo.md`](./plan-full-split-ibm-cargo.md) · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) |
 | Backup taurus (**D37**) | [`plan-taurus-backup-core.md`](./plan-taurus-backup-core.md) — read-only, не трогать |
 | Vision до classify (таймаут / gate) | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |

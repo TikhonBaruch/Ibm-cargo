@@ -15,7 +15,7 @@
         "to": { "type": "string", "minLength": 1 },
         "template": {
           "type": "string",
-          "enum": ["generic", "calc.approved", "calc.sla_risk", "ledger.topup"]
+          "enum": ["generic", "calc.approved", "calc.sla_risk", "ledger.topup", "chat.message", "chat.support_new", "chat.support_reply"]
         },
         "payload": { "type": "object", "additionalProperties": true },
         "outboxId": { "type": "string", "description": "Optional durable ServiceOutbox id" }

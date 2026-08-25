@@ -11,6 +11,9 @@ export const OUTBOX_TEMPLATES = [
   "calc.approved",
   "calc.sla_risk",
   "ledger.topup",
+  "chat.message",
+  "chat.support_new",
+  "chat.support_reply",
 ] as const;
 
 export type OutboxTemplate = (typeof OUTBOX_TEMPLATES)[number];
