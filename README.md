@@ -1,20 +1,36 @@
-# LBM fork (2026-08-25)
+# LBM (Ibm-cargo)
 
-Полный форк кода taurus + llm (git history + working tree на момент копирования).
+Автономный продукт **LBM**. Репозиторий: `TikhonBaruch/Ibm-cargo`.
 
-## Что включено
-- Исходники, docs, contracts, containers, prisma schema/migrations
-- Незакоммиченные правки (в т.ч. precedent-suggest)
-- `.env.example` (не `.env` — секреты не копировались)
+Отдельная **Postgres** и S3 bucket **`lbm`**. Имя taurus в проекте не используется.
 
-## Что не включено (следующий шаг)
-- База данных (Postgres volume / dump)
-- Хранилище uploads / S3
-- `node_modules` / `.next` — поставить: `cd taurus && npm ci` (и при необходимости containers/*)
+## Структура
 
-## Открытие
-```bash
-cursor /home/andrey/Projects/.worktrees/lbm-fork-2026-08-25/lbm.code-workspace
+```
+Ibm-cargo/
+  app/          # Next.js + domain + UI lab (/client)
+  llm/          # AI matrix + tnved data
+  docs/
+  PLATFORMS.md
 ```
 
-Источник: `/home/andrey/taurus` + `/home/andrey/llm`
+Vercel **Root Directory = `app`**.
+
+## Секреты
+
+Только `app/.env` (gitignore) или Vercel Env.  
+Шаблон: `app/.env.example`. Заметки доступов: `lbm.txt` (gitignore).
+
+## Старт
+
+```bash
+cd app
+npm ci   # при необходимости
+npx prisma migrate deploy
+npx prisma db seed
+npm run dev
+```
+
+- Функция: `/cabinet`
+- UI lab: `/client`
+- Demo после seed: `client@example.com` / `demo1234`

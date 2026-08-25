@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-label="Socks">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="640" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#dbeafe"/><stop offset="1" stop-color="#93c5fd"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="640" fill="url(#bg)"/>
+  <path d="M180 420c0-80 40-140 100-160 20-6 40-6 60 0 60 20 100 80 100 160v80H180z" fill="#fff" opacity=".95"/>
+  <path d="M300 420c0-80 40-140 100-160 20-6 40-6 60 0 60 20 100 80 100 160v80H300z" fill="#f8fafc"/>
+  <rect x="210" y="260" width="220" height="36" rx="18" fill="#2563eb" opacity=".25"/>
+</svg>

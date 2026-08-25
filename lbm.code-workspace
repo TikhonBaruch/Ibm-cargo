@@ -1,6 +1,6 @@
 {
   "folders": [
-    { "name": "taurus", "path": "taurus" },
+    { "name": "app", "path": "app" },
     { "name": "llm", "path": "llm" }
   ],
   "settings": {}

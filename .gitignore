@@ -22,3 +22,7 @@ coverage/
 # IDE
 .idea/
 *.swp
+.vercel
+.env*
+app/.env
+lbm.txt

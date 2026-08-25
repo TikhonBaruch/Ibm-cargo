@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-label="Jeans">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="640" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1e3a8a"/><stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="640" fill="url(#bg)"/>
+  <path d="M250 120h140l20 420H230z" fill="#2563eb"/>
+  <path d="M250 120h70v180h-70z" fill="#1e40af"/>
+  <path d="M320 120h70v180h-70z" fill="#3b82f6"/>
+  <rect x="285" y="120" width="70" height="28" rx="8" fill="#93c5fd"/>
+</svg>

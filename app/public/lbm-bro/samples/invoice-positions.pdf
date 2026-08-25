@@ -1,0 +1,54 @@
+%PDF-1.4
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj
+4 0 obj << /Length 759 >> stream
+BT
+/F1 12 Tf
+50 800 Td
+16 TL
+/F1 16 Tf
+(COMMERCIAL INVOICE  LBM-TEST-01) Tj
+/F1 11 Tf
+T*
+(Seller: Shenzhen Cargo Ltd    Buyer: LBM Broker) Tj
+T*
+() Tj
+T*
+(No   Description                     Qty      Price) Tj
+T*
+(1   Cotton T-shirt                     800      3.10) Tj
+T*
+(2   Mens polo shirt                    240      5.60) Tj
+T*
+(3   Leather sneakers                   120     28.00) Tj
+T*
+(4   ThinkPad 14 laptop                  20    820.00) Tj
+T*
+(5   Cotton fabric unbleached           400     12.40) Tj
+T*
+(6   Android smartphone 6.5              50    190.00) Tj
+T*
+(7   Oil filter automotive              200      4.50) Tj
+T*
+(8   Kids cotton t-shirt                350      2.10) Tj
+T*
+() Tj
+T*
+(Currency USD    Incoterm FOB Shenzhen) Tj
+T*
+ET
+endstream endobj
+5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Courier >> endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001051 00000 n 
+trailer << /Size 6 /Root 1 0 R >>
+startxref
+1119
+%%EOF
