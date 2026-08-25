@@ -2,7 +2,8 @@
 
 Проект уже связан с remote и Vercel. Этот checklist — безопасная выкладка без секретов и тяжёлых ассетов.
 
-Прод UI: https://ibm-cargo.vercel.app (hostname Vercel: ibm-cargo)  
+Канон live LBM: https://taurus-liart.vercel.app  
+`https://ibm-cargo.vercel.app` — чужой Vercel-проект, не этот репозиторий. Этот git-репозиторий деплоится как Vercel project **ibm-cargo** → **Preview URL** (SSO).  
 Remote: `git@github.com:TikhonBaruch/Ibm-cargo.git`  
 Локальная разработка: [`../development.md`](../development.md).  
 Карта сред (local vs Compose vs prod): [`environments.md`](./environments.md).  

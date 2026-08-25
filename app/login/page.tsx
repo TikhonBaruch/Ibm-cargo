@@ -4,16 +4,7 @@ import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { LandingAuthShell } from "@/components/landing/LandingAuthShell";
-
-function messageForAuthError(code: string | null | undefined): string {
-  if (code === "Configuration") {
-    return "Серверу не хватает NEXTAUTH_SECRET (или AUTH_SECRET) в Vercel → Environment Variables. Задайте для Preview и Production.";
-  }
-  if (code === "Callback") {
-    return "Не удалось проверить вход. На Vercel задайте DATABASE_URL (Postgres newlsu_lbm) для Preview и Production.";
-  }
-  return "Неверный email или пароль";
-}
+import { messageForAuthError, normalizeLoginEmail } from "@/lib/auth-login";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -34,7 +25,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const result = await signIn("credentials", {
-        email,
+        email: normalizeLoginEmail(email),
         password,
         redirect: false,
       });
@@ -60,7 +51,7 @@ export default function LoginPage() {
 
   return (
     <LandingAuthShell title="Вход в кабинет" subtitle="Email и пароль учётки LBM Брокер." active="login">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         {error && (
           <div className="pill warn" style={{ marginBottom: 14, display: "block", padding: "10px 14px" }}>
             {error}
@@ -93,7 +84,8 @@ export default function LoginPage() {
           </button>
         </div>
         <p className="auth-hint">
-          Демо: client@ / broker@ / manufacturer@ / operator@ / admin@ — пароль <code>demo1234</code>
+          Демо: client@example.com / broker@example.com / manufacturer@example.com / operator@example.com / admin@example.com — пароль{" "}
+          <code>demo1234</code>
         </p>
         <p className="auth-hint">
           Нет аккаунта?{" "}

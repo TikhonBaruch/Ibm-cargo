@@ -41,12 +41,12 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 
 - Root = monolith Next; `postinstall` → `prisma generate` only
 - Env: `DATABASE_URL`, `NEXTAUTH_*`, `NEXT_PUBLIC_SITE_URL`; mock topup via `ALLOW_MOCK_TOPUP`
-- **ibm-cargo Production alias** `https://ibm-cargo.vercel.app` может всё ещё отдавать старый статический IBM Cargo, пока alias не переключён. Preview = этот Next; без `NEXTAUTH_SECRET`/`DATABASE_URL` на Preview → NextAuth «Server error» ([`plan-preview-auth.md`](./plan-preview-auth.md)).
+- **Хост `https://ibm-cargo.vercel.app`** — чужой Vercel-проект (статический IBM Cargo), не этот репозиторий. Этот git → Preview проекта `ibm-cargo`. Без `DATABASE_URL` на Preview Prisma: `Environment variable not found: DATABASE_URL` ([`plan-preview-auth.md`](./plan-preview-auth.md)).
 - Uploads: `S3_BUCKET`, `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` — без них `POST /api/v1/uploads` → **503** (FS read-only). **Заданы на Production и Preview** (as-of 2026-08-05). Для `<img src={mediaUrl}>` в кабинетах бакет должен отдавать объект публично **или** `S3_OBJECT_ACL=public-read` (если ACL включены).
 - Signup: `/register` + `POST /api/v1/auth/register` (D25) — публичный путь в middleware
 - **Не** ставить docker DNS / `USE_DOMAIN_API=1` на Vercel
 - Миграции схемы — отдельно на prod DB (`db push` / migrate)
-- Verify: `TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp` (+ `smoke:full`, `smoke:payments`)
+- Verify: Preview URL этого репозитория, не `ibm-cargo.vercel.app` (`npm run smoke:mvp`)
 
 Подробности: [`deploy.md`](./deploy.md) · результаты: [`staging.md`](./staging.md).
 

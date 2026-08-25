@@ -4,6 +4,8 @@ import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 import { logLogin } from "./audit";
 import { bootAuthEnv } from "./auth-env";
+import { normalizeLoginEmail } from "./auth-login";
+import { isMissingDatabaseUrlError, readDatabaseUrl } from "./db-url";
 
 // next-auth parseUrl throws on NEXTAUTH_URL="" (Vercel Preview empty override).
 // v4 needs NEXTAUTH_SECRET; Vercel often only has AUTH_SECRET.
@@ -33,18 +35,23 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        if (!process.env.DATABASE_URL) {
+        if (!readDatabaseUrl()) {
           console.error("[auth] DATABASE_URL is not set");
           throw new Error("DATABASE_URL is not set");
         }
 
+        const email = normalizeLoginEmail(credentials.email);
+
         let user;
         try {
           user = await prisma.user.findUnique({
-            where: { email: credentials.email },
+            where: { email },
           });
         } catch (err) {
           console.error("[auth] authorize prisma failed", err);
+          if (isMissingDatabaseUrlError(err)) {
+            throw new Error("DATABASE_URL is not set");
+          }
           throw err;
         }
 
@@ -57,7 +64,7 @@ export const authOptions: NextAuthOptions = {
           const adminPassword = process.env.ADMIN_PASSWORD;
 
           if (
-            credentials.email === adminEmail &&
+            email === (adminEmail || "").trim().toLowerCase() &&
             credentials.password === adminPassword &&
             (user.role === "ADMIN" || user.role === "SUPER_ADMIN")
           ) {

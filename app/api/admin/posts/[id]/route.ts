@@ -6,6 +6,7 @@ import { notifyPublished } from "@/lib/telegram";
 import { s3Configured, deleteFromS3 } from "@/lib/s3";
 import { extractS3Key } from "@/lib/utils";
 import { logUpdate, logDelete } from "@/lib/audit";
+import { resolveSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -108,7 +109,7 @@ export async function PUT(
 
   // Notify when published (fire-and-forget)
   if (status === "PUBLISHED") {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ibm-cargo.vercel.app";
+    const siteUrl = resolveSiteUrl();
     notifyPublished(post.title, `${siteUrl}/posts/${post.slug}`).catch(() => {});
 
     // Auto-posting to social platforms

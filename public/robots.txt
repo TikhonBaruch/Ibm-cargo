@@ -2,5 +2,3 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /api/
-
-Sitemap: https://ibm-cargo.vercel.app/sitemap.xml

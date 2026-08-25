@@ -33,7 +33,7 @@ docs/knowledge/           # ADR, branches, skeleton, testing, ops
 6. Seed-брокер claim → `IN_REVIEW`; approve → `DONE` + `pdfHtml`.
 7. Клиент видит статус и PDF из тех же полей Postgres.
 
-Live: `TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp`.
+Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smoke:mvp`. Этот репозиторий: Preview URL, не `ibm-cargo.vercel.app`.
 
 ## Живое (VED + ветви 1–2)
 

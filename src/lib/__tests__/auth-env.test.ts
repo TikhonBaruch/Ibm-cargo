@@ -24,18 +24,18 @@ describe("ensureNextAuthUrlForRuntime", () => {
       VERCEL_ENV: "preview",
       VERCEL_BRANCH_URL: "ibm-cargo-git-x.vercel.app",
       VERCEL_URL: "ibm-cargo-abc.vercel.app",
-      NEXTAUTH_URL: "https://ibm-cargo.vercel.app",
+      NEXTAUTH_URL: "https://unrelated.example",
     } as NodeJS.ProcessEnv;
     expect(ensureNextAuthUrlForRuntime(env)).toBe("https://ibm-cargo-git-x.vercel.app");
     expect(env.NEXTAUTH_URL).toBe("https://ibm-cargo-git-x.vercel.app");
   });
 
-  it("leaves production NEXTAUTH_URL alone", () => {
+  it("leaves a real production NEXTAUTH_URL alone", () => {
     const env = {
       VERCEL_ENV: "production",
-      NEXTAUTH_URL: "https://ibm-cargo.vercel.app",
+      NEXTAUTH_URL: "https://lbm.example",
     } as NodeJS.ProcessEnv;
-    expect(ensureNextAuthUrlForRuntime(env)).toBe("https://ibm-cargo.vercel.app");
+    expect(ensureNextAuthUrlForRuntime(env)).toBe("https://lbm.example");
   });
 });
 

@@ -1,11 +1,12 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { resolveSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ibm-cargo.vercel.app";
+  const baseUrl = resolveSiteUrl();
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "daily", priority: 1 },

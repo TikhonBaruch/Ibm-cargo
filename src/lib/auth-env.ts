@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { ensureNextAuthUrl } from "./site-url";
+import { ensureNextAuthUrl, isForeignIbmCargoOrigin } from "./site-url";
 
 function absoluteOrigin(hostOrUrl: string): string {
   const t = hostOrUrl.trim().replace(/\/$/, "");
@@ -10,8 +10,13 @@ function absoluteOrigin(hostOrUrl: string): string {
 
 /** Branch alias, then unique deployment host. Empty when not on Vercel. */
 export function previewOrigin(env: NodeJS.ProcessEnv = process.env): string {
-  const host = (env.VERCEL_BRANCH_URL || env.VERCEL_URL || "").trim();
-  return host ? absoluteOrigin(host) : "";
+  for (const raw of [env.VERCEL_BRANCH_URL, env.VERCEL_URL]) {
+    const host = (raw || "").trim();
+    if (!host) continue;
+    const origin = absoluteOrigin(host);
+    if (origin && !isForeignIbmCargoOrigin(origin)) return origin;
+  }
+  return "";
 }
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ensureNextAuthUrl, resolveSiteUrl } from "../site-url";
+import { ensureNextAuthUrl, isForeignIbmCargoOrigin, resolveSiteUrl } from "../site-url";
 
 describe("resolveSiteUrl", () => {
   it("prefers NEXTAUTH_URL when set", () => {
@@ -31,8 +31,38 @@ describe("resolveSiteUrl", () => {
     ).toBe("https://ibm-cargo-git-x.vercel.app");
   });
 
-  it("falls back to prod host", () => {
-    expect(resolveSiteUrl({} as NodeJS.ProcessEnv)).toBe("https://ibm-cargo.vercel.app");
+  it("skips ibm-cargo.vercel.app and uses the next candidate", () => {
+    expect(
+      resolveSiteUrl({
+        NEXTAUTH_URL: "https://ibm-cargo.vercel.app",
+        VERCEL_URL: "lbm-git-x.vercel.app",
+      } as NodeJS.ProcessEnv)
+    ).toBe("https://lbm-git-x.vercel.app");
+  });
+
+  it("uses VERCEL_PROJECT_PRODUCTION_URL when it is not the foreign host", () => {
+    expect(
+      resolveSiteUrl({
+        VERCEL_PROJECT_PRODUCTION_URL: "example.vercel.app",
+      } as NodeJS.ProcessEnv)
+    ).toBe("https://example.vercel.app");
+  });
+
+  it("falls back to localhost, not ibm-cargo.vercel.app", () => {
+    expect(resolveSiteUrl({} as NodeJS.ProcessEnv)).toBe("http://localhost:3000");
+    expect(
+      resolveSiteUrl({
+        NEXTAUTH_URL: "https://ibm-cargo.vercel.app/",
+        VERCEL_PROJECT_PRODUCTION_URL: "ibm-cargo.vercel.app",
+      } as NodeJS.ProcessEnv)
+    ).toBe("http://localhost:3000");
+  });
+});
+
+describe("isForeignIbmCargoOrigin", () => {
+  it("matches only the other project's hostname", () => {
+    expect(isForeignIbmCargoOrigin("https://ibm-cargo.vercel.app")).toBe(true);
+    expect(isForeignIbmCargoOrigin("ibm-cargo-git-x.vercel.app")).toBe(false);
   });
 });
 
@@ -40,6 +70,15 @@ describe("ensureNextAuthUrl", () => {
   it("fills empty NEXTAUTH_URL so next-auth parseUrl does not see \"\"", () => {
     const env = {
       NEXTAUTH_URL: "",
+      VERCEL_URL: "branch.vercel.app",
+    } as NodeJS.ProcessEnv;
+    expect(ensureNextAuthUrl(env)).toBe("https://branch.vercel.app");
+    expect(env.NEXTAUTH_URL).toBe("https://branch.vercel.app");
+  });
+
+  it("replaces ibm-cargo.vercel.app NEXTAUTH_URL", () => {
+    const env = {
+      NEXTAUTH_URL: "https://ibm-cargo.vercel.app",
       VERCEL_URL: "branch.vercel.app",
     } as NodeJS.ProcessEnv;
     expect(ensureNextAuthUrl(env)).toBe("https://branch.vercel.app");

@@ -5,8 +5,9 @@
 ## Продукт (D27)
 
 Частник: ТН ВЭД (heuristic) → брокер-QC → PDF. Shipping UI default off.  
-Демо: `client@` / `broker@` / `operator@` / `admin@example.com` · `demo1234`.  
-Прод: https://ibm-cargo.vercel.app
+Демо: `client@example.com` / `broker@example.com` / `operator@example.com` / `admin@example.com` · `demo1234`.  
+Канон live LBM: https://taurus-liart.vercel.app  
+`https://ibm-cargo.vercel.app` — **чужой** Vercel-проект (статический IBM Cargo), не этот репозиторий. Этот репозиторий открывается с **Vercel Preview** проекта `ibm-cargo`. Preview без `DATABASE_URL` ломает вход (Prisma).
 
 ## Куда смотреть
 

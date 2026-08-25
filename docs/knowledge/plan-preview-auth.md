@@ -1,16 +1,16 @@
-# План: NextAuth «Server error» на Vercel Preview
+# План: NextAuth на Vercel Preview (Configuration → «неверный пароль»)
 
 Индекс: [`deploy.md`](./deploy.md) · [`environments.md`](./environments.md) · [`plan-vercel-services.md`](./plan-vercel-services.md).  
 Ветвь 3 (ядро). D33.
 
 ## 1. Идея
 
-На Preview (Visit Preview после SSO) `/login` или `/api/auth/*` отдаёт дефолтную страницу NextAuth:
+Два разных сбоя на «Visit Preview»:
 
-> Server error  
-> There is a problem with the server configuration.
+1. HTML NextAuth **Server error / server configuration** = `Configuration` / `NO_SECRET`.
+2. После починки Configuration форма пишет **«Неверный email или пароль»** (`CredentialsSignin`) — `authorize` вернул `null`.
 
-Это **Configuration / NO_SECRET**, не баг формы. Проект Vercel `ibm-cargo` изначально был статическим IBM Cargo: Production alias `ibm-cargo.vercel.app` всё ещё тот сайт; Preview — этот Next. Env NextAuth/`DATABASE_URL` на Preview часто нет, либо задан только `AUTH_SECRET` (Auth.js), а код читает `NEXTAUTH_SECRET` (next-auth v4).
+**Hostname `ibm-cargo.vercel.app` — не этот продукт.** Это Production alias **другого** Vercel-проекта (статический IBM Cargo, Uganda). Curl туда отдаёт чужой сайт. Этот репозиторий (`TikhonBaruch/Ibm-cargo`) живёт как **Vercel Preview проекта `ibm-cargo`** (SSO). Живой LBM-ориентир: https://taurus-liart.vercel.app. Код не должен использовать `ibm-cargo.vercel.app` как origin.
 
 ## 2. Анализ
 
@@ -18,10 +18,12 @@
 |---------|---------|
 | HTML NextAuth «Server error» | Нет `NEXTAUTH_SECRET` в Node production |
 | `AUTH_SECRET` есть, вход всё равно падает | v4 не читает `AUTH_SECRET` |
-| `NEXTAUTH_URL=https://ibm-cargo.vercel.app` на Preview | CSRF/cookie на branch URL |
-| После Configuration починен, «неверный пароль» | Нет `DATABASE_URL` → Prisma в `authorize` |
+| `NEXTAUTH_URL=https://ibm-cargo.vercel.app` на Preview | CSRF/cookie на branch URL **и** чужой хост |
+| После Configuration — Prisma `Environment variable not found: DATABASE_URL` на `user.findUnique` | Runtime Preview **без** `DATABASE_URL`. Не инлайнить `process.env.DATABASE_URL` на билде; lazy Prisma + `datasourceUrl`. |
+| После Configuration — «неверный пароль» при живой БД | Нет seed в `newlsu_lbm` **или** на `/login` сокращения `client@` (seed = `client@example.com`) |
+| Пустой env → `https://ibm-cargo.vercel.app` | Хардкод fallback в `site-url.ts` / sitemap / robots |
 
-Не делать: коммитить секреты; fallback secret на **Production**.
+Не делать: коммитить секреты; fallback secret на **Production**; считать `ibm-cargo.vercel.app` продом LBM.
 
 ## 3. Структурирование
 
@@ -31,23 +33,25 @@
 | E2 | `authOptions.secret` + `pages.error=/login`; `proxy.ts` тот же secret |
 | E3 | `/login` показывает Configuration / Callback по-русски |
 | E4 | KB: Preview env must-have (зеркало Production) |
+| E5 | `resolveSiteUrl()`: кандидаты без хоста `ibm-cargo.vercel.app`; пустой env → `http://localhost:3000` |
+| E6 | `/login`: полные демо-email; `authorize` trim/lowercase + `client@` → `client@example.com`; hint при CredentialsSignin про seed/`DATABASE_URL` |
 
 ## 4. Реализация
 
-Код: `src/lib/auth-env.ts`, `site-url.ts`, `auth.ts`, `proxy.ts`, `app/login/page.tsx`.  
-Проверка: unit `auth-env` + `site-url`; локальный `signIn` demo.
+Код: `src/lib/auth-env.ts`, `site-url.ts`, `db-url.ts`, `auth-login.ts`, `prisma.ts` (lazy), `auth.ts`, `proxy.ts`, `app/login/page.tsx`, `app/sitemap.ts`, `app/robots.ts`.  
+Проверка: unit `auth-env` + `site-url` + `db-url` + `auth-login`; локальный `signIn` demo.
 
 ## 5. Env на Vercel (человек, Dashboard)
 
-На **Preview и Production** проекта `ibm-cargo` (не только Production):
+На **Preview** проекта `ibm-cargo` (Production alias этого имени — чужой сайт, не копировать как origin):
 
-- `DATABASE_URL` — Postgres `newlsu_lbm` (URL-encode `#` → `%23`)
+- `DATABASE_URL` — Postgres **`newlsu_lbm`**, **с seed** (`client@example.com` / `demo1234`). URL-encode `#` → `%23`. Без seed вход даст CredentialsSignin; можно `/register`.
 - `NEXTAUTH_SECRET` (длинный random; можно то же значение, что `AUTH_SECRET`)
-- `NEXTAUTH_URL` — на Preview лучше **не** копировать prod origin; код подставит branch URL
-- `NEXT_PUBLIC_SITE_URL`
+- `NEXTAUTH_URL` — **не** `https://ibm-cargo.vercel.app`; на Preview лучше не копировать чужой/prod origin — код подставит branch URL
+- `NEXT_PUBLIC_SITE_URL` — origin Preview, не `ibm-cargo.vercel.app`
 
 Без `DATABASE_URL` NextAuth уже не покажет Configuration, но вход не найдёт демо-юзеров.
 
 ## 6. Деплой
 
-Только Next/session. Merge не обязателен для проверки: Preview этого PR.
+Только Next/session. Merge не обязателен для проверки: Preview этого PR (SSO). Не открывать https://ibm-cargo.vercel.app как «наш прод».

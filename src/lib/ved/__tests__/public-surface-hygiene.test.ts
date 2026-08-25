@@ -16,6 +16,8 @@ describe("public surface hygiene", () => {
     const src = fs.readFileSync(path.join(repoRoot, "app/login/page.tsx"), "utf8");
     expect(src).toContain("Демо:");
     expect(src).toMatch(/demo1234/);
+    expect(src).toContain("client@example.com");
+    expect(src).toContain("broker@example.com");
   });
 
   it("does not list obscure path in robots.txt", () => {
@@ -23,6 +25,7 @@ describe("public surface hygiene", () => {
     expect(robots).toContain("Disallow: /admin/");
     expect(robots).toContain("Disallow: /api/");
     expect(robots).not.toContain(SUPER_ADMIN_BASE);
+    expect(robots).not.toContain("ibm-cargo.vercel.app");
   });
 
   it("encodes SUPER path/email in super-admin source", () => {

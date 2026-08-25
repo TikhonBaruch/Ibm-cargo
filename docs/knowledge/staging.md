@@ -9,7 +9,8 @@
 |-------|------------|-----|
 | **Local** | ежедневная разработка | Mode A: `.env` → `prisma db push` → `npm run dev` ([`environments.md`](./environments.md)) |
 | **Preview** | PR / ветка перед prod | Vercel Preview Deployment |
-| **Prod** | пользователи | https://ibm-cargo.vercel.app |
+| **Prod** | канон LBM | https://taurus-liart.vercel.app |
+| **Этот репозиторий** | PR Preview | Vercel project `ibm-cargo` (не hostname `ibm-cargo.vercel.app`) |
 
 Отдельный долгоживущий staging-стенд **не обязателен**, если каждый PR получает Vercel Preview. Осторожно: общая preview-БД = prod sweb → smoke пишет тестовые регистрации/топапы.
 
@@ -30,10 +31,10 @@ TEST_API_URL=https://your-preview.vercel.app npm run smoke:full
 ## Prod smoke (после merge в `main`)
 
 ```bash
-TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:mvp
-TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:payments
-TEST_API_URL=https://ibm-cargo.vercel.app npm run smoke:full
+TEST_API_URL=<preview-url> npm run smoke:mvp
 ```
+
+Не использовать `https://ibm-cargo.vercel.app` — это другой проект.
 
 Требования prod:
 
