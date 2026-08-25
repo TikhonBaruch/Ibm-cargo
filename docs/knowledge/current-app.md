@@ -37,7 +37,9 @@ Live (канон LBM): `TEST_API_URL=https://taurus-liart.vercel.app npm run smo
 
 ### Автономия вне taurus (D36)
 
-MVP D27 **не** требует sibling `taurus/llm` / `../llm`: draft = heuristic (+ opt-in `LLM_SERVICE_URL` fail-open). Проверка 2026-08-25: `test:ci` PASS · live `smoke:mvp` #47935 · `smoke:payments` PASS · без записи в матрицу. Nested `llm/` в репо — sync-источник зеркал, не runtime npm-dep. Канон: [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md).
+MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ opt-in HTTP fail-open).  
+**Нулевая связка:** нет sync/mount/build из `./llm`; `containers/{llm,ocr}` LBM-owned.  
+Проверка 2026-08-25: `test:ci` · `smoke:mvp` #47935 · `smoke:payments`. Канон: [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) · [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md).
 
 ## Живое (VED + ветви 1–2)
 
@@ -97,7 +99,7 @@ MVP D27 **не** требует sibling `taurus/llm` / `../llm`: draft = heurist
 | Container inventory | 14 + ocr scaffold | [`../containers.md`](../containers.md) · [`containerization.md`](./containerization.md) |
 | Container add priorities (P1a/P1b–P3) | P1a now (D27); P1b Growth; ocr scaffold; anti-patterns D19 | [`../../containers/README.md`](../../containers/README.md) §«Что добавлять» · [`growth.md`](./growth.md) |
 | Parallel ownership / multi-model (D35) | packages domain/orch/mesh; llm matrix canon; sync mirrors | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
-| Автономия вне taurus (**D36**) | MVP без sibling `../llm`; matrix HTTP/sync only | [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md) · smoke #47935 |
+| Автономия / zero coupling (**D36**) | MVP без nested `./llm`; matrix HTTP only; sync retired | [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) · smoke #47935 |
 | Vision-before-classify | **done** — OCR_TIMEOUT 90s; no classify until Qwen OK (requeue); last attempt fail-open; maxDuration 300 | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |
 | Vision step logging | **done** — `[ai-drain]` phases + ServiceCall.fetch + `aiDraft.visionTrace` | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) §Пошаговые логи |
 | Client LLM soft-fail notice | **done** — `aiDraft.llmSoftFails` + «Тестовый режим» в карточке/PDF | [`plan-client-llm-soft-fail.md`](./plan-client-llm-soft-fail.md) |

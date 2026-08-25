@@ -54,7 +54,7 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 
 | Дата | Smoke | Результат | Заметки |
 |------|-------|-----------|---------|
-| 2026-08-25 | `smoke:mvp` (autonomy / D36) | **PASS** #47935 DONE | Agent VM: **нет** sibling `../llm`, нет Docker/.env; CI `test:ci` 508 PASS; live без записи в taurus/llm — [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md) |
+| 2026-08-25 | `smoke:mvp` (autonomy / D36) | **PASS** #47935 DONE | Agent VM: **нет** sibling `../llm`; CI PASS; затем **zero coupling** (sync retired, corpus → `containers/llm/data`) — [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) |
 | 2026-08-25 | `smoke:payments` (autonomy) | **PASS** | mock +1500 |
 | 2026-08-23 | deploy `b24b01c` + rich probe | **PASS** #47931 | ThinkPad X1 full attrs (CN, Lenovo, specs) → `8471 30 000 0` conf 0.95; `chain-log` + `chainRun` live; classify mesh ~1.3s |
 | 2026-08-23 | `probe:ai-chain` ×4 | **PASS** #47927–#47930 | laptop→8471 30; tee→6109 10; laptop+png→8471 30; shoes→6404 11; all `llm-openai-v1` ~8–22s; `chain-log` API after deploy |

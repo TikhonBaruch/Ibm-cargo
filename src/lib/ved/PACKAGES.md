@@ -17,11 +17,11 @@ Ownership для параллельной разработки — **логич�
 Один PR ≈ один пакет (+ dual-path `containers/api` если трогали domain writers).  
 Не смешивать **mesh provider** и **cabinet UI** в одном changeset без необходимости.
 
-## External AI matrix
+## AI services (LBM)
 
-HTTP classify/OCR/duty живут в репо **taurus/llm** (`services/classification`, `services/ocr`).  
-LBM `containers/llm` / `containers/ocr` — Compose **mirror**; sync: `npm run sync:ai-matrix`.  
-Новая **модель** → env profile / chain в matrix (или Vercel mesh).  
-Новая **capability** (risk, documents, …) → новый сервис в `llm` + ADR + `*_SERVICE_URL`, не папка под vendor.
+HTTP classify/OCR/duty в Compose: **`containers/llm`** / **`containers/ocr`** — **LBM-owned** (D36).  
+Внешняя матрица (taurus / nested `./llm`) — **только HTTP** (`*_SERVICE_URL`); **нулевая связка** — нет sync/mount/build из `./llm`.  
+Новая **модель** → env profile / `AI_CHAIN_ID` в LBM.  
+Новая **capability** → ADR + `*_SERVICE_URL` (+ опционально новый LBM container), не vendor-папка.
 
-**D36:** changeset LBM (включая `prisma` / migrate / seed) **не** мутирует файлы, БД или тома taurus/llm. Sync пишет только в mirrors `containers/{llm,ocr}`.
+**D36:** changeset LBM **не** мутирует и **не** читает nested `./llm` / taurus как sync-источник. `sync:ai-matrix` retired.

@@ -21,7 +21,7 @@ Preview / результаты prod smoke: [`staging.md`](./staging.md). Пла�
 | Stub money | no `PAYMENTS_SERVICE_URL` locally, or Compose payments + `ALLOW_MOCK_TOPUP=1` on demo |
 | Vercel media | `S3_*` → VED uploads durable (`/api/v1/uploads`); optional `S3_OBJECT_ACL=public-read` so `CalculationItem.mediaUrl` works in `<img>` |
 | Compose local media | volume `ved_uploads` → `public/uploads/ved`; entrypoint `containers/web/docker-entrypoint.sh` chown; serve via `app/uploads/ved/[filename]/route.ts` (`GET /uploads/ved/*`) |
-| Compose LLM enrich | profile `scale`/`full`: service `llm` :4500; mount `../llm/data/tnved/normalized:/data/tnved:ro`; `LLM_SERVICE_URL=http://llm:4500` in ai/api/web (override host `.env` 127.0.0.1); gate `llmEnrichEnabled` |
+| Compose LLM enrich | profile `scale`/`full`: service `llm` :4500; mount `./containers/llm/data/tnved/normalized:/data/tnved:ro`; `LLM_SERVICE_URL=http://llm:4500`; gate `llmEnrichEnabled` |
 | Compose DB (Mode B) | `api`/`web`/`worker` → **in-network** `postgresql://lbm:lbm@postgres:5432/lbm` (host `.env` `DATABASE_URL` на sweb **не** подставляется — нужно для `verified_determinations` write-back) |
 | Precedent smoke | `npm run smoke:precedent-csv` после `smoke:chain-llm` (локальный postgres) |
 | Client shipping UI | off by default; `NEXT_PUBLIC_SHIPPING_UI=1` to show «Перевозка» |

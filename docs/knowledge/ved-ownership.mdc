@@ -1,5 +1,5 @@
 ---
-description: Ownership map — UI, domain, orch, mesh, AI matrix; D36 isolation
+description: Ownership map — UI, domain, orch, mesh, AI; D36 zero llm coupling
 globs: src/components/ved/**/*,app/api/v1/**/*,app/cabinet/**/*,app/broker/**/*,containers/**/*,src/lib/ved/**
 alwaysApply: true
 ---
@@ -14,21 +14,21 @@ Canon: `docs/knowledge/branches.md` · `src/lib/ved/PACKAGES.md` · `plan-parall
 | Cabinets | orchestration only (`*Cabinet.tsx`) |
 | Session API | `app/api/v1/*` · domain extract `containers/api` |
 | domain / orch / mesh / draft | see `PACKAGES.md` |
-| `containers/llm` · `containers/ocr` | Compose **mirrors** of matrix — `npm run sync:ai-matrix` (writes **here only**) |
+| `containers/llm` · `containers/ocr` | **LBM-owned** Compose services (D36 — no nested `./llm` sync) |
 
-## D36 — taurus/llm isolation (always)
+## D36 — zero coupling to taurus / nested `./llm` (always)
 
 Changes to **this** project (ibm-cargo / LBM) or **its** database must **not** affect:
 
-- files under **taurus/llm** (sibling `../llm`, `taurus/llm`, external matrix clone);
+- files under **taurus/llm**, sibling `../llm`, **nested `./llm`**, or external matrix clone;
 - databases, Docker volumes, or secrets belonging to that matrix project.
 
-Allowed: call matrix over HTTP (`*_SERVICE_URL`); copy matrix → LBM mirrors via `sync:ai-matrix`.  
-Forbidden in LBM tasks: edit/delete matrix sources; `prisma` / migrate / seed against matrix DB; shared `DATABASE_URL` with matrix.
+Allowed: call matrix over HTTP (`*_SERVICE_URL`) only.  
+Forbidden: `sync:ai-matrix` copy; mount/build defaults on `./llm`; edit matrix sources; `prisma` against matrix DB; shared `DATABASE_URL`.
 
 ## Multi-model
 
-- **Model ≠ container.** Vendors = `AI_CHAIN_ID` / env profiles (`llm/chains/*` in matrix — edit only in matrix-owned PRs).
+- **Model ≠ container.** Vendors = `AI_CHAIN_ID` / env profiles in LBM (`src/lib/ved/chains/`).
 - **Capability = service** (classification, ocr, …). One HTTP envelope each.
 - UI never calls matrix URLs.
 
@@ -37,4 +37,5 @@ Forbidden in LBM tasks: edit/delete matrix sources; `prisma` / migrate / seed ag
 - `@prisma/client` in `containers/{broker,client,admin,manufacturer}`
 - Parallel C3+C4 extracts in one change (D19)
 - Docker service per vendor
-- Touching taurus/llm files or DB from an LBM/DB changeset (D36)
+- Touching taurus/llm or nested `./llm` from an LBM/DB changeset (D36)
+- Reintroducing sync from nested `./llm` into `containers/{llm,ocr}`

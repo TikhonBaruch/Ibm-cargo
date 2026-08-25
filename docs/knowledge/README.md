@@ -35,7 +35,7 @@
 | Гладкий create / smoke S3 / compress | [`plan-smooth-create-path.md`](./plan-smooth-create-path.md) |
 | Журнал AI-цепочки + online probes | [`plan-chain-run-log.md`](./plan-chain-run-log.md) |
 | Параллельная ownership + multi-model (D35) | [`plan-parallel-ownership.md`](./plan-parallel-ownership.md) · [`../../src/lib/ved/PACKAGES.md`](../../src/lib/ved/PACKAGES.md) |
-| Изоляция LBM ↔ taurus/llm (**D36**, always) | [`decisions.md`](./decisions.md) D36 · [`ved-invariants.mdc`](./ved-invariants.mdc) · [`database.md`](./database.md) · проверка: [`plan-autonomy-outside-taurus.md`](./plan-autonomy-outside-taurus.md) |
+| Изоляция LBM ↔ taurus/nested `./llm` (**D36**, zero coupling) | [`decisions.md`](./decisions.md) D36 · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md) · [`ved-invariants.mdc`](./ved-invariants.mdc) |
 | Vision до classify (таймаут / gate) | [`plan-vision-before-classify.md`](./plan-vision-before-classify.md) |
 | LLM на заполнении + удачные прецеденты | [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) |
 | Typeahead полей NewCalc | [`plan-field-suggest.md`](./plan-field-suggest.md) · precedents [`plan-precedent-suggest-service.md`](./plan-precedent-suggest-service.md) · fix [`plan-field-suggest-fix.md`](./plan-field-suggest-fix.md) |
@@ -121,7 +121,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 
 | Слой | Документы | Роль |
 |------|-----------|------|
-| Решение | [`decisions.md`](./decisions.md) | Канон статусов, оплаты, UI, extract, **D24** данные, **D25** signup, **D26** orch, **D27** фокус частник, **D28** ADMIN ops, **D29** стратегия, **D32** UI-паттерны, **D33** цикл фичи, **D35** ownership, **D36** изоляция taurus/llm |
+| Решение | [`decisions.md`](./decisions.md) | Канон статусов, оплаты, UI, extract, **D24** данные, **D25** signup, **D26** orch, **D27** фокус частник, **D28** ADMIN ops, **D29** стратегия, **D32** UI-паттерны, **D33** цикл фичи, **D35** ownership, **D36** zero coupling taurus/nested `./llm` |
 | Продукт / vision | [`product.md`](./product.md), [`target-client.md`](./target-client.md), [`growth.md`](./growth.md) | Зачем продукт, тарифы, фокус MVP (D27), persona/ценность (D29), фаза E / P1b–P3 |
 | Структура данных | [`data-model.md`](./data-model.md), [`calculation-fields.md`](./calculation-fields.md) | Товары (`attrs`), ТН ВЭД, `CalculationEvent`; матрица полей × роли |
 | Справочники ВЭД (hold) | [`incoterms.md`](./incoterms.md), [`customs-payments.md`](./customs-payments.md) | Инкотермс; платежи (НДС/сбор канон, акциз/утиль hold) |
@@ -191,7 +191,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 5. **D6** — legacy CMS не лицо продукта.
 6. **D24** — attrs на item; ТН ВЭД soft-lookup; `CalculationEvent` append-only ([`data-model.md`](./data-model.md)).
 7. **D33** — без письменного плана код не писать; без записи в KB задачу не закрывать ([`feature-cycle.md`](./feature-cycle.md)).
-8. **D36** — LBM/DB не трогают taurus/llm ([`decisions.md`](./decisions.md)).
+8. **D36** — нулевая связка LBM с taurus/nested `./llm` ([`decisions.md`](./decisions.md) · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md)).
 
 CI: `npm run test:structure` требует наличие ключевых файлов KB (см. `scripts/verify-structure.cjs`).
 
@@ -226,8 +226,8 @@ UI baseline: tag **`ved-ui-cabinets-baseline`** · ADR **D14** · [`design.md`](
 13. **Platform settings / ADMIN ops (D28)** — marketplace / acceptingJobs / maintenance / **payments / llm / notify / mockTopup** → `platform-gates.ts` + dual-path `containers/api` + [`admin-ops.md`](./admin-ops.md) + [`cabinets/admin/`](./cabinets/admin/) + строка в [`cabinets/shared/correctness.md`](./cabinets/shared/correctness.md). Закрытие ops UX (tnved / orch retry / finance CSV / acceptingJobs admin) → ADR D28 + `current-app` + `roadmap` §Post-polish. URL/keys интеграций — только env, не ADMIN UI.
 14. Не коммитить секреты; host БД — в [`database.md`](./database.md), пароли только в `.env`. SUPER credentials — не в публичных демо-строках (D6/D28).
 15. **Цикл фичи (D33)** — идея → анализ → **план в `docs/knowledge/`** → реализация → проверка → анализ → правка → деплой Hobby → KB. Без плана не начинать `src/` / `app/` / `containers/`. PR без KB не закрывать ([`feature-cycle.md`](./feature-cycle.md)).
-16. **Параллельная ownership / multi-model (D35)** — пакеты в [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md); AI HTTP канон в репо `llm`; mirrors `sync:ai-matrix`; модель ≠ контейнер ([`plan-parallel-ownership.md`](./plan-parallel-ownership.md)).
-17. **Изоляция от taurus/llm (D36, always)** — правки LBM и его БД не трогают файлы/БД/ресурсы матрицы; свой `DATABASE_URL`; HTTP или sync→mirrors only ([`decisions.md`](./decisions.md) D36).
+16. **Параллельная ownership / multi-model (D35)** — пакеты в [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md); `containers/{llm,ocr}` LBM-owned; модель ≠ контейнер ([`plan-parallel-ownership.md`](./plan-parallel-ownership.md)).
+17. **Изоляция / zero coupling (D36, always)** — LBM не читает/не пишет nested `./llm` или taurus; свой `DATABASE_URL`; matrix = HTTP only; sync retired ([`decisions.md`](./decisions.md) D36 · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md)).
 
 ## Машинные проверки
 

@@ -129,7 +129,8 @@ ADR **D19:** не дробить postgres/redis/gateway как product branches.
 
 **Model ≠ container.** DeepSeek/Qwen/… = профили + `LLM_CLASSIFY_CHAIN`.  
 **Capability = сервис** (`classification`, `ocr`, позже risk/documents).  
-Mirrors: `npm run sync:ai-matrix`. Compose build from matrix: `LLM_DOCKER_CONTEXT` / `OCR_DOCKER_CONTEXT`.  
+**D36:** `containers/{llm,ocr}` — LBM-owned. Нет `sync:ai-matrix` из nested `./llm`. Corpus: `containers/llm/data/tnved/normalized`. Внешняя матрица — только `*_SERVICE_URL`.  
+**Model ≠ container.**  
 Карта файлов: [`../../src/lib/ved/PACKAGES.md`](../../src/lib/ved/PACKAGES.md) · план [`plan-parallel-ownership.md`](./plan-parallel-ownership.md).
 
 ## Диалоги и контракты

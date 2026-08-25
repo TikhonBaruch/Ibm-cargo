@@ -43,7 +43,7 @@ const host = {
   REDIS_URL: process.env.REDIS_URL || "redis://127.0.0.1:6379",
   TNVED_CODES_PATH:
     process.env.TNVED_CODES_PATH ||
-    path.join(root, "llm/data/tnved/normalized/codes.jsonl"),
+    path.join(root, "containers/llm/data/tnved/normalized/codes.jsonl"),
 };
 
 const services = [

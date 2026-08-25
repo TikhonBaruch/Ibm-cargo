@@ -10,8 +10,9 @@
 ## Анализ
 
 As-is: 14+ контейнеров и dual-path (Vercel Prisma-in-Next vs Compose `USE_DOMAIN_API`).  
-AI-логика размазана: `src/lib/ved/provider-mesh*` (Vercel), `containers/llm|ocr` (Compose mirror), канон capability — репо **`Ibm-cargo/llm`**.  
-Антипаттерн D19 уже запрещает дробить infra; не хватало явной таблицы «кто трогает какие файлы» и канона sync mirror.
+AI-логика: `src/lib/ved/provider-mesh*` (Vercel), `containers/llm|ocr` (**LBM-owned** Compose, D36).  
+Внешняя матрица — только HTTP. Nested `./llm` / taurus — **out of bounds** (нулевая связка).  
+Антипаттерн D19 запрещает дробить infra; ownership — [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md).
 
 ## Структура (этот цикл)
 
@@ -19,8 +20,8 @@ AI-логика размазана: `src/lib/ved/provider-mesh*` (Vercel), `cont
 |---|-----|----------------|
 | 1 | Ownership table + multi-model rules в KB / `ved-ownership.mdc` | агенты видят пакеты |
 | 2 | `src/lib/ved/PACKAGES.md` — logical domain/orch/mesh (без массового move) | карта файлов |
-| 3 | Canon: `llm` repo → compose mirror; override context + sync script | один источник classify/ocr |
-| 4 | Structure gate + ссылки в README / containerization / llm AGENTS | `test:structure` зелёный |
+| 3 | `containers/{llm,ocr}` LBM-owned; нет sync из nested `./llm` (D36) | zero coupling |
+| 4 | Structure gate + ссылки в README / containerization | `test:structure` зелёный |
 
 **Не в этом цикле:** C5 slim cutover, полный Domain API на Vercel, новый capability-сервис (risk/documents).
 
@@ -29,12 +30,12 @@ AI-логика размазана: `src/lib/ved/provider-mesh*` (Vercel), `cont
 1. D27 MVP не ломать.  
 2. Не контейнер на DeepSeek/Qwen/… — только profile + `LLM_CLASSIFY_CHAIN`.  
 3. UI без Prisma. UI не зовёт matrix URL.  
-4. Envelope sync: `llm/contracts` ↔ `docs/contracts`.  
+4. Contracts: `docs/contracts`.  
 5. Fail-open create.  
-6. **D36:** changeset LBM/DB **не** мутирует файлы/БД/тома **taurus/llm**; `sync:ai-matrix` пишет только в LBM `containers/{llm,ocr}`.
+6. **D36:** нулевая связка с taurus/llm **и nested `./llm`**; matrix = HTTP only; `sync:ai-matrix` retired.
 
 ## Проверка
 
 - `npm run test:structure`  
-- `npm run sync:ai-matrix:check` (если есть sibling `../llm`)  
+- `npm run sync:ai-matrix:check` → retired no-op (D36)  
 - Unit mesh/failover без регресса (уже зелёные).

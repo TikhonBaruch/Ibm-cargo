@@ -67,7 +67,7 @@ AGENTS.md                 # Правила для агентов
 12. **D29** — стратегия производителя / buyer-groups / master-data габаритов не подменяет CTA D27 ([`target-client.md`](./target-client.md)).
 13. **D32** — UI: сначала общепризнанный паттерн; не второй toast/drawer/shell ([`design-patterns.md`](./design-patterns.md)).
 14. **D33** — без письменного плана в `docs/knowledge/` код не писать; без записи в KB задачу не закрывать ([`feature-cycle.md`](./feature-cycle.md)).
-15. **D36** — изменения LBM/ibm-cargo и его БД **не** затрагивают файлы / БД / тома / секреты **taurus/llm**; свой `DATABASE_URL`; matrix только HTTP или sync → `containers/{llm,ocr}` ([`decisions.md`](./decisions.md) D36).
+15. **D36** — нулевая связка с taurus/llm **и nested `./llm`**; свой `DATABASE_URL`; matrix только HTTP; `containers/{llm,ocr}` LBM-owned ([`decisions.md`](./decisions.md) D36 · [`plan-zero-llm-coupling.md`](./plan-zero-llm-coupling.md)).
 
 ## Checklist перед фичей
 
@@ -81,7 +81,7 @@ AGENTS.md                 # Правила для агентов
 - [ ] Unit на инвариант в `src/lib/ved/__tests__/`?
 - [ ] Dual-path: Next + `containers/api`, если мутация domain?
 - [ ] `PROTECTED_V1_MUTATIONS` обновлён, если новая чувствительная мутация?
-- [ ] **D36:** changeset не трогает taurus/llm файлы/БД (свой `DATABASE_URL`; sync только → `containers/{llm,ocr}`)?
+- [ ] **D36:** нет связки с nested `./llm` / taurus (свой `DATABASE_URL`; только HTTP; не sync)?
 - [ ] При смене данных — [`data-model.md`](./data-model.md) / contracts?
 - [ ] LLM enrich / corpus lookup / local uploads / **precedent БД-2** / CSV·XLSX·PDF import / broker reclassify — [`ai-pipeline.md`](./ai-pipeline.md) + [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) + [`runbook.md`](./runbook.md); smoke `smoke:chain-llm` / `smoke:precedent-csv` / `smoke:csv-import` / `smoke:pdf-import` / `smoke:reclassify` / `smoke:precedent-vector` (skip OK) при compose `scale`?
 - [ ] OCR vision (`imageBase64`) — только после ключа; hold D30 · [`plan-ocr-vision.md`](./plan-ocr-vision.md); не включать в CTA D27?

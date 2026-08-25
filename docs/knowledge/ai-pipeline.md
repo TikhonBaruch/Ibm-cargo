@@ -74,7 +74,7 @@ Write-back: `approve` → `recordVerifiedFromApprove` (per item, fail-open). Е�
 
 ### Lookup-v1 (corpus)
 
-При старте: `TNVED_CODES_PATH` (compose: `../llm/data/tnved/normalized` → `/data/tnved/codes.jsonl`, ~13k leaves).
+При старте: `TNVED_CODES_PATH` (compose: `containers/llm/data/tnved/normalized` → `/data/tnved/codes.jsonl`). Без файла — fail-open.
 
 1. Lexical top-K (`LLM_LOOKUP_TOP_K`, default 10) по `titleRu`
 2. При `OPENAI_API_KEY`: prompt на русском — выбор **только** из candidates

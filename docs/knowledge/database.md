@@ -6,7 +6,7 @@ SSL на prod: `sslmode=require` (при необходимости `uselibpqcom
 Секреты и боевой хост только в `.env` / `.env.local` / Vercel (не коммитить).  
 Публичный `/login` по-прежнему показывает демо-учётки. Obscure SUPER path/email в коде закодированы; `robots.txt` obscure-пути не перечисляет.
 
-**D36:** эта БД и миграции/seed/`db push` относятся **только** к LBM (ibm-cargo). Запрещено нацеливать Prisma/Compose LBM на БД, volume или `.env` проекта **taurus/llm**. Матрица AI не шарит Postgres с LBM.
+**D36:** эта БД и миграции/seed/`db push` относятся **только** к LBM (ibm-cargo). Запрещено нацеливать Prisma/Compose LBM на БД, volume или `.env` **taurus/llm** или nested `./llm`. Матрица AI не шарит Postgres с LBM.
 
 SUPER UI: блок «Инфраструктура и доступы» читает `DATABASE_URL` и опциональные `OPS_*` через `GET /api/admin/infra` (только `SUPER_ADMIN`). Seed-пароль в эту панель не кладём.
 
