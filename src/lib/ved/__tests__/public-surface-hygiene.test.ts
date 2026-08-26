@@ -82,6 +82,21 @@ describe("public surface hygiene", () => {
     expect(src).not.toContain("HsCodeAutocomplete");
   });
 
+  it("keeps a gap between stepper numbers and labels (C13)", () => {
+    const order = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/OrderDetail.tsx"),
+      "utf8",
+    );
+    const css = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/lbm-cabinets-live.css"),
+      "utf8",
+    );
+    expect(order).toContain("wiz-step-lab");
+    expect(order).toContain("view-client");
+    expect(css).toContain("wiz-step-lab");
+    expect(css).toContain("0.4em");
+  });
+
   it("obscure login page has no role/CMS label", () => {
     const src = fs.readFileSync(
       path.join(repoRoot, "app", SUPER_ADMIN_BASE.slice(1), "login/page.tsx"),

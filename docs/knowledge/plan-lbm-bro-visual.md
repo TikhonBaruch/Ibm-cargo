@@ -265,6 +265,7 @@ app/client/**              # Next routes UI lab
 | **C10** | `/cabinet/new` = точная копия шага «Что ввозите?» макета. Остальной create-UI скрыт. [`plan-lbm-bro-newcalc-mock.md`](./plan-lbm-bro-newcalc-mock.md) | Не менять D8/D10/D11; 0 ₽ только chrome |
 | **C11** | Клик «Мультипозиция» на `/cabinet/new` = экран lab (модалка файла, карточки пакета). [`plan-lbm-bro-newcalc-multipack.md`](./plan-lbm-bro-newcalc-multipack.md) | Не менять D10 caps 1/3/10; не charge 3990/20 |
 | **C12** | Single `/cabinet/new`: панель «Уточняем для точности кода» (lab clarify) после описания + страна. [`plan-lbm-bro-newcalc-clarify.md`](./plan-lbm-bro-newcalc-clarify.md) | Не на `/cabinet/tnved`; не в multi; heuristic не переписывать |
+| **C13** | Stepper заявки: зазор «1 Товар 2 Оплата 3 Брокер 4 PDF». Drawer порталится в `body` (вне `.view-client`) — CSS labeled не жил | Не менять D8 шаги; не трогать broker/admin drawers |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -324,10 +325,11 @@ app/client/**              # Next routes UI lab
 | Фаза C10: `/cabinet/new` = копия шага «Что ввозите?» | **этот PR** · [`plan-lbm-bro-newcalc-mock.md`](./plan-lbm-bro-newcalc-mock.md) |
 | Фаза C11: клик «Мультипозиция» = пакетный экран макета | **этот PR** · [`plan-lbm-bro-newcalc-multipack.md`](./plan-lbm-bro-newcalc-multipack.md) |
 | Фаза C12: single `/cabinet/new` панель уточнений (lab clarify) | **этот PR** · [`plan-lbm-bro-newcalc-clarify.md`](./plan-lbm-bro-newcalc-clarify.md) |
+| Фаза C13: зазор в stepper заявки (`1 Товар`, не `1Товар`) | **этот PR** |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты; `/cabinet/new` шаг «Что ввозите?» (C10) + клик «Мультипозиция» (C11, D10 caps) + панель уточнений на single (C12, lab heuristic). Domain D8/D10/D11/D15 и live ТН ВЭД не менять.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты; `/cabinet/new` шаг «Что ввозите?» (C10) + клик «Мультипозиция» (C11, D10 caps) + панель уточнений на single (C12, lab heuristic); stepper заявки с зазором «1 Товар» (C13). Domain D8/D10/D11/D15 и live ТН ВЭД не менять.
 
 ### C9 — скрыть «Замысел дизайнера»
 
@@ -350,6 +352,10 @@ app/client/**              # Next routes UI lab
 ### C5 — бейдж hold скрыт
 
 Показ «Замысел дизайнера» скрыт (C9 = C5 `return null`). Публичный `/login` показывает только client / broker / admin.
+
+### C13 — зазор в stepper заявки
+
+`VedDetailDrawer` порталит OrderDetail в `document.body`, вне `.view-client`, поэтому `.view-client .wiz-steps.labeled button { gap: 6px }` не жил: `1Товар2Оплата3Брокер4PDF`. На `.order-full` добавлен `view-client`; подпись в `<span class="wiz-step-lab">`; live CSS `inline-flex` + `gap: 0.4em`.
 
 ### C4 — leftover inner panes
 

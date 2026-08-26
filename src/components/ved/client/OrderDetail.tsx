@@ -78,7 +78,7 @@ export function OrderDetail({
   const stepClass = stepper.labels.length === 3 ? "steps-3" : "steps-4";
 
   return (
-    <div className="order-full" style={embedded ? undefined : { marginTop: 24 }}>
+    <div className="order-full view-client" style={embedded ? undefined : { marginTop: 24 }}>
       <div className="order-full-top">
         <div>
           <span className="go-kicker">{selected.number}</span>
@@ -90,7 +90,7 @@ export function OrderDetail({
         {stepper.labels.map((lab, i) => (
           <button key={lab} type="button" className={wizardStepClass(i, stepper.current)} tabIndex={-1}>
             <b>{i + 1}</b>
-            {lab}
+            <span className="wiz-step-lab">{lab}</span>
           </button>
         ))}
       </div>

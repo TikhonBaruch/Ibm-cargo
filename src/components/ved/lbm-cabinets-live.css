@@ -57,14 +57,25 @@
   flex-wrap: wrap;
   align-items: center;
 }
+.view-client .wiz-steps.labeled.steps-3,
 .lbm-live-client .view-client .wiz-steps.labeled.steps-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+.view-client .wiz-steps.labeled.steps-4,
 .lbm-live-client .view-client .wiz-steps.labeled.steps-4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .lbm-live-client .view-client .wiz-steps.labeled b {
   border-radius: 50%;
+}
+/* C13: order drawer portals to body — keep «1 Товар» readable even if labeled chrome is thin. */
+.order-full .wiz-steps.labeled button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+.order-full .wiz-steps.labeled .wiz-step-lab {
+  margin-inline-start: 0.15em;
 }
 .lbm-live-client .wiz-hs-dashes {
   display: flex;

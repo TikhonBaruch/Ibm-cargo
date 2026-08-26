@@ -447,7 +447,7 @@ export function NewCalcPane({
         {WIZ_STEPS.map((lab, i) => (
           <button key={lab} type="button" className={i === 0 ? "on" : ""}>
             <b>{i + 1}</b>
-            {lab}
+            <span className="wiz-step-lab">{lab}</span>
           </button>
         ))}
       </div>
