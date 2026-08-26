@@ -9,7 +9,7 @@ import { detectCategory } from "./detect";
 
 type Db = Pick<
   PrismaClient,
-  "clarifyAttributeOption" | "clarifyDependencyEdge"
+  "clarifyHsFeedback" | "clarifyProductProfile" | "clarifyAttributeOption" | "clarifyDependencyEdge"
 >;
 
 export async function weightedClarificationQuestions(
