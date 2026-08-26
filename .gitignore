@@ -19,6 +19,9 @@ tsconfig.tsbuildinfo
 .env.*.local
 .env*
 !.env.example
+!.env.local.example
+!**/.env.example
+!**/.env.local.example
 lbm.txt
 
 # vercel / docker local

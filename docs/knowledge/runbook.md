@@ -4,13 +4,16 @@
 Карта режимов сред (as-is): [`environments.md`](./environments.md).  
 Preview / результаты prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./roadmap.md).
 
-## Local (Next + sweb DB)
+## Local (Next + dedicated LBM Postgres)
 
-1. `.env` / `.env.local`: `DATABASE_URL` (sweb), `NEXTAUTH_*`, optional `S3_*`, optional `PAYMENTS_SERVICE_URL`.
-2. `npx prisma db push` · `npm run db:seed` (тарифы, demo client/broker/admin, баланс demo-клиента).
-3. `npm run dev` → http://localhost:3000  
-4. Mock topup: без `PAYMENTS_SERVICE_URL` в non-prod **или** `ALLOW_MOCK_TOPUP=1` (не включать на prod без stub/payments).
-5. MVP signup: `/register` → `POST /api/v1/auth/register` (Company + User CLIENT, balance 0); broker только seed/admin.
+1. **`.env`**: `DATABASE_URL` (выделенная БД продукта), `NEXTAUTH_*`, `S3_*` (bucket `lbm`), optional `PAYMENTS_SERVICE_URL`.
+2. Опционально **`.env.local`**: localhost UI / `ALLOW_MOCK_TOPUP` — **не** override `DATABASE_URL` / `S3_*` (шаблон `.env.local.example`).
+3. `npx prisma db push` · `npm run db:seed` (тарифы, demo client/broker/admin, баланс demo-клиента).
+4. `npm run dev` → http://localhost:3000  
+5. Mock topup: без `PAYMENTS_SERVICE_URL` в non-prod **или** `ALLOW_MOCK_TOPUP=1` (не включать на prod без stub/payments).
+6. MVP signup: `/register` → `POST /api/v1/auth/register` (Company + User CLIENT, balance 0); broker только seed/admin.
+
+Карта слоёв / lab: [`docs/architecture-map.md`](../architecture-map.md).
 
 ## MVP bootstrap checklist
 
@@ -22,7 +25,7 @@ Preview / результаты prod smoke: [`staging.md`](./staging.md). Пла�
 | Vercel media | `S3_*` → VED uploads durable (`/api/v1/uploads`); optional `S3_OBJECT_ACL=public-read` so `CalculationItem.mediaUrl` works in `<img>` |
 | Compose local media | volume `ved_uploads` → `public/uploads/ved`; entrypoint `containers/web/docker-entrypoint.sh` chown; serve via `app/uploads/ved/[filename]/route.ts` (`GET /uploads/ved/*`) |
 | Compose LLM enrich | profile `scale`/`full`: service `llm` :4500; mount `./containers/llm/data/tnved/normalized:/data/tnved:ro`; `LLM_SERVICE_URL=http://llm:4500`; gate `llmEnrichEnabled` |
-| Compose DB (Mode B) | `api`/`web`/`worker` → **in-network** `postgresql://lbm:lbm@postgres:5432/lbm` (host `.env` `DATABASE_URL` на sweb **не** подставляется — нужно для `verified_determinations` write-back) |
+| Compose DB (Mode B) | `api`/`web`/`worker` → in-network `postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}` (defaults в `docker.env.example`). Host Mode A Next остаётся на **`.env` DATABASE_URL** (выделенная БД продукта) |
 | Precedent smoke | `npm run smoke:precedent-csv` после `smoke:chain-llm` (локальный postgres) |
 | Client shipping UI | off by default; `NEXT_PUBLIC_SHIPPING_UI=1` to show «Перевозка» |
 | Factory / manufacturer helpers | Vercel Pro: `NEXT_PUBLIC_FACTORY_UI=1` (Production+Preview). Local default off. Shows client «Завод», manufacturer `/pools`, SKU helpers, admin «Производители» |

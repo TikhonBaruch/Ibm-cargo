@@ -5,6 +5,7 @@
  *   npm run tnved:load
  *   npm run tnved:load -- --full
  */
+import { config as loadEnv } from "dotenv";
 import { readFileSync, existsSync } from "fs";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
@@ -13,6 +14,11 @@ import { TNVED_DEMO_RATE_SOURCE } from "../src/lib/ved/tnved-fns";
 import { TNVED_TWS_RATE_SOURCE } from "../src/lib/ved/tnved-tws";
 
 const root = path.resolve(__dirname, "..");
+loadEnv({ path: path.join(root, ".env") });
+// Keep dedicated DB/S3 from .env even if .env.local exists
+const dedicatedUrl = process.env.DATABASE_URL;
+loadEnv({ path: path.join(root, ".env.local"), override: true });
+if (dedicatedUrl) process.env.DATABASE_URL = dedicatedUrl;
 const CHUNK = Number(process.env.TNVED_LOAD_CHUNK || "80");
 const prisma = new PrismaClient();
 

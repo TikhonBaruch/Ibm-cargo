@@ -1,7 +1,7 @@
 # Анализ lbm-bro → план визуала LBM (Ibm-cargo)
 
 **Площадка:** `TikhonBaruch/Ibm-cargo` (продукт **LBM**).  
-**Код приложения:** Next at repo root (`app/` = App Router routes only; Vercel Root Directory = `.`).  
+**Код приложения:** `app/` (Vercel Root Directory).  
 **Инфра:** отдельная Postgres + S3 bucket `lbm`.  
 **Источник UI:** lbm-bro prototype · [`PLATFORMS.md`](../PLATFORMS.md)
 
@@ -22,9 +22,9 @@
 | Radius | 28px / 16px | Крупные «soft» карточки |
 | Proto-bar | Админ / Клиент / Брокер | Только lab, не prod |
 
-### 1.3. Тарифная модель дизайнера (≠ LBM D10)
+### 1.3. Тарифная модель дизайнера (≠ taurus D10)
 
-| Дизайн | Смысл | В LBM |
+| Дизайн | Смысл | В taurus |
 |--------|--------|----------|
 | **Код** (990 ₽, 1-й бесплатно) | Только HS | Нет freemium-гейта |
 | **Таможня** (2990) | HS + пошлина/НДС, без брокера | Ближе к EXPRESS без QC? |
@@ -54,9 +54,9 @@ lib/
   tariffs / payments / clarify-ai / tnved-lookup / order-pdf …
 ```
 
-### 1.6. Что есть только в дизайне (нет / hold в LBM domain)
+### 1.6. Что есть только в дизайне (нет / hold в taurus domain)
 
-| Модуль | Замысел дизайнера | Domain LBM |
+| Модуль | Замысел дизайнера | Domain taurus |
 |--------|-------------------|---------------|
 | **Честный знак** | Маркировка в заявке, брокер проверяет коды | Нет продукта |
 | **Таможенное оформление (ТО)** | Декларация / выпуск после кода | Нет полного модуля |
@@ -68,7 +68,7 @@ lib/
 | **Shipping на главной** | LTL/FTL CTA | Domain есть, UI default **off** (D27) |
 | Proto-bar ролей | Демо | Запрещён в prod |
 
-### 1.7. Что пересекается с LBM domain (можно подключать позже)
+### 1.7. Что пересекается с taurus (можно подключать позже)
 
 Create calc, pay, queue/claim, chat text, balance/ledger, PDF, HS search, broker work, attrs/upload/CSV — **сохранять**; визуал натягивать поверх API.
 
@@ -103,11 +103,13 @@ Create calc, pay, queue/claim, chat text, balance/ledger, PDF, HS search, broker
 14. Маппинг тарифов дизайн ↔ D10 (таблица в KB).
 15. Убрать stubs по мере готовности API; freemium/ЧЗ/ТО — ADR или hold.
 
+Дорожная карта слоёв (Phase 1–4): [`architecture-map.md`](./architecture-map.md) § «Дорожная карта внедрения фронта». Образец lab+API: справочник `/client/tnved`.
+
 ### Фаза E — Деплой ibm-cargo
 
-16. Vercel Root Directory = `lbm`.
-17. Отдельные env/БД (следующий шаг пользователя).
-18. Smoke: login → `/client` визуал; `/cabinet` функция.
+16. Vercel Root Directory = **`app`**.
+17. Env: выделенная Postgres + S3 bucket `lbm` (только ресурсы Ibm-cargo).
+18. Smoke: login → `/client` визуал; `/cabinet` функция; `/client/tnved` на своей БД.
 
 ---
 
@@ -129,5 +131,6 @@ Create calc, pay, queue/claim, chat text, balance/ledger, PDF, HS search, broker
 | DesignerStub + stubs на home / ship / clearance / chat / new | **done** |
 | Фаза B: orders / balance / brokers / tnved / company / faq / guide | **done** |
 | Фаза C: broker/admin skin | next |
-| Domain wire (DemoProvider → `/api/v1`) | later |
-| Vercel Root=`lbm` + push | later |
+| Domain wire (DemoProvider → `/api/v1`) | later · см. [`architecture-map.md`](./architecture-map.md) |
+| Vercel Root=`app` + своя БД/S3 | later |
+| ТН ВЭД lab → `/api/v1/tnved` | **done** (Phase 1 образец) |
