@@ -11,11 +11,30 @@ SSL на prod: `sslmode=require` (при необходимости `uselibpqcom
 SUPER UI: блок «Инфраструктура и доступы» читает `DATABASE_URL` и опциональные `OPS_*` через `GET /api/admin/infra` (только `SUPER_ADMIN`). Seed-пароль в эту панель не кладём.
 
 ```env
-DATABASE_URL="postgresql://USER:<PASSWORD>@HOST:PORT/DB?schema=public&connect_timeout=15&sslmode=require"
+DATABASE_URL="postgresql://newlsu_lbm:YOUR_PASSWORD@pg4.sweb.ru:5433/newlsu_lbm?schema=public&connect_timeout=15&sslmode=require"
 ```
 
-**As-is (Ibm-cargo / `newlsu_lbm` на sweb):** пароль БД **без** символа `#` — в `DATABASE_URL` его можно писать как есть, `%23` не нужен.  
-Если позже снова появятся спецсимволы в пароле (`#`, `@`, `/`, …) — URL-encode (`#` → `%23`). Не коммитить боевой URL.
+Пароль — только `.env` / `.env.local` / Vercel. Не коммитить боевой URL. План: [`plan-sweb-db-url.md`](./plan-sweb-db-url.md).
+
+### As-is sweb (проверено 2026-08-26)
+
+| Поле | Значение |
+|------|----------|
+| Провайдер | Timeweb / sweb PostgreSQL |
+| Host | `pg4.sweb.ru` |
+| Port | **5433** (SSL). `5432` открыт, но TLS нет — `sslmode=require` падает на handshake |
+| User | `newlsu_lbm` |
+| Database | `newlsu_lbm` |
+| SSL | `sslmode=require` |
+| Пароль | **без** `#` `@` `/` — в URL как есть, `%23` не нужен |
+
+Ловушки при копировании строки:
+
+1. Символ `#` в «пароле» — это **фрагмент URL**, не часть пароля. `new URL(...)` → `Invalid URL`; Prisma → Authentication failed.
+2. Лишнее двоеточие `:5433:/newlsu_lbm` — тоже `Invalid URL`. Нужно `:5433/newlsu_lbm`.
+3. `env -u DATABASE_URL` перед `npm run db:seed`, если в процессе уже стоит плейсхолдер Vercel `[SENSITIVE]` — `prisma.config.ts` / `loadEnvFile` его не перезапишет.
+
+Если позже в пароле появятся `#` `@` `/` — URL-encode (`#` → `%23`).
 
 ## Схема и миграции
 

@@ -19,7 +19,7 @@ Vercel: **Root = `.`**, **Framework = Services**.
 ## Старт (Mode A — канон MVP)
 
 ```bash
-cp .env.example .env   # DATABASE_URL на Postgres LBM only
+cp .env.example .env   # sweb: pg4.sweb.ru:5433/newlsu_lbm — подставить пароль; см. docs/knowledge/database.md
 npm ci
 npx prisma db push && npx prisma db seed
 npm run dev            # http://localhost:3000

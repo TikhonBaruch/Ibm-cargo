@@ -18,7 +18,7 @@
 ## Vercel Preview
 
 1. Push ветки → Vercel создаёт preview URL (`https://ibm-cargo-*-*.vercel.app`).
-2. Env: **зеркало** ключей этого приложения — как минимум `DATABASE_URL` на **seeded** Postgres `newlsu_lbm` (`client@example.com` / `demo1234`; пароль БД без `#`, encode не нужен), `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (origin preview, **не** `ibm-cargo.vercel.app`), `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, полный набор `S3_*`. Без seed вход даст «неверный пароль»; можно `/register`.
+2. Env: **зеркало** ключей этого приложения — как минимум `DATABASE_URL` на **seeded** Postgres `newlsu_lbm` (`pg4.sweb.ru:5433`, пароль без `#` — канон [`database.md`](./database.md); `client@example.com` / `demo1234`), `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (origin preview, **не** `ibm-cargo.vercel.app`), `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, полный набор `S3_*`. Без seed вход даст «неверный пароль»; можно `/register`.
 3. Smoke:
 
 ```bash
