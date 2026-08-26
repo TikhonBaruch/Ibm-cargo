@@ -3,9 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { StatusPill } from "../VedShell";
+import { ClarifyField } from "@/lbm-bro/components/clarify-field";
+import { Icon } from "@/lbm-bro/components/icon";
+import {
+  getClarificationQuestions,
+  type ClarificationQuestion,
+} from "@/lbm-bro/lib/clarify-ai";
 import type { Broker, Calc, CalcForm, CatalogSku, CreatePhase, FormItem, TariffOption } from "./types";
 import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
+import {
+  appendClarifyBlock,
+  compositionFromClarify,
+  unansweredClarifyParts,
+  wizardDraftForClarify,
+} from "./new-calc-clarify";
 import {
   MIN_PACK,
   allPackChrome,
@@ -48,8 +60,9 @@ function homeFromOrders(ordersHref: string): string {
 }
 
 /**
- * C10/C11: live `/cabinet/new` chrome = designer «Что ввозите?».
- * Multi-pack click matches lab `/client/new`; create still hits /api/v1 (D10 caps).
+ * C10–C12: live `/cabinet/new` chrome = designer «Что ввозите?».
+ * Single: lab clarify panel after description + country. Multi: C11 pack, no clarify.
+ * Create still hits /api/v1 (D10 caps).
  */
 export function NewCalcPane({
   form,
@@ -95,6 +108,10 @@ export function NewCalcPane({
   const [packReading, setPackReading] = useState(false);
   const [packFail, setPackFail] = useState(false);
   const [packDocName, setPackDocName] = useState("");
+  const [clarifyQs, setClarifyQs] = useState<ClarificationQuestion[]>([]);
+  const [clarifyAnswers, setClarifyAnswers] = useState<Record<string, string>>({});
+  const [clarifyLoading, setClarifyLoading] = useState(false);
+  const [clarifyAppliedIds, setClarifyAppliedIds] = useState<string[]>([]);
   const isPack = packMode === "multi";
   const packId = packIdForLiveCode(form.tariffCode || "STANDARD");
   const picked = resolvePackChrome(isPack && packId === "one" ? "m20" : packId, tariffs);
@@ -109,6 +126,9 @@ export function NewCalcPane({
   const validPack = packN >= MIN_PACK;
   const valid = isPack ? validPack : validSingle;
   const uploading = createPhase === "uploading" || packReading;
+  const goodsText = form.description || form.title;
+  const clarifyEnabled = !isPack;
+  const visibleClarifyQs = clarifyEnabled ? clarifyQs : [];
 
   useEffect(() => {
     if (!packModal) return;
@@ -118,6 +138,41 @@ export function NewCalcPane({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [packModal]);
+
+  useEffect(() => {
+    if (!clarifyEnabled) return;
+    let alive = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async clarify fetch kickoff
+    setClarifyLoading(true);
+    const t = window.setTimeout(async () => {
+      try {
+        const qs = await getClarificationQuestions({
+          wizard: wizardDraftForClarify(goodsText, countryLabel),
+          step: 1,
+        });
+        if (!alive) return;
+        setClarifyQs(qs);
+        setClarifyLoading(false);
+        setClarifyAppliedIds([]);
+        setClarifyAnswers((prev) => {
+          const next: Record<string, string> = {};
+          qs.forEach((q) => {
+            next[q.id] = prev[q.id] ?? "";
+          });
+          return next;
+        });
+      } catch {
+        if (!alive) return;
+        setClarifyQs([]);
+        setClarifyLoading(false);
+      }
+    }, 350);
+
+    return () => {
+      alive = false;
+      window.clearTimeout(t);
+    };
+  }, [clarifyEnabled, goodsText, countryLabel]);
 
   const setGoodsText = (raw: string) => {
     const title = raw.trim().split("\n")[0]?.slice(0, 120) || raw.trim().slice(0, 80);
@@ -131,6 +186,36 @@ export function NewCalcPane({
 
   const setCountry = (label: string) => {
     onForm({ country: label });
+  };
+
+  const applyClarifications = () => {
+    const parts = unansweredClarifyParts(visibleClarifyQs, clarifyAnswers, clarifyAppliedIds);
+    if (!parts.length) return;
+    const nextDesc = appendClarifyBlock(goodsText, parts);
+    const title = nextDesc.trim().split("\n")[0]?.slice(0, 120) || nextDesc.trim().slice(0, 80);
+    const composition = compositionFromClarify(
+      clarifyAnswers,
+      items[0]?.attrs?.composition || nextDesc,
+    );
+    onForm({ title, description: nextDesc });
+    const next = [...items];
+    if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
+    next[0] = {
+      ...next[0],
+      name: title || next[0].name,
+      attrs: {
+        ...next[0].attrs,
+        composition,
+      },
+    };
+    onItems(next);
+    setClarifyAppliedIds((ids) => [...ids, ...parts.map((p) => p.id)]);
+  };
+
+  const skipClarifications = () => {
+    if (!visibleClarifyQs.length) return;
+    setClarifyAppliedIds(visibleClarifyQs.map((q) => q.id));
+    setClarifyQs([]);
   };
 
   const pickPack = (id: PackId) => {
@@ -546,6 +631,88 @@ export function NewCalcPane({
                   value={form.description || form.title}
                   onChange={(e) => setGoodsText(e.target.value)}
                 />
+              </div>
+              <div className="field">
+                <label>Страна происхождения</label>
+                <select value={countryLabel} onChange={(e) => setCountry(e.target.value)}>
+                  {COUNTRY_OPTIONS.map((c) => (
+                    <option key={c.iso} value={c.label}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {visibleClarifyQs.length ? (
+                <div
+                  style={{
+                    marginTop: 14,
+                    border: "1.5px solid var(--line)",
+                    borderRadius: 18,
+                    padding: 16,
+                    background: "#fff",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: 12,
+                      alignItems: "baseline",
+                      marginBottom: 10,
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          fontFamily: "var(--display)",
+                          fontWeight: 800,
+                          letterSpacing: "-.02em",
+                        }}
+                      >
+                        Уточняем для точности кода
+                      </div>
+                      <div className="meta" style={{ marginTop: 4 }}>
+                        {clarifyLoading
+                          ? "ИИ формирует вопросы…"
+                          : "Ответьте, если хотите точнее подобрать ТН ВЭД"}
+                      </div>
+                    </div>
+                  </div>
+                  {visibleClarifyQs.map((q) => (
+                    <div key={q.id} className="field">
+                      <label>{q.text}</label>
+                      <ClarifyField
+                        question={q}
+                        value={clarifyAnswers[q.id] || ""}
+                        onChange={(v) => setClarifyAnswers((a) => ({ ...a, [q.id]: v }))}
+                      />
+                    </div>
+                  ))}
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={applyClarifications}
+                      disabled={clarifyLoading}
+                    >
+                      <Icon name="check" /> Применить
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      onClick={skipClarifications}
+                      disabled={clarifyLoading}
+                    >
+                      Пока пропустить
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+              <div className="field" style={{ marginTop: 22 }}>
+                <label>Тариф просчёта кода ТН ВЭД</label>
+                <p className="meta" style={{ margin: "0 0 10px" }}>
+                  Сначала считаем только код. Таможню — пошлину и НДС — после кода, отдельным шагом.
+                </p>
               </div>
             </>
           )}

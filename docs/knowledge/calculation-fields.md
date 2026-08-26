@@ -86,7 +86,7 @@ Broker **не** перезаписывает заполненные product attr
 
 Код: `hasRequiredCreateAttrs` в `product-description.ts`; refine в `POST /api/v1/calculations`; dual-path в `containers/api`; UI — NewCalcPane + Dashboard quick.
 
-**UI create (D32 contextual help):** progressive tip + labels на `/cabinet/new` — [`plan-newcalc-hints.md`](./plan-newcalc-hints.md). Heuristic **attr chips** (клик → только пустые поля) — [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md). **Field typeahead** — прецеденты + локальный словарь [`plan-precedent-suggest-service.md`](./plan-precedent-suggest-service.md) · [`plan-field-suggest.md`](./plan-field-suggest.md). Не wizard; UI не зовёт LLM matrix.
+**UI create (D32 contextual help):** progressive tip + labels на `/cabinet/new` — [`plan-newcalc-hints.md`](./plan-newcalc-hints.md). Heuristic **attr chips** (клик → только пустые поля) — [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md). **Field typeahead** — прецеденты + локальный словарь [`plan-precedent-suggest-service.md`](./plan-precedent-suggest-service.md) · [`plan-field-suggest.md`](./plan-field-suggest.md). **C12 fill-help** на single `/cabinet/new`: lab `ClarifyField` + `getClarificationQuestions` (не LLM-CTA; не на `/cabinet/tnved`; не в multi) — [`plan-lbm-bro-newcalc-clarify.md`](./plan-lbm-bro-newcalc-clarify.md). Не wizard API; UI не зовёт LLM matrix.
 
 **Реакция клиента:** `POST …/feedback` с `AI_READY`, если есть HS-черновик (не только DONE). 👍 на approve пишет `verified_determinations.quality=CLIENT_HELPFUL` (не новая колонка заявки).
 
