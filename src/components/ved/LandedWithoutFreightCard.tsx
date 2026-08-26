@@ -78,7 +78,7 @@ export function LandedWithoutFreightCard({
       <p className="mt-2 text-[11px] leading-snug text-[#7a7f89]">
         {showInvoice
           ? snap.note
-          : "Пошлина, НДС и сбор — живые цифры заявки. Стоимость партии в этой смете скрыта."
+          : "Пошлина, НДС и сбор — живые цифры заявки. Стоимость партии в этой смете скрыта."}
       </p>
     </div>
   );
