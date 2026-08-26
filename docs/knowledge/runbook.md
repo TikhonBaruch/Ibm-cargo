@@ -6,7 +6,7 @@ Preview / результаты prod smoke: [`staging.md`](./staging.md). Пла�
 
 ## Local (Next + sweb DB)
 
-1. **Корень репо** `.env` / `.env.local` (не `app/.env` — App Router): `DATABASE_URL` на sweb (канон и lookup [`database.md`](./database.md)), `NEXTAUTH_*`, optional `S3_*`, optional `PAYMENTS_SERVICE_URL`.
+1. **Корень репо** `.env` / `.env.local` — канон `DATABASE_URL` на sweb (lookup [`database.md`](./database.md)). Дубликаты для агентов: `app/.env`, `prisma/.env` (gitignored; Next/Prisma CLI грузят корень). `NEXTAUTH_*`, optional `S3_*`, optional `PAYMENTS_SERVICE_URL`.
 
    ```env
    DATABASE_URL="postgresql://newlsu_lbm:YOUR_PASSWORD@pg4.sweb.ru:5433/newlsu_lbm?schema=public&connect_timeout=15&sslmode=require"

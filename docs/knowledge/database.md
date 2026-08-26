@@ -38,17 +38,17 @@ DATABASE_URL="postgresql://newlsu_lbm:YOUR_PASSWORD@pg4.sweb.ru:5433/newlsu_lbm?
 
 ### Где агентам брать `DATABASE_URL`
 
-Порядок (пароль не печатать, `.env` не коммитить):
+Порядок (пароль не печатать, `.env*` не коммитить):
 
 | # | Источник | Когда |
 |---|----------|--------|
-| 1 | **repo-root** `.env` / `.env.local` | Канон. Next.js и `prisma.config.ts` читают **cwd = корень репо**. |
-| 2 | `prisma/.env` | Второй файл, который грузит Prisma CLI, если файл есть. |
-| — | `app/.env` | **Не читать и не создавать.** `app/` — App Router Next.js, не пакет. В репозитории ничто не загружает `app/.env`. |
-| — | git | Секреты gitignored (`.env*`). |
-| — | `vercel env pull` | В Cloud VM часто приходит плейсхолдер `[SENSITIVE]` — Prisma: URL must start with `postgresql://`. |
+| 1 | **`/workspace/.env`** (repo-root `.env` / `.env.local`) | **Канон.** Next.js и `prisma.config.ts` читают **cwd = корень репо**. Не удалять. |
+| 2 | **`/workspace/app/.env`** | **Дубликат канона** для агентов, которые открывают каталог `app/` (App Router, не пакет). Next/Prisma CLI этот файл **не** грузят. |
+| 3 | **`prisma/.env`** | Второй файл, который грузит Prisma CLI (`prisma.config.ts`), если файл есть. |
+| — | git | Секреты gitignored (`.env*` покрывает `app/.env` и `prisma/.env`). |
+| — | `vercel env pull` | Плейсхолдер `[SENSITIVE]` — Prisma: URL must start with `postgresql://`. Не источник пароля. |
 
-Проверка 2026-08-26 (Cloud VM): корневой `.env` — `$queryRaw SELECT current_database()` → `newlsu_lbm`. `app/.env` и `prisma/.env` **отсутствуют**. `process.env.DATABASE_URL=[SENSITIVE]` — fail. Сырой paste с `#` + `:5433:/db` — invalid port. `%23` и «пароль только до `#`» — Authentication failed.
+Проверка 2026-08-26 (Cloud VM): корневой `.env` — `$queryRaw SELECT current_database()` → `newlsu_lbm`. Тот же рабочий URL продублирован в `app/.env` и `prisma/.env` (gitignored). `process.env.DATABASE_URL=[SENSITIVE]` — fail. Сырой paste с `#` + `:5433:/db` — invalid port. `%23` и «пароль только до `#`» — Authentication failed.
 
 План: [`plan-sweb-db-url.md`](./plan-sweb-db-url.md).
 

@@ -17,8 +17,8 @@
 | Строка с `#` внутри «пароля» → Prisma Authentication failed | `#` — фрагмент URL, **не** символ пароля. WHATWG `new URL` на таком вводе бросает `Invalid URL`. `%23` вместо вырезанного `#` тоже **не** логинит |
 | `:5433:/dbname` | Лишнее двоеточие после порта — `Invalid URL` / invalid port |
 | Порт **5432** + `sslmode=require` | TLS handshake: server does not support TLS |
-| Агент читает `app/.env` → Authentication failed / «нет файла» | `app/` — App Router, **не** пакет. Prisma/Next грузят **корневой** `.env`. На Cloud VM 2026-08-26 `app/.env` нет |
-| `process.env.DATABASE_URL=[SENSITIVE]` | `vercel env pull` / инъекция Cloud. `loadEnvFile` не перезапишет — нужен `env -u DATABASE_URL` |
+| Агент читает `app/.env` → Authentication failed / «нет файла» | `app/` — App Router, не пакет; Prisma/Next грузят **корневой** `.env`. Для агентов, которые всё равно открывают `app/`, кладём **дубликат** канона в `app/.env` (gitignored). Корень не удалять. |
+| `process.env.DATABASE_URL=[SENSITIVE]` | `vercel env pull` / инъекция Cloud. `loadEnvFile` не перезапишет — нужен `env -u DATABASE_URL`. Не источник пароля. |
 | Пароль в KB / `.env.example` | Нарушение инварианта 8 (секреты не коммитить) |
 
 Не делать: коммитить боевой URL; нацеливать Prisma на taurus/llm (D36); dump/restore с taurus-liart (D37).
@@ -31,20 +31,20 @@
 | U2 | `.env.example` / `docker.env.example` — тот же host:port/db |
 | U3 | Runbook / deploy / Preview / environments — ссылка на канон |
 | U4 | Unit `parsePostgresUrl`: as-is shape + paste-pitfall `#` |
-| U5 | Lookup order для агентов: root `.env` / `.env.local` → `prisma/.env`; **не** `app/.env`; **не** git; **не** `vercel env pull` |
+| U5 | Lookup order для агентов: `/workspace/.env` (канон) → `/workspace/app/.env` (дубликат) → `prisma/.env`; **не** git; **не** `vercel env pull` |
 
 ## 4. Реализация
 
 - Канон: [`database.md`](./database.md) (host/port + **lookup order**).
 - Шаблон: `.env.example` (пароль = `YOUR_PASSWORD`).
-- Prisma CLI: `prisma.config.ts` грузит только `.env` и `prisma/.env` из **cwd** (корень репо), не `app/.env`.
+- Prisma CLI: `prisma.config.ts` грузит `.env` и `prisma/.env` из **cwd** (корень репо). `app/.env` — gitignored дубликат для агентов; CLI его не грузит.
 - Тест: `src/lib/ved/__tests__/infra-access.test.ts` + `src/lib/__tests__/vercel-root.test.ts` (список файлов в `prisma.config.ts`).
 
-Локально: `cp .env.example .env`, подставить пароль, `env -u DATABASE_URL npm run db:seed` (если в процессе уже висит плейсхолдер Vercel `[SENSITIVE]`, `loadEnvFile` его не перезапишет).
+Локально: `cp .env.example .env`, подставить пароль, при необходимости `cp .env app/.env` и `cp .env prisma/.env`, затем `env -u DATABASE_URL npm run db:seed` (если в процессе уже висит плейсхолдер Vercel `[SENSITIVE]`, `loadEnvFile` его не перезапишет).
 
-Не создавать `app/.env` «чтобы Next его увидел» — не увидит. Не сбрасывать пароль sweb из агента (нет панели).
+`app/.env` не заменяет корень: Next его не увидит. Не сбрасывать пароль sweb из агента (нет панели).
 
 ## 5. Закрытие
 
 KB обновлён; пароль не в diff. Проверка: unit `infra-access` + `vercel-root` + `npm run test:ci`.  
-Live 2026-08-26: корневой `.env` (hash-stripped) — Prisma auth OK на `newlsu_lbm`; `app/.env` отсутствует.
+Live 2026-08-26: корневой `.env` (hash-stripped) — Prisma auth OK на `newlsu_lbm`; тот же URL в `app/.env` и `prisma/.env` (gitignored дубликаты).
