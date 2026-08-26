@@ -59,6 +59,21 @@ describe("public surface hygiene", () => {
     expect(isSuperAdminLoginPath(`${SUPER_ADMIN_BASE}/login`)).toBe(true);
   });
 
+  it("locks live /cabinet/new to designer first-step chrome (C10)", () => {
+    const src = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/NewCalcPane.tsx"),
+      "utf8",
+    );
+    expect(src).toContain("Что ввозите?");
+    expect(src).toContain("Первый код бесплатный");
+    expect(src).toContain("Бесплатно");
+    expect(src).toContain("Первый просчёт — 0 ₽");
+    expect(src).toContain("Перетащите фото товара или сделайте снимок");
+    expect(src).toContain("По заявке");
+    expect(src).not.toContain("tariff-mini");
+    expect(src).not.toContain("ProductCsvImport");
+  });
+
   it("obscure login page has no role/CMS label", () => {
     const src = fs.readFileSync(
       path.join(repoRoot, "app", SUPER_ADMIN_BASE.slice(1), "login/page.tsx"),
