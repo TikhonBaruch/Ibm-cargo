@@ -102,6 +102,8 @@ export type ChatSend = string | {
   durationSec: number;
 };
 
+import type { ProductAttrs } from "@/lib/ved/product-description";
+
 export type WizardDraft = {
   desc: string;
   country: string;
@@ -118,6 +120,8 @@ export type WizardDraft = {
   packSize: number;
   lines: HsLine[];
   codePack: "one" | "m20" | "m100";
+  /** Clarify attrsPatch seed for Phase 3 domain create. */
+  attrs?: ProductAttrs;
 };
 
 export const EMPTY_WIZARD: WizardDraft = {
