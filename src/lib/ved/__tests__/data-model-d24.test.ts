@@ -92,9 +92,11 @@ describe("D24 TN VED helpers", () => {
   });
 
   it("searchTnvedCodes builds OR on title, notes, and code prefix", async () => {
-    const findMany = vi.fn().mockResolvedValue([{ code: "8471" }]);
+    const findMany = vi.fn().mockResolvedValue([
+      { code: "8471", codeDisplay: "84 71", titleRu: "машины", notes: null, level: 4, isLeaf: false },
+    ]);
     const { searchTnvedCodes } = await import("../tnved");
-    await searchTnvedCodes({ tnvedCode: { findMany } } as never, { q: "8471", limit: 10 });
+    const items = await searchTnvedCodes({ tnvedCode: { findMany } } as never, { q: "8471", limit: 10 });
     expect(findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
@@ -105,9 +107,161 @@ describe("D24 TN VED helpers", () => {
             { notes: { contains: "8471", mode: "insensitive" } },
           ]),
         }),
-        take: 10,
+        take: 40,
       })
     );
+    expect(items[0]?.code).toBe("8471");
+  });
+
+  it("scoreTnvedSearchHit boosts laptop expand toward 847130", async () => {
+    const { scoreTnvedSearchHit } = await import("../tnved");
+    const leaf = {
+      code: "8471300000",
+      codeDisplay: "8471 30 000 0",
+      titleRu: "машины вычислительные портативные массой не более 10 кг",
+      notes: "ноутбук",
+      level: 10,
+      isLeaf: true,
+    };
+    const other = {
+      code: "6404199000",
+      codeDisplay: "6404 19 900 0",
+      titleRu: "обувь с верхом из текстиля",
+      notes: null,
+      level: 10,
+      isLeaf: true,
+    };
+    const opts = {
+      q: "ноутбук ThinkPad",
+      digits: "",
+      expandPrefixes: ["847130"],
+      expandTokens: ["портативн", "вычислительн"],
+    };
+    expect(scoreTnvedSearchHit(leaf, opts)).toBeGreaterThan(scoreTnvedSearchHit(other, opts));
+  });
+
+  it("searchTnvedCodes pins ноутбук via hs-aliases to 847130", async () => {
+    const findMany = vi.fn()
+      .mockResolvedValueOnce([
+        {
+          code: "6404199000",
+          codeDisplay: "6404 19 900 0",
+          titleRu: "обувь",
+          notes: null,
+          level: 10,
+          isLeaf: true,
+        },
+        {
+          code: "8471300000",
+          codeDisplay: "8471 30 000 0",
+          titleRu: "машины вычислительные портативные",
+          notes: null,
+          level: 10,
+          isLeaf: true,
+        },
+      ]);
+    const { searchTnvedCodes } = await import("../tnved");
+    const items = await searchTnvedCodes({ tnvedCode: { findMany } } as never, {
+      q: "ноутбук",
+      limit: 10,
+    });
+    expect(items[0]?.code).toBe("8471300000");
+    expect(items[0]?.matchMeta?.kind).toBe("alias");
+    expect(items[0]?.matchMeta?.score).toBeGreaterThanOrEqual(2000);
+    expect(items[0]?.matchMeta?.why).toMatch(/Ноутбук/i);
+  });
+
+  it("searchTnvedCodes pins iphone via alias to 851713", async () => {
+    const findMany = vi.fn().mockResolvedValue([
+      {
+        code: "8517120000",
+        codeDisplay: "8517 12 000 0",
+        titleRu: "телефоны прочие",
+        notes: null,
+        level: 10,
+        isLeaf: true,
+      },
+      {
+        code: "8517130000",
+        codeDisplay: "8517 13 000 0",
+        titleRu: "смартфоны",
+        notes: null,
+        level: 10,
+        isLeaf: true,
+      },
+    ]);
+    const { searchTnvedCodes } = await import("../tnved");
+    const items = await searchTnvedCodes({ tnvedCode: { findMany } } as never, {
+      q: "iphone",
+      limit: 10,
+    });
+    expect(items[0]?.code.startsWith("851713")).toBe(true);
+    expect(items[0]?.matchMeta?.kind).toBe("alias");
+  });
+
+  it("searchTnvedCodes pins кросовки typo via alias to 640411", async () => {
+    const { matchAlias } = await import("../tnved-aliases");
+    const hit = matchAlias("кросовки");
+    expect(hit?.alias.code).toBe("6404110000");
+
+    const findMany = vi.fn().mockResolvedValue([
+      {
+        code: "6404110000",
+        codeDisplay: "6404 11 000 0",
+        titleRu: "спортивная обувь текстиль",
+        notes: null,
+        level: 10,
+        isLeaf: true,
+      },
+    ]);
+    const { searchTnvedCodes } = await import("../tnved");
+    const items = await searchTnvedCodes({ tnvedCode: { findMany } } as never, {
+      q: "кросовки",
+      limit: 5,
+    });
+    expect(items[0]?.code.startsWith("640411")).toBe(true);
+    expect(items[0]?.matchMeta?.kind).toBe("alias");
+  });
+
+  it("laptop alias exclude blocks pin when query has планшет", async () => {
+    const { scoreAlias, HS_ALIASES, matchAlias } = await import("../tnved-aliases");
+    const laptop = HS_ALIASES.find((a) => a.keys.includes("ноутбук"));
+    expect(laptop).toBeTruthy();
+    expect(scoreAlias("ноутбук планшет", laptop!)).toBe(0);
+    expect(scoreAlias("планшет iPad", laptop!)).toBe(0);
+
+    const findMany = vi.fn().mockResolvedValue([
+      {
+        code: "8471300000",
+        codeDisplay: "8471 30 000 0",
+        titleRu: "портативные",
+        notes: null,
+        level: 10,
+        isLeaf: true,
+      },
+    ]);
+    const { searchTnvedCodes } = await import("../tnved");
+    const laptopHit = matchAlias("ноутбук ThinkPad");
+    expect(laptopHit?.alias.code).toBe("8471300000");
+    const items = await searchTnvedCodes({ tnvedCode: { findMany } } as never, {
+      q: "ноутбук ThinkPad",
+      limit: 5,
+    });
+    expect(items[0]?.matchMeta?.kind).toBe("alias");
+  });
+
+  it("searchTnvedCodes keeps code-prefix dominant for 8471", async () => {
+    const findMany = vi.fn().mockResolvedValue([
+      { code: "8471", codeDisplay: "84 71", titleRu: "машины", notes: null, level: 4, isLeaf: false },
+      { code: "8471300000", codeDisplay: "8471 30 000 0", titleRu: "портативные", notes: null, level: 10, isLeaf: true },
+    ]);
+    const { searchTnvedCodes } = await import("../tnved");
+    const items = await searchTnvedCodes({ tnvedCode: { findMany } } as never, {
+      q: "8471",
+      limit: 10,
+    });
+    expect(items.some((i) => i.code.startsWith("8471"))).toBe(true);
+    expect(items[0]?.matchMeta?.kind).toBe("code");
   });
 
   it("getTnvedByCode normalizes display form", async () => {

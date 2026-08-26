@@ -1016,3 +1016,82 @@ model ServiceCall {
   @@index([calculationId])
   @@map("service_calls")
 }
+
+/// Clarify-hints P2/P3: successful product descriptions for typeahead (product_profiles).
+model ClarifyProductProfile {
+  id                  String   @id @default(cuid())
+  canonicalText       String   @db.Text
+  category            String
+  confidence          Float    @default(0.5)
+  hsCodeDigits        String?
+  usageCount          Int      @default(1)
+  attrsSnapshot       Json?
+  sourceCalculationId String?
+  sourceItemId        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([category])
+  @@index([hsCodeDigits])
+  @@index([usageCount])
+  @@index([updatedAt])
+  @@map("clarify_product_profiles")
+}
+
+/// Chip catalogs with learned weights (attribute_options). Seeded from code map; P2 reweights.
+model ClarifyAttributeOption {
+  id          String   @id @default(cuid())
+  category    String
+  attrKey     String
+  optionId    String
+  label       String
+  searchValue String
+  weight      Float    @default(1)
+  skipCount   Int      @default(0)
+  pickCount   Int      @default(0)
+  attrsPatch  Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([category, attrKey, optionId])
+  @@index([category, attrKey])
+  @@map("clarify_attribute_options")
+}
+
+/// Question tree edges with weights (dependency_edges). parentAttr null = category root.
+model ClarifyDependencyEdge {
+  id          String   @id @default(cuid())
+  category    String
+  parentAttr  String   @default("")
+  parentValue String   @default("")
+  childAttr   String
+  weight      Float    @default(1)
+  askCount    Int      @default(0)
+  skipCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([category, parentAttr, parentValue, childAttr])
+  @@index([category])
+  @@map("clarify_dependency_edges")
+}
+
+/// Broker-confirmed HS linked to description + clarify answers (hs_feedback).
+model ClarifyHsFeedback {
+  id                  String   @id @default(cuid())
+  category            String
+  description         String   @db.Text
+  answersJson         Json?
+  tokens              String?  @db.Text
+  hsCodeFinal         String
+  hsCodeDigits        String
+  sourceCalculationId String?
+  sourceItemId        String?
+  approvedByUserId    String?
+  createdAt           DateTime @default(now())
+
+  @@index([category, createdAt])
+  @@index([hsCodeDigits])
+  @@index([createdAt])
+  @@map("clarify_hs_feedback")
+}

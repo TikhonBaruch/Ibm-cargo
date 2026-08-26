@@ -28,6 +28,7 @@ import { handleCatalogRoutes, hydrateItemsWithPublishedSkus } from "./catalog-sk
 import { handleFactoryOrderRoutes, handleManufacturerOrderRoutes } from "./sku-orders.js";
 import { handleManufacturerDirectoryRoutes } from "./manufacturer-directory.js";
 import { assembleTnvedCard, hsCodeAncestors } from "./tnved-card.js";
+import { listTnvedChapters, searchTnvedCodesRanked } from "./tnved-search.js";
 import { suggestProductAttrs } from "./attr-suggest.js";
 import { shouldEnqueueAiDrain, runAiDrainPipeline } from "./ai-pipeline.js";
 import { isAllowedMediaUrl } from "./media-url.js";
@@ -3095,25 +3096,31 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, updated);
     }
 
+    if (req.method === "GET" && url.pathname === "/v1/tnved/chapters") {
+      const user = authorize(req);
+      if (!user) return json(res, 401, { error: "Unauthorized" });
+      const payload = await listTnvedChapters(prisma);
+      return json(res, 200, payload);
+    }
+
     if (req.method === "GET" && url.pathname === "/v1/tnved/search") {
       const user = authorize(req);
       if (!user) return json(res, 401, { error: "Unauthorized" });
       const q = String(url.searchParams.get("q") || "").trim();
-      if (!q) return json(res, 200, { items: [] });
+      const codePrefix = String(url.searchParams.get("codePrefix") || "").trim();
+      if (!q && !codePrefix) return json(res, 200, { items: [], ranked: true });
       const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 20), 1), 50);
       const leafOnly = url.searchParams.get("leafOnly") === "1";
-      const digits = q.replace(/\D/g, "");
-      const or = [
-        { titleRu: { contains: q, mode: "insensitive" } },
-        { notes: { contains: q, mode: "insensitive" } },
-      ];
-      if (digits.length >= 2) or.push({ code: { startsWith: digits } });
-      const items = await prisma.tnvedCode.findMany({
-        where: { isActive: true, OR: or, ...(leafOnly ? { isLeaf: true } : {}) },
-        take: limit,
-        orderBy: [{ level: "desc" }, { code: "asc" }],
+      const levelRaw = Number(url.searchParams.get("level") || "0");
+      const level = [2, 4, 6, 8, 10].includes(levelRaw) ? levelRaw : undefined;
+      const payload = await searchTnvedCodesRanked(prisma, {
+        q,
+        limit,
+        leafOnly,
+        codePrefix,
+        level,
       });
-      return json(res, 200, { items });
+      return json(res, 200, payload);
     }
 
     const tnvedCodeMatch = url.pathname.match(/^\/v1\/tnved\/([^/]+)$/);

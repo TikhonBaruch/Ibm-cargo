@@ -22,7 +22,7 @@ export type PrecedentSuggestRequest = z.infer<typeof precedentSuggestRequestSche
 export type PrecedentSuggestHit = {
   value: string;
   label?: string;
-  source: "precedent" | "past_calc" | "local";
+  source: "precedent" | "past_calc" | "local" | "profile";
   score?: number;
 };
 

@@ -50,6 +50,7 @@ import {
   sumItemQty,
 } from "@/lib/ved/landed-cost";
 import { recordVerifiedFromApprove } from "@/lib/ved/verified-determinations";
+import { recordClarifyFeedbackFromApprove } from "@/lib/ved/clarify-hints/learning";
 import {
   assertBrokerAcceptingJobs,
   assertNotInMaintenance,
@@ -1014,6 +1015,24 @@ export async function approveCalculation(opts: {
     });
   } catch {
     /* fail-open: precedent write-back must not block approve */
+  }
+
+  try {
+    await recordClarifyFeedbackFromApprove(prisma, {
+      calculationId: calc.id,
+      approvedByUserId: opts.brokerUserId,
+      title: calc.title,
+      description: calc.description,
+      items: updated.row.items.map((i) => ({
+        itemId: i.id,
+        name: i.name,
+        description: i.description,
+        attrs: sanitizeProductAttrs(i.attrs as ProductAttrs) || undefined,
+        hsCodeFinal: i.hsCodeFinal || opts.hsCodeFinal,
+      })),
+    });
+  } catch {
+    /* fail-open: clarify learning must not block approve */
   }
 
   return updated.row;

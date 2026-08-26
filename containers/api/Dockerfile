@@ -12,6 +12,7 @@ COPY prisma ./prisma
 COPY containers/api/node_modules ./node_modules
 COPY containers/api/src ./src
 COPY src/lib/ved/tnved-layer-g.json ./src/tnved-layer-g.json
+COPY src/lbm-bro/lib/hs-aliases.json ./src/hs-aliases.json
 
 # Client generated at image build — not at container start (Factor III / V).
 RUN npx prisma generate --schema=./prisma/schema.prisma \
