@@ -59,7 +59,7 @@ describe("public surface hygiene", () => {
     expect(isSuperAdminLoginPath(`${SUPER_ADMIN_BASE}/login`)).toBe(true);
   });
 
-  it("locks live /cabinet/new to designer first-step chrome (C10)", () => {
+  it("locks live /cabinet/new to designer first-step chrome (C10/C11)", () => {
     const src = fs.readFileSync(
       path.join(repoRoot, "src/components/ved/client/NewCalcPane.tsx"),
       "utf8",
@@ -70,9 +70,11 @@ describe("public surface hygiene", () => {
     expect(src).toContain("Первый просчёт — 0 ₽");
     expect(src).toContain("Перетащите фото товара или сделайте снимок");
     expect(src).toContain("По заявке");
+    expect(src).toContain("Мультипозиция");
+    expect(src).toContain("Прикрепить файл");
+    expect(src).toContain("pack-modal");
     expect(src).not.toContain("tariff-mini");
     expect(src).not.toContain("ProductCsvImport");
-    expect(src).not.toContain("Страна происхождения");
     expect(src).not.toContain("HsCodeAutocomplete");
   });
 

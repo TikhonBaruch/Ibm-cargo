@@ -117,6 +117,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-lbm-bro-visual.md     # визуал lbm-bro: live chrome + lab /client
   plan-lbm-bro-honest-skin.md # C8–C9: скрыть инвойс/qty/вес; блок «Замысел дизайнера» off
   plan-lbm-bro-newcalc-mock.md # C10: точная копия шага «Что ввозите?»
+  plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   containerization.md        # C1–C5, Compose vs Vercel, инвентарь as-is/будущее
   cabinets/                  # UI-инвентарь client/broker/admin + correctness + ux-saas + ui-guide
   …

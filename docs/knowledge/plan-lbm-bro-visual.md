@@ -263,6 +263,7 @@ app/client/**              # Next routes UI lab
 | **C8** | Честные stub + скрыть инвойс/qty/вес. [`plan-lbm-bro-honest-skin.md`](./plan-lbm-bro-honest-skin.md) | Не выдумывать KPI; не менять API required; цена тарифа и пошлина/НДС остаются |
 | **C9** | Скрыть блок «Замысел дизайнера» (`DesignerStub` → `null`, бейдж `.is-stub` off). Инвойс/qty/вес как в C8 | Не удалять call sites |
 | **C10** | `/cabinet/new` = точная копия шага «Что ввозите?» макета. Остальной create-UI скрыт. [`plan-lbm-bro-newcalc-mock.md`](./plan-lbm-bro-newcalc-mock.md) | Не менять D8/D10/D11; 0 ₽ только chrome |
+| **C11** | Клик «Мультипозиция» на `/cabinet/new` = экран lab (модалка файла, карточки пакета). [`plan-lbm-bro-newcalc-multipack.md`](./plan-lbm-bro-newcalc-multipack.md) | Не менять D10 caps 1/3/10; не charge 3990/20 |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -320,10 +321,11 @@ app/client/**              # Next routes UI lab
 | Фаза C8: честные stub + скрыть инвойс/qty/вес | **этот PR** · [`plan-lbm-bro-honest-skin.md`](./plan-lbm-bro-honest-skin.md) |
 | Фаза C9: блок «Замысел дизайнера» скрыт | **этот PR** |
 | Фаза C10: `/cabinet/new` = копия шага «Что ввозите?» | **этот PR** · [`plan-lbm-bro-newcalc-mock.md`](./plan-lbm-bro-newcalc-mock.md) |
+| Фаза C11: клик «Мультипозиция» = пакетный экран макета | **этот PR** · [`plan-lbm-bro-newcalc-multipack.md`](./plan-lbm-bro-newcalc-multipack.md) |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты; брокер/админ = тёмный ops. Domain D8/D10/D11/D15 и live ТН ВЭД не менять.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты; `/cabinet/new` шаг «Что ввозите?» (C10) + клик «Мультипозиция» (C11, D10 caps). Domain D8/D10/D11/D15 и live ТН ВЭД не менять.
 
 ### C9 — скрыть «Замысел дизайнера»
 

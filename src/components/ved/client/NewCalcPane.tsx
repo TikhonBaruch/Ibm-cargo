@@ -1,11 +1,23 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { StatusPill } from "../VedShell";
 import type { Broker, Calc, CalcForm, CatalogSku, CreatePhase, FormItem, TariffOption } from "./types";
 import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
+import {
+  MIN_PACK,
+  allPackChrome,
+  fmtRub,
+  liveCodeForPack,
+  namedItemCount,
+  packIdForLiveCode,
+  previewPackFile,
+  resolvePackChrome,
+  type PackId,
+  type PackMode,
+} from "./new-calc-pack";
 
 const COUNTRY_OPTIONS = [
   { label: "Китай", iso: "CN" },
@@ -36,9 +48,8 @@ function homeFromOrders(ordersHref: string): string {
 }
 
 /**
- * C10: live `/cabinet/new` chrome = designer step «Что ввозите?» (скрин макета).
- * Extra create UI (tariffs, CSV, qty, country select, attrs grid) is hidden.
- * Domain create unchanged: origin CN + composition from description.
+ * C10/C11: live `/cabinet/new` chrome = designer «Что ввозите?».
+ * Multi-pack click matches lab `/client/new`; create still hits /api/v1 (D10 caps).
  */
 export function NewCalcPane({
   form,
@@ -73,38 +84,164 @@ export function NewCalcPane({
   onUpload: (file: File, index: number) => Promise<void>;
 }) {
   void brokers;
-  void tariffs;
   void catalogSkus;
   const fileRef = useRef<HTMLInputElement>(null);
   const camRef = useRef<HTMLInputElement>(null);
+  const packFileRef = useRef<HTMLInputElement>(null);
+  const packCamRef = useRef<HTMLInputElement>(null);
   const homeHref = homeFromOrders(ordersHref);
+  const [packMode, setPackMode] = useState<PackMode>("single");
+  const [packModal, setPackModal] = useState(false);
+  const [packReading, setPackReading] = useState(false);
+  const [packFail, setPackFail] = useState(false);
+  const [packDocName, setPackDocName] = useState("");
+  const isPack = packMode === "multi";
+  const packId = packIdForLiveCode(form.tariffCode || "STANDARD");
+  const picked = resolvePackChrome(isPack && packId === "one" ? "m20" : packId, tariffs);
+  const packs = allPackChrome(tariffs);
   const desc = form.description.trim() || form.title.trim();
   const photoUrl = items[0]?.mediaUrl;
-  const docCount = photoUrl ? 1 : 0;
+  const packN = namedItemCount(items);
+  const docCount = isPack ? (packDocName ? 1 : 0) : photoUrl ? 1 : 0;
   const countryLabel =
     COUNTRY_OPTIONS.some((c) => c.label === form.country) ? form.country : form.country || "Китай";
-  const valid = desc.length >= 5;
-  const uploading = createPhase === "uploading";
+  const validSingle = desc.length >= 5;
+  const validPack = packN >= MIN_PACK;
+  const valid = isPack ? validPack : validSingle;
+  const uploading = createPhase === "uploading" || packReading;
+
+  useEffect(() => {
+    if (!packModal) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setPackModal(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [packModal]);
 
   const setGoodsText = (raw: string) => {
     const title = raw.trim().split("\n")[0]?.slice(0, 120) || raw.trim().slice(0, 80);
     onForm({ title, description: raw });
+    if (isPack) return;
     const next = [...items];
     if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
     next[0] = { ...next[0], name: title || next[0].name };
     onItems(next);
   };
 
-  const addFiles = (list: FileList | null) => {
+  const setCountry = (label: string) => {
+    onForm({ country: label });
+  };
+
+  const pickPack = (id: PackId) => {
+    if (id === "one") {
+      setPackMode("single");
+      setPackModal(false);
+      setPackFail(false);
+      onForm({ tariffCode: "STANDARD" });
+      const first = items[0] ? { ...items[0] } : { name: "", qty: 1, unitPrice: 0 };
+      onItems([first]);
+      return;
+    }
+    setPackMode("multi");
+    onForm({ tariffCode: liveCodeForPack(id) });
+    if (namedItemCount(items) >= MIN_PACK) {
+      setPackModal(false);
+      return;
+    }
+    setPackModal(true);
+  };
+
+  const applyPackItems = (next: FormItem[], filename: string) => {
+    const iso = originIso(countryLabel);
+    const capped = next.slice(0, picked.max).map((it) => ({
+      ...it,
+      qty: it.qty || 1,
+      unitPrice: it.unitPrice || 0,
+      attrs: {
+        ...it.attrs,
+        originCountry: it.attrs?.originCountry || iso,
+        composition: it.attrs?.composition?.trim() || it.name,
+      },
+    }));
+    onItems(capped);
+    const title = capped[0]?.name.slice(0, 120) || filename;
+    if (!form.description.trim()) {
+      onForm({ title, description: `Пакет ${capped.length} позиций` });
+    } else {
+      onForm({ title });
+    }
+  };
+
+  const addPhoto = (list: FileList | null) => {
     const file = list?.[0];
     if (!file) return;
     void onUpload(file, 0);
   };
 
+  const addPackFile = async (list: FileList | null) => {
+    const file = list?.[0];
+    if (!file || packReading) return;
+    setPackReading(true);
+    setPackFail(false);
+    setPackDocName(file.name);
+    try {
+      const { items: parsed } = await previewPackFile(file, {
+        tariffCode: picked.liveCode,
+        country: countryLabel,
+      });
+      if (parsed.length < MIN_PACK) {
+        setPackFail(true);
+        onItems([{ name: "", qty: 1, unitPrice: 0 }]);
+        return;
+      }
+      applyPackItems(parsed, file.name);
+      setPackFail(false);
+    } catch {
+      setPackFail(true);
+      onItems([{ name: "", qty: 1, unitPrice: 0 }]);
+    } finally {
+      setPackReading(false);
+    }
+  };
+
+  const resetMulti = () => {
+    setPackFail(false);
+    setPackDocName("");
+    onItems([{ name: "", qty: 1, unitPrice: 0 }]);
+    onForm({ title: "", description: "" });
+    setPackModal(false);
+  };
+
   const tryCreate = () => {
     if (!valid) return;
-    const title = form.title.trim() || desc.slice(0, 80);
     const iso = originIso(countryLabel);
+    if (isPack) {
+      const nextItems = items
+        .filter((it) => it.name.trim())
+        .slice(0, picked.max)
+        .map((it) => ({
+          ...it,
+          name: it.name.trim(),
+          attrs: {
+            ...it.attrs,
+            originCountry: it.attrs?.originCountry || iso,
+            composition: it.attrs?.composition?.trim() || it.name.trim() || desc,
+          },
+        }));
+      const title = form.title.trim() || `Пакет ${nextItems.length} позиций`;
+      void onCreate({
+        items: nextItems,
+        form: {
+          title,
+          description: desc || title,
+          country: countryLabel,
+          tariffCode: picked.liveCode,
+        },
+      });
+      return;
+    }
+    const title = form.title.trim() || desc.slice(0, 80);
     const base = items[0] || { name: "", qty: 1, unitPrice: 0 };
     const nextItems: FormItem[] = [
       {
@@ -123,6 +260,88 @@ export function NewCalcPane({
     });
   };
 
+  const dropzone = (
+    kind: "photo" | "pack",
+    inputFile: typeof fileRef,
+    inputCam: typeof camRef,
+  ) => (
+    <>
+      <input
+        ref={inputFile}
+        type="file"
+        accept={
+          kind === "photo"
+            ? "image/jpeg,image/png,image/webp,image/*"
+            : ".csv,.xlsx,.xls,.pdf,image/jpeg,image/png,image/webp,text/csv,application/pdf"
+        }
+        hidden
+        onChange={(e) => {
+          if (kind === "photo") addPhoto(e.target.files);
+          else void addPackFile(e.target.files);
+          e.target.value = "";
+        }}
+      />
+      <input
+        ref={inputCam}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden
+        onChange={(e) => {
+          if (kind === "photo") addPhoto(e.target.files);
+          else void addPackFile(e.target.files);
+          e.target.value = "";
+        }}
+      />
+      <div
+        className={`dropzone${uploading ? " reading" : ""}`}
+        onClick={() => inputFile.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (kind === "photo") addPhoto(e.dataTransfer.files);
+          else void addPackFile(e.dataTransfer.files);
+        }}
+      >
+        <strong>
+          {packReading
+            ? "Читаем файл…"
+            : kind === "photo"
+              ? uploading
+                ? "Загружаем фото…"
+                : "Перетащите фото товара или сделайте снимок"
+              : "Перетащите invoice, packing list или таблицу"}
+        </strong>
+        <span className="meta">
+          {kind === "photo"
+            ? "JPG, PNG, WEBP · ИИ опишет товар · до 12 МБ"
+            : "CSV, PDF, JPG · читаем реальные позиции · до 12 МБ"}
+        </span>
+        <div className="dropzone-actions" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => inputFile.current?.click()}
+            disabled={uploading}
+          >
+            Выбрать файлы
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => inputCam.current?.click()}
+            disabled={uploading}
+          >
+            Снять фото
+          </button>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <section className="wiz-full">
       <div className="wiz-head">
@@ -131,7 +350,9 @@ export function NewCalcPane({
             ← На главную
           </Link>
           <span className="go-kicker" style={{ display: "block", marginTop: 14 }}>
-            Первый код бесплатный · этот просчёт только ТН ВЭД
+            {isPack
+              ? "Просчёт кода ТН ВЭД ЕАЭС"
+              : "Первый код бесплатный · этот просчёт только ТН ВЭД"}
           </span>
           <h2>Что ввозите?</h2>
         </div>
@@ -148,118 +369,186 @@ export function NewCalcPane({
 
       <div className="wiz-grid">
         <div className="wiz-main card" style={{ margin: 0 }}>
-          <p className="wiz-lead">Одна позиция: описание товара и документы для кода ТН ВЭД.</p>
+          <p className="wiz-lead">
+            {isPack
+              ? "Прикрепите инвойс, таблицу или фото — читаем реальные позиции и считаем стоимость."
+              : "Одна позиция: описание товара и документы для кода ТН ВЭД."}
+          </p>
 
-          <div className="free-calc-banner">
-            <span className="free-calc-stamp">1 бесплатно</span>
-            <div>
-              <strong>Первый просчёт — 0 ₽</strong>
-              <p>
-                Один расчёт одной позиции бесплатный. Все следующие заявки уже по тарифам «Код»,
-                «Таможня» или «Под ключ».
-              </p>
+          {isPack ? null : (
+            <div className="free-calc-banner">
+              <span className="free-calc-stamp">1 бесплатно</span>
+              <div>
+                <strong>Первый просчёт — 0 ₽</strong>
+                <p>
+                  Один расчёт одной позиции бесплатный. Все следующие заявки уже по тарифам «Код»,
+                  «Таможня» или «Под ключ».
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="field">
             <label>Режим</label>
             <div className="amt-chips">
-              <button type="button" className="on">
-                Одна позиция · 1 бесплатно
+              <button type="button" className={!isPack ? "on" : ""} onClick={() => pickPack("one")}>
+                Одна позиция{isPack ? "" : " · 1 бесплатно"}
               </button>
-              <button type="button">Мультипозиция</button>
-            </div>
-          </div>
-
-          <div className="field">
-            <label>Фото товара</label>
-            <p className="meta" style={{ margin: "0 0 10px" }}>
-              Загрузите фото — ИИ распознает товар, заполнит описание и спросит, чего не хватает для
-              кода.
-            </p>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/*"
-              hidden
-              onChange={(e) => {
-                addFiles(e.target.files);
-                e.target.value = "";
-              }}
-            />
-            <input
-              ref={camRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              hidden
-              onChange={(e) => {
-                addFiles(e.target.files);
-                e.target.value = "";
-              }}
-            />
-            <div
-              className={`dropzone${uploading ? " reading" : ""}`}
-              onClick={() => fileRef.current?.click()}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = "copy";
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                addFiles(e.dataTransfer.files);
-              }}
-            >
-              <strong>
-                {uploading ? "Загружаем фото…" : "Перетащите фото товара или сделайте снимок"}
-              </strong>
-              <span className="meta">JPG, PNG, WEBP · ИИ опишет товар · до 12 МБ</span>
-              <div className="dropzone-actions" onClick={(e) => e.stopPropagation()}>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => fileRef.current?.click()}
-                  disabled={uploading}
-                >
-                  Выбрать файлы
+              <button type="button" className={isPack ? "on" : ""} onClick={() => pickPack("m20")}>
+                Мультипозиция
+              </button>
+              {isPack ? (
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => setPackModal(true)}>
+                  Прикрепить файл
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => camRef.current?.click()}
-                  disabled={uploading}
-                >
-                  Снять фото
-                </button>
-              </div>
+              ) : null}
             </div>
-            {photoUrl ? (
-              <div className="doc-list">
-                <div className="doc-chip">
-                  <a href={photoUrl} target="_blank" rel="noreferrer" className="doc-thumb">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={photoUrl} alt="" />
-                  </a>
-                  <div className="doc-info">
-                    <b>Фото товара</b>
-                    <span className="meta">прикреплено</span>
-                  </div>
-                  <span className="pill ok">Фото</span>
-                </div>
+            {isPack && packN >= MIN_PACK ? (
+              <div className="pack-quote">
+                <strong>В файле {packN} позиций</strong>
+                <span>
+                  Пакет «{picked.name}»: {fmtRub(picked.priceRub)} ₽
+                  <small> · до {picked.max} строк</small>
+                </span>
               </div>
+            ) : isPack ? (
+              packDocName || packFail ? (
+                <span className="meta pack-read-fail">
+                  Не удалось вычитать позиции. Нужен CSV/Excel или более чёткое фото таблицы
+                  инвойса.
+                </span>
+              ) : (
+                <span className="meta">
+                  Прикрепите invoice, CSV или фото — читаем реальные строки и считаем стоимость.
+                </span>
+              )
             ) : null}
           </div>
 
-          <div className="field">
-            <label>Наименование и описание</label>
-            <textarea
-              rows={5}
-              style={{ minHeight: 132, resize: "vertical" }}
-              placeholder="Или опишите сами: ноутбуки Lenovo ThinkPad, 14'' — либо загрузите фото выше"
-              value={form.description || form.title}
-              onChange={(e) => setGoodsText(e.target.value)}
-            />
-          </div>
+          {isPack ? (
+            <>
+              <div className="field">
+                <label>Комментарий к партии (необязательно)</label>
+                <textarea
+                  rows={3}
+                  placeholder="Например: поставка электроники, инвойс на 15 SKU"
+                  value={form.description}
+                  onChange={(e) => setGoodsText(e.target.value)}
+                />
+              </div>
+              <div className="field">
+                <label>Страна происхождения</label>
+                <select value={countryLabel} onChange={(e) => setCountry(e.target.value)}>
+                  {COUNTRY_OPTIONS.map((c) => (
+                    <option key={c.iso} value={c.label}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>Документы и фото</label>
+                {packModal ? null : dropzone("pack", packFileRef, packCamRef)}
+                {packDocName ? (
+                  <div className="doc-list">
+                    <div className="doc-chip">
+                      <div className="doc-info">
+                        <b>{packDocName}</b>
+                        <span className="meta">{packN >= MIN_PACK ? `${packN} позиций` : "прикреплён"}</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              {packN >= MIN_PACK ? (
+                <div className="field">
+                  <label>Позиции и характеристики</label>
+                  <div className="doc-list">
+                    {items
+                      .filter((it) => it.name.trim())
+                      .map((it, i) => (
+                        <div key={`${it.name}-${i}`} className="doc-chip">
+                          <div className="doc-info">
+                            <b>
+                              {i + 1}. {it.name}
+                            </b>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ) : null}
+              <div className="field" style={{ marginTop: 22 }}>
+                <label>Тариф просчёта кода ТН ВЭД</label>
+                <p className="meta" style={{ margin: "0 0 10px" }}>
+                  Сначала считаем только код. Таможню — пошлину и НДС — после кода, отдельным шагом.
+                </p>
+                <div className="tariff-pick">
+                  {packs.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className={`${picked.id === t.id ? "on" : ""}${t.featured ? " featured" : ""}`}
+                      onClick={() => pickPack(t.id)}
+                    >
+                      <span className="tariff-tag">{t.tag}</span>
+                      <strong>{t.name}</strong>
+                      <div className="tariff-price">
+                        {fmtRub(t.priceRub)} ₽
+                        <small>{t.id === "one" ? "/ 1 позиция" : `/ до ${t.max} поз.`}</small>
+                      </div>
+                      <p>{t.summary}</p>
+                      <ul>
+                        {t.includes.map((line) => (
+                          <li key={line}>{line}</li>
+                        ))}
+                      </ul>
+                    </button>
+                  ))}
+                </div>
+                <div className="tariff-note">
+                  <strong>{picked.name}:</strong> {fmtRub(picked.priceRub)} ₽ за просчёт кодов, без
+                  таможни.
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="field">
+                <label>Фото товара</label>
+                <p className="meta" style={{ margin: "0 0 10px" }}>
+                  Загрузите фото — ИИ распознает товар, заполнит описание и спросит, чего не хватает
+                  для кода.
+                </p>
+                {dropzone("photo", fileRef, camRef)}
+                {photoUrl ? (
+                  <div className="doc-list">
+                    <div className="doc-chip">
+                      <a href={photoUrl} target="_blank" rel="noreferrer" className="doc-thumb">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={photoUrl} alt="" />
+                      </a>
+                      <div className="doc-info">
+                        <b>Фото товара</b>
+                        <span className="meta">прикреплено</span>
+                      </div>
+                      <span className="pill ok">Фото</span>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              <div className="field">
+                <label>Наименование и описание</label>
+                <textarea
+                  rows={5}
+                  style={{ minHeight: 132, resize: "vertical" }}
+                  placeholder="Или опишите сами: ноутбуки Lenovo ThinkPad, 14'' — либо загрузите фото выше"
+                  value={form.description || form.title}
+                  onChange={(e) => setGoodsText(e.target.value)}
+                />
+              </div>
+            </>
+          )}
 
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
             <button
@@ -270,20 +559,45 @@ export function NewCalcPane({
             >
               {createBusyLabel(createPhase, busy)}
             </button>
+            {isPack ? (
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={resetMulti}
+                disabled={!packDocName && !packN && !form.description.trim()}
+              >
+                Очистить
+              </button>
+            ) : null}
           </div>
+          {isPack && packN < MIN_PACK ? (
+            <p className="meta" style={{ marginTop: 8 }}>
+              Прикрепите файл — минимум {MIN_PACK} позиции, в этом пакете до {picked.max}.
+            </p>
+          ) : null}
         </div>
 
         <aside className="wiz-side">
           <div className="order-hs" style={{ minHeight: 220, gridTemplateColumns: "1fr" }}>
             <div className="order-hs-copy">
-              <span className="gt-kicker">Первый просчёт · 0 ₽</span>
+              <span className="gt-kicker">
+                {isPack
+                  ? packN
+                    ? `Пакет ${packN} позиций · после оплаты`
+                    : "Код после оплаты"
+                  : "Первый просчёт · 0 ₽"}
+              </span>
               <div className="wiz-hs-dashes" aria-hidden>
                 <i />
                 <i />
                 <i />
                 <i />
               </div>
-              <p>Один расчёт бесплатный. Следующие заявки — по тарифам.</p>
+              <p>
+                {isPack
+                  ? "Приложите файл — после оплаты AI проставит код каждой строке"
+                  : "Один расчёт бесплатный. Следующие заявки — по тарифам."}
+              </p>
             </div>
           </div>
           <div className="card" style={{ margin: 0 }}>
@@ -296,15 +610,25 @@ export function NewCalcPane({
               <span>Документы</span>
               <strong>{docCount}</strong>
             </div>
+            {isPack ? (
+              <div className="pay-row">
+                <span>Позиций</span>
+                <strong>{packN}</strong>
+              </div>
+            ) : null}
             <div className="pay-row">
               <span>Тариф</span>
-              <strong>первый · 0 ₽</strong>
+              <strong>
+                {isPack ? `${picked.name} · ${fmtRub(picked.priceRub)} ₽` : "первый · 0 ₽"}
+              </strong>
             </div>
             <p className="meta" style={{ marginTop: 10 }}>
               Этот просчёт — только код ТН ВЭД. Таможню считаем отдельно.
             </p>
             <p className="meta" style={{ marginTop: 10 }}>
-              Первый просчёт бесплатно. Дальше 990 ₽ за один код.
+              {isPack
+                ? picked.summary
+                : "Первый просчёт бесплатно. Дальше 990 ₽ за один код."}
             </p>
           </div>
         </aside>
@@ -330,6 +654,65 @@ export function NewCalcPane({
           ) : null}
         </div>
       )}
+
+      {packModal ? (
+        <div className="pack-modal-back" onClick={() => setPackModal(false)}>
+          <div
+            className="pack-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="pack-modal-title"
+          >
+            <div className="pack-modal-head">
+              <span className="go-kicker">Мультипозиция</span>
+              <button
+                type="button"
+                className="pack-modal-x"
+                aria-label="Закрыть"
+                onClick={() => setPackModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <h3 id="pack-modal-title">Файл с позициями</h3>
+            <p className="meta" style={{ margin: "0 0 14px" }}>
+              CSV, Excel, PDF или фото инвойса. Читаем строки с документа и считаем стоимость
+              просчёта.
+            </p>
+            {dropzone("pack", packFileRef, packCamRef)}
+            {packN >= MIN_PACK ? (
+              <div className="pack-quote" style={{ marginTop: 14 }}>
+                <strong>В файле {packN} позиций</strong>
+                <span>
+                  Пакет «{picked.name}»: {fmtRub(picked.priceRub)} ₽
+                  <small> · до {picked.max} строк</small>
+                </span>
+              </div>
+            ) : packDocName || packFail ? (
+              <p className="meta pack-read-fail">
+                Не удалось вычитать позиции. Попробуйте CSV/Excel или более чёткое фото таблицы.
+              </p>
+            ) : null}
+            <div className="pack-modal-actions">
+              <button type="button" className="btn btn-ghost" onClick={resetMulti}>
+                Очистить
+              </button>
+              <button type="button" className="btn btn-ghost" onClick={() => setPackModal(false)}>
+                Позже
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={packN < MIN_PACK}
+                onClick={() => setPackModal(false)}
+              >
+                Готово
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
