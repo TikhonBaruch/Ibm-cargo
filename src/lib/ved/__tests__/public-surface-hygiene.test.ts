@@ -23,13 +23,13 @@ describe("public surface hygiene", () => {
     expect(visible).toMatch(/Демо: client@example.com \/ broker@example.com \/ admin@example.com/);
   });
 
-  it("shows designer-stub badge on hold modules (C8 honest slots)", () => {
+  it("hides designer-stub badge while keeping restore markup in source", () => {
     const src = fs.readFileSync(
       path.join(repoRoot, "src/lbm-bro/components/designer-stub.tsx"),
       "utf8",
     );
-    expect(src).toContain("Замысел дизайнера");
-    expect(src).not.toMatch(/export function DesignerStub[\s\S]*return null/);
+    expect(src).toContain("return null");
+    expect(src).toContain("Restore visual");
   });
 
   it("hides manufacturer tile on designer home while keeping restore markup", () => {

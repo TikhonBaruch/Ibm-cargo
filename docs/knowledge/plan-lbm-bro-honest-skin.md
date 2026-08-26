@@ -8,7 +8,7 @@
 Live-кабинеты уже в chrome lbm-bro (C3–C7). Нужно:
 
 1. **Правдивое ядро D27** — описание → ТН ВЭД → оплата тарифа → брокер → PDF. Цифры только live.
-2. **Честные заглушки** — hold-модули занимают те же слоты, что в макете; бейдж «Замысел дизайнера» снова виден (откат C5 `return null`).
+2. **Честные заглушки** — hold-модули занимают те же слоты, что в макете. Бейдж «Замысел дизайнера» **скрыт** (C9: `DesignerStub` → `null`, как C5).
 3. **Временно скрыть** стоимость партии (инвойс), количество и вес. API поля остаются optional. Цена **тарифа** и пошлина/НДС — оставить (ядро сметы).
 
 Цель сходства: визуал слотов ~95% за счёт stub; достоверность продукта ~80–85% (ядро живое, hold не притворяется).
@@ -28,12 +28,13 @@ Live-кабинеты уже в chrome lbm-bro (C3–C7). Нужно:
 | ID | Что |
 |----|-----|
 | C8a | `commercialInvoiceUiEnabled()` = `false` (restore: `true`). Скрыть инвойс/qty/вес на client/broker/admin UI; default create без `18000`. |
-| C8b | Вернуть визуал `DesignerStub`. Слот hold = плитка + note. Не fake GMV. |
+| C8b | (история) вернуть визуал `DesignerStub`. Слот hold = плитка + note. |
 | C8c | KB: этот план + секция C8 в `plan-lbm-bro-visual.md` + `calculation-fields.md`. |
+| C9 | Скрыть блок «Замысел дизайнера»: `DesignerStub` → `null`; бейдж `.is-stub::after` выключен. Плитки hold остаются. Restore — комментарий в `designer-stub.tsx`. |
 
 ## 4. Проверка
 
-Unit: cabinet-features + public-surface (stub badge снова в исходнике как live return, не `return null`) + factorySkuSnapshotLine `includeWeight: false`.  
-`npm run test:ci`. Ручной: `/cabinet` — слоты ЧЗ/ТО/сопровождение видны как stub; create без полей инвойса/qty/веса; тарифная цена на месте; смета без строки инвойса (итого = платежи).
+Unit: cabinet-features + public-surface (`DesignerStub` → `null` + Restore visual в исходнике) + factorySkuSnapshotLine `includeWeight: false`.  
+`npm run test:ci`. Ручной: `/cabinet` без блоков «Замысел дизайнера»; create без полей инвойса/qty/веса; тарифная цена на месте; смета без строки инвойса (итого = платежи).
 
-Restore: `commercialInvoiceUiEnabled` → `true`; при необходимости снова спрятать бейдж — отдельный ADR.
+Restore: `commercialInvoiceUiEnabled` → `true`; визуал stub — раскомментировать aside в `designer-stub.tsx`.

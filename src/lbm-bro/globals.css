@@ -2375,19 +2375,5 @@
 .designer-stub-body .btn { pointer-events: none; }
 .go-tile.is-stub {
   position: relative;
-  outline: 1px dashed rgba(43, 114, 244, 0.35);
 }
-.go-tile.is-stub::after {
-  content: "замысел";
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #1a5fd4;
-  background: var(--blue-soft);
-  padding: 2px 7px;
-  border-radius: 999px;
-}
+/* C9: hide «замысел» chip on hold tiles. Restore outline + ::after from git history. */

@@ -261,6 +261,7 @@ app/client/**              # Next routes UI lab
 | **C6** | Chrome производителя скрыт в визуале: плитка «Производитель» на главной, admin nav, фильтр в «Клиентах». `designerManufacturerChromeEnabled()` = `false`. Код/роуты живые | Не выключать `FACTORY_UI`, не удалять pane `/factory` |
 | **C7** | `manufacturerName` временно **не** required на create (поле остаётся). Restore: вернуть ключ в `hasRequiredCreateAttrs` | Не убирать поле из формы; origin + composition остаются R |
 | **C8** | Честные stub + скрыть инвойс/qty/вес. [`plan-lbm-bro-honest-skin.md`](./plan-lbm-bro-honest-skin.md) | Не выдумывать KPI; не менять API required; цена тарифа и пошлина/НДС остаются |
+| **C9** | Скрыть блок «Замысел дизайнера» (`DesignerStub` → `null`, бейдж `.is-stub` off). Инвойс/qty/вес как в C8 | Не удалять call sites |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -312,18 +313,23 @@ app/client/**              # Next routes UI lab
 | Фаза C2: pane visual + `DesignerStub` | **этот PR** |
 | Фаза C3: 5-tile IA + шапка макета + extra-роуты + stub hold | **этот PR** |
 | Фаза C4: leftover inner panes → `.card` / `.stats` / `table.data` / `.field` / `.chat-box` | **этот PR** |
-| Фаза C5: бейдж hold скрыт (`DesignerStub` → `null`); hint `/login` = client / broker / admin | superseded C8 |
+| Фаза C5: бейдж hold скрыт (`DesignerStub` → `null`); hint `/login` = client / broker / admin | superseded C8, restored C9 |
 | Фаза C6: chrome производителя скрыт в визуале (`designerManufacturerChromeEnabled` = false) | **этот PR** |
 | Фаза C7: `manufacturerName` optional на create | **этот PR** |
 | Фаза C8: честные stub + скрыть инвойс/qty/вес | **этот PR** · [`plan-lbm-bro-honest-skin.md`](./plan-lbm-bro-honest-skin.md) |
+| Фаза C9: блок «Замысел дизайнера» скрыт | **этот PR** |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; hold-модули — видимый `DesignerStub` в том же слоте (C8); инвойс/qty/вес временно скрыты; брокер/админ = тёмный ops. Domain D8/D10/D11/D15 и live ТН ВЭД не менять.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты; брокер/админ = тёмный ops. Domain D8/D10/D11/D15 и live ТН ВЭД не менять.
+
+### C9 — скрыть «Замысел дизайнера»
+
+`DesignerStub` снова `return null` (как C5). Бейдж `.go-tile.is-stub::after` выключен. Call sites и плитки hold остаются. Restore: aside в `designer-stub.tsx`.
 
 ### C8 — честные stub + скрыть инвойс / qty / вес
 
-`DesignerStub` снова рисует бейдж «Замысел дизайнера» (откат C5 `return null`). Слоты ЧЗ / ТО / freemium / сопровождение на главной занимают место макета, не притворяются API.
+Исторически C8 вернул видимый бейдж. **C9 снова скрыл.** Слоты ЧЗ / ТО / freemium / сопровождение на главной занимают место макета без note-блока.
 
 `commercialInvoiceUiEnabled()` = `false`: в UI нет стоимости партии, количества, цены единицы, нетто. Default create больше не шлёт `18000`. Цена **тарифа** и пошлина/НДС остаются. Смета «без доставки» в этом режиме показывает только платежи (не инвойс→ТС). Restore флага: `return true`.
 
@@ -337,7 +343,7 @@ app/client/**              # Next routes UI lab
 
 ### C5 — бейдж hold скрыт
 
-Показ «Замысел дизайнера» **вернулся в C8** (честные слоты). Исторически C5 прятал бейдж через `return null`. Публичный `/login` показывает только client / broker / admin.
+Показ «Замысел дизайнера» скрыт (C9 = C5 `return null`). Публичный `/login` показывает только client / broker / admin.
 
 ### C4 — leftover inner panes
 
