@@ -266,6 +266,7 @@ app/client/**              # Next routes UI lab
 | **C11** | Клик «Мультипозиция» на `/cabinet/new` = экран lab (модалка файла, карточки пакета). [`plan-lbm-bro-newcalc-multipack.md`](./plan-lbm-bro-newcalc-multipack.md) | Не менять D10 caps 1/3/10; не charge 3990/20 |
 | **C12** | Single `/cabinet/new`: панель «Уточняем для точности кода» (lab clarify) после описания + страна. [`plan-lbm-bro-newcalc-clarify.md`](./plan-lbm-bro-newcalc-clarify.md) | Не на `/cabinet/tnved`; не в multi; heuristic не переписывать |
 | **C13** | Stepper заявки: зазор «1 Товар 2 Оплата 3 Брокер 4 PDF». Drawer порталится в `body` (вне `.view-client`) — CSS labeled не жил | Не менять D8 шаги; не трогать broker/admin drawers |
+| **C14** | На карточке заявки показать страну происхождения (header + ТН ВЭД блок). Селект create — полный каталог `ORIGIN_COUNTRIES`, не 6 пунктов | Не менять API required; не выдумывать страну если её нет |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -326,10 +327,11 @@ app/client/**              # Next routes UI lab
 | Фаза C11: клик «Мультипозиция» = пакетный экран макета | **этот PR** · [`plan-lbm-bro-newcalc-multipack.md`](./plan-lbm-bro-newcalc-multipack.md) |
 | Фаза C12: single `/cabinet/new` панель уточнений (lab clarify) | **этот PR** · [`plan-lbm-bro-newcalc-clarify.md`](./plan-lbm-bro-newcalc-clarify.md) |
 | Фаза C13: зазор в stepper заявки (`1 Товар`, не `1Товар`) | **этот PR** |
+| Фаза C14: страна происхождения на карточке заявки | **этот PR** |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты; `/cabinet/new` шаг «Что ввозите?» (C10) + клик «Мультипозиция» (C11, D10 caps) + панель уточнений на single (C12, lab heuristic); stepper заявки с зазором «1 Товар» (C13). Domain D8/D10/D11/D15 и live ТН ВЭД не менять.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты; `/cabinet/new` шаг «Что ввозите?» (C10) + клик «Мультипозиция» (C11, D10 caps) + панель уточнений на single (C12, lab heuristic); stepper заявки с зазором «1 Товар» (C13); страна происхождения на карточке заявки (C14). Domain D8/D10/D11/D15 и live ТН ВЭД не менять.
 
 ### C9 — скрыть «Замысел дизайнера»
 
@@ -356,6 +358,10 @@ app/client/**              # Next routes UI lab
 ### C13 — зазор в stepper заявки
 
 `VedDetailDrawer` порталит OrderDetail в `document.body`, вне `.view-client`, поэтому `.view-client .wiz-steps.labeled button { gap: 6px }` не жил: `1Товар2Оплата3Брокер4PDF`. На `.order-full` добавлен `view-client`; подпись в `<span class="wiz-step-lab">`; live CSS `inline-flex` + `gap: 0.4em`.
+
+### C14 — страна происхождения на заявке
+
+На live OrderDetail страна была только в нижнем card (`Страна:`) и часто как ISO. Показать **Страна происхождения · Китай** под заголовком и в блоке ТН ВЭД (`originCountryRuLabel` из `field-suggest`: calc.country или `items[0].attrs.originCountry`). Селект `/cabinet/new` берёт тот же каталог, плюс «ЕС».
 
 ### C4 — leftover inner panes
 

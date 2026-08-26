@@ -187,6 +187,44 @@ function scoreEntry(entry: FieldSuggestEntry, q: string): number {
   return 3;
 }
 
+function originCountryRuName(entry: FieldSuggestEntry): string {
+  const fromLabel = entry.label?.split("·")[1]?.trim();
+  if (fromLabel) return fromLabel;
+  const ru = (entry.aliases || []).find((a) => /[а-яё]/i.test(a));
+  if (ru) return ru.charAt(0).toUpperCase() + ru.slice(1);
+  return entry.value;
+}
+
+/** RU labels for the create-form country select (same catalog as origin suggestions). */
+export function originCountrySelectOptions(): { label: string; iso: string }[] {
+  const rows = ORIGIN_COUNTRIES.map((e) => ({
+    label: originCountryRuName(e),
+    iso: e.value,
+  }));
+  if (!rows.some((r) => r.label === "ЕС")) {
+    const de = rows.findIndex((r) => r.iso === "DE");
+    rows.splice(de < 0 ? rows.length : de + 1, 0, { label: "ЕС", iso: "DE" });
+  }
+  return rows;
+}
+
+/** Human country for order chrome. Accepts ISO, RU name, or «CN · Китай». */
+export function originCountryRuLabel(...raw: Array<string | null | undefined>): string {
+  const v = raw.map((x) => (x || "").trim()).find(Boolean) || "";
+  if (!v) return "";
+  const n = norm(v);
+  if (n === "ес" || n === "eu") return "ЕС";
+  for (const e of ORIGIN_COUNTRIES) {
+    const ru = originCountryRuName(e);
+    if (norm(e.value) === n || norm(ru) === n) return ru;
+    if (e.label && norm(e.label) === n) return ru;
+    if ((e.aliases || []).some((a) => norm(a) === n)) return ru;
+  }
+  const dotted = v.includes("·") ? v.split("·")[1]?.trim() : "";
+  if (dotted && dotted !== v) return originCountryRuLabel(dotted);
+  return v;
+}
+
 /** Filter curated suggestions for a field kind. Empty query → first `limit` entries. */
 export function filterFieldSuggestions(
   kind: FieldSuggestKind,

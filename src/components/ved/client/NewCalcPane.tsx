@@ -11,7 +11,7 @@ import {
 } from "@/lbm-bro/lib/clarify-ai";
 import type { Broker, Calc, CalcForm, CatalogSku, CreatePhase, FormItem, TariffOption } from "./types";
 import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
-import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
+import { originCountrySelectOptions, resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import {
   appendClarifyBlock,
   compositionFromClarify,
@@ -31,14 +31,7 @@ import {
   type PackMode,
 } from "./new-calc-pack";
 
-const COUNTRY_OPTIONS = [
-  { label: "Китай", iso: "CN" },
-  { label: "Турция", iso: "TR" },
-  { label: "ЕС", iso: "DE" },
-  { label: "Корея", iso: "KR" },
-  { label: "Вьетнам", iso: "VN" },
-  { label: "Индия", iso: "IN" },
-] as const;
+const COUNTRY_OPTIONS = originCountrySelectOptions();
 
 const WIZ_STEPS = ["Товар", "Бесплатно", "Код"] as const;
 
@@ -50,7 +43,7 @@ function createBusyLabel(phase: CreatePhase, busy: boolean): string {
 }
 
 function originIso(country: string): string {
-  const hit = COUNTRY_OPTIONS.find((c) => c.label === country);
+  const hit = COUNTRY_OPTIONS.find((c) => c.label === country || c.iso === country);
   if (hit) return hit.iso;
   return resolveOriginCountryCode(country) || "CN";
 }
@@ -121,7 +114,10 @@ export function NewCalcPane({
   const packN = namedItemCount(items);
   const docCount = isPack ? (packDocName ? 1 : 0) : photoUrl ? 1 : 0;
   const countryLabel =
-    COUNTRY_OPTIONS.some((c) => c.label === form.country) ? form.country : form.country || "Китай";
+    COUNTRY_OPTIONS.find((c) => c.label === form.country)?.label ||
+    COUNTRY_OPTIONS.find((c) => c.iso === form.country)?.label ||
+    form.country ||
+    "Китай";
   const validSingle = desc.length >= 5;
   const validPack = packN >= MIN_PACK;
   const valid = isPack ? validPack : validSingle;
@@ -525,7 +521,7 @@ export function NewCalcPane({
                 <label>Страна происхождения</label>
                 <select value={countryLabel} onChange={(e) => setCountry(e.target.value)}>
                   {COUNTRY_OPTIONS.map((c) => (
-                    <option key={c.iso} value={c.label}>
+                    <option key={`${c.iso}-${c.label}`} value={c.label}>
                       {c.label}
                     </option>
                   ))}
@@ -636,7 +632,7 @@ export function NewCalcPane({
                 <label>Страна происхождения</label>
                 <select value={countryLabel} onChange={(e) => setCountry(e.target.value)}>
                   {COUNTRY_OPTIONS.map((c) => (
-                    <option key={c.iso} value={c.label}>
+                    <option key={`${c.iso}-${c.label}`} value={c.label}>
                       {c.label}
                     </option>
                   ))}

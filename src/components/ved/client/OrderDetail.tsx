@@ -5,6 +5,7 @@ import { EventsTimeline } from "../EventsTimeline";
 import { LandedWithoutFreightCard } from "../LandedWithoutFreightCard";
 import { OrderResultFeedback } from "./OrderResultFeedback";
 import type { Broker, Calc, ClientFeedbackReaction, Me } from "./types";
+import { originCountryRuLabel } from "@/lib/ved/field-suggest";
 import { landedFromAiDraft } from "@/lib/ved/landed-cost";
 import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
 import { formatTestModeLlmNotice } from "@/lib/ved/ai-drain-retry";
@@ -76,6 +77,10 @@ export function OrderDetail({
   });
   const cover = selected.items?.find((it) => it.mediaUrl)?.mediaUrl;
   const stepClass = stepper.labels.length === 3 ? "steps-3" : "steps-4";
+  const originLabel = originCountryRuLabel(
+    selected.country,
+    selected.items?.[0]?.attrs?.originCountry,
+  );
 
   return (
     <div className="order-full view-client" style={embedded ? undefined : { marginTop: 24 }}>
@@ -83,6 +88,7 @@ export function OrderDetail({
         <div>
           <span className="go-kicker">{selected.number}</span>
           <h2>{selected.title}</h2>
+          {originLabel ? <div className="meta">Страна происхождения · {originLabel}</div> : null}
         </div>
         <StatusPill status={selected.status} />
       </div>
@@ -100,6 +106,11 @@ export function OrderDetail({
             <div className="order-hs-copy">
               <span className="gt-kicker">ТН ВЭД</span>
               <div className="order-hs-code">{hs}</div>
+              {originLabel ? (
+                <p className="meta" style={{ margin: "8px 0 0" }}>
+                  Страна происхождения · {originLabel}
+                </p>
+              ) : null}
               <p>
                 {selected.description ||
                   "Черновик кода с сервера. Финал подтверждает брокер; смета — НДС 22% и сбор ПП 1637, не цифры макета."}
@@ -115,11 +126,10 @@ export function OrderDetail({
               ) : null}
             </div>
           </div>
-          {(selected.description || selected.country || (commercialInvoiceUiEnabled() && selected.shipmentValue)) && (
+          {(selected.description || (commercialInvoiceUiEnabled() && selected.shipmentValue)) && (
             <div className="card" style={{ margin: "12px 0 0" }}>
               {selected.description && <p className="whitespace-pre-wrap">{selected.description}</p>}
               <div className="meta" style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: "8px 16px" }}>
-                {selected.country && <span>Страна: {selected.country}</span>}
                 {commercialInvoiceUiEnabled() && selected.shipmentValue ? (
                   <span>Стоимость партии: {selected.shipmentValue}</span>
                 ) : null}

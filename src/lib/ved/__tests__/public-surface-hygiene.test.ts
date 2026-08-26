@@ -97,6 +97,15 @@ describe("public surface hygiene", () => {
     expect(css).toContain("0.4em");
   });
 
+  it("shows origin country on live order detail (C14)", () => {
+    const order = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/OrderDetail.tsx"),
+      "utf8",
+    );
+    expect(order).toContain("Страна происхождения");
+    expect(order).toContain("originCountryRuLabel");
+  });
+
   it("obscure login page has no role/CMS label", () => {
     const src = fs.readFileSync(
       path.join(repoRoot, "app", SUPER_ADMIN_BASE.slice(1), "login/page.tsx"),
