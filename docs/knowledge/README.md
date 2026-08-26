@@ -115,6 +115,7 @@ docs/knowledge/              # единая KB (этот каталог)
   design-parity.md           # реф ↔ live, UI backlog
   design-patterns.md         # D32: сначала общепризнанные UI-паттерны
   plan-lbm-bro-visual.md     # визуал lbm-bro: live chrome + lab /client
+  plan-lbm-bro-honest-skin.md # C8: честные stub + скрыть инвойс/qty/вес
   containerization.md        # C1–C5, Compose vs Vercel, инвентарь as-is/будущее
   cabinets/                  # UI-инвентарь client/broker/admin + correctness + ux-saas + ui-guide
   …

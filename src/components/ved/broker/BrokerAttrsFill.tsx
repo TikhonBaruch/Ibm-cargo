@@ -6,7 +6,7 @@ import {
   type BrokerFillableAttrKey,
   type ProductAttrs,
 } from "@/lib/ved/product-description";
-import { factoryUiEnabled } from "@/lib/ved/cabinet-features";
+import { factoryUiEnabled, commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
 import { ManufacturerSuggest } from "../client/ManufacturerSuggest";
 
 const LABELS: Record<BrokerFillableAttrKey, string> = {
@@ -34,8 +34,13 @@ export function BrokerAttrsFill({
 }) {
   const current = attrs || {};
   const factoryOn = factoryUiEnabled();
-  const filled = BROKER_FILLABLE_ATTR_KEYS.filter((k) => !isEmptyAttrValue(current[k]));
-  const empty = BROKER_FILLABLE_ATTR_KEYS.filter((k) => isEmptyAttrValue(current[k]));
+  const showInvoice = commercialInvoiceUiEnabled();
+  const filled = BROKER_FILLABLE_ATTR_KEYS.filter((k) => !isEmptyAttrValue(current[k])).filter(
+    (k) => showInvoice || (k !== "netWeightKg" && k !== "grossWeightKg")
+  );
+  const empty = BROKER_FILLABLE_ATTR_KEYS.filter((k) => isEmptyAttrValue(current[k])).filter(
+    (k) => showInvoice || (k !== "netWeightKg" && k !== "grossWeightKg")
+  );
   const needManufacturer = isEmptyAttrValue(current.manufacturerName);
   const emptyOther = empty.filter((k) => k !== "manufacturerName");
 

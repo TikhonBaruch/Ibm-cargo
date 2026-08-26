@@ -40,3 +40,15 @@ export function designerManufacturerChromeEnabled(
   void env;
   return false;
 }
+
+/**
+ * Invoice value, line qty, unit price, and net weight in cabinet UI (C8).
+ * Domain/API fields stay optional. Tariff priceRub and duty/VAT stay visible.
+ * Restore: `return true`.
+ */
+export function commercialInvoiceUiEnabled(
+  env?: Record<string, string | undefined>
+): boolean {
+  void env;
+  return false;
+}

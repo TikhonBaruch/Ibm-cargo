@@ -9,6 +9,8 @@ import { StatusPill, VedEmptyState } from "../VedShell";
 import type { Calc, Me, ShipRow } from "./types";
 import { calcThumb } from "./types";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
+import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
+import { DesignerStub } from "@/lbm-bro/components/designer-stub";
 import {
   clientOrderHsLabel,
   clientOrderNextStep,
@@ -79,7 +81,7 @@ export function DashboardPane({
   const [qOrigin, setQOrigin] = useState("CN");
   const [qManufacturer, setQManufacturer] = useState("");
   const [qComposition, setQComposition] = useState("");
-  const [qValue, setQValue] = useState("18000");
+  const [qValue, setQValue] = useState("");
   const [qCurrency, setQCurrency] = useState<"USD" | "CNY" | "EUR">("USD");
   const [qMedia, setQMedia] = useState<string | undefined>();
   const [showRequiredErrors, setShowRequiredErrors] = useState(false);
@@ -117,7 +119,7 @@ export function DashboardPane({
       title,
       description: desc,
       country: qCountry.trim() || "Китай",
-      shipmentValue: qValue.trim() || "0",
+      shipmentValue: commercialInvoiceUiEnabled() ? qValue.trim() || "0" : "",
       shipmentCurrency: qCurrency,
       mediaUrl: qMedia,
       attrs: {
@@ -329,6 +331,7 @@ export function DashboardPane({
                 onChange={setQCountry}
               />
             </div>
+            {commercialInvoiceUiEnabled() ? (
             <label className="block text-xs font-semibold text-slate-500">
               Стоимость партии (инвойс)
               <div className="mt-1 flex gap-2">
@@ -350,6 +353,14 @@ export function DashboardPane({
                 </select>
               </div>
             </label>
+            ) : (
+              <DesignerStub
+                compact
+                title="Инвойс партии"
+                intent="В макете quick-calc тоже просит стоимость груза."
+                gap="Временно скрыто в UI (C8)."
+              />
+            )}
           </div>
           <div className="mb-4 flex flex-wrap gap-2">
             {qMedia ? (

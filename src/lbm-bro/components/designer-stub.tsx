@@ -16,17 +16,9 @@ export type DesignerStubProps = {
 };
 
 /**
- * Hold-module note from the design brief.
- * Call sites keep title / intent / gap in source (the “comment”).
- * Visual badge is off — restore by returning DESIGNER_STUB_ASIDE.
+ * Honest hold-slot: same place as the designer module, not a silent no-op (C8).
+ * C5 had `return null`; restore that only if badges must be hidden again.
  */
-export function DesignerStub(_props: DesignerStubProps) {
-  return null;
-}
-
-/*
-Restore visual (DesignerStub):
-
 export function DesignerStub({
   title,
   intent,
@@ -51,4 +43,3 @@ export function DesignerStub({
     </aside>
   );
 }
-*/

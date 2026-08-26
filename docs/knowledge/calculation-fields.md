@@ -35,6 +35,8 @@ Legend: **R** = required · **O** = optional · **E** = edit · **V** = view · 
 
 ### Calculation (шапка)
 
+**C8:** `shipmentValue`, item `qty` / `unitPrice`, attrs `netWeightKg` **скрыты в UI** (`commercialInvoiceUiEnabled()` = false). API optional без изменения. Restore флага — снова показать. Цена тарифа и пошлина/НДС не трогаем.
+
 | Поле | CLIENT create | CLIENT detail | BROKER work | ADMIN detail |
 |------|---------------|---------------|-------------|--------------|
 | `number`, `status` | — / V | V | V | V |

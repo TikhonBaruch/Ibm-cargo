@@ -4,6 +4,7 @@ import { VedDetailDrawer } from "../VedDetailDrawer";
 import { StatusPill } from "../VedShell";
 import { EventsTimeline } from "../EventsTimeline";
 import { LandedWithoutFreightCard } from "../LandedWithoutFreightCard";
+import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
 import type { AdminBrokerRow, AdminCalc } from "./types";
 
 export function AdminCalcDetailDrawer({
@@ -35,12 +36,14 @@ export function AdminCalcDetailDrawer({
               {calc.company?.name || calc.clientUser?.name} · брокер {calc.brokerUser?.name || "—"} · тариф{" "}
               {calc.tariff?.name || "—"}
             </p>
-            {(calc.description || calc.country || calc.shipmentValue) && (
+            {(calc.description || calc.country || (commercialInvoiceUiEnabled() && calc.shipmentValue)) && (
               <div className="mt-2 max-w-2xl rounded-2xl bg-slate-50 px-3 py-2 text-sm text-[#0f172a]">
                 {calc.description && <p className="whitespace-pre-wrap">{calc.description}</p>}
                 <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-[var(--kb-muted)]">
                   {calc.country && <span>Страна: {calc.country}</span>}
-                  {calc.shipmentValue && <span>Партия: {calc.shipmentValue}</span>}
+                  {commercialInvoiceUiEnabled() && calc.shipmentValue ? (
+                    <span>Партия: {calc.shipmentValue}</span>
+                  ) : null}
                 </div>
               </div>
             )}
@@ -89,7 +92,7 @@ export function AdminCalcDetailDrawer({
                   a.brand && `бренд: ${a.brand}`,
                   a.material && `мат.: ${a.material}`,
                   a.originCountry && `origin: ${a.originCountry}`,
-                  a.netWeightKg != null && `${a.netWeightKg} кг`,
+                  commercialInvoiceUiEnabled() && a.netWeightKg != null && `${a.netWeightKg} кг`,
                   a.hsHint && `hint: ${a.hsHint}`,
                 ].filter(Boolean)
               : [];

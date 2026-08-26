@@ -8,6 +8,7 @@ import { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
+  commercialInvoiceUiEnabled,
   designerManufacturerChromeEnabled,
   factoryUiEnabled,
   shippingUiEnabled,
@@ -119,7 +120,7 @@ function ClientCabinetInner() {
     title: "",
     description: "",
     country: "Китай",
-    shipmentValue: "18000",
+    shipmentValue: "",
     shipmentCurrency: "USD",
     tariffCode: "STANDARD",
     preferredBrokerUserId: "",
@@ -308,13 +309,16 @@ function ClientCabinetInner() {
             attrs.originCountry = it.attrs.originCountry.trim().toUpperCase();
           }
           if (it.attrs?.hsHint?.trim()) attrs.hsHint = it.attrs.hsHint.trim();
-          const w = Number(it.attrs?.netWeightKg);
-          if (Number.isFinite(w) && w >= 0 && it.attrs?.netWeightKg !== "") attrs.netWeightKg = w;
+          if (commercialInvoiceUiEnabled()) {
+            const w = Number(it.attrs?.netWeightKg);
+            if (Number.isFinite(w) && w >= 0 && it.attrs?.netWeightKg !== "") attrs.netWeightKg = w;
+          }
           return {
             name: it.name.trim(),
             description: f.description || it.name.trim(),
-            qty: it.qty,
-            unitPrice: it.unitPrice,
+            ...(commercialInvoiceUiEnabled()
+              ? { qty: it.qty, unitPrice: it.unitPrice }
+              : {}),
             mediaUrl: it.mediaUrl,
             manufacturerSkuId: it.manufacturerSkuId || undefined,
             ...(Object.keys(attrs).length ? { attrs } : {}),
@@ -324,14 +328,19 @@ function ClientCabinetInner() {
       if (override?.items) setItems(override.items);
       if (override?.form) setForm((prev) => ({ ...prev, ...override.form }));
       const invoice = parseShipmentInvoice(f.shipmentValue, f.shipmentCurrency);
+      const showInvoice = commercialInvoiceUiEnabled();
       let calc = await api<Calc>("/api/v1/calculations", {
         method: "POST",
         body: JSON.stringify({
           title: f.title,
           description: f.description,
           country: f.country,
-          shipmentValue: formatShipmentInvoice(invoice.amount, invoice.currency),
-          shipmentCurrency: invoice.currency,
+          ...(showInvoice
+            ? {
+                shipmentValue: formatShipmentInvoice(invoice.amount, invoice.currency),
+                shipmentCurrency: invoice.currency,
+              }
+            : {}),
           tariffCode: f.tariffCode,
           preferredBrokerUserId: f.preferredBrokerUserId || undefined,
           items: payloadItems,
@@ -391,22 +400,23 @@ function ClientCabinetInner() {
     try {
       const invoice = parseShipmentInvoice(payload.shipmentValue, payload.shipmentCurrency);
       const stored = formatShipmentInvoice(invoice.amount, invoice.currency);
+      const showInvoice = commercialInvoiceUiEnabled();
       let calc = await api<Calc>("/api/v1/calculations", {
         method: "POST",
         body: JSON.stringify({
           title: payload.title,
           description: payload.description,
           country: payload.country,
-          shipmentValue: stored,
-          shipmentCurrency: invoice.currency,
+          ...(showInvoice
+            ? { shipmentValue: stored, shipmentCurrency: invoice.currency }
+            : {}),
           tariffCode: form.tariffCode || "STANDARD",
           preferredBrokerUserId: form.preferredBrokerUserId || preferredBrokerUserId || undefined,
           items: [
             {
               name: payload.title,
               description: payload.description,
-              qty: 1,
-              unitPrice: invoice.amount,
+              ...(showInvoice ? { qty: 1, unitPrice: invoice.amount } : {}),
               mediaUrl: payload.mediaUrl,
               ...(payload.attrs ? { attrs: payload.attrs } : {}),
             },

@@ -6,6 +6,7 @@ import { LandedWithoutFreightCard } from "../LandedWithoutFreightCard";
 import { OrderResultFeedback } from "./OrderResultFeedback";
 import type { Broker, Calc, ClientFeedbackReaction, Me } from "./types";
 import { landedFromAiDraft } from "@/lib/ved/landed-cost";
+import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
 import { formatTestModeLlmNotice } from "@/lib/ved/ai-drain-retry";
 import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
 import { DesignerStub } from "@/lbm-bro/components/designer-stub";
@@ -114,12 +115,14 @@ export function OrderDetail({
               ) : null}
             </div>
           </div>
-          {(selected.description || selected.country || selected.shipmentValue) && (
+          {(selected.description || selected.country || (commercialInvoiceUiEnabled() && selected.shipmentValue)) && (
             <div className="card" style={{ margin: "12px 0 0" }}>
               {selected.description && <p className="whitespace-pre-wrap">{selected.description}</p>}
               <div className="meta" style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: "8px 16px" }}>
                 {selected.country && <span>Страна: {selected.country}</span>}
-                {selected.shipmentValue && <span>Стоимость партии: {selected.shipmentValue}</span>}
+                {commercialInvoiceUiEnabled() && selected.shipmentValue ? (
+                  <span>Стоимость партии: {selected.shipmentValue}</span>
+                ) : null}
               </div>
             </div>
           )}
@@ -242,7 +245,7 @@ export function OrderDetail({
                             a.brand && `бренд: ${a.brand}`,
                             a.material && `мат.: ${a.material}`,
                             a.originCountry && `origin: ${a.originCountry}`,
-                            a.netWeightKg != null && `${a.netWeightKg} кг`,
+                            commercialInvoiceUiEnabled() && a.netWeightKg != null && `${a.netWeightKg} кг`,
                             a.hsHint && `hint: ${a.hsHint}`,
                           ].filter(Boolean)
                         : [];

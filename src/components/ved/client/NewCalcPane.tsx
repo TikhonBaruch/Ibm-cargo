@@ -15,7 +15,7 @@ import { FieldSuggest } from "./FieldSuggest";
 import { HsCodeAutocomplete } from "../HsCodeAutocomplete";
 import { TnvedCardDrawer } from "../TnvedCardDrawer";
 import { rankHeuristicCandidates } from "@/lib/ved/ai-draft-engine";
-import { factoryUiEnabled } from "@/lib/ved/cabinet-features";
+import { commercialInvoiceUiEnabled, factoryUiEnabled } from "@/lib/ved/cabinet-features";
 import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
 import { hasRequiredCreateAttrs } from "@/lib/ved/product-description";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
@@ -89,6 +89,7 @@ export function NewCalcPane({
   const [showRequiredErrors, setShowRequiredErrors] = useState(false);
   const { toast } = useVedToast();
   const factoryOn = factoryUiEnabled();
+  const showInvoice = commercialInvoiceUiEnabled();
   const tariffOptions = tariffs;
   const maxPos = maxPositionsForTariffCode(form.tariffCode);
   const canAdd = items.length < maxPos;
@@ -239,6 +240,7 @@ export function NewCalcPane({
               onChange={(country) => onForm({ country })}
             />
           </FieldLabel>
+          {showInvoice ? (
           <FieldLabel
             as="div"
             label="Стоимость партии (инвойс)"
@@ -267,6 +269,14 @@ export function NewCalcPane({
               </select>
             </div>
           </FieldLabel>
+          ) : (
+            <DesignerStub
+              compact
+              title="Инвойс партии"
+              intent="В макете здесь сумма и валюта груза — от них считается таможенная стоимость."
+              gap="Временно скрыто в UI (C8). Поле в API остаётся optional; цена тарифа ниже — живая."
+            />
+          )}
         </div>
 
         <div id="wiz-section-tariff">
@@ -479,6 +489,7 @@ export function NewCalcPane({
                   items={items}
                   onItems={onItems}
                 />
+                {showInvoice ? (
                 <div className="mb-2 flex gap-2">
                   <FieldLabel label="Кол-во">
                     <input
@@ -510,6 +521,14 @@ export function NewCalcPane({
                     />
                   </FieldLabel>
                 </div>
+                ) : idx === 0 ? (
+                  <DesignerStub
+                    compact
+                    title="Количество и цена позиции"
+                    intent="Макет мастера просит qty и цену единицы для сметы «Таможня»."
+                    gap="Временно скрыто в UI (C8). Лимит позиций тарифа (D10) не меняется."
+                  />
+                ) : null}
 
                 <div className="mb-2 grid gap-2 sm:grid-cols-2">
                   <FieldLabel
@@ -646,6 +665,7 @@ export function NewCalcPane({
                       }}
                     />
                   </FieldLabel>
+                  {showInvoice ? (
                   <FieldLabel label="Вес нетто, кг">
                     <input
                       type="number"
@@ -662,6 +682,14 @@ export function NewCalcPane({
                       }}
                     />
                   </FieldLabel>
+                  ) : idx === 0 ? (
+                    <DesignerStub
+                      compact
+                      title="Вес нетто"
+                      intent="В макете нетто участвует в классификации и платежах."
+                      gap="Временно скрыто в UI (C8). API attrs.netWeightKg остаётся optional."
+                    />
+                  ) : null}
                   <div className="sm:col-span-2">
                     <FieldLabel
                       as="div"

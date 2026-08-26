@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  commercialInvoiceUiEnabled,
   designerManufacturerChromeEnabled,
   factoryUiEnabled,
   shippingUiEnabled,
@@ -36,6 +37,10 @@ describe("cabinet-features", () => {
   it("hides designer manufacturer chrome even when factory UI is on (C6)", () => {
     expect(designerManufacturerChromeEnabled()).toBe(false);
     expect(designerManufacturerChromeEnabled({ NEXT_PUBLIC_FACTORY_UI: "1" })).toBe(false);
+  });
+
+  it("hides invoice qty and weight in cabinets until restore (C8)", () => {
+    expect(commercialInvoiceUiEnabled()).toBe(false);
   });
 });
 
