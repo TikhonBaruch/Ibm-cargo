@@ -72,6 +72,8 @@ describe("public surface hygiene", () => {
     expect(src).toContain("По заявке");
     expect(src).not.toContain("tariff-mini");
     expect(src).not.toContain("ProductCsvImport");
+    expect(src).not.toContain("Страна происхождения");
+    expect(src).not.toContain("HsCodeAutocomplete");
   });
 
   it("obscure login page has no role/CMS label", () => {

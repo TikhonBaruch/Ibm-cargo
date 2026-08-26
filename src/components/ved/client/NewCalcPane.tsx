@@ -36,8 +36,9 @@ function homeFromOrders(ordersHref: string): string {
 }
 
 /**
- * C10: live `/cabinet/new` chrome = designer step «Что ввозите?».
- * Extra create UI (tariffs, CSV, qty, attrs grid) is hidden. Domain create unchanged.
+ * C10: live `/cabinet/new` chrome = designer step «Что ввозите?» (скрин макета).
+ * Extra create UI (tariffs, CSV, qty, country select, attrs grid) is hidden.
+ * Domain create unchanged: origin CN + composition from description.
  */
 export function NewCalcPane({
   form,
@@ -91,18 +92,6 @@ export function NewCalcPane({
     const next = [...items];
     if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
     next[0] = { ...next[0], name: title || next[0].name };
-    onItems(next);
-  };
-
-  const setCountry = (label: string) => {
-    const iso = originIso(label);
-    onForm({ country: label });
-    const next = [...items];
-    if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
-    next[0] = {
-      ...next[0],
-      attrs: { ...next[0].attrs, originCountry: iso },
-    };
     onItems(next);
   };
 
@@ -272,17 +261,6 @@ export function NewCalcPane({
             />
           </div>
 
-          <div className="field">
-            <label>Страна происхождения</label>
-            <select value={countryLabel} onChange={(e) => setCountry(e.target.value)}>
-              {COUNTRY_OPTIONS.map((c) => (
-                <option key={c.iso} value={c.label}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
             <button
               type="button"
@@ -299,14 +277,13 @@ export function NewCalcPane({
           <div className="order-hs" style={{ minHeight: 220, gridTemplateColumns: "1fr" }}>
             <div className="order-hs-copy">
               <span className="gt-kicker">Первый просчёт · 0 ₽</span>
-              <div className="order-hs-code">— — —</div>
-              <p>Один расчёт бесплатный. Следующие заявки — по тарифам.</p>
               <div className="wiz-hs-dashes" aria-hidden>
                 <i />
                 <i />
                 <i />
                 <i />
               </div>
+              <p>Один расчёт бесплатный. Следующие заявки — по тарифам.</p>
             </div>
           </div>
           <div className="card" style={{ margin: 0 }}>
