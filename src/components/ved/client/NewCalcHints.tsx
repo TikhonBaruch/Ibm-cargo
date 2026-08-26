@@ -34,6 +34,7 @@ export function newCalcStageTip({
   maxPos,
   hasCatalog,
   needsAttrsHint,
+  clarifyGapLabels,
 }: {
   form: CalcForm;
   items: FormItem[];
@@ -41,6 +42,8 @@ export function newCalcStageTip({
   maxPos: number;
   hasCatalog: boolean;
   needsAttrsHint: boolean;
+  /** Open gaps from clarify-hints map (e.g. верх / состав). */
+  clarifyGapLabels?: string[];
 }): string | null {
   const titleOk = form.title.trim().length > 0;
   const descOk = form.description.trim().length > 0;
@@ -49,6 +52,9 @@ export function newCalcStageTip({
 
   if (!titleOk || !descOk) {
     return "Сначала наименование и описание партии — по ним появится черновик ТН ВЭД.";
+  }
+  if (clarifyGapLabels && clarifyGapLabels.length > 0 && !hasHs) {
+    return `Уточните: ${clarifyGapLabels.slice(0, 3).join(" / ")} — чипы ниже улучшат черновик ТН ВЭД.`;
   }
   if (hsCandidateCount > 0 && !hasHs) {
     return "Ниже — черновик кода по правилам. Клик подставит подсказку в позицию (финал — у брокера).";
