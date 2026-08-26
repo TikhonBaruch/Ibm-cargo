@@ -103,11 +103,13 @@ Create calc, pay, queue/claim, chat text, balance/ledger, PDF, HS search, broker
 14. Маппинг тарифов дизайн ↔ D10 (таблица в KB).
 15. Убрать stubs по мере готовности API; freemium/ЧЗ/ТО — ADR или hold.
 
+Дорожная карта слоёв (Phase 1–4): [`architecture-map.md`](./architecture-map.md) § «Дорожная карта внедрения фронта». Образец lab+API: справочник `/client/tnved`.
+
 ### Фаза E — Деплой ibm-cargo
 
-16. Vercel Root Directory = `taurus`.
-17. Отдельные env/БД (следующий шаг пользователя).
-18. Smoke: login → `/client` визуал; `/cabinet` функция.
+16. Vercel Root Directory = **`app`**.
+17. Env: выделенная Postgres + S3 bucket `lbm` (только ресурсы Ibm-cargo).
+18. Smoke: login → `/client` визуал; `/cabinet` функция; `/client/tnved` на своей БД.
 
 ---
 
@@ -129,5 +131,6 @@ Create calc, pay, queue/claim, chat text, balance/ledger, PDF, HS search, broker
 | DesignerStub + stubs на home / ship / clearance / chat / new | **done** |
 | Фаза B: orders / balance / brokers / tnved / company / faq / guide | **done** |
 | Фаза C: broker/admin skin | next |
-| Domain wire (DemoProvider → `/api/v1`) | later |
-| Vercel Root=`taurus` + push | later |
+| Domain wire (DemoProvider → `/api/v1`) | later · см. [`architecture-map.md`](./architecture-map.md) |
+| Vercel Root=`app` + своя БД/S3 | later |
+| ТН ВЭД lab → `/api/v1/tnved` | **done** (Phase 1 образец) |

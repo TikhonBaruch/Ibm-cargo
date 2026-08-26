@@ -6,8 +6,8 @@ export function TnvedLabBanner() {
   return (
     <DesignerStub
       title="Справочник ТН ВЭД + «1 раз бесплатно»"
-      intent="Дизайнер: поиск по коду/названию, группы классификатора, первый просмотр одной позиции бесплатно — воронка в платный просчёт."
-      gap="Локальный tnved.json в браузере. Domain: /api/v1/tnved/search + TnvedCode; freemium-гейта нет."
+      intent="Поиск по коду/названию и группам, первый полный просмотр карточки бесплатно — воронка в платный просчёт."
+      gap="Ранжирование как lbm-bro (hs-aliases pin), данные и ставки — Postgres /api/v1/tnved. Freemium пока DemoProvider (localStorage)."
       compact
     />
   );

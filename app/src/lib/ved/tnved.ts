@@ -5,6 +5,7 @@
 import { z } from "zod";
 import type { Prisma } from "@prisma/client";
 import { DEFAULT_IMPORT_VAT_PERCENT } from "./customs-fees";
+import { expandFromAliases, matchAlias, type HsAlias } from "./tnved-aliases";
 import { layerGToHint, matchLayerG } from "./tnved-layer-g";
 
 export const TNVED_LEVELS = [2, 4, 6, 8, 10] as const;
@@ -100,34 +101,240 @@ export function hsCodeAncestors(leafDisplayOrDigits: string): string[] {
 }
 
 export type TnvedSearchOpts = {
-  q: string;
+  q?: string;
   limit?: number;
   leafOnly?: boolean;
+  /** Digits prefix, e.g. chapter "84" or heading "8471". */
+  codePrefix?: string;
+  /** Exact hierarchy level filter (2|4|6|8|10). */
+  level?: TnvedLevel;
+};
+
+export type TnvedMatchKind = "code" | "title" | "alias" | "expand";
+
+export type TnvedMatchMeta = {
+  score: number;
+  kind: TnvedMatchKind;
+  why?: string;
+  risk?: string;
+};
+
+export type TnvedSearchHit = {
+  code: string;
+  codeDisplay: string;
+  titleRu: string;
+  notes?: string | null;
+  level: number;
+  isLeaf: boolean;
+  matchMeta?: TnvedMatchMeta;
 };
 
 type TnvedDb = Pick<Prisma.TransactionClient, "tnvedCode" | "tnvedDutyRate">;
 
-/** Directory search by code prefix and/or titleRu (D-TNVED). */
-export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
+type TnvedSearchRow = {
+  code: string;
+  codeDisplay: string;
+  titleRu: string;
+  notes?: string | null;
+  level: number;
+  isLeaf: boolean;
+};
+
+/** Fallback expand when aliases miss (legacy browse boost). */
+const SEARCH_EXPAND_FALLBACK: Array<{ test: RegExp; tokens: string[]; prefixes: string[] }> = [
+  { test: /ноутбук|laptop|notebook|macbook|нетбук|thinkpad/i, tokens: ["портативн", "вычислительн"], prefixes: ["847130"] },
+  { test: /смартфон|телефон|iphone|android|mobile\s*phone/i, tokens: ["телефон"], prefixes: ["8517"] },
+  { test: /футболка|t-?shirt|поло|майка/i, tokens: ["футболк", "майк", "нательн"], prefixes: ["6109", "6105"] },
+  { test: /кроссов|кеды|sneakers|обув/i, tokens: ["обув"], prefixes: ["6404", "6402"] },
+  { test: /фильтр.*(масл|oil)|oil\s*filter/i, tokens: ["фильтр"], prefixes: ["8421"] },
+];
+
+function normalizeSearchText(s: string) {
+  return s.toLowerCase().replace(/ё/g, "е");
+}
+
+/** Score a candidate for directory ranking (higher = better). */
+export function scoreTnvedSearchHit(
+  row: TnvedSearchRow,
+  opts: {
+    q: string;
+    digits: string;
+    expandPrefixes: string[];
+    expandTokens: string[];
+    pinCode?: string | null;
+  }
+): number {
+  const title = normalizeSearchText(row.titleRu || "");
+  const notes = normalizeSearchText(row.notes || "");
+  const q = normalizeSearchText(opts.q);
+  let score = 0;
+
+  const pin = opts.pinCode ? opts.pinCode.replace(/\D/g, "") : "";
+  if (pin && (row.code === pin || row.code.startsWith(pin) || pin.startsWith(row.code))) {
+    // lbm-bro searchTnved pins classify/alias winner at 2000
+    score += 2000;
+  }
+
+  if (opts.digits.length >= 2) {
+    if (row.code === opts.digits || row.code === `${opts.digits}0`) score += 1000;
+    else if (row.code.startsWith(opts.digits) || opts.digits.startsWith(row.code)) {
+      score += 400 - Math.abs(row.code.length - opts.digits.length) * 8;
+    }
+  }
+
+  if (q.length >= 2) {
+    const tPos = title.indexOf(q);
+    if (tPos >= 0) score += 120 - Math.min(tPos, 40);
+    const nPos = notes.indexOf(q);
+    if (nPos >= 0) score += 80 - Math.min(nPos, 30);
+  }
+
+  for (const p of opts.expandPrefixes) {
+    if (row.code.startsWith(p)) score += 200 + Math.min(p.length, 6) * 10;
+  }
+  for (const tok of opts.expandTokens) {
+    if (title.includes(tok) || notes.includes(tok)) score += 60;
+  }
+
+  if (row.isLeaf) score += 40;
+  score += row.level;
+  return score;
+}
+
+function expandForQuery(q: string) {
+  const fromAliases = expandFromAliases(q);
+  const expandPrefixes = [...fromAliases.expandPrefixes];
+  const expandTokens = [...fromAliases.expandTokens];
+  for (const rule of SEARCH_EXPAND_FALLBACK) {
+    if (!rule.test.test(q)) continue;
+    expandPrefixes.push(...rule.prefixes);
+    expandTokens.push(...rule.tokens);
+  }
+  return {
+    expandPrefixes: [...new Set(expandPrefixes)],
+    expandTokens: [...new Set(expandTokens)],
+    aliasHits: fromAliases.hits,
+  };
+}
+
+function matchKindForHit(
+  row: TnvedSearchRow,
+  score: number,
+  opts: { q: string; digits: string; pinCode?: string | null; expandPrefixes: string[] }
+): TnvedMatchKind {
+  const pin = opts.pinCode ? opts.pinCode.replace(/\D/g, "") : "";
+  if (pin && (row.code === pin || row.code.startsWith(pin.slice(0, 6)))) return "alias";
+  if (opts.digits.length >= 2 && (row.code.startsWith(opts.digits) || opts.digits.startsWith(row.code))) {
+    return "code";
+  }
+  if (opts.expandPrefixes.some((p) => row.code.startsWith(p)) && score >= 200) return "expand";
+  return "title";
+}
+
+function resolvePinAlias(q: string): { alias: HsAlias; score: number } | null {
+  if (!q.trim()) return null;
+  return matchAlias(q);
+}
+
+/** Directory search by code prefix and/or titleRu/notes (D-TNVED) with lbm-bro-style ranking. */
+export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts): Promise<TnvedSearchHit[]> {
   const q = String(opts.q || "").trim();
-  if (!q) return [];
+  const codePrefix = String(opts.codePrefix || "").replace(/\D/g, "");
+  if (!q && !codePrefix) return [];
+
   const limit = Math.min(Math.max(opts.limit ?? 20, 1), 50);
   const digits = q.replace(/\D/g, "");
-  const or: Array<Record<string, unknown>> = [
-    { titleRu: { contains: q, mode: "insensitive" } },
-    { notes: { contains: q, mode: "insensitive" } },
-  ];
+  const { expandPrefixes, expandTokens, aliasHits } = expandForQuery(q);
+  const pinHit = resolvePinAlias(q);
+  const pinCode = pinHit?.alias.code || null;
+
+  const or: Array<Record<string, unknown>> = [];
+  if (q) {
+    or.push({ titleRu: { contains: q, mode: "insensitive" } });
+    or.push({ notes: { contains: q, mode: "insensitive" } });
+  }
   if (digits.length >= 2) {
     or.push({ code: { startsWith: digits } });
   }
-  return db.tnvedCode.findMany({
-    where: {
-      isActive: true,
-      OR: or,
-      ...(opts.leafOnly ? { isLeaf: true } : {}),
-    },
-    take: limit,
+  if (pinCode) {
+    or.push({ code: { startsWith: pinCode.slice(0, Math.min(6, pinCode.length)) } });
+    or.push({ code: pinCode });
+  }
+  for (const p of expandPrefixes) {
+    or.push({ code: { startsWith: p } });
+  }
+  for (const tok of expandTokens) {
+    or.push({ titleRu: { contains: tok, mode: "insensitive" } });
+  }
+
+  const where: Record<string, unknown> = {
+    isActive: true,
+    ...(opts.leafOnly ? { isLeaf: true } : {}),
+    ...(opts.level ? { level: opts.level } : {}),
+    ...(codePrefix ? { code: { startsWith: codePrefix } } : {}),
+  };
+  if (or.length) where.OR = or;
+
+  // Fetch a wider pool, then rank in memory (ILIKE has no relevance score).
+  const pool = Math.min(Math.max(limit * 4, 40), 120);
+  const rows = (await db.tnvedCode.findMany({
+    where,
+    take: pool,
     orderBy: [{ level: "desc" }, { code: "asc" }],
+  })) as TnvedSearchRow[];
+
+  // Ensure alias pin code is in the pool even if ILIKE missed (thin seed / notes gap).
+  let poolRows = rows;
+  if (pinCode && !rows.some((r) => r.code === pinCode || r.code.startsWith(pinCode.slice(0, 6)))) {
+    const pinned = (await db.tnvedCode.findMany({
+      where: {
+        isActive: true,
+        OR: [{ code: pinCode }, { code: { startsWith: pinCode.slice(0, 6) } }],
+        ...(opts.leafOnly ? { isLeaf: true } : {}),
+      },
+      take: 8,
+      orderBy: [{ level: "desc" }, { code: "asc" }],
+    })) as TnvedSearchRow[];
+    if (pinned.length) {
+      const seen = new Set(rows.map((r) => r.code));
+      poolRows = [...rows, ...pinned.filter((r) => !seen.has(r.code))];
+    }
+  }
+
+  const scoreOpts = { q, digits, expandPrefixes, expandTokens, pinCode };
+  const ranked = poolRows
+    .map((row) => ({
+      row,
+      score: scoreTnvedSearchHit(row, scoreOpts),
+    }))
+    .sort((a, b) => b.score - a.score || b.row.level - a.row.level || a.row.code.localeCompare(b.row.code));
+
+  const topAlias = pinHit?.alias || aliasHits[0]?.alias || null;
+
+  return ranked.slice(0, limit).map((r) => {
+    const kind = matchKindForHit(r.row, r.score, {
+      q,
+      digits,
+      pinCode,
+      expandPrefixes,
+    });
+    const meta: TnvedMatchMeta = {
+      score: r.score,
+      kind,
+      ...(kind === "alias" && topAlias
+        ? { why: topAlias.why, risk: topAlias.risk }
+        : {}),
+    };
+    return { ...r.row, matchMeta: meta };
+  });
+}
+
+/** Chapter nodes (level 2) for directory browse. */
+export async function listTnvedChapters(db: TnvedDb) {
+  return db.tnvedCode.findMany({
+    where: { isActive: true, level: 2 },
+    orderBy: { code: "asc" },
+    select: { code: true, codeDisplay: true, titleRu: true },
   });
 }
 

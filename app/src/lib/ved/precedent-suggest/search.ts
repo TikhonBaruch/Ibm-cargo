@@ -5,12 +5,17 @@ import {
   type FieldSuggestKind,
 } from "../field-suggest";
 import { lexicalScore, tokenize } from "../verified-determinations";
+import { searchClarifyProductProfiles } from "../clarify-hints/learning";
 import type { PrecedentSuggestHit } from "./schema";
 import { guardSuggestQuery } from "./query-guard";
 
 type DbLike = Pick<
   PrismaClient,
-  "calculation" | "calculationItem" | "verifiedDetermination" | "user"
+  | "calculation"
+  | "calculationItem"
+  | "verifiedDetermination"
+  | "user"
+  | "clarifyProductProfile"
 >;
 
 const CALC_SCAN = 40;
@@ -255,13 +260,25 @@ export async function searchPrecedentSuggestions(
   const query = guarded.query;
   const companyId = await companyIdForUser(db, opts.userId);
 
-  const [past, precedents] = await Promise.all([
+  const [past, precedents, profiles] = await Promise.all([
     fromPastCalculations(db, opts.kind, query, companyId, limit),
     fromVerifiedPrecedents(db, opts.kind, query, limit),
+    opts.kind === "partyDescription" || opts.kind === "itemName"
+      ? searchClarifyProductProfiles(db, query, limit).then((rows) =>
+          rows.map(
+            (r): PrecedentSuggestHit => ({
+              value: r.value,
+              label: r.label,
+              source: "profile" as PrecedentSuggestHit["source"],
+              score: r.score,
+            })
+          )
+        )
+      : Promise.resolve([] as PrecedentSuggestHit[]),
   ]);
 
   const merged = new Map<string, PrecedentSuggestHit>();
-  for (const h of [...precedents, ...past]) pushHit(merged, h);
+  for (const h of [...profiles, ...precedents, ...past]) pushHit(merged, h);
 
   let items = [...merged.values()].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
 

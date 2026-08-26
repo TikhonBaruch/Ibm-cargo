@@ -75,7 +75,7 @@ export function AttrSuggestChips({
   const [result, setResult] = useState<AttrSuggestResult | null>(null);
   const [failed, setFailed] = useState(false);
   // Gate on name + title + description so tips appear as soon as the party is described.
-  const hint = `${item.name || ""} ${title} ${description}`.trim();
+  const hint = `${item.name || ""} ${title} ${description} ${item.attrs?.composition || ""} ${item.attrs?.material || ""}`.trim();
 
   useEffect(() => {
     if (hint.length < 3) {

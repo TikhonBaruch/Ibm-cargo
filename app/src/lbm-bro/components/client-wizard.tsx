@@ -19,7 +19,13 @@ import { type HsLine } from "@/lbm-bro/lib/types";
 import { fmt } from "@/lbm-bro/lib/format";
 import { downloadDemoPdf, shareDemoPdf, type PdfOrder } from "@/lbm-bro/lib/order-pdf";
 import { CUSTOMS_CALC_MSGS, paymentsSummary, resolvePayments } from "@/lbm-bro/lib/payments";
-import { clarifySummary, productTitle, buildClassificationQuery, mergeClarifyAnswers } from "@/lbm-bro/lib/product-copy";
+import { clarifySummary, productTitle, buildClassificationQuery } from "@/lbm-bro/lib/product-copy";
+import {
+  applyAttrsPatches,
+  buildEnrichedHsQuery,
+  type ClarificationQuestion as SharedQuestion,
+} from "@/lib/ved/clarify-hints";
+import { fillEmptyProductAttrs } from "@/lib/ved/product-description";
 import {
   CODE_PACKS, codePackForCount, codePackInfo, codePackPrice,
   tariffHasCustoms, upgradeCost,
@@ -101,7 +107,11 @@ export function ClientWizard() {
 
   const paidOrderEarly = paidId ? orders.find((x) => x.id === paidId) : undefined;
   const customsReportReady = Boolean(paidOrderEarly?.duty && paidOrderEarly.duty !== "—") || reportUnlocked;
-  const classQuery = buildClassificationQuery(mergeClarifyAnswers(wizard.desc, clarifyAnswers), wizard.docs);
+  const classQuery = (() => {
+    const base = buildClassificationQuery(wizard.desc, wizard.docs);
+    if (/\n+\s*Уточнения \(ИИ\):/.test(wizard.desc)) return base;
+    return buildEnrichedHsQuery(base, clarifyAnswers);
+  })();
   const preview = guess(classQuery, tnvedData);
   const isPack = (wizard.packMode || (wizard.packSize ? "multi" : "single")) === "multi";
   const firstFree = !isPack && !freeHsUsed;
@@ -250,7 +260,26 @@ export function ClientWizard() {
       .map(({ q, ans }, i) => `${i + 1}) ${q.text}\nОтвет: ${ans}`)
       .join("\n\n");
 
-    setWizard({ desc: `${wizard.desc.trim()}\n\nУточнения (ИИ):\n${block}` });
+    const sharedQs: SharedQuestion[] = visibleClarifyQs.map((q) => ({
+      id: q.id,
+      text: q.text,
+      required: q.required,
+      hint: q.hint,
+      kind: q.kind,
+      allowCustom: q.allowCustom,
+      options: q.options?.map((o) => ({
+        id: o.id,
+        label: o.label,
+        searchValue: o.value,
+      })),
+    }));
+    const answerSlice = Object.fromEntries(parts.map(({ q, ans }) => [q.id, ans]));
+    const attrs = applyAttrsPatches(answerSlice, sharedQs, wizard.attrs);
+
+    setWizard({
+      desc: `${wizard.desc.trim()}\n\nУточнения (ИИ):\n${block}`,
+      attrs: fillEmptyProductAttrs(wizard.attrs, attrs) || attrs,
+    });
     setClarifyAppliedIds((ids) => [...ids, ...parts.map((p) => p.q.id)]);
   }
 
@@ -375,7 +404,13 @@ export function ClientWizard() {
       if (AI_MSGS[i]) setAiStatus(AI_MSGS[i]);
       if (i >= 2) {
         window.clearInterval(t);
-        const coded = classifyName(mergeClarifyAnswers(wizard.desc, clarifyAnswers), tnvedData, wizard.docs);
+        const coded = classifyName(
+          /\n+\s*Уточнения \(ИИ\):/.test(wizard.desc)
+            ? wizard.desc
+            : buildEnrichedHsQuery(wizard.desc, clarifyAnswers),
+          tnvedData,
+          wizard.docs
+        );
         const why = coded.hs !== "—"
           ? `${coded.why} Код открыт после оплаты.`
           : coded.why;

@@ -108,4 +108,18 @@ describe("newCalcStageTip", () => {
       })
     ).toMatch(/эталон SKU|производител/i);
   });
+
+  it("surfaces clarify gaps before HS candidates", () => {
+    expect(
+      newCalcStageTip({
+        form: baseForm({ title: "Кроссовки", description: "партия" }),
+        items: [item()],
+        hsCandidateCount: 2,
+        maxPos: 3,
+        hasCatalog: false,
+        needsAttrsHint: false,
+        clarifyGapLabels: ["верх", "подошва"],
+      })
+    ).toMatch(/уточните:\s*верх/i);
+  });
 });

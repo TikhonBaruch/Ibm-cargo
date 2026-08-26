@@ -33,6 +33,7 @@ export function HsCodeAutocomplete({
   className,
   leafOnly = false,
   placeholder,
+  searchBoost,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -44,6 +45,8 @@ export function HsCodeAutocomplete({
   /** Client NewCalc: 10-digit leaves only. Broker omits (chapters allowed). */
   leafOnly?: boolean;
   placeholder?: string;
+  /** Clarify tokens appended to text searches (not digit-only codes). */
+  searchBoost?: string;
 }) {
   const listId = useId();
   const [hits, setHits] = useState<TnvedHit[]>([]);
@@ -51,12 +54,15 @@ export function HsCodeAutocomplete({
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const q = value.trim();
-    if (q.length < 2) {
+    const raw = value.trim();
+    if (raw.length < 2) {
       setHits([]);
       setWarn("");
       return;
     }
+    const digitsOnly = /^\d[\d\s.]*$/.test(raw);
+    const boost = (!digitsOnly && searchBoost?.trim()) || "";
+    const q = boost ? `${raw} ${boost}`.replace(/\s+/g, " ").trim() : raw;
     let cancelled = false;
     const t = setTimeout(() => {
       void (async () => {
@@ -76,8 +82,8 @@ export function HsCodeAutocomplete({
           }
           if (cancelled) return;
           setHits(items);
-          const digits = q.replace(/\D/g, "");
-          const exact = items.some((h) => h.code === digits || h.codeDisplay === q);
+          const digits = raw.replace(/\D/g, "");
+          const exact = items.some((h) => h.code === digits || h.codeDisplay === raw);
           if (items.length === 0) {
             setWarn(
               leafOnly
@@ -101,7 +107,7 @@ export function HsCodeAutocomplete({
       cancelled = true;
       clearTimeout(t);
     };
-  }, [value, leafOnly]);
+  }, [value, leafOnly, searchBoost]);
 
   const pick = async (hit: TnvedHit) => {
     onChange(hit.codeDisplay || hit.code);

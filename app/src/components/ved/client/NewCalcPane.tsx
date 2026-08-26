@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { StatusPill } from "../VedShell";
+import { StatusPill, api } from "../VedShell";
 import { ProductCsvImport } from "./ProductCsvImport";
 import type { Broker, Calc, CalcForm, CatalogSku, CreatePhase, FormItem, TariffOption } from "./types";
 import { formatTariffOption, maxPositionsForTariffCode } from "./types";
 import { SkuCatalogSelect } from "./SkuCatalogSelect";
 import { ManufacturerSuggest } from "./ManufacturerSuggest";
 import { AttrSuggestChips } from "./AttrSuggestChips";
+import { ClarifyHintsPanel } from "./ClarifyHintsPanel";
 import { HsHintCandidates } from "./HsHintCandidates";
 import { FieldLabel, StageTip, newCalcStageTip } from "./NewCalcHints";
 import { FieldSuggest } from "./FieldSuggest";
@@ -17,7 +18,19 @@ import { TnvedCardDrawer } from "../TnvedCardDrawer";
 import { rankHeuristicCandidates } from "@/lib/ved/ai-draft-engine";
 import { factoryUiEnabled } from "@/lib/ved/cabinet-features";
 import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
-import { hasRequiredCreateAttrs } from "@/lib/ved/product-description";
+import {
+  buildEnrichedHsQuery,
+  detectCategory,
+  gapTipLabels,
+  mergeSearchTokens,
+  newCalcClarifyQuestions,
+  type ClarificationQuestion,
+} from "@/lib/ved/clarify-hints";
+import {
+  fillEmptyProductAttrs,
+  hasRequiredCreateAttrs,
+  type ProductAttrs,
+} from "@/lib/ved/product-description";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import { useVedToast } from "../feedback/VedToast";
 
@@ -81,6 +94,8 @@ export function NewCalcPane({
 }) {
   const [cardCode, setCardCode] = useState<string | null>(null);
   const [showRequiredErrors, setShowRequiredErrors] = useState(false);
+  const [clarifyAnswers, setClarifyAnswers] = useState<Record<string, string>>({});
+  const [clarifyQs, setClarifyQs] = useState<ClarificationQuestion[]>([]);
   const { toast } = useVedToast();
   const factoryOn = factoryUiEnabled();
   const tariffOptions = tariffs;
@@ -96,6 +111,45 @@ export function NewCalcPane({
   const missingRequiredHint = namedItems.some((i) => !itemRequiredAttrsOk(i));
   const highlightRequired = showRequiredErrors && missingRequiredHint;
 
+  const clarifyDesc = useMemo(
+    () =>
+      `${form.title} ${form.description} ${items.map((i) => i.name).join(" ")}`.trim(),
+    [form.title, form.description, items]
+  );
+
+  useEffect(() => {
+    if (clarifyDesc.length < 4) {
+      setClarifyQs([]);
+      return;
+    }
+    const local = newCalcClarifyQuestions(clarifyDesc);
+    setClarifyQs(local);
+    let cancelled = false;
+    const t = window.setTimeout(() => {
+      void api<{ questions: ClarificationQuestion[] }>("/api/v1/clarify/questions", {
+        method: "POST",
+        body: JSON.stringify({ desc: clarifyDesc, includeDocsQuestion: false }),
+      })
+        .then((row) => {
+          if (!cancelled && Array.isArray(row.questions)) setClarifyQs(row.questions);
+        })
+        .catch(() => {
+          /* keep local heuristic */
+        });
+    }, 350);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
+  }, [clarifyDesc]);
+
+  const clarifyCategory = useMemo(() => detectCategory(clarifyDesc), [clarifyDesc]);
+  const clarifyGaps = useMemo(
+    () => (clarifyDesc.length >= 4 ? gapTipLabels(clarifyDesc, clarifyCategory) : []),
+    [clarifyDesc, clarifyCategory]
+  );
+  const searchTokens = useMemo(() => mergeSearchTokens(clarifyAnswers), [clarifyAnswers]);
+
   const tryCreate = () => {
     if (!requiredAttrsOk) {
       setShowRequiredErrors(true);
@@ -109,11 +163,16 @@ export function NewCalcPane({
     void onCreate();
   };
   const needsAttrsHint = false;
-  const hsText = `${form.title} ${form.description} ${items.map((i) => i.name).join(" ")}`;
+  const hsBase = `${form.title} ${form.description} ${items.map((i) => i.name).join(" ")}`;
+  const hsText = buildEnrichedHsQuery(hsBase, clarifyAnswers);
   const hsCandidates =
     hsText.trim().length >= 8
       ? rankHeuristicCandidates(
-          { title: form.title, description: `${form.description} ${items.map((i) => i.name).join(" ")}`, country: form.country },
+          {
+            title: form.title,
+            description: `${form.description} ${items.map((i) => i.name).join(" ")} ${searchTokens}`.trim(),
+            country: form.country,
+          },
           3
         )
       : [];
@@ -124,6 +183,7 @@ export function NewCalcPane({
     maxPos,
     hasCatalog: catalogSkus.length > 0,
     needsAttrsHint,
+    clarifyGapLabels: clarifyGaps,
   });
   const pickHsHint = (hsCode: string) => {
     const next = [...items];
@@ -133,6 +193,34 @@ export function NewCalcPane({
       ...next[target],
       attrs: { ...next[target].attrs, hsHint: hsCode },
     };
+    onItems(next);
+  };
+
+  const acceptClarifyPatch = (patch: {
+    attrsPatch?: ProductAttrs;
+    hsHint?: string;
+  }) => {
+    if (!patch.attrsPatch && !patch.hsHint) return;
+    const next = [...items];
+    const idx = next.findIndex((i) => itemHasIdentity(i)) >= 0
+      ? next.findIndex((i) => itemHasIdentity(i))
+      : 0;
+    const existing = (next[idx]?.attrs || {}) as ProductAttrs;
+    const merged = fillEmptyProductAttrs(existing, {
+      ...(patch.attrsPatch || {}),
+      ...(patch.hsHint ? { hsHint: patch.hsHint } : {}),
+    });
+    if (!merged) return;
+    const attrs = { ...(next[idx]?.attrs || {}) };
+    if (merged.brand !== undefined) attrs.brand = merged.brand;
+    if (merged.material !== undefined) attrs.material = merged.material;
+    if (merged.composition !== undefined) attrs.composition = merged.composition;
+    if (merged.purpose !== undefined) attrs.purpose = merged.purpose;
+    if (merged.originCountry !== undefined) attrs.originCountry = merged.originCountry;
+    if (merged.hsHint !== undefined) attrs.hsHint = merged.hsHint;
+    if (merged.netWeightKg !== undefined) attrs.netWeightKg = String(merged.netWeightKg);
+    if (merged.extra) attrs.extra = { ...(attrs.extra || {}), ...merged.extra };
+    next[idx] = { ...next[idx], attrs };
     onItems(next);
   };
 
@@ -176,6 +264,15 @@ export function NewCalcPane({
             onChange={(description) => onForm({ description })}
           />
         </FieldLabel>
+
+        {clarifyQs.length > 0 ? (
+          <ClarifyHintsPanel
+            questions={clarifyQs}
+            answers={clarifyAnswers}
+            onAnswers={setClarifyAnswers}
+            onAccept={acceptClarifyPatch}
+          />
+        ) : null}
 
         <HsHintCandidates
           candidates={hsCandidates}
@@ -613,6 +710,7 @@ export function NewCalcPane({
                         className={inputClass}
                         placeholder="смартфон или 8517"
                         value={it.attrs?.hsHint ?? ""}
+                        searchBoost={searchTokens}
                         onChange={(hsHint) => {
                           const next = [...items];
                           next[idx] = {
