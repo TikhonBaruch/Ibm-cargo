@@ -8,6 +8,9 @@ import { defineConfig } from "prisma/config";
  *
  * When this file exists, Prisma CLI skips its own .env loader — restore
  * the historic `.env` / `prisma/.env` lookup so local `db seed` still works.
+ * Cwd = repo root. Do not load `app/.env` (`app/` is App Router, not a package).
+ * `loadEnvFile` does not override an existing `process.env.DATABASE_URL`
+ * (Cloud/Vercel often injects the placeholder `[SENSITIVE]` — use `env -u DATABASE_URL`).
  */
 for (const file of [".env", "prisma/.env"]) {
   if (existsSync(file)) {

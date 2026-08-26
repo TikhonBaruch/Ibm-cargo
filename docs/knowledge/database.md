@@ -30,11 +30,27 @@ DATABASE_URL="postgresql://newlsu_lbm:YOUR_PASSWORD@pg4.sweb.ru:5433/newlsu_lbm?
 
 Ловушки при копировании строки:
 
-1. Символ `#` в «пароле» — это **фрагмент URL**, не часть пароля. `new URL(...)` → `Invalid URL`; Prisma → Authentication failed.
-2. Лишнее двоеточие `:5433:/newlsu_lbm` — тоже `Invalid URL`. Нужно `:5433/newlsu_lbm`.
-3. `env -u DATABASE_URL` перед `npm run db:seed`, если в процессе уже стоит плейсхолдер Vercel `[SENSITIVE]` — `prisma.config.ts` / `loadEnvFile` его не перезапишет.
+1. Символ `#` в «пароле» — это **фрагмент URL**, не часть пароля. `new URL(...)` → `Invalid URL`; Prisma → Authentication failed. Рабочий пароль = конкатенация **до и после** `#` (сам `#` выкинуть). **Не** кодировать `#` как `%23` — такая строка тоже даёт Authentication failed.
+2. Лишнее двоеточие `:5433:/newlsu_lbm` — тоже `Invalid URL` / invalid port. Нужно `:5433/newlsu_lbm`.
+3. `env -u DATABASE_URL` перед `npm run db:seed` / Prisma CLI, если в процессе уже стоит плейсхолдер Vercel `[SENSITIVE]` — `prisma.config.ts` / `loadEnvFile` его не перезапишет.
 
-Если позже в пароле появятся `#` `@` `/` — URL-encode (`#` → `%23`).
+Если позже в пароле появятся `#` `@` `/` — URL-encode (`#` → `%23`). На as-is sweb 2026-08-26 `%23` **не** нужен.
+
+### Где агентам брать `DATABASE_URL`
+
+Порядок (пароль не печатать, `.env` не коммитить):
+
+| # | Источник | Когда |
+|---|----------|--------|
+| 1 | **repo-root** `.env` / `.env.local` | Канон. Next.js и `prisma.config.ts` читают **cwd = корень репо**. |
+| 2 | `prisma/.env` | Второй файл, который грузит Prisma CLI, если файл есть. |
+| — | `app/.env` | **Не читать и не создавать.** `app/` — App Router Next.js, не пакет. В репозитории ничто не загружает `app/.env`. |
+| — | git | Секреты gitignored (`.env*`). |
+| — | `vercel env pull` | В Cloud VM часто приходит плейсхолдер `[SENSITIVE]` — Prisma: URL must start with `postgresql://`. |
+
+Проверка 2026-08-26 (Cloud VM): корневой `.env` — `$queryRaw SELECT current_database()` → `newlsu_lbm`. `app/.env` и `prisma/.env` **отсутствуют**. `process.env.DATABASE_URL=[SENSITIVE]` — fail. Сырой paste с `#` + `:5433:/db` — invalid port. `%23` и «пароль только до `#`» — Authentication failed.
+
+План: [`plan-sweb-db-url.md`](./plan-sweb-db-url.md).
 
 ## Схема и миграции
 

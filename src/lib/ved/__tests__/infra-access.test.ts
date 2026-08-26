@@ -40,6 +40,16 @@ describe("parsePostgresUrl", () => {
     expect(p.host).toBeUndefined();
     expect(p.database).toBeUndefined();
   });
+
+  it("treats extra colon after port as an unusable URL", () => {
+    const p = parsePostgresUrl(
+      "postgresql://u:secret@pg4.sweb.ru:5433:/newlsu_lbm?sslmode=require"
+    );
+    expect(p.present).toBe(true);
+    expect(p.host).toBeUndefined();
+    expect(p.port).toBeUndefined();
+    expect(p.database).toBeUndefined();
+  });
 });
 
 describe("buildInfraSections", () => {
