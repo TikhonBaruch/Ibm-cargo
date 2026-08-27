@@ -13,6 +13,16 @@ import {
 } from "@/lib/ved/tnved-directory-read";
 import { api } from "../VedShell";
 
+/** Same labels as lab chips; queries are short tokens for live Postgres contains-search. */
+const LIVE_HS_EXAMPLES = HS_EXAMPLES.map((ex) => {
+  if (ex.label === "Ноутбук") return { ...ex, q: "ноутбук" };
+  if (ex.label === "Футболка") return { ...ex, q: "футболка" };
+  if (ex.label === "Поло") return { ...ex, q: "поло" };
+  if (ex.label === "Фильтр") return { ...ex, q: "фильтр" };
+  if (ex.label === "8471") return { ...ex, q: "8471" };
+  return ex;
+});
+
 type Hit = {
   code: string;
   codeDisplay?: string;
@@ -167,7 +177,7 @@ export function TnvedDirectoryPane({
             />
           </div>
           <div className="filter-chips" style={{ marginTop: 4 }}>
-            {HS_EXAMPLES.map((ex) => (
+            {LIVE_HS_EXAMPLES.map((ex) => (
               <button
                 key={ex.label}
                 type="button"

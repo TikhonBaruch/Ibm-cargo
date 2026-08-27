@@ -174,7 +174,9 @@ describe("public surface hygiene", () => {
       path.join(repoRoot, "src/lib/ved/tnved-directory-read.ts"),
       "utf8",
     );
-    expect(tnved).toContain("Оформить заявку по этому коду");
+    expect(tnved).toContain("LIVE_HS_EXAMPLES");
+    expect(tnved).toContain('q: "ноутбук"');
+    expect(tnved).not.toContain("cotton t-shirt");
     expect(tnved).toContain("tnved-code");
     expect(tnved).toContain("metric-row");
     expect(tnved).toContain("Выберите группу или введите запрос");
