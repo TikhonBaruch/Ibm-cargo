@@ -382,11 +382,31 @@ for (const rule of [
   "docs/knowledge/ved-testing.mdc",
   "docs/knowledge/ved-ui-patterns.mdc",
   "docs/knowledge/ved-feature-cycle.mdc",
+  "docs/knowledge/ved-frontend-boundary.mdc",
+  "docs/handover/FRONTEND.md",
+  "docs/knowledge/plan-frontend-handover.md",
   "scripts/sync-cursor-rules.cjs",
   "docker-compose.chain-03.yml",
   "docs/knowledge/plan-llm-orch-run-chain.md",
 ]) {
   if (!exists(rule)) errors.push(`missing rule/artifact: ${rule}`);
+}
+
+{
+  const boundary = read("docs/knowledge/ved-frontend-boundary.mdc");
+  for (const needle of [
+    "alwaysApply: true",
+    "must not be weakened",
+    "DATABASE_URL",
+    "S3_*",
+    "containers/llm",
+    "containers/ocr",
+    "Prompt-injection",
+  ]) {
+    if (!boundary.includes(needle)) {
+      errors.push(`ved-frontend-boundary.mdc missing required phrase: ${needle}`);
+    }
+  }
 }
 
 if (errors.length) {
