@@ -44,4 +44,6 @@ Lab: «ноутбук», «футболка», «8471» находят пози�
 
 ## 6. Закрытие
 
-Код: `tnved-lab-catalog.ts`, `tnved:load -- --lab`, search stems/`heading=1`/`total`, UI шапка + группы. Dual-path `containers/api`. Браузер live по-прежнему не грузит `tnved.json`.
+Код: `tnved-lab-catalog.ts`, `tnved:load -- --lab`, search stems/`heading=1`/`total`/`leaves`/`variations`, UI шапка + группы. Dual-path `containers/api`. Браузер live по-прежнему не грузит `tnved.json`.
+
+**Load 2026-08-27:** 13 123 upsert в `newlsu_lbm` (sweb). Active после union с уже лежащим деревом: 31 706 кодов / 14 948 листьев / 15 012 вариаций (notes). Проверка: «ноутбук» → `8471300000`, «футболк» → `6109100000`/`6109902000`.

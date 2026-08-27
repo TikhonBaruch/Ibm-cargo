@@ -67,6 +67,10 @@ export function directoryHumanLead(notes: string | null | undefined): string {
     .split(/\n+/)[0]
     ?.trim() || "";
   if (!lead) return "";
+  const parts = lead.split(",").map((p) => p.trim()).filter(Boolean);
+  const looksLikeTokens =
+    parts.length >= 3 && parts.every((p) => p.length <= 40) && !/[.!?]/.test(lead);
+  if (looksLikeTokens) return "";
   if (lead.length >= 48 || /[.!?]/.test(lead)) return lead;
   return "";
 }

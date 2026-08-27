@@ -67,6 +67,17 @@ describe("directoryReadFromCard", () => {
     expect(read.why).not.toContain("macbook");
   });
 
+  it("does not use a long comma token list as why", () => {
+    const read = directoryReadFromCard({
+      code: "8471300000",
+      codeDisplay: "8471 30 000 0",
+      titleRu: "машины вычислительные портативные",
+      notes: "ноутбук, laptop, notebook, macbook, компьютеры портативные, пк",
+      paymentsHint: { vatPct: 22, feeRule: "ПП 1637" },
+    });
+    expect(read.why).toBe("машины вычислительные портативные");
+  });
+
   it("warns on layer-G triggers without inventing Низкий", () => {
     const card = assembleTnvedCard({
       row: {
