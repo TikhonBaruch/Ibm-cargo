@@ -119,7 +119,7 @@ MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ o
 | D26+D27 + polish UX | **на `origin/main`**; sweb schema synced; `S3_OBJECT_ACL` on Vercel; prod smoke mvp/full **PASS** | [`runbook.md`](./runbook.md) · [`roadmap.md`](./roadmap.md) §Post-polish · [`staging.md`](./staging.md) |
 | Broker chat threads UI + DevEx (`setup`, `.nvmrc`) | **done** на `main` (merge chat-threads) | [`design-parity.md`](./design-parity.md) |
 | Shipping UI go-live | **hold (D27)** — код готов, flag **off**; не включать `NEXT_PUBLIC_SHIPPING_UI=1` как MVP CTA | [`roadmap.md`](./roadmap.md) §2.2 · `cabinet-features.ts` |
-| Полный каталог ТН ВЭД | **C18 2026-08-27:** `tnved:load -- --lab` upsert 13 123 узлов lab в sweb `newlsu_lbm` (без wipe rates). После union: **31 706** активных кодов, **14 948** листьев, **15 012** с notes/вариациями. «ноутбук»→8471300000, «футболк»→6109. **Не** `--full` / TWS dump. | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) |
+| Полный каталог ТН ВЭД | **C18 2026-08-27:** `tnved:load -- --lab` + `--search-extras` в sweb `newlsu_lbm`. **31 706** кодов · **14 948** листьев · **15 014** вариаций. Поиск ранжирует alias-notes. Production: https://ibm-cargo-phi.vercel.app | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) |
 | LLM-as-CTA / matcher UX | **hold (D27)** — heuristic-v1; `LLM_SERVICE_URL` только opt-in fail-open | [`ai-pipeline.md`](./ai-pipeline.md) · [`growth.md`](./growth.md) |
 | TN VED search/UI attrs/events | **done** (polish §2.5) | [`data-model.md`](./data-model.md) · [`roadmap.md`](./roadmap.md) |
 | Real ЮKassa / notify на prod | Track A ops — mock topup + SMTP_FROM; **нужен RESEND + ЮKassa host** | [`plan-track-a-p0.md`](./plan-track-a-p0.md) · `npm run ops:track-a` |
