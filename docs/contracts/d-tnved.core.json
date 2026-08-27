@@ -53,6 +53,16 @@
           "type": "integer",
           "minimum": 0,
           "description": "Count of active TnvedCode rows (C18 directory header)"
+        },
+        "leaves": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Active 10-digit leaves"
+        },
+        "variations": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Active rows with search notes (aliases / index tokens)"
         }
       }
     },
@@ -145,7 +155,9 @@
           "isActive": true
         }
       ],
-      "total": 13123
+      "total": 13123,
+      "leaves": 10081,
+      "variations": 430
     }
   },
   "x-invariants": [

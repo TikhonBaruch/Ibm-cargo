@@ -3104,14 +3104,18 @@ const server = http.createServer(async (req, res) => {
       const cap = headingOnly ? 200 : 50;
       const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 20), 1), cap);
       const leafOnly = url.searchParams.get("leafOnly") === "1";
-      const total = await prisma.tnvedCode.count({ where: { isActive: true } });
-      if (!q) return json(res, 200, { items: [], total });
+      const [total, leaves, variations] = await Promise.all([
+        prisma.tnvedCode.count({ where: { isActive: true } }),
+        prisma.tnvedCode.count({ where: { isActive: true, isLeaf: true } }),
+        prisma.tnvedCode.count({ where: { isActive: true, notes: { not: null } } }),
+      ]);
+      if (!q) return json(res, 200, { items: [], total, leaves, variations });
       const items = await prisma.tnvedCode.findMany({
         where: tnvedSearchWhere(q, { leafOnly, headingOnly }),
         take: limit,
         orderBy: headingOnly ? { code: "asc" } : [{ level: "desc" }, { code: "asc" }],
       });
-      return json(res, 200, { items, total });
+      return json(res, 200, { items, total, leaves, variations });
     }
 
     const tnvedCodeMatch = url.pathname.match(/^\/v1\/tnved\/([^/]+)$/);

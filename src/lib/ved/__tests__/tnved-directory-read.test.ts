@@ -52,6 +52,19 @@ describe("directoryReadFromCard", () => {
     expect(read.riskLabel).toBe("Уточнит брокер");
     expect(read.riskKind).toBe("ok");
     expect(read.riskLabel).not.toContain("Низкий");
+    expect(read.why).toMatch(/портативн/i);
+  });
+
+  it("uses alias why sentence, not the search-token line", () => {
+    const read = directoryReadFromCard({
+      code: "8471300000",
+      codeDisplay: "8471 30 000 0",
+      titleRu: "машины вычислительные портативные",
+      notes: "Ноутбуки и аналоги массой не более 10 кг.\nноутбук, laptop, macbook",
+      paymentsHint: { vatPct: 22, feeRule: "ПП 1637" },
+    });
+    expect(read.why).toMatch(/^Ноутбуки и аналоги/);
+    expect(read.why).not.toContain("macbook");
   });
 
   it("warns on layer-G triggers without inventing Низкий", () => {

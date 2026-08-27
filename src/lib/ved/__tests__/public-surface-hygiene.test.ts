@@ -189,6 +189,7 @@ describe("public surface hygiene", () => {
     expect(tnved).not.toContain("tnved.json");
     expect(tnved).toContain("heading=1");
     expect(tnved).toContain("catalogTotal");
+    expect(tnved).toContain("вариаций");
     expect(helper).toContain("vatPct");
     expect(helper).toContain("22");
     expect(helper).not.toContain("Низкий");

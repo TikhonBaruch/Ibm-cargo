@@ -67,49 +67,74 @@ export function labPairToImportItem(
   return item;
 }
 
-export type LabAlias = { code: string; keys: string[] };
+export type LabAlias = { code: string; keys: string[]; why?: string };
 export type LabIndex = {
   entries?: Array<[string, string, string[], number]>;
   aliasTokens?: Record<string, string[]>;
 };
 
+export function composeLabNotes(whyParts: string[] | undefined, tokens: string[] | undefined, maxLen = 4000): string | undefined {
+  const why = [...new Set((whyParts || []).map((w) => w.trim()).filter(Boolean))].join(" ");
+  const tokBudget = why ? Math.max(32, maxLen - why.length - 1) : maxLen;
+  const tok = notesFromSearchTokens(tokens || [], tokBudget);
+  const out = why && tok ? `${why}\n${tok}` : why || tok;
+  if (!out) return undefined;
+  return out.length > maxLen ? out.slice(0, maxLen) : out;
+}
+
 export function notesByCodeFromLabSearch(opts: {
   aliases?: LabAlias[];
   index?: LabIndex;
-}): Map<string, string[]> {
-  const map = new Map<string, string[]>();
-  const add = (codeRaw: string, token: string) => {
+  synonyms?: Record<string, string>;
+}): { tokens: Map<string, string[]>; why: Map<string, string[]> } {
+  const tokens = new Map<string, string[]>();
+  const why = new Map<string, string[]>();
+  const addTok = (codeRaw: string, token: string) => {
     const code = normalizeHsCode(codeRaw);
     if (!code || !token) return;
-    const row = map.get(code) || [];
+    const row = tokens.get(code) || [];
     row.push(token);
-    map.set(code, row);
+    tokens.set(code, row);
+  };
+  const addWhy = (codeRaw: string, text: string) => {
+    const code = normalizeHsCode(codeRaw);
+    const w = String(text || "").trim();
+    if (!code || !w) return;
+    const row = why.get(code) || [];
+    if (!row.includes(w)) row.push(w);
+    why.set(code, row);
   };
   for (const a of opts.aliases || []) {
-    for (const k of a.keys || []) add(a.code, k.replace(/^=/, ""));
+    for (const k of a.keys || []) addTok(a.code, k.replace(/^=/, ""));
+    if (a.why) addWhy(a.code, a.why);
   }
   for (const [tok, codes] of Object.entries(opts.index?.aliasTokens || {})) {
-    for (const c of codes) add(c, tok);
+    for (const c of codes) addTok(c, tok);
   }
   for (const [code, , toks] of opts.index?.entries || []) {
-    for (const t of toks || []) add(code, t);
+    for (const t of toks || []) addTok(code, t);
   }
-  return map;
+  for (const [code, blob] of Object.entries(opts.synonyms || {})) {
+    for (const t of String(blob || "").split(/[,;]+/)) addTok(code, t);
+  }
+  return { tokens, why };
 }
 
 export function labCatalogToImportItems(
   pairs: Array<[string, string]>,
-  notesByCode?: Map<string, string[]>,
+  notesByCode?: Map<string, string[]> | { tokens: Map<string, string[]>; why: Map<string, string[]> },
 ): TnvedImportItem[] {
   const present = new Set<string>();
   for (const [codeRaw] of pairs) {
     const code = normalizeHsCode(codeRaw);
     if (code) present.add(code);
   }
+  const tokenMap = notesByCode instanceof Map ? notesByCode : notesByCode?.tokens;
+  const whyMap = notesByCode instanceof Map ? undefined : notesByCode?.why;
   const items: TnvedImportItem[] = [];
   for (const [codeRaw, title] of pairs) {
     const code = normalizeHsCode(codeRaw);
-    const notes = code ? notesFromSearchTokens(notesByCode?.get(code) || []) : undefined;
+    const notes = code ? composeLabNotes(whyMap?.get(code), tokenMap?.get(code) || []) : undefined;
     const item = labPairToImportItem(codeRaw, title, present, notes);
     if (item) items.push(item);
   }

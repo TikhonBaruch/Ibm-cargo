@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/require-role";
 import { forwardDomainResponse, proxyDomainApi } from "@/lib/ved/domain-api";
-import { countActiveTnvedCodes, searchTnvedCodes } from "@/lib/ved/tnved";
+import { countTnvedDirectoryStats, searchTnvedCodes } from "@/lib/ved/tnved";
 
 export async function GET(req: NextRequest) {
   const { session, error } = await requireRole(["CLIENT", "BROKER", "ADMIN", "SUPER_ADMIN"]);
@@ -25,9 +25,9 @@ export async function GET(req: NextRequest) {
   const limit = Number(req.nextUrl.searchParams.get("limit") || "20");
   const leafOnly = req.nextUrl.searchParams.get("leafOnly") === "1";
   const headingOnly = req.nextUrl.searchParams.get("heading") === "1";
-  const [items, total] = await Promise.all([
+  const [items, stats] = await Promise.all([
     searchTnvedCodes(prisma, { q, limit, leafOnly, headingOnly }),
-    countActiveTnvedCodes(prisma),
+    countTnvedDirectoryStats(prisma),
   ]);
-  return NextResponse.json({ items, total });
+  return NextResponse.json({ items, ...stats });
 }

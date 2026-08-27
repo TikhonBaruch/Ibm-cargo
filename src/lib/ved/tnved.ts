@@ -113,6 +113,15 @@ export async function countActiveTnvedCodes(db: Pick<Prisma.TransactionClient, "
   return db.tnvedCode.count({ where: { isActive: true } });
 }
 
+export async function countTnvedDirectoryStats(db: Pick<Prisma.TransactionClient, "tnvedCode">) {
+  const [total, leaves, variations] = await Promise.all([
+    db.tnvedCode.count({ where: { isActive: true } }),
+    db.tnvedCode.count({ where: { isActive: true, isLeaf: true } }),
+    db.tnvedCode.count({ where: { isActive: true, notes: { not: null } } }),
+  ]);
+  return { total, leaves, variations };
+}
+
 /** Stems so «футболка» hits notes token «футболк» (lab alias keys). */
 export function tnvedSearchStems(query: string): string[] {
   const q = String(query || "")

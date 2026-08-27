@@ -59,6 +59,14 @@ export function TnvedDirectoryPane({
   const [picked, setPicked] = useState<Hit | null>(null);
   const [card, setCard] = useState<DirectoryCardLike | null>(null);
   const [catalogTotal, setCatalogTotal] = useState<number | null>(null);
+  const [catalogLeaves, setCatalogLeaves] = useState<number | null>(null);
+  const [catalogVariations, setCatalogVariations] = useState<number | null>(null);
+
+  function applyStats(res: { total?: number; leaves?: number; variations?: number }) {
+    if (typeof res.total === "number") setCatalogTotal(res.total);
+    if (typeof res.leaves === "number") setCatalogLeaves(res.leaves);
+    if (typeof res.variations === "number") setCatalogVariations(res.variations);
+  }
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -66,9 +74,9 @@ export function TnvedDirectoryPane({
 
   useEffect(() => {
     let cancelled = false;
-    void api<{ total?: number }>("/api/v1/tnved/search?limit=1")
+    void api<{ total?: number; leaves?: number; variations?: number }>("/api/v1/tnved/search?limit=1")
       .then((res) => {
-        if (!cancelled && typeof res.total === "number") setCatalogTotal(res.total);
+        if (!cancelled) applyStats(res);
       })
       .catch(() => undefined);
     return () => {
@@ -91,12 +99,12 @@ export function TnvedDirectoryPane({
         try {
           const heading = !query.trim() && group ? "&heading=1" : "";
           const limit = heading ? 100 : 40;
-          const res = await api<{ items: Hit[]; total?: number }>(
+          const res = await api<{ items: Hit[]; total?: number; leaves?: number; variations?: number }>(
             `/api/v1/tnved/search?q=${encodeURIComponent(q)}&limit=${limit}${heading}`,
           );
           if (cancelled) return;
           setHits(res.items || []);
-          if (typeof res.total === "number") setCatalogTotal(res.total);
+          applyStats(res);
           setLoadError("");
         } catch (e) {
           if (cancelled) return;
@@ -163,7 +171,16 @@ export function TnvedDirectoryPane({
             {catalogTotal == null && busy && !hits.length
               ? "Ищем в справочнике…"
               : catalogTotal != null
-                ? `${catalogTotal.toLocaleString("ru-RU")} позиций · НДС 22% / сбор ПП 1637`
+                ? [
+                    `${catalogTotal.toLocaleString("ru-RU")} кодов`,
+                    catalogLeaves != null ? `${catalogLeaves.toLocaleString("ru-RU")} листьев` : null,
+                    catalogVariations != null
+                      ? `${catalogVariations.toLocaleString("ru-RU")} вариаций`
+                      : null,
+                    "НДС 22% / сбор ПП 1637",
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")
                 : "Живой справочник · НДС 22% / сбор ПП 1637"}
           </p>
         </div>

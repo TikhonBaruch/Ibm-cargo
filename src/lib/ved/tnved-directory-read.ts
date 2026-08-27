@@ -61,6 +61,16 @@ export function formatDirectoryDuty(rate: DirectoryDutyRate): string {
   return "нет в источнике";
 }
 
+export function directoryHumanLead(notes: string | null | undefined): string {
+  const lead = String(notes || "")
+    .trim()
+    .split(/\n+/)[0]
+    ?.trim() || "";
+  if (!lead) return "";
+  if (lead.length >= 48 || /[.!?]/.test(lead)) return lead;
+  return "";
+}
+
 export function directoryReadFromCard(
   card: DirectoryCardLike,
   fallback?: { code?: string; codeDisplay?: string | null; titleRu?: string | null },
@@ -81,9 +91,9 @@ export function directoryReadFromCard(
     .filter(Boolean)
     .at(-1);
   const why =
-    (card.notes || "").trim() ||
-    ancestorWhy ||
+    directoryHumanLead(card.notes) ||
     title ||
+    ancestorWhy ||
     "Рекомендация справочника, не решение таможенного органа.";
 
   const notes: string[] = [];

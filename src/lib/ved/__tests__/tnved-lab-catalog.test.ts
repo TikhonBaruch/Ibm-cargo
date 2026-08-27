@@ -60,7 +60,26 @@ describe("C18 lab TN VED catalog", () => {
         entries: [["8471300000", "title", ["портативн"], 1]],
       },
     });
-    expect(map.get("8471300000")).toEqual(expect.arrayContaining(["ноутбук", "laptop", "ноут", "портативн"]));
+    expect(map.tokens.get("8471300000")).toEqual(
+      expect.arrayContaining(["ноутбук", "laptop", "ноут", "портативн"]),
+    );
+  });
+
+  it("composeLabNotes puts human why above search tokens", () => {
+    const packed = notesByCodeFromLabSearch({
+      aliases: [{ code: "8471300000", keys: ["ноутбук"], why: "Ноутбуки и аналоги массой не более 10 кг." }],
+      synonyms: { "8471300000": "laptop, macbook" },
+    });
+    const items = labCatalogToImportItems(
+      [
+        ["84", "оборудование"],
+        ["8471300000", "портативные машины"],
+      ],
+      packed,
+    );
+    expect(items[1].notes).toMatch(/^Ноутбуки и аналоги/);
+    expect(items[1].notes).toMatch(/ноутбук/);
+    expect(items[1].notes).toMatch(/laptop/);
   });
 
   it("searchTnvedCodes headingOnly lists 4-digit headings in a chapter", async () => {

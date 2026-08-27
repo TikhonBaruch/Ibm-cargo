@@ -47,6 +47,7 @@ function readLabItems(): TnvedImportItem[] {
   const jsonPath = path.join(root, "public/lbm-bro/data/tnved.json");
   const indexPath = path.join(root, "public/lbm-bro/data/tnved-index.json");
   const aliasPath = path.join(root, "src/lbm-bro/lib/hs-aliases.json");
+  const synPath = path.join(root, "src/lib/ved/tnved-demo-synonyms.json");
   if (!existsSync(jsonPath)) throw new Error(`Missing ${jsonPath}`);
   const raw = JSON.parse(readFileSync(jsonPath, "utf8")) as {
     items: [string, string][];
@@ -58,9 +59,12 @@ function readLabItems(): TnvedImportItem[] {
       })
     : undefined;
   const aliases = existsSync(aliasPath)
-    ? (JSON.parse(readFileSync(aliasPath, "utf8")) as Array<{ code: string; keys: string[] }>)
+    ? (JSON.parse(readFileSync(aliasPath, "utf8")) as Array<{ code: string; keys: string[]; why?: string }>)
     : [];
-  const notesByCode = notesByCodeFromLabSearch({ aliases, index });
+  const synonyms = existsSync(synPath)
+    ? (JSON.parse(readFileSync(synPath, "utf8")) as Record<string, string>)
+    : {};
+  const notesByCode = notesByCodeFromLabSearch({ aliases, index, synonyms });
   return labCatalogToImportItems(raw.items, notesByCode);
 }
 
