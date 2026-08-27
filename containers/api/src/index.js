@@ -28,7 +28,7 @@ import { handleCatalogRoutes, hydrateItemsWithPublishedSkus } from "./catalog-sk
 import { handleFactoryOrderRoutes, handleManufacturerOrderRoutes } from "./sku-orders.js";
 import { handleManufacturerDirectoryRoutes } from "./manufacturer-directory.js";
 import { assembleTnvedCard, hsCodeAncestors } from "./tnved-card.js";
-import { tnvedSearchWhere } from "./tnved-helpers.js";
+import { tnvedSearchWhere, tnvedSearchStems, scoreTnvedSearchHit } from "./tnved-helpers.js";
 import { suggestProductAttrs } from "./attr-suggest.js";
 import { shouldEnqueueAiDrain, runAiDrainPipeline } from "./ai-pipeline.js";
 import { isAllowedMediaUrl } from "./media-url.js";
@@ -3110,11 +3110,25 @@ const server = http.createServer(async (req, res) => {
         prisma.tnvedCode.count({ where: { isActive: true, notes: { not: null } } }),
       ]);
       if (!q) return json(res, 200, { items: [], total, leaves, variations });
-      const items = await prisma.tnvedCode.findMany({
+      const digits = q.replace(/\D/g, "");
+      const codeOnly = digits.length >= 2 && /^[\d\s./-]+$/.test(q);
+      const headingPool = headingOnly ? limit : codeOnly ? Math.min(50, Math.max(limit * 4, 24)) : 500;
+      const found = await prisma.tnvedCode.findMany({
         where: tnvedSearchWhere(q, { leafOnly, headingOnly }),
-        take: limit,
+        take: headingPool,
         orderBy: headingOnly ? { code: "asc" } : [{ level: "desc" }, { code: "asc" }],
       });
+      const stems = codeOnly ? [digits] : tnvedSearchStems(q);
+      const items = headingOnly
+        ? found
+        : [...found]
+            .sort((a, b) => {
+              const d =
+                scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits }) -
+                scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits });
+              return d || String(a.code).localeCompare(String(b.code));
+            })
+            .slice(0, limit);
       return json(res, 200, { items, total, leaves, variations });
     }
 

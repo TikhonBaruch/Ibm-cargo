@@ -149,6 +149,38 @@ export function tnvedSearchStems(query: string): string[] {
   return out;
 }
 
+export function scoreTnvedSearchHit(
+  row: { code: string; titleRu?: string | null; notes?: string | null; isLeaf?: boolean; level?: number },
+  opts: { stems: string[]; digits: string },
+): number {
+  const notes = String(row.notes || "")
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  const title = String(row.titleRu || "")
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  const lead = notes.split(/\n+/)[0] || "";
+  const noteParts = notes.split(/[,\n;]+/).map((p) => p.trim()).filter(Boolean);
+  let score = 0;
+  if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
+  for (const s of opts.stems) {
+    if (!s) continue;
+    if (noteParts.some((p) => p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`))) score += 80;
+    else if (notes.includes(s)) score += 25;
+    if (title.includes(s)) {
+      const word = new RegExp(`(?:^|[^а-яa-z0-9])${s}(?:[^а-яa-z0-9]|$)`, "i");
+      score += word.test(title) ? 35 : 8;
+    }
+  }
+  if (opts.digits.length >= 2 && row.code.startsWith(opts.digits)) {
+    score += 100;
+    if (row.code === opts.digits) score += 50;
+  }
+  if (row.isLeaf) score += 15;
+  score += Number(row.level || 0);
+  return score;
+}
+
 /** Directory search by code prefix and/or titleRu / notes (D-TNVED). */
 export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
   const q = String(opts.q || "").trim();
@@ -179,15 +211,23 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
     or.push({ titleRu: { contains: stem, mode: "insensitive" } });
     or.push({ notes: { contains: stem, mode: "insensitive" } });
   }
-  return db.tnvedCode.findMany({
+  const pool = codeOnly ? Math.min(50, Math.max(limit * 4, 24)) : 500;
+  const rows = await db.tnvedCode.findMany({
     where: {
       isActive: true,
       OR: or,
       ...(opts.leafOnly ? { isLeaf: true } : {}),
     },
-    take: limit,
+    take: pool,
     orderBy: [{ level: "desc" }, { code: "asc" }],
   });
+  return [...rows]
+    .sort((a, b) => {
+      const d = scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits })
+        - scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits });
+      return d || a.code.localeCompare(b.code);
+    })
+    .slice(0, limit);
 }
 
 export const TNVED_CARD_DISCLAIMER =

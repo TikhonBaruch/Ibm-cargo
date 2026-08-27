@@ -106,7 +106,7 @@ describe("D24 TN VED helpers", () => {
             { notes: { contains: "8471", mode: "insensitive" } },
           ]),
         }),
-        take: 10,
+        take: 40,
       })
     );
   });

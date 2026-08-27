@@ -5,6 +5,7 @@
  *   npm run tnved:load
  *   npm run tnved:load -- --full
  *   npm run tnved:load -- --lab
+ *   npm run tnved:load -- --search-extras
  */
 import { readFileSync, existsSync } from "fs";
 import path from "path";
@@ -18,7 +19,9 @@ import { TNVED_DEMO_RATE_SOURCE } from "../src/lib/ved/tnved-fns";
 import { TNVED_TWS_RATE_SOURCE } from "../src/lib/ved/tnved-tws";
 import {
   labCatalogToImportItems,
+  mergeNotesWithSearchExtras,
   notesByCodeFromLabSearch,
+  STALE_INDEX_REMAP,
 } from "../src/lib/ved/tnved-lab-catalog";
 
 try {
@@ -43,15 +46,11 @@ function dbHint() {
   }
 }
 
-function readLabItems(): TnvedImportItem[] {
-  const jsonPath = path.join(root, "public/lbm-bro/data/tnved.json");
+function loadProjectSearchPack() {
   const indexPath = path.join(root, "public/lbm-bro/data/tnved-index.json");
   const aliasPath = path.join(root, "src/lbm-bro/lib/hs-aliases.json");
   const synPath = path.join(root, "src/lib/ved/tnved-demo-synonyms.json");
-  if (!existsSync(jsonPath)) throw new Error(`Missing ${jsonPath}`);
-  const raw = JSON.parse(readFileSync(jsonPath, "utf8")) as {
-    items: [string, string][];
-  };
+  const heuristicPath = path.join(root, "src/lib/ved/ai-draft-rules.json");
   const index = existsSync(indexPath)
     ? (JSON.parse(readFileSync(indexPath, "utf8")) as {
         entries?: Array<[string, string, string[], number]>;
@@ -64,8 +63,63 @@ function readLabItems(): TnvedImportItem[] {
   const synonyms = existsSync(synPath)
     ? (JSON.parse(readFileSync(synPath, "utf8")) as Record<string, string>)
     : {};
-  const notesByCode = notesByCodeFromLabSearch({ aliases, index, synonyms });
-  return labCatalogToImportItems(raw.items, notesByCode);
+  const heuristicFile = existsSync(heuristicPath)
+    ? (JSON.parse(readFileSync(heuristicPath, "utf8")) as {
+        default?: { hsCode?: string; test?: string; why?: string };
+        rules?: Array<{ hsCode?: string; test?: string; why?: string }>;
+      })
+    : { rules: [] };
+  const heuristic = [heuristicFile.default, ...(heuristicFile.rules || [])].filter(Boolean) as Array<{
+    hsCode?: string;
+    test?: string;
+    why?: string;
+  }>;
+  const packed = notesByCodeFromLabSearch({ aliases, index, synonyms, heuristic });
+  return { packed, aliases, synonyms, heuristic };
+}
+
+function readLabItems(): TnvedImportItem[] {
+  const jsonPath = path.join(root, "public/lbm-bro/data/tnved.json");
+  if (!existsSync(jsonPath)) throw new Error(`Missing ${jsonPath}`);
+  const raw = JSON.parse(readFileSync(jsonPath, "utf8")) as {
+    items: [string, string][];
+  };
+  return labCatalogToImportItems(raw.items, loadProjectSearchPack().packed);
+}
+
+async function mergeSearchExtras() {
+  const { packed, aliases, synonyms, heuristic } = loadProjectSearchPack();
+  const focus = new Set<string>();
+  for (const a of aliases) if (a.code) focus.add(String(a.code).replace(/\D/g, ""));
+  for (const c of Object.keys(synonyms)) focus.add(c.replace(/\D/g, ""));
+  for (const r of heuristic) if (r.hsCode) focus.add(String(r.hsCode).replace(/\D/g, ""));
+  for (const targets of Object.values(STALE_INDEX_REMAP)) for (const t of targets) focus.add(t);
+  let updated = 0;
+  let skipped = 0;
+  for (const code of focus) {
+    if (![2, 4, 6, 8, 10].includes(code.length)) continue;
+    const row = await prisma.tnvedCode.findUnique({
+      where: { code },
+      select: { code: true, notes: true },
+    });
+    if (!row) {
+      skipped += 1;
+      continue;
+    }
+    const next = mergeNotesWithSearchExtras(row.notes, {
+      why: packed.why.get(code),
+      tokens: packed.tokens.get(code),
+    });
+    if (!next || next === row.notes) continue;
+    await prisma.tnvedCode.update({ where: { code }, data: { notes: next } });
+    updated += 1;
+  }
+  const stats = {
+    total: await prisma.tnvedCode.count({ where: { isActive: true } }),
+    leaves: await prisma.tnvedCode.count({ where: { isActive: true, isLeaf: true } }),
+    variations: await prisma.tnvedCode.count({ where: { isActive: true, notes: { not: null } } }),
+  };
+  console.log(`search extras merged ${updated}; stale-index skipped ${skipped}; ${stats.total} codes · ${stats.leaves} leaves · ${stats.variations} variations`);
 }
 
 function readItems(): { label: string; items: TnvedImportItem[]; wipeRates: boolean; fast: boolean } {
@@ -123,6 +177,11 @@ async function upsertTnvedChunkSql(chunk: TnvedImportItem[]) {
 }
 
 async function main() {
+  if (process.argv.includes("--search-extras")) {
+    console.log(`target ${dbHint()} · merge project search extras`);
+    await mergeSearchExtras();
+    return;
+  }
   const { label, items, wipeRates, fast } = readItems();
   if (!items.length) throw new Error("no items");
   const chunkSize = fast ? Number(process.env.TNVED_LOAD_CHUNK || "400") : CHUNK;

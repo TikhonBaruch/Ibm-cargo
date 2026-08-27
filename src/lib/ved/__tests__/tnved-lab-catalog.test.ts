@@ -65,6 +65,14 @@ describe("C18 lab TN VED catalog", () => {
     );
   });
 
+  it("remaps stale index aliases onto official leaves", () => {
+    const packed = notesByCodeFromLabSearch({
+      index: { aliasTokens: { наушник: ["8518300000"], зарядн: ["8504409008"] } },
+    });
+    expect(packed.tokens.get("8518309500")).toEqual(expect.arrayContaining(["наушник"]));
+    expect(packed.tokens.get("8504405500")).toEqual(expect.arrayContaining(["зарядн"]));
+  });
+
   it("composeLabNotes puts human why above search tokens", () => {
     const packed = notesByCodeFromLabSearch({
       aliases: [{ code: "8471300000", keys: ["ноутбук"], why: "Ноутбуки и аналоги массой не более 10 кг." }],
@@ -103,5 +111,18 @@ describe("C18 lab TN VED catalog", () => {
     const rows = await searchTnvedCodes({ tnvedCode: { findMany } } as never, { q: "  " });
     expect(rows).toEqual([]);
     expect(findMany).not.toHaveBeenCalled();
+  });
+
+  it("scoreTnvedSearchHit prefers alias notes over substring titles", async () => {
+    const { scoreTnvedSearchHit } = await import("../tnved");
+    const polo = scoreTnvedSearchHit(
+      { code: "6105100000", titleRu: "Из хлопчатобумажной пряжи", notes: "включая поло.\npolo, поло", isLeaf: true, level: 10 },
+      { stems: ["поло"], digits: "" },
+    );
+    const meat = scoreTnvedSearchHit(
+      { code: "0207132000", titleRu: "Половины или четвертины", notes: null, isLeaf: true, level: 10 },
+      { stems: ["поло"], digits: "" },
+    );
+    expect(polo).toBeGreaterThan(meat);
   });
 });

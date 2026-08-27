@@ -33,6 +33,35 @@ export function tnvedSearchStems(query) {
   return out;
 }
 
+export function scoreTnvedSearchHit(row, { stems, digits }) {
+  const notes = String(row.notes || "")
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  const title = String(row.titleRu || "")
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  const lead = notes.split(/\n+/)[0] || "";
+  const noteParts = notes.split(/[,\n;]+/).map((p) => p.trim()).filter(Boolean);
+  let score = 0;
+  if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
+  for (const s of stems || []) {
+    if (!s) continue;
+    if (noteParts.some((p) => p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`))) score += 80;
+    else if (notes.includes(s)) score += 25;
+    if (title.includes(s)) {
+      const word = new RegExp(`(?:^|[^а-яa-z0-9])${s}(?:[^а-яa-z0-9]|$)`, "i");
+      score += word.test(title) ? 35 : 8;
+    }
+  }
+  if (digits && digits.length >= 2 && String(row.code || "").startsWith(digits)) {
+    score += 100;
+    if (row.code === digits) score += 50;
+  }
+  if (row.isLeaf) score += 15;
+  score += Number(row.level || 0);
+  return score;
+}
+
 export function tnvedSearchWhere(q, { leafOnly = false, headingOnly = false } = {}) {
   const digits = String(q || "").replace(/\D/g, "");
   const codeOnly = digits.length >= 2 && /^[\d\s./-]+$/.test(String(q || "").trim());

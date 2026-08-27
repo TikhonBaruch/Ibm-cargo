@@ -82,10 +82,23 @@ export function composeLabNotes(whyParts: string[] | undefined, tokens: string[]
   return out.length > maxLen ? out.slice(0, maxLen) : out;
 }
 
+/** Index aliases that point at 10-digit codes absent from the lab tree → official leaves in DB. */
+export const STALE_INDEX_REMAP: Record<string, string[]> = {
+  "8504409008": ["8504405500"],
+  "8518300000": ["8518309500"],
+  "8544429008": ["8544429009"],
+  "5208110000": ["5208119000"],
+  "8708990009": ["8708999709"],
+  "9404909000": ["9404908000"],
+  "8450110000": ["8450111100", "8450111900"],
+  "3926909700": ["39269097"],
+};
+
 export function notesByCodeFromLabSearch(opts: {
   aliases?: LabAlias[];
   index?: LabIndex;
   synonyms?: Record<string, string>;
+  heuristic?: Array<{ hsCode?: string; test?: string; why?: string }>;
 }): { tokens: Map<string, string[]>; why: Map<string, string[]> } {
   const tokens = new Map<string, string[]>();
   const why = new Map<string, string[]>();
@@ -109,7 +122,11 @@ export function notesByCodeFromLabSearch(opts: {
     if (a.why) addWhy(a.code, a.why);
   }
   for (const [tok, codes] of Object.entries(opts.index?.aliasTokens || {})) {
-    for (const c of codes) addTok(c, tok);
+    for (const c of codes) {
+      addTok(c, tok);
+      const mapped = STALE_INDEX_REMAP[normalizeHsCode(c) || ""];
+      if (mapped) for (const m of mapped) addTok(m, tok);
+    }
   }
   for (const [code, , toks] of opts.index?.entries || []) {
     for (const t of toks || []) addTok(code, t);
@@ -117,7 +134,29 @@ export function notesByCodeFromLabSearch(opts: {
   for (const [code, blob] of Object.entries(opts.synonyms || {})) {
     for (const t of String(blob || "").split(/[,;]+/)) addTok(code, t);
   }
+  for (const r of opts.heuristic || []) {
+    if (r.why) addWhy(r.hsCode || "", r.why);
+    for (const t of String(r.test || "").split("|")) {
+      addTok(
+        r.hsCode || "",
+        t.replace(/\\b/g, "").replace(/[^a-zA-Zа-яА-ЯёЁ0-9 -]/g, " ").trim(),
+      );
+    }
+  }
   return { tokens, why };
+}
+
+export function mergeNotesWithSearchExtras(
+  existing: string | null | undefined,
+  extras: { why?: string[]; tokens?: string[] },
+): string | undefined {
+  const raw = String(existing || "").trim();
+  const lines = raw ? raw.split(/\n+/) : [];
+  const lead = lines[0] || "";
+  const tokenish = lead.split(",").filter((p) => p.trim()).length >= 3 && !/[.!?]/.test(lead);
+  const whyParts = tokenish ? extras.why || [] : [lead, ...(extras.why || [])];
+  const oldTokens = (tokenish ? lines : lines.slice(1)).join(" ").split(/[,;]+/);
+  return composeLabNotes(whyParts, [...oldTokens, ...(extras.tokens || [])]);
 }
 
 export function labCatalogToImportItems(
