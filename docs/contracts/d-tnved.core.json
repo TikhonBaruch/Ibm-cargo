@@ -48,6 +48,11 @@
         "items": {
           "type": "array",
           "items": { "$ref": "#/definitions/tnvedCode" }
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of active TnvedCode rows (C18 directory header)"
         }
       }
     },
@@ -139,7 +144,8 @@
           "isLeaf": true,
           "isActive": true
         }
-      ]
+      ],
+      "total": 13123
     }
   },
   "x-invariants": [

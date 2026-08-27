@@ -34,6 +34,7 @@ Gate: same behaviour when `USE_DOMAIN_API=0` (Prisma in Next) and `=1` (proxy �
 | Create + SKU FK | `items[].manufacturerSkuId` | same | snapshot attrs; optional |
 | Brokers PATCH | moderation + **acceptingJobs** | Next `PATCH /api/v1/brokers` (web session); domain list/me already dual-path | admin pause ≠ `/brokers/me` |
 | GET TN VED card | `getTnvedCard` | `GET /v1/tnved/:code` | envelope: ancestors + rate (ETT or null) + paymentsHint 22%/ПП 1637 |
+| GET TN VED search | `searchTnvedCodes` + `total` | `GET /v1/tnved/search` | stems / `heading=1` / empty q → `{ items:[], total }` |
 | Orch retry | `POST /api/v1/platform/orch` | Next-only admin session (Prisma helpers) | FAILED/DEAD → requeue |
 
 ## Ops / observability

@@ -45,7 +45,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 
 **Hobby (история D33):** на free cron был только daily — на Pro `*/15` OK.
 
-**ТН ВЭД:** не коммитить `scripts/data/tnved/raw/` и `normalized/` (gitignore). Не `tnved:load -- --full` на sweb — Preview и Production делят одну БД. Ставки TWS только local Compose postgres. Канон: [`plan-tnved-collect.md`](./plan-tnved-collect.md).
+**ТН ВЭД:** не коммитить `scripts/data/tnved/raw/` и `normalized/` (gitignore). Не `tnved:load -- --full` на sweb — Preview и Production делят одну БД. **C18 исключение:** `tnved:load -- --lab` пишет классификатор из git (`public/lbm-bro/data/tnved.json` + алиасы) в ту же `newlsu_lbm`, **без** delete rates и без TWS dump. Ставки TWS только local Compose postgres. Канон: [`plan-tnved-collect.md`](./plan-tnved-collect.md) · [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md).
 
 После смены схемы: `npx prisma db push` (или migrate) **на prod DB отдельно** — Vercel build делает только `prisma generate` через `postinstall`.
 

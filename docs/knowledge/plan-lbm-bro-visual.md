@@ -269,7 +269,7 @@ app/client/**              # Next routes UI lab
 | **C14** | На карточке заявки показать страну происхождения (header + ТН ВЭД блок). Селект create — полный каталог `ORIGIN_COUNTRIES`, не 6 пунктов | Не менять API required; не выдумывать страну если её нет |
 | **C15** | Карточка заявки = страница `/cabinet/orders/[id]` (chrome lab 47892). Drawer off. Hold: upgrade / payments form / ship-ТО. [`plan-lbm-bro-order-page.md`](./plan-lbm-bro-order-page.md) | Не НДС 20%; не Код/Таможня/Под ключ domain; не «передать брокеру» без оплаты |
 | **C16** | Максимальный visual match live↔lab без ломки ibm-cargo. [`plan-lbm-bro-max-match.md`](./plan-lbm-bro-max-match.md) | Не proto-bar; не 20%/15k; не free pay; не Код/Таможня/Под ключ domain; WorkMapping и admin 14 panes не трогать |
-| **C17** | `/cabinet/tnved` = chrome lab `/client/tnved` (карточка, автовыбор, CTA в мастер). Данные live API. [`plan-lbm-bro-tnved-dir.md`](./plan-lbm-bro-tnved-dir.md) | Не `tnved.json`; не НДС 20%; не `consumeFreeHs`; не фейковый N позиций |
+| **C18** | Каталог lab (13 123) + алиасы в Postgres; поиск/группы как lab. [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) | Не `tnved.json` в браузере live; не dump taurus; не 20% НДС |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -334,10 +334,15 @@ app/client/**              # Next routes UI lab
 | Фаза C15: заявка = страница lab 47892, не drawer | **этот PR** · [`plan-lbm-bro-order-page.md`](./plan-lbm-bro-order-page.md) |
 | Фаза C16: максимальный visual match без ломки domain | **этот PR** · [`plan-lbm-bro-max-match.md`](./plan-lbm-bro-max-match.md) |
 | Фаза C17: `/cabinet/tnved` chrome lab, данные live | **этот PR** · [`plan-lbm-bro-tnved-dir.md`](./plan-lbm-bro-tnved-dir.md) |
+| Фаза C18: lab-классификатор в Postgres + поиск | **этот PR** · [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; C16 дотягивает порядок полей `/new`, чипы заявок и copy шапки до `/client` без смены D8/D10/D11. C17 дотягивает справочник `/cabinet/tnved` до карточки lab при живом API. Hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты. Domain и live ТН ВЭД не менять.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; C16 дотягивает порядок полей `/new`, чипы заявок и copy шапки до `/client` без смены D8/D10/D11. C17 дотягивает справочник `/cabinet/tnved` до карточки lab при живом API. C18 заливает lab-классификатор в Postgres, чтобы поиск находил те же коды. Hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты.
+
+### C18 — каталог lab в live DB
+
+Lab находит большинство кодов из `tnved.json` (13 123) + алиасы. Live читает Postgres. C18: CLI `--lab` upsert в `newlsu_lbm`, notes из алиасов/индекса, поиск со стемами и `heading=1` для групп. Браузер live **не** грузит json. План: [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md).
 
 ### C16 — максимальный visual match
 
@@ -408,7 +413,7 @@ CSS-мост в `lbm-cabinets-live.css` подтягивает оставшие�
 | Шапка | поиск + колокол + «Новый просчёт»; title скрыт на home/wizard/order | то же; order live = drawer, title на `/orders` остаётся |
 | Главная | greet + consult/ЧЗ + freemium stub + faq/guide + lookup + feed covers/chips + svc | `ClientSuperappHome` клон разметки; данные live D8 |
 | Extra | `/faq` `/guide` `/tnved` `/clearance` `/ship` | те же пути под `/cabinet/*`; ship live только при флаге, иначе stub |
-| Справочник | `tnved.json` + «1-й бесплатно» | `GET /api/v1/tnved/search` + карточка lab (C17); без freemium-гейта |
+| Справочник | `tnved.json` + «1-й бесплатно» | `GET /api/v1/tnved/search` + карточка lab (C17) + каталог lab в Postgres (C18); без freemium-гейта |
 | FAQ/гайд | тарифы Код/Таможня/Под ключ | copy D10 (EXPRESS 1 / STANDARD 3 / PRO 10), НДС 22% / сбор 1637 |
 | Иконки | `lbm-bro/components/icon` | то же на live chrome (не Lucide) |
 

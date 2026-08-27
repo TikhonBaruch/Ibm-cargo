@@ -38,8 +38,8 @@ As-is инвентарь: [`current-app.md`](./current-app.md).
 | `TnvedCode` | PK = только цифры; дерево `parentCode`; level 2\|4\|6\|8\|10 |
 | `TnvedDutyRate` | подсказки duty/VAT/fee (не `TariffPlan.priceRub`) |
 
-HTTP: `GET /v1/tnved/search` (titleRu **или** notes **или** prefix кода), `GET /v1/tnved/:code` (**карточка:** предки, ЕТТ `rate` или `null`, НДС/сбор-hint), `POST /v1/tnved/import` (admin, ≤500).  
-ADMIN UI: `/admin/tnved`. CLI (opendata, не CI): `npm run tnved:fetch` → `tnved:normalize` → `tnved:load` (демо) / `tnved:load -- --full` (текущее дерево ФНС, чанки). Манифест: `scripts/data/tnved/manifest.json`. Полный dump в git **не** класть.
+HTTP: `GET /v1/tnved/search` (titleRu **или** notes **или** prefix кода; `heading=1` — 4-значные товарные позиции главы; ответ `{ items, total }`), `GET /v1/tnved/:code` (**карточка:** предки, ЕТТ `rate` или `null`, НДС/сбор-hint), `POST /v1/tnved/import` (admin, ≤500).  
+ADMIN UI: `/admin/tnved`. CLI (opendata, не CI): `npm run tnved:fetch` → `tnved:normalize` → `tnved:load` (демо) / `tnved:load -- --lab` (классификатор lbm-bro → sweb, без wipe rates) / `tnved:load -- --full` (**только local**, дерево ФНС). Манифест: `scripts/data/tnved/manifest.json`. Полный dump в git **не** класть.
 
 ### 2.1 Два слоя ТН ВЭД (не смешивать)
 

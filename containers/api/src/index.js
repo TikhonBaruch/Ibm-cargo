@@ -28,6 +28,7 @@ import { handleCatalogRoutes, hydrateItemsWithPublishedSkus } from "./catalog-sk
 import { handleFactoryOrderRoutes, handleManufacturerOrderRoutes } from "./sku-orders.js";
 import { handleManufacturerDirectoryRoutes } from "./manufacturer-directory.js";
 import { assembleTnvedCard, hsCodeAncestors } from "./tnved-card.js";
+import { tnvedSearchWhere } from "./tnved-helpers.js";
 import { suggestProductAttrs } from "./attr-suggest.js";
 import { shouldEnqueueAiDrain, runAiDrainPipeline } from "./ai-pipeline.js";
 import { isAllowedMediaUrl } from "./media-url.js";
@@ -3099,21 +3100,18 @@ const server = http.createServer(async (req, res) => {
       const user = authorize(req);
       if (!user) return json(res, 401, { error: "Unauthorized" });
       const q = String(url.searchParams.get("q") || "").trim();
-      if (!q) return json(res, 200, { items: [] });
-      const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 20), 1), 50);
+      const headingOnly = url.searchParams.get("heading") === "1";
+      const cap = headingOnly ? 200 : 50;
+      const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 20), 1), cap);
       const leafOnly = url.searchParams.get("leafOnly") === "1";
-      const digits = q.replace(/\D/g, "");
-      const or = [
-        { titleRu: { contains: q, mode: "insensitive" } },
-        { notes: { contains: q, mode: "insensitive" } },
-      ];
-      if (digits.length >= 2) or.push({ code: { startsWith: digits } });
+      const total = await prisma.tnvedCode.count({ where: { isActive: true } });
+      if (!q) return json(res, 200, { items: [], total });
       const items = await prisma.tnvedCode.findMany({
-        where: { isActive: true, OR: or, ...(leafOnly ? { isLeaf: true } : {}) },
+        where: tnvedSearchWhere(q, { leafOnly, headingOnly }),
         take: limit,
-        orderBy: [{ level: "desc" }, { code: "asc" }],
+        orderBy: headingOnly ? { code: "asc" } : [{ level: "desc" }, { code: "asc" }],
       });
-      return json(res, 200, { items });
+      return json(res, 200, { items, total });
     }
 
     const tnvedCodeMatch = url.pathname.match(/^\/v1\/tnved\/([^/]+)$/);

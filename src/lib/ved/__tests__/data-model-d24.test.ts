@@ -23,6 +23,7 @@ import {
   parentHsCode,
   buildTnvedImportItem,
   parseTnvedCsv,
+  tnvedSearchStems,
 } from "../tnved";
 
 describe("D24 product description", () => {
@@ -108,6 +109,10 @@ describe("D24 TN VED helpers", () => {
         take: 10,
       })
     );
+  });
+
+  it("tnvedSearchStems stems household queries", () => {
+    expect(tnvedSearchStems("футболка")).toContain("футболк");
   });
 
   it("getTnvedByCode normalizes display form", async () => {

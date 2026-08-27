@@ -58,10 +58,23 @@ export function TnvedDirectoryPane({
   const [busy, setBusy] = useState(false);
   const [picked, setPicked] = useState<Hit | null>(null);
   const [card, setCard] = useState<DirectoryCardLike | null>(null);
+  const [catalogTotal, setCatalogTotal] = useState<number | null>(null);
 
   useEffect(() => {
     setQuery(initialQuery);
   }, [initialQuery]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void api<{ total?: number }>("/api/v1/tnved/search?limit=1")
+      .then((res) => {
+        if (!cancelled && typeof res.total === "number") setCatalogTotal(res.total);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const q = query.trim() || group;
@@ -76,11 +89,14 @@ export function TnvedDirectoryPane({
     const t = window.setTimeout(() => {
       void (async () => {
         try {
-          const res = await api<{ items: Hit[] }>(
-            `/api/v1/tnved/search?q=${encodeURIComponent(q)}&limit=40`,
+          const heading = !query.trim() && group ? "&heading=1" : "";
+          const limit = heading ? 100 : 40;
+          const res = await api<{ items: Hit[]; total?: number }>(
+            `/api/v1/tnved/search?q=${encodeURIComponent(q)}&limit=${limit}${heading}`,
           );
           if (cancelled) return;
           setHits(res.items || []);
+          if (typeof res.total === "number") setCatalogTotal(res.total);
           setLoadError("");
         } catch (e) {
           if (cancelled) return;
@@ -144,9 +160,11 @@ export function TnvedDirectoryPane({
         <div>
           <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Справочник ТН ВЭД</h3>
           <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 4 }}>
-            {busy && !hits.length
+            {catalogTotal == null && busy && !hits.length
               ? "Ищем в справочнике…"
-              : "Живой справочник · НДС 22% / сбор ПП 1637"}
+              : catalogTotal != null
+                ? `${catalogTotal.toLocaleString("ru-RU")} позиций · НДС 22% / сбор ПП 1637`
+                : "Живой справочник · НДС 22% / сбор ПП 1637"}
           </p>
         </div>
         <Link href={homeHref} className="btn btn-ghost btn-sm">

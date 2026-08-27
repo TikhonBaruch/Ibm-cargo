@@ -103,22 +103,72 @@ export type TnvedSearchOpts = {
   q: string;
   limit?: number;
   leafOnly?: boolean;
+  /** 4-digit headings in a 2-digit chapter (lab group browse). */
+  headingOnly?: boolean;
 };
 
 type TnvedDb = Pick<Prisma.TransactionClient, "tnvedCode" | "tnvedDutyRate">;
 
-/** Directory search by code prefix and/or titleRu (D-TNVED). */
+export async function countActiveTnvedCodes(db: Pick<Prisma.TransactionClient, "tnvedCode">) {
+  return db.tnvedCode.count({ where: { isActive: true } });
+}
+
+/** Stems so «футболка» hits notes token «футболк» (lab alias keys). */
+export function tnvedSearchStems(query: string): string[] {
+  const q = String(query || "")
+    .trim()
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  if (!q) return [];
+  const words = q
+    .replace(/[-_/\\,.;:()[\]{}+]+/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 3);
+  const tokens = words.length ? words : q.length >= 2 ? [q] : [];
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const t of tokens) {
+    const variants = [t];
+    if (t.length >= 6) variants.push(t.slice(0, -1));
+    if (t.length >= 8) variants.push(t.slice(0, -2));
+    for (const v of variants) {
+      if (v.length < 2 || seen.has(v)) continue;
+      seen.add(v);
+      out.push(v);
+    }
+  }
+  return out;
+}
+
+/** Directory search by code prefix and/or titleRu / notes (D-TNVED). */
 export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
   const q = String(opts.q || "").trim();
   if (!q) return [];
-  const limit = Math.min(Math.max(opts.limit ?? 20, 1), 50);
+  const cap = opts.headingOnly ? 200 : 50;
+  const limit = Math.min(Math.max(opts.limit ?? 20, 1), cap);
   const digits = q.replace(/\D/g, "");
-  const or: Array<Record<string, unknown>> = [
-    { titleRu: { contains: q, mode: "insensitive" } },
-    { notes: { contains: q, mode: "insensitive" } },
-  ];
+  const codeOnly = digits.length >= 2 && /^[\d\s./-]+$/.test(q);
+
+  if (opts.headingOnly && digits.length >= 2) {
+    return db.tnvedCode.findMany({
+      where: {
+        isActive: true,
+        level: 4,
+        code: { startsWith: digits.slice(0, 2) },
+      },
+      take: limit,
+      orderBy: { code: "asc" },
+    });
+  }
+
+  const stems = codeOnly ? [digits] : tnvedSearchStems(q);
+  const or: Array<Record<string, unknown>> = [];
   if (digits.length >= 2) {
     or.push({ code: { startsWith: digits } });
+  }
+  for (const stem of stems.length ? stems : [q]) {
+    or.push({ titleRu: { contains: stem, mode: "insensitive" } });
+    or.push({ notes: { contains: stem, mode: "insensitive" } });
   }
   return db.tnvedCode.findMany({
     where: {
@@ -337,7 +387,7 @@ export async function upsertTnvedBatch(
         titleEn: parsed.titleEn ?? null,
         isLeaf: parsed.isLeaf,
         isActive: parsed.isActive,
-        notes: parsed.notes ?? null,
+        ...(parsed.notes !== undefined ? { notes: parsed.notes ?? null } : {}),
         ...(validFrom !== undefined ? { validFrom } : {}),
         ...(validTo !== undefined ? { validTo } : {}),
       },
@@ -349,7 +399,7 @@ export async function upsertTnvedBatch(
         titleEn: parsed.titleEn ?? null,
         isLeaf: parsed.isLeaf,
         isActive: parsed.isActive,
-        notes: parsed.notes ?? null,
+        ...(parsed.notes !== undefined ? { notes: parsed.notes ?? null } : {}),
         ...(validFrom !== undefined ? { validFrom } : {}),
         ...(validTo !== undefined ? { validTo } : {}),
       },
