@@ -71,7 +71,7 @@ const PAGE_META: Record<string, { title: string; lead: string }> = {
   balance: { title: "Баланс", lead: "Пополнение и история списаний" },
   profile: { title: "Компания", lead: "Профиль и уведомления" },
   support: { title: "Чаты", lead: "Поддержка отдельно, брокер — по каждой заявке" },
-  tnved: { title: "Справочник ТН ВЭД", lead: "Живой поиск кодов ЕАЭС" },
+  tnved: { title: "Справочник ТН ВЭД", lead: "НДС 22% / сбор ПП 1637" },
   faq: { title: "FAQ", lead: "Частые вопросы по просчёту и брокеру" },
   guide: { title: "Как пользоваться", lead: "Четыре шага до PDF" },
   clearance: { title: "Таможенное оформление", lead: "Декларация, платежи и выпуск груза" },
@@ -1151,6 +1151,29 @@ function ClientCabinetInner() {
           initialQuery={search.get("q") || ""}
           homeHref={cabinetHome}
           newCalcHref={path("/new")}
+          onApplyCode={({ code, titleRu }) => {
+            const prefill = directoryPrefillFromQuery(code, titleRu);
+            if (!prefill) return;
+            directoryPrefillRef.current = `${code}|${titleRu}`;
+            setForm((f) => ({
+              ...f,
+              title: prefill.title || f.title,
+              description: prefill.description,
+            }));
+            if (prefill.hsHint) {
+              setItems((prev) => {
+                const first = prev[0] || { name: "", qty: 1, unitPrice: 0 };
+                return [
+                  {
+                    ...first,
+                    name: first.name.trim() || prefill.name || first.name,
+                    attrs: { ...first.attrs, hsHint: prefill.hsHint },
+                  },
+                  ...prev.slice(1),
+                ];
+              });
+            }
+          }}
         />
       )}
 

@@ -34,10 +34,12 @@ export function TnvedDirectoryPane({
   initialQuery = "",
   homeHref,
   newCalcHref,
+  onApplyCode,
 }: {
   initialQuery?: string;
   homeHref: string;
   newCalcHref: string;
+  onApplyCode?: (input: { code: string; titleRu: string }) => void;
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [group, setGroup] = useState("");
@@ -283,6 +285,12 @@ export function TnvedDirectoryPane({
                 href={wizardHref}
                 className="btn btn-primary"
                 style={{ width: "100%", marginTop: 14, justifyContent: "center" }}
+                onClick={() => {
+                  onApplyCode?.({
+                    code: picked.code,
+                    titleRu: card?.titleRu || picked.titleRu || read.title,
+                  });
+                }}
               >
                 Оформить заявку по этому коду
               </Link>

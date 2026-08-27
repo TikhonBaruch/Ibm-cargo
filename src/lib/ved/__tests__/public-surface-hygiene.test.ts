@@ -190,6 +190,7 @@ describe("public surface hygiene", () => {
     expect(helper).not.toContain("Низкий");
     expect(cabinet).toContain("directoryPrefillFromQuery");
     expect(cabinet).toContain('search.get("hs")');
+    expect(cabinet).toContain("onApplyCode");
   });
 
   it("obscure login page has no role/CMS label", () => {
