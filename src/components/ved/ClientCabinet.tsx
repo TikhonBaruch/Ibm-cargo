@@ -899,10 +899,10 @@ function ClientCabinetInner() {
       userLabel={me?.name}
       userMeta={me?.company?.name}
       hideHeaderTitle={hideHeaderTitle}
-      hideSearch={pane === "new"}
+      hideSearch={pane === "order"}
       balanceRub={me?.company?.balanceRub ?? 0}
       balanceHref={path("/balance")}
-      newCalcHref={pane === "new" ? undefined : path("/new")}
+      newCalcHref={path("/new")}
       notes={bellNotes}
       bellUnread={unreadCount > 0 || bellNotes.some((n) => n.tone === "warn")}
       onSearch={(q) =>

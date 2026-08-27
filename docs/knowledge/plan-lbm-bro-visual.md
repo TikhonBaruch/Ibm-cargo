@@ -268,6 +268,7 @@ app/client/**              # Next routes UI lab
 | **C13** | Stepper заявки: зазор «1 Товар 2 Оплата 3 Брокер 4 PDF». Drawer порталится в `body` (вне `.view-client`) — CSS labeled не жил | Не менять D8 шаги; не трогать broker/admin drawers |
 | **C14** | На карточке заявки показать страну происхождения (header + ТН ВЭД блок). Селект create — полный каталог `ORIGIN_COUNTRIES`, не 6 пунктов | Не менять API required; не выдумывать страну если её нет |
 | **C15** | Карточка заявки = страница `/cabinet/orders/[id]` (chrome lab 47892). Drawer off. Hold: upgrade / payments form / ship-ТО. [`plan-lbm-bro-order-page.md`](./plan-lbm-bro-order-page.md) | Не НДС 20%; не Код/Таможня/Под ключ domain; не «передать брокеру» без оплаты |
+| **C16** | Максимальный visual match live↔lab без ломки ibm-cargo. [`plan-lbm-bro-max-match.md`](./plan-lbm-bro-max-match.md) | Не proto-bar; не 20%/15k; не free pay; не Код/Таможня/Под ключ domain; WorkMapping и admin 14 panes не трогать |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -330,10 +331,15 @@ app/client/**              # Next routes UI lab
 | Фаза C13: зазор в stepper заявки (`1 Товар`, не `1Товар`) | **этот PR** |
 | Фаза C14: страна происхождения на карточке заявки | **этот PR** |
 | Фаза C15: заявка = страница lab 47892, не drawer | **этот PR** · [`plan-lbm-bro-order-page.md`](./plan-lbm-bro-order-page.md) |
+| Фаза C16: максимальный visual match без ломки domain | **этот PR** · [`plan-lbm-bro-max-match.md`](./plan-lbm-bro-max-match.md) |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
-**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты; `/cabinet/new` шаг «Что ввозите?» (C10) + клик «Мультипозиция» (C11, D10 caps) + панель уточнений на single (C12, lab heuristic); stepper заявки с зазором «1 Товар» (C13); страна происхождения на карточке заявки (C14). Domain D8/D10/D11/D15 и live ТН ВЭД не менять.
+**Одной фразой:** live `/cabinet` повторяет IA и chrome макета; C16 дотягивает порядок полей `/new`, чипы заявок и copy шапки до `/client` без смены D8/D10/D11. Hold-модули на месте, блок «Замысел дизайнера» скрыт (C9); инвойс/qty/вес временно скрыты. Domain и live ТН ВЭД не менять.
+
+### C16 — максимальный visual match
+
+Сверка live↔lab: шелл высокий, `/new` почти 1:1 после C10–C12, список заявок и developer-copy расходились. C16: поиск в шапке как в lab (есть на `/new`, нет на карточке заявки); порядок полей single = описание → страна → clarify → фото; чипы списка = Все / Оплата / ТН ВЭД / В работе / Готово через `liveFeedMatch`; плитки и справочник без API-path. Не копировать proto-bar, НДС 20%, сбор 15k, free pay.
 
 ### C9 — скрыть «Замысел дизайнера»
 

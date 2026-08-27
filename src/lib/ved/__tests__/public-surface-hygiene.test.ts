@@ -69,6 +69,7 @@ describe("public surface hygiene", () => {
     expect(src).toContain("Бесплатно");
     expect(src).toContain("Первый просчёт — 0 ₽");
     expect(src).toContain("Перетащите фото товара или сделайте снимок");
+    expect(src).toContain("Документы и фото");
     expect(src).toContain("По заявке");
     expect(src).toContain("Мультипозиция");
     expect(src).toContain("Прикрепить файл");
@@ -129,6 +130,35 @@ describe("public surface hygiene", () => {
     expect(order).not.toContain("НДС 20%");
     expect(cabinet).not.toContain("OrderDetailDrawer");
     expect(cabinet).toContain("pane === \"order\"");
+    expect(cabinet).toContain("hideSearch={pane === \"order\"}");
+  });
+
+  it("locks C16 visual match without copying lab domain", () => {
+    const home = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/ClientSuperappHome.tsx"),
+      "utf8",
+    );
+    const dash = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/DashboardPane.tsx"),
+      "utf8",
+    );
+    const tnved = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/TnvedDirectoryPane.tsx"),
+      "utf8",
+    );
+    const order = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/OrderDetail.tsx"),
+      "utf8",
+    );
+    expect(home).toContain("Открыть мастер");
+    expect(home).not.toContain("/api/v1/tnved/search");
+    expect(dash).toContain("LIVE_FEED_FILTERS");
+    expect(dash).toContain("liveFeedMatch");
+    expect(dash).toContain("Подробнее");
+    expect(tnved).not.toContain("Живой поиск GET");
+    expect(order).not.toContain("shipmentValue");
+    expect(order).toContain("НДС 22%");
+    expect(order).not.toContain("НДС 20%");
   });
 
   it("obscure login page has no role/CMS label", () => {

@@ -166,7 +166,7 @@ export function OrderDetail({
               ) : null}
               <p>
                 {selected.description ||
-                  "Черновик кода с сервера. Финал подтверждает брокер; смета — НДС 22% и сбор ПП 1637, не цифры макета."}
+                  "Черновик кода. Финал подтверждает брокер."}
               </p>
               {conf != null ? (
                 <>
@@ -191,7 +191,7 @@ export function OrderDetail({
               ) : null}
               <div className="alert-box ok-box">
                 <strong>Риск</strong>
-                Оценка риска из макета — hold. Live: брокер правит HS после оплаты.
+                Уточнит брокер
               </div>
             </div>
             <div
@@ -215,8 +215,7 @@ export function OrderDetail({
           <div className="card" id="order-customs-form">
             <h3>Стоимость и налоги</h3>
             <p className="meta" style={{ margin: "0 0 14px" }}>
-              Форма партии из макета (город, инвойс, вес) — слот. Live-цифры пошлины и НДС — в блоке
-              «Платежи», не 20% и не сбор 15 000.
+              Куда едет партия и условия поставки. Платежи справа — пошлина, НДС 22% и сбор ПП 1637.
             </p>
             <fieldset disabled className="order-hold-form">
               <div className="two">
@@ -238,7 +237,7 @@ export function OrderDetail({
               </div>
               <div className="field">
                 <label>Таможенная стоимость партии</label>
-                <input defaultValue={selected.shipmentValue || ""} placeholder="из макета, не required" readOnly />
+                <input defaultValue="" placeholder="из документов партии" readOnly />
               </div>
             </fieldset>
           </div>
@@ -289,8 +288,8 @@ export function OrderDetail({
             <h3>{docs.length ? "Документы в заявке" : "Документы"}</h3>
             <p className="meta" style={{ margin: "0 0 12px" }}>
               {docs.length
-                ? "Файлы позиций этой заявки. Загрузка новых с карточки — hold."
-                : "Invoice, packing list или фото — слот макета. Новые файлы с карточки пока hold."}
+                ? "Файлы позиций этой заявки."
+                : "Invoice, packing list или фото."}
             </p>
             {docs.length ? (
               <div className="doc-list">
@@ -309,24 +308,24 @@ export function OrderDetail({
             ) : null}
             <div className="dropzone order-hold-drop" aria-disabled>
               <strong>Добавить документ</strong>
-              <span className="meta">Слот макета · загрузка с карточки не в domain</span>
+              <span className="meta">CSV, PDF, JPG · до 12 МБ</span>
             </div>
           </div>
 
           <div className="card">
             <h3>Доплатить по этой заявке</h3>
             <p className="meta" style={{ margin: "0 0 14px" }}>
-              Плитки Код → Таможня → Под ключ из макета. Пакет LBM фиксируется при создании (D10).
+              Таможня и брокер — отдельные пакеты в макете. Здесь тариф уже выбран при создании.
             </p>
             <div className="upgrade-tiles order-hold-upgrades">
               <UpgradeTile
                 icon="chart"
                 tag="Макет"
                 title="Таможенный расчёт"
-                desc="Пошлина и НДС в макете — отдельная доплата. Live уже считает НДС 22% и ПП 1637 в этой заявке."
-                items={["Слот: стоимость партии", "Не 20% и не сбор 15 000", "CTA выключен"]}
+                desc="Пошлина и НДС по этой заявке — в блоке «Платежи»."
+                items={["Стоимость партии", "Пошлина и НДС", "CTA выключен"]}
                 price="—"
-                note="hold · не D10"
+                note="После кода"
                 featured
                 primary
                 cta="Недоступно"
@@ -336,10 +335,10 @@ export function OrderDetail({
                 icon="users"
                 tag="Макет"
                 title="Брокер под ключ"
-                desc="В макете — докупить эксперта. Live: очередь брокера только после оплаты тарифа (D11)."
-                items={["Не «передать брокеру» без оплаты", "Чат — после QUEUED", "CTA выключен"]}
+                desc="Эксперт в очереди после оплаты тарифа."
+                items={["Чат после оплаты", "SLA брокера", "CTA выключен"]}
                 price="—"
-                note="hold · D11"
+                note="После оплаты"
                 cta="Недоступно"
                 onClick={holdClick}
               />
@@ -352,7 +351,7 @@ export function OrderDetail({
                 <Icon name="truck" />
               </div>
               <div className="gt-title">Перевозка</div>
-              <div className="gt-sub">Только фуры и наземная доставка · UI default off (D27)</div>
+              <div className="gt-sub">Только фуры и наземная доставка</div>
               <div className="gt-more">Скоро</div>
             </div>
             <div className="go-tile svc clear">
@@ -360,7 +359,7 @@ export function OrderDetail({
                 <Icon name="shield" />
               </div>
               <div className="gt-title">Оформление</div>
-              <div className="gt-sub">Декларация, платежи и выпуск · hold</div>
+              <div className="gt-sub">Декларация, платежи и выпуск груза</div>
               <div className="gt-more">Скоро</div>
             </div>
             <div className="go-tile svc turnkey">
@@ -368,7 +367,7 @@ export function OrderDetail({
                 <Icon name="users" />
               </div>
               <div className="gt-title">Брокер под ключ</div>
-              <div className="gt-sub">Сменить эксперта пакетом макета · hold</div>
+              <div className="gt-sub">UI выбора · очередь после оплаты</div>
               <div className="gt-more">Скоро</div>
             </div>
           </div>
@@ -471,7 +470,7 @@ export function OrderDetail({
               </>
             ) : (
               <p className="meta" style={{ margin: 0 }}>
-                Пошлина и НДС появятся с кодом. Не ставки макета 20% / 15 000.
+                Пошлина и НДС появятся с кодом.
               </p>
             )}
           </div>

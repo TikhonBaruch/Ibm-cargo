@@ -57,7 +57,7 @@ export function ClientSuperappHome({
         <div className="go-greet-copy">
           <span className="go-kicker">Кабинет клиента</span>
           <h2>Что сделаем?</h2>
-          <p>ТН ВЭД → брокер-QC → PDF. Выберите модуль — как в суперприложении</p>
+          <p>Выберите модуль — как в суперприложении</p>
         </div>
 
         <div className="go-quick-wrap">
@@ -68,7 +68,7 @@ export function ClientSuperappHome({
               </span>
               <span className="gq-txt">
                 <strong>Консультация</strong>
-                <span>FAQ и обращения</span>
+                <span>Ответ за 15 минут</span>
               </span>
               <span className="gq-go" aria-hidden>
                 ›
@@ -116,12 +116,12 @@ export function ClientSuperappHome({
           <div className="gt-title">Определение кода ТН ВЭД ЕАЭС</div>
           <div className="gt-sub">Опишите товар — heuristic подготовит черновик, брокер подтвердит после оплаты.</div>
           <div className="gt-cta">
-            Новый просчёт <span>›</span>
+            Открыть мастер <span>›</span>
           </div>
           <div className="gt-art art-calc" aria-hidden>
             <div className="ring" />
             <div className="box" />
-            <div className="chip">HS</div>
+            <div className="chip">AI</div>
           </div>
         </Link>
 
@@ -183,7 +183,7 @@ export function ClientSuperappHome({
       <Link href={path("/tnved")} className="go-tile lookup">
         <span className="gt-kicker">Справочник</span>
         <div className="gt-title">Справочник ТН ВЭД</div>
-        <div className="gt-sub">Живой поиск `/api/v1/tnved/search`. Freemium peek макета — stub.</div>
+        <div className="gt-sub">Поиск по коду или названию</div>
         <div className="gt-more">
           Открыть <span>›</span>
         </div>
@@ -267,9 +267,7 @@ export function ClientSuperappHome({
               <Icon name="truck" />
             </div>
             <div className="gt-title">Грузоперевозки</div>
-            <div className="gt-sub">
-              {showShipping ? "После статуса DONE · котировки" : "Макет · клиентский UI default off (D27)"}
-            </div>
+            <div className="gt-sub">Только наземная доставка · фуры · Китай, Турция, ЕС → РФ</div>
             <div className="gt-more">
               {showShipping ? "Открыть" : "Макет"} <span>›</span>
             </div>

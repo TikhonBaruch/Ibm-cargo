@@ -596,34 +596,11 @@ export function NewCalcPane({
           ) : (
             <>
               <div className="field">
-                <label>Фото товара</label>
-                <p className="meta" style={{ margin: "0 0 10px" }}>
-                  Загрузите фото — ИИ распознает товар, заполнит описание и спросит, чего не хватает
-                  для кода.
-                </p>
-                {dropzone("photo", fileRef, camRef)}
-                {photoUrl ? (
-                  <div className="doc-list">
-                    <div className="doc-chip">
-                      <a href={photoUrl} target="_blank" rel="noreferrer" className="doc-thumb">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={photoUrl} alt="" />
-                      </a>
-                      <div className="doc-info">
-                        <b>Фото товара</b>
-                        <span className="meta">прикреплено</span>
-                      </div>
-                      <span className="pill ok">Фото</span>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-              <div className="field">
                 <label>Наименование и описание</label>
                 <textarea
                   rows={5}
                   style={{ minHeight: 132, resize: "vertical" }}
-                  placeholder="Или опишите сами: ноутбуки Lenovo ThinkPad, 14'' — либо загрузите фото выше"
+                  placeholder="Ноутбуки Lenovo ThinkPad, 14'', для офиса — или загрузите фото ниже"
                   value={form.description || form.title}
                   onChange={(e) => setGoodsText(e.target.value)}
                 />
@@ -704,11 +681,27 @@ export function NewCalcPane({
                   </div>
                 </div>
               ) : null}
-              <div className="field" style={{ marginTop: 22 }}>
-                <label>Тариф просчёта кода ТН ВЭД</label>
+              <div className="field">
+                <label>Документы и фото</label>
                 <p className="meta" style={{ margin: "0 0 10px" }}>
-                  Сначала считаем только код. Таможню — пошлину и НДС — после кода, отдельным шагом.
+                  Перетащите фото товара или сделайте снимок — ИИ поможет уточнить код.
                 </p>
+                {dropzone("photo", fileRef, camRef)}
+                {photoUrl ? (
+                  <div className="doc-list">
+                    <div className="doc-chip">
+                      <a href={photoUrl} target="_blank" rel="noreferrer" className="doc-thumb">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={photoUrl} alt="" />
+                      </a>
+                      <div className="doc-info">
+                        <b>Фото товара</b>
+                        <span className="meta">прикреплено</span>
+                      </div>
+                      <span className="pill ok">Фото</span>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </>
           )}

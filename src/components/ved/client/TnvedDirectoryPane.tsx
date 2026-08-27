@@ -105,7 +105,7 @@ export function TnvedDirectoryPane({
         <div>
           <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Справочник ТН ВЭД</h3>
           <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 4 }}>
-            Живой поиск GET /api/v1/tnved/search · не браузерный tnved.json
+            Поиск по коду или названию · ставки справочника (НДС 22% / сбор ПП 1637)
           </p>
         </div>
         <Link href={homeHref} className="btn btn-ghost btn-sm">
@@ -155,7 +155,7 @@ export function TnvedDirectoryPane({
           {!query.trim() ? (
             <>
               <p className="meta" style={{ marginTop: 16, marginBottom: 8 }}>
-                96 групп классификатора — поиск по префиксу кода в live API
+                96 групп классификатора
               </p>
               <div className="tnved-groups">
                 {TNVED_GROUPS.map(([code, title]) => (

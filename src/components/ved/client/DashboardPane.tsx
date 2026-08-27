@@ -11,20 +11,20 @@ import { calcThumb } from "./types";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
 import { DesignerStub } from "@/lbm-bro/components/designer-stub";
+import { OrderCover } from "@/lbm-bro/components/order-cover";
 import {
   clientOrderHsLabel,
   clientOrderNextStep,
   formatRub,
+  LIVE_FEED_FILTERS,
+  liveFeedMatch,
+  type LiveFeedFilter,
 } from "../lbm-pane-visual";
 
-type OrderFilter = "all" | "done" | "broker" | "pay";
+type OrderFilter = LiveFeedFilter;
 
 function matchesFilter(c: Calc, f: OrderFilter): boolean {
-  if (f === "all") return true;
-  if (f === "done") return c.status === "DONE";
-  if (f === "broker") return ["QUEUED", "IN_REVIEW", "SLA_RISK"].includes(c.status);
-  if (f === "pay") return ["AI_READY", "AWAITING_PAYMENT"].includes(c.status) && !c.paidAt;
-  return true;
+  return liveFeedMatch(c, f);
 }
 
 export function DashboardPane({
@@ -76,6 +76,7 @@ export function DashboardPane({
   createHref?: string;
 }) {
   const [filter, setFilter] = useState<OrderFilter>("all");
+  const [listQ, setListQ] = useState("");
   const [qDesc, setQDesc] = useState("");
   const [qCountry, setQCountry] = useState("Китай");
   const [qOrigin, setQOrigin] = useState("CN");
@@ -97,7 +98,16 @@ export function DashboardPane({
     null;
 
   const recent = [...calcs].slice(0, 6);
-  const filtered = calcs.filter((c) => matchesFilter(c, filter));
+  const nq = listQ.trim().toLowerCase();
+  const filtered = calcs.filter((c) => {
+    if (!matchesFilter(c, filter)) return false;
+    if (!nq) return true;
+    return [c.number, c.title, c.country, c.hsCode, c.hsCodeFinal, c.tariff?.name]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(nq);
+  });
 
   const runQuick = () => {
     const desc = qDesc.trim();
@@ -146,25 +156,44 @@ export function DashboardPane({
         <div className="card-head">
           <div>
             <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Заявки на просчёт</h3>
-            <p>Карточки заявок — откройте, чтобы увидеть код, смету и оплату</p>
+            <p>Карточки вместо таблицы — откройте любую, чтобы увидеть код, платежи и чат</p>
           </div>
         </div>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+          <label style={{ flex: 1, minWidth: 260 }}>
+            <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--muted)", marginBottom: 6 }}>
+              Поиск по №, товару, брокеру, HS и документам
+            </span>
+            <input
+              type="search"
+              value={listQ}
+              onChange={(e) => setListQ(e.target.value)}
+              placeholder="Например: ноутбуки, Invoice, 8471…"
+              style={{
+                width: "100%",
+                padding: "12px 14px",
+                borderRadius: 14,
+                border: "1.5px solid var(--line)",
+                background: "#fff",
+                outline: "none",
+              }}
+            />
+          </label>
+          {listQ ? (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setListQ("")}>
+              Сбросить
+            </button>
+          ) : null}
+        </div>
         <div className="filter-chips">
-          {(
-            [
-              ["all", "Все"],
-              ["done", "Готово"],
-              ["broker", "У брокера"],
-              ["pay", "Оплата"],
-            ] as const
-          ).map(([id, label]) => (
+          {LIVE_FEED_FILTERS.map((f) => (
             <button
-              key={id}
+              key={f.id}
               type="button"
-              className={filter === id ? "on" : ""}
-              onClick={() => setFilter(id)}
+              className={filter === f.id ? "on" : ""}
+              onClick={() => setFilter(f.id)}
             >
-              {label}
+              {f.label}
             </button>
           ))}
         </div>
@@ -479,10 +508,16 @@ function filterEmptyCopy(filter: OrderFilter): { title: string; hint: string } {
       hint: "В этом фильтре нет заявок. Откройте все заявки или создайте просчёт ТН ВЭД.",
     };
   }
-  if (filter === "broker") {
+  if (filter === "work") {
     return {
-      title: "Нет заявок у брокера",
+      title: "Нет заявок в работе",
       hint: "Сейчас нет просчётов на проверке. Откройте все заявки.",
+    };
+  }
+  if (filter === "hs") {
+    return {
+      title: "Нет заявок с кодом ТН ВЭД",
+      hint: "В этом фильтре нет просчётов с кодом. Откройте все заявки.",
     };
   }
   if (filter === "pay") {
@@ -528,8 +563,12 @@ function OrdersTable({
 }) {
   const total = listTotal ?? calcs.length;
   const filterEmpty = calcs.length === 0 && total > 0 && filter !== "all";
-  const copy = filterEmptyCopy(filterEmpty ? filter : "all");
+  const searchEmpty = calcs.length === 0 && total > 0 && filter === "all";
+  const copy = filterEmptyCopy(filterEmpty || searchEmpty ? (filterEmpty ? filter : "all") : "all");
   const empty = calcs.length === 0 ? (
+    searchEmpty ? (
+      <p style={{ color: "var(--muted)" }}>Нет заявок в этом фильтре. Создайте первый просчёт.</p>
+    ) : (
     <VedEmptyState
       title={copy.title}
       hint={copy.hint}
@@ -537,6 +576,7 @@ function OrdersTable({
       actionHref={filterEmpty ? undefined : createHref}
       onAction={filterEmpty ? onResetFilter : undefined}
     />
+    )
   ) : null;
 
   const rowActions = (c: Calc, payable: boolean, canPay: boolean) => (
@@ -609,8 +649,7 @@ function OrdersTable({
             }}
           >
             <div className="ph">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={calcThumb(c, i)} alt="" />
+              <OrderCover src={calcThumb(c, i)} />
             </div>
             <div>
               <h4>{c.title}</h4>
@@ -621,7 +660,22 @@ function OrdersTable({
                 {c.preferredBrokerUser?.name ? ` · брокер ${c.preferredBrokerUser.name}` : ""}
               </div>
               <div className="meta">
-                HS: {hs} · {clientOrderNextStep({ status: c.status, paidAt: c.paidAt })}
+                HS: {hs} · документы: {c.items?.length || 0}
+              </div>
+              <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <span className="meta" style={{ marginTop: 0 }}>
+                  <b>{clientOrderNextStep({ status: c.status, paidAt: c.paidAt })}</b>
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpen(c);
+                  }}
+                >
+                  Подробнее
+                </button>
               </div>
               {rowActions(c, payable, canPay)}
             </div>

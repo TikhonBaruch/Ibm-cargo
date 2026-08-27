@@ -117,6 +117,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-lbm-bro-visual.md     # визуал lbm-bro: live chrome + lab /client
   plan-lbm-bro-honest-skin.md # C8–C9: скрыть инвойс/qty/вес; блок «Замысел дизайнера» off
   plan-lbm-bro-newcalc-mock.md # C10: точная копия шага «Что ввозите?»
+  plan-lbm-bro-max-match.md  # C16: максимальный visual match live↔lab без ломки domain
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
