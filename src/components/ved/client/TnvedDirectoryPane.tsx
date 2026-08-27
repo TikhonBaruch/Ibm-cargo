@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { HS_EXAMPLES } from "@/lbm-bro/lib/hs-catalog";
 import { TNVED_GROUPS } from "@/lbm-bro/lib/tnved-groups";
 import { DesignerStub } from "@/lbm-bro/components/designer-stub";
+import { formatHsCode } from "@/lib/ved/tnved";
+import {
+  directoryReadFromCard,
+  directoryWizardHref,
+  type DirectoryCardLike,
+} from "@/lib/ved/tnved-directory-read";
 import { api } from "../VedShell";
 
 type Hit = {
@@ -14,15 +20,15 @@ type Hit = {
   isLeaf?: boolean;
 };
 
-type Card = {
-  code: string;
-  codeDisplay?: string;
-  titleRu?: string;
-  notes?: string | null;
-  rate?: { dutyPct?: number | null } | null;
-  paymentsHint?: { vatPct?: number | null; feeRule?: string };
-  disclaimer?: string;
-};
+function groupLabel(code: string) {
+  const d = String(code || "").replace(/\D/g, "").slice(0, 2);
+  const g = TNVED_GROUPS.find((row) => row[0] === d);
+  return g ? `${g[0]} — ${g[1]}` : d ? `${d} — группа ТН ВЭД` : "";
+}
+
+function hitHs(h: Hit) {
+  return h.codeDisplay || formatHsCode(h.code) || h.code;
+}
 
 export function TnvedDirectoryPane({
   initialQuery = "",
@@ -39,7 +45,7 @@ export function TnvedDirectoryPane({
   const [loadError, setLoadError] = useState("");
   const [busy, setBusy] = useState(false);
   const [picked, setPicked] = useState<Hit | null>(null);
-  const [card, setCard] = useState<Card | null>(null);
+  const [card, setCard] = useState<DirectoryCardLike | null>(null);
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -50,11 +56,12 @@ export function TnvedDirectoryPane({
     if (q.length < 2) {
       setHits([]);
       setLoadError("");
+      setBusy(false);
       return;
     }
     let cancelled = false;
+    setBusy(true);
     const t = window.setTimeout(() => {
-      setBusy(true);
       void (async () => {
         try {
           const res = await api<{ items: Hit[] }>(
@@ -79,6 +86,15 @@ export function TnvedDirectoryPane({
   }, [query, group]);
 
   useEffect(() => {
+    if (!query.trim() || busy) return;
+    if (!hits.length) {
+      setPicked(null);
+      return;
+    }
+    setPicked((prev) => (prev && hits.some((h) => h.code === prev.code) ? prev : hits[0]));
+  }, [hits, query, busy]);
+
+  useEffect(() => {
     if (!picked?.code) {
       setCard(null);
       return;
@@ -86,7 +102,9 @@ export function TnvedDirectoryPane({
     let cancelled = false;
     void (async () => {
       try {
-        const detail = await api<Card>(`/api/v1/tnved/${encodeURIComponent(picked.code)}`);
+        const detail = await api<DirectoryCardLike>(
+          `/api/v1/tnved/${encodeURIComponent(picked.code)}`,
+        );
         if (!cancelled) setCard(detail);
       } catch {
         if (!cancelled) setCard(null);
@@ -97,7 +115,16 @@ export function TnvedDirectoryPane({
     };
   }, [picked]);
 
-  const result = card || picked;
+  const read = useMemo(
+    () => (picked ? directoryReadFromCard(card || {}, picked) : null),
+    [card, picked],
+  );
+  const wizardHref = picked
+    ? directoryWizardHref(newCalcHref, {
+        code: picked.code,
+        titleRu: card?.titleRu || picked.titleRu,
+      })
+    : newCalcHref;
 
   return (
     <>
@@ -105,7 +132,9 @@ export function TnvedDirectoryPane({
         <div>
           <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Справочник ТН ВЭД</h3>
           <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 4 }}>
-            Поиск по коду или названию · ставки справочника (НДС 22% / сбор ПП 1637)
+            {busy && !hits.length
+              ? "Ищем в справочнике…"
+              : "Живой справочник · НДС 22% / сбор ПП 1637"}
           </p>
         </div>
         <Link href={homeHref} className="btn btn-ghost btn-sm">
@@ -196,12 +225,12 @@ export function TnvedDirectoryPane({
                   className={picked?.code === h.code ? "on" : ""}
                   onClick={() => setPicked(h)}
                 >
-                  <strong>{h.codeDisplay || h.code}</strong>
+                  <strong>{hitHs(h)}</strong>
                   <span>{h.titleRu || ""}</span>
                 </button>
               ))}
             </div>
-          ) : (query.trim() || group) && !busy ? (
+          ) : query.trim() && !busy ? (
             <p className="meta" style={{ marginTop: 14 }}>
               Ничего не нашли. Попробуйте 4+ цифры кода или другое название.
             </p>
@@ -213,38 +242,58 @@ export function TnvedDirectoryPane({
         </div>
 
         <div className="card tnved-read" style={{ margin: 0 }}>
-          {result ? (
+          {picked && read ? (
             <>
-              <h3>{card?.codeDisplay || picked?.codeDisplay || picked?.code}</h3>
-              <p style={{ marginTop: 8, fontSize: 14, lineHeight: 1.5 }}>
-                {card?.titleRu || picked?.titleRu}
+              <span className="pill muted">Справочник</span>
+              <div className="meta" style={{ marginTop: 10 }}>
+                {groupLabel(picked.code)}
+              </div>
+              <div className="tnved-code">{read.hs}</div>
+              <h3 style={{ marginTop: 8 }}>{read.title}</h3>
+              <p className="meta" style={{ marginTop: 8, lineHeight: 1.45 }}>
+                {read.why}
               </p>
-              {card?.paymentsHint ? (
-                <p className="meta" style={{ marginTop: 10 }}>
-                  НДС {card.paymentsHint.vatPct ?? 22}%
-                  {card.rate?.dutyPct != null ? ` · пошлина ${card.rate.dutyPct}%` : ""}
-                  {card.paymentsHint.feeRule ? ` · сбор ${card.paymentsHint.feeRule}` : " · сбор ПП 1637"}
-                </p>
-              ) : null}
-              {card?.disclaimer ? (
-                <p className="meta" style={{ marginTop: 10 }}>
-                  {card.disclaimer}
-                </p>
-              ) : null}
-              <Link href={newCalcHref} className="btn btn-primary btn-sm" style={{ marginTop: 14 }}>
-                Оформить просчёт
+              <div className="metric-row" style={{ marginTop: 14 }}>
+                <div className="metric">
+                  <div className="k">Пошлина, ориентир</div>
+                  <div className="v">{read.dutyLabel}</div>
+                </div>
+                <div className="metric">
+                  <div className="k">НДС</div>
+                  <div className="v">{read.vatPct}%</div>
+                </div>
+              </div>
+              <ul className="tnved-notes">
+                {read.notes.map((n) => (
+                  <li key={n}>{n}</li>
+                ))}
+              </ul>
+              <div
+                className={`alert-box ${read.riskKind === "ok" ? "ok-box" : "warn-box"}`}
+                style={{ marginTop: 12 }}
+              >
+                <strong>Риск</strong>
+                {read.riskLabel}
+              </div>
+              <p className="meta" style={{ marginTop: 10 }}>
+                Рекомендация справочника, не решение таможенного органа. Финальный код подтверждает
+                брокер.
+              </p>
+              <Link
+                href={wizardHref}
+                className="btn btn-primary"
+                style={{ width: "100%", marginTop: 14, justifyContent: "center" }}
+              >
+                Оформить заявку по этому коду
               </Link>
             </>
           ) : (
             <>
-              <h3>Карточка кода</h3>
-              <p className="meta">
-                Выберите позицию слева — покажем название и ставки справочника. Это не решение
-                таможенного органа.
+              <span className="pill muted">Справочник</span>
+              <h3 style={{ marginTop: 10 }}>Выберите группу или введите запрос</h3>
+              <p className="meta" style={{ marginTop: 8 }}>
+                96 товарных групп ТН ВЭД ЕАЭС. Это не официальное решение ФТС.
               </p>
-              <Link href={newCalcHref} className="btn btn-ghost btn-sm" style={{ marginTop: 12 }}>
-                Сразу к новому просчёту
-              </Link>
             </>
           )}
         </div>

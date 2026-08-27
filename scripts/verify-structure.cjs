@@ -51,6 +51,7 @@ const knowledgeRequired = [
   "docs/knowledge/design-patterns.md",
   "docs/knowledge/plan-lbm-bro-visual.md",
   "docs/knowledge/plan-lbm-bro-max-match.md",
+  "docs/knowledge/plan-lbm-bro-tnved-dir.md",
   "docs/knowledge/environments.md",
   "docs/knowledge/staging.md",
   "docs/knowledge/roadmap.md",

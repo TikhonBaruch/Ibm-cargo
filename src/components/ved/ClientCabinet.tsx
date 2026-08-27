@@ -57,6 +57,7 @@ import {
   formItemFromCatalogSku,
 } from "./client/types";
 import { factoryNavBadge } from "@/lib/ved/sku-order";
+import { directoryPrefillFromQuery } from "@/lib/ved/tnved-directory-read";
 import { liveBellNotes, resolveClientSearch } from "./lbm-pane-visual";
 
 const PAGE_META: Record<string, { title: string; lead: string }> = {
@@ -160,6 +161,7 @@ function ClientCabinetInner() {
   const [catalogSkus, setCatalogSkus] = useState<CatalogSku[]>([]);
   const [factoryRequests, setFactoryRequests] = useState<FactoryOrderRequest[] | null>(null);
   const factoryPrefillRef = useRef(false);
+  const directoryPrefillRef = useRef("");
 
   const reload = async () => {
     const tasks: Array<{ key: string; run: () => Promise<unknown> }> = [
@@ -827,6 +829,37 @@ function ClientCabinetInner() {
       .then(setCatalogSkus)
       .catch(() => setCatalogSkus([]));
   }, [pane, factoryOn]);
+
+  useEffect(() => {
+    if (pane !== "new") return;
+    if (search.get("sku")) return;
+    const hs = search.get("hs") || "";
+    const desc = search.get("desc") || "";
+    const key = `${hs}|${desc}`;
+    if (!hs && !desc) return;
+    if (directoryPrefillRef.current === key) return;
+    const prefill = directoryPrefillFromQuery(hs, desc);
+    if (!prefill) return;
+    directoryPrefillRef.current = key;
+    setForm((f) => ({
+      ...f,
+      title: prefill.title || f.title,
+      description: prefill.description,
+    }));
+    if (prefill.hsHint) {
+      setItems((prev) => {
+        const first = prev[0] || { name: "", qty: 1, unitPrice: 0 };
+        return [
+          {
+            ...first,
+            name: first.name.trim() || prefill.name || first.name,
+            attrs: { ...first.attrs, hsHint: prefill.hsHint },
+          },
+          ...prev.slice(1),
+        ];
+      });
+    }
+  }, [pane, search]);
 
   useEffect(() => {
     if (!factoryOn || pane !== "new" || factoryPrefillRef.current || !catalogSkus.length) return;

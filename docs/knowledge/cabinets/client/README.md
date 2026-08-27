@@ -11,7 +11,7 @@
 |---------|-------|----------------|----------------|
 | Главная | `/` · `/cabinet` | Superapp как у дизайнера: greet, consult/ЧЗ-stub, faq/guide, lookup, лента covers/chips, svc | Плитки → `/new` `/orders` `/support` `/faq` `/guide` `/tnved` `/brokers` `/clearance`; shipping — плитка; factory-плитка скрыта (C6), deep-link `/factory` жив |
 | Заявки | `/orders` | Карточки (`.cl-order`): обложка, pill, «следующий шаг» D8 | Фильтры Все\|Готово\|У брокера\|Оплата; PDF при DONE; `onOpen` / pay без смены FSM |
-| Справочник ТН ВЭД | `/tnved` | Combobox live `GET /api/v1/tnved/search` + карточка кода | Не `tnved.json`; CTA → `/new` |
+| Справочник ТН ВЭД | `/tnved` | Chrome lab: две колонки, 96 групп, карточка `.tnved-code` / metric-row; live `GET /api/v1/tnved/*`; CTA → `/new?hs=&desc=` (C17) | Не `tnved.json`; не НДС 20%; не freemium-peek |
 | Чат | `/support` | IM-шелл: тикеты поддержки + ссылки на чат брокера по заявке | Голос → stub; FAQ → `/faq` |
 | Компания | `/profile` | `.field` реквизиты | Тумблеры уведомлений макета → stub |
 | Новый просчёт | `/new` (header CTA) | Wizard chrome (товар→тариф→запуск, поля не прячутся); лимит D10; heuristic top-N + **combobox ТН ВЭД** (`HsCodeAutocomplete`, `leafOnly`); **stage tip** + labels; **attr chips**; **FieldSuggest**; `tariff-mini` D10 | Форма + позиции + attrs; производитель **необязателен** (C7); origin/состав R; опц. SKU + **HS directory** + **upload** + **CSV** · [`plan-client-tnved-search.md`](../../plan-client-tnved-search.md) |
@@ -38,7 +38,7 @@
 
 **Upload:** `POST /api/v1/uploads` → `{ url, storage: "local"|"s3" }`. Compose: volume `ved_uploads`; `GET /uploads/ved/[uuid]` — [`runbook.md`](../../runbook.md).  
 **CSV/XLSX/PDF:** `POST /api/v1/imports/products/preview` → grid; create через обычный `POST /calculations` (UI: «Создать заявку из таблицы»).  
-**ТН ВЭД:** `GET /api/v1/tnved/search?leafOnly=1` с NewCalc (`HsCodeAutocomplete`) пишет только `attrs.hsHint`, не `hsCodeFinal` (D15). Поиск: `titleRu` / `notes` / префикс кода. После выбора — ссылка «Карточка кода» (`VedDetailDrawer`, полное имя, предки, пошлина из `TnvedDutyRate` или «нет в источнике», НДС 22%). Local fill ставок = `tws-csv` (не НСИ). Демо-корпус = официальные имена ФНС + синонимы в `notes`. Heuristic top-N рядом. Не LLM-CTA (D27).
+**ТН ВЭД:** `GET /api/v1/tnved/search` на `/cabinet/tnved` (C17: карточка lab, автовыбор хита, CTA в мастер с `hs`/`desc`) и `?leafOnly=1` с NewCalc (`HsCodeAutocomplete`) пишет только `attrs.hsHint`, не `hsCodeFinal` (D15). Поиск: `titleRu` / `notes` / префикс кода. В мастере после выбора — ссылка «Карточка кода» (`VedDetailDrawer`). Local fill ставок = `tws-csv` (не НСИ). Демо-корпус = официальные имена ФНС + синонимы в `notes`. Heuristic top-N рядом. Не LLM-CTA (D27).
 
 ## Panes (файлы)
 

@@ -103,6 +103,10 @@
   border-radius: 99px;
   background: rgba(255, 255, 255, 0.55);
 }
+.lbm-live-client .view-client .tnved-read {
+  display: flex;
+  flex-direction: column;
+}
 .lbm-live-client .view-client button.tariff-mini {
   cursor: pointer;
   text-align: left;

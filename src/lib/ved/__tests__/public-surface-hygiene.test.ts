@@ -161,6 +161,37 @@ describe("public surface hygiene", () => {
     expect(order).not.toContain("НДС 20%");
   });
 
+  it("locks C17 tnved directory chrome without copying lab domain", () => {
+    const tnved = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/TnvedDirectoryPane.tsx"),
+      "utf8",
+    );
+    const cabinet = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/ClientCabinet.tsx"),
+      "utf8",
+    );
+    const helper = fs.readFileSync(
+      path.join(repoRoot, "src/lib/ved/tnved-directory-read.ts"),
+      "utf8",
+    );
+    expect(tnved).toContain("Оформить заявку по этому коду");
+    expect(tnved).toContain("tnved-code");
+    expect(tnved).toContain("metric-row");
+    expect(tnved).toContain("Выберите группу или введите запрос");
+    expect(tnved).toContain("НДС 22%");
+    expect(tnved).not.toContain("НДС 20%");
+    expect(tnved).not.toContain("Первый раз бесплатно");
+    expect(tnved).not.toContain("Оплатить и открыть код");
+    expect(tnved).not.toContain("consumeFreeHs");
+    expect(tnved).not.toContain("loadTnved");
+    expect(tnved).not.toContain("tnved.json");
+    expect(helper).toContain("vatPct");
+    expect(helper).toContain("22");
+    expect(helper).not.toContain("Низкий");
+    expect(cabinet).toContain("directoryPrefillFromQuery");
+    expect(cabinet).toContain('search.get("hs")');
+  });
+
   it("obscure login page has no role/CMS label", () => {
     const src = fs.readFileSync(
       path.join(repoRoot, "app", SUPER_ADMIN_BASE.slice(1), "login/page.tsx"),
