@@ -3,6 +3,7 @@ import {
   clientOrderHsLabel,
   clientOrderNextStep,
   clientOrderStepper,
+  clientOrderTimeline,
   liveFeedMatch,
   liveFeedProgress,
   newCalcWizardProgress,
@@ -45,6 +46,19 @@ describe("lbm pane visual mapping", () => {
     expect(done.current).toBe(3);
   });
 
+  it("maps D8 onto lab 47892 timeline chrome", () => {
+    expect(clientOrderTimeline({ status: "AI_READY", paidAt: null }).labels).toEqual([
+      "Параметры",
+      "Оплата",
+      "Код",
+      "Платежи",
+      "Файл",
+    ]);
+    expect(clientOrderTimeline({ status: "AI_READY", paidAt: null }).current).toBe(1);
+    expect(clientOrderTimeline({ status: "QUEUED" }).current).toBe(3);
+    expect(clientOrderTimeline({ status: "DONE" }).current).toBe(4);
+  });
+
   it("advances new-calc wizard from goods to launch without hiding fields", () => {
     expect(newCalcWizardProgress({ hasGoods: false, hasTariff: true }).current).toBe(1);
     expect(newCalcWizardProgress({ hasGoods: true, hasTariff: false }).current).toBe(2);
@@ -77,7 +91,7 @@ describe("lbm pane visual mapping", () => {
         brokerNames: ["Иванов"],
         path,
       }),
-    ).toBe("/cabinet/orders?id=c1");
+    ).toBe("/cabinet/orders/c1");
     expect(
       resolveClientSearch({
         q: "Иванов",

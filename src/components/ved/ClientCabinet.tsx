@@ -22,7 +22,6 @@ import { useVedToast } from "./feedback/VedToast";
 import { DashboardPane } from "./client/DashboardPane";
 import { ClientSuperappHome } from "./client/ClientSuperappHome";
 import { OrderDetail } from "./client/OrderDetail";
-import { OrderDetailDrawer } from "./client/OrderDetailDrawer";
 import { OrderChat } from "./client/OrderChat";
 import { NewCalcPane } from "./client/NewCalcPane";
 import { BrokersPane } from "./client/BrokersPane";
@@ -38,6 +37,8 @@ import { ClearancePane } from "./client/ClearancePane";
 import type { SupportTicketAction } from "@/lib/ved/support-ticket";
 import {
   clientPane,
+  clientOrderHref,
+  orderIdFromPath,
   getClientNav,
   type Broker,
   type Calc,
@@ -61,6 +62,7 @@ import { liveBellNotes, resolveClientSearch } from "./lbm-pane-visual";
 const PAGE_META: Record<string, { title: string; lead: string }> = {
   dashboard: { title: "Главная", lead: "Импорт под контролем · AI + брокер" },
   orders: { title: "Заявки", lead: "Просчёты, статусы и действия по карточкам" },
+  order: { title: "Заявка", lead: "Карточка просчёта" },
   factory: { title: "Производитель", lead: "Сборный заказ и каталог · добавить производителя" },
   new: { title: "Новый просчёт", lead: "Опишите партию — AI подготовит черновик ТН ВЭД" },
   brokers: { title: "Брокеры", lead: "Назначьте эксперта или напишите в чат" },
@@ -92,6 +94,7 @@ function ClientCabinetInner() {
   const factoryChromeOn = factoryOn && designerManufacturerChromeEnabled();
   const paneRaw = clientPane(pathname);
   const pane = paneRaw;
+  const pathOrderId = orderIdFromPath(pathname);
   const navBase = process.env.NEXT_PUBLIC_CLIENT_BASE ?? "/cabinet";
   const nav = getClientNav(navBase);
   const path = (suffix: string) => {
@@ -522,7 +525,7 @@ function ClientCabinetInner() {
       setPreferredBrokerUserId(full.preferredBrokerUserId || form.preferredBrokerUserId || "");
       if (opts?.syncUrl !== false) {
         deepOpenedRef.current = full.id;
-        router.replace(`${path("/orders")}?id=${encodeURIComponent(full.id)}`, { scroll: false });
+        router.replace(clientOrderHref(path("/orders"), full.id), { scroll: false });
       }
       if (["IN_REVIEW", "DONE", "QUEUED", "SLA_RISK"].includes(full.status)) {
         try {
@@ -546,25 +549,24 @@ function ClientCabinetInner() {
     setChat([]);
     setWaitingOn(null);
     deepOpenedRef.current = null;
-    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("id")) {
-      router.replace(path(pane === "dashboard" ? "" : "/orders"), { scroll: false });
-    }
+    router.replace(path("/orders"), { scroll: false });
   };
 
-  /** Deep-link: /cabinet/orders?id=<calcId> opens detail + chat. */
+  /** Deep-link: /cabinet/orders/[id] (and legacy ?id=) opens the full-page card. */
   useEffect(() => {
-    if (!calcs.length) return;
-    if (pane !== "orders" && pane !== "dashboard") return;
     if (typeof window === "undefined") return;
-    const deepCalcId = new URLSearchParams(window.location.search).get("id");
-    if (!deepCalcId) return;
-    if (selected?.id === deepCalcId || deepOpenedRef.current === deepCalcId) return;
-    const found = calcs.find((c) => c.id === deepCalcId);
-    if (!found) return;
-    deepOpenedRef.current = deepCalcId;
-    void openCalc(found, { syncUrl: false });
+    const qid = new URLSearchParams(window.location.search).get("id");
+    if (qid && (pane === "orders" || pane === "dashboard")) {
+      router.replace(clientOrderHref(path("/orders"), qid), { scroll: false });
+      return;
+    }
+    if (pane !== "order" || !pathOrderId) return;
+    if (selected?.id === pathOrderId) return;
+    if (deepOpenedRef.current === pathOrderId) return;
+    deepOpenedRef.current = pathOrderId;
+    void openCalc({ id: pathOrderId } as Calc, { syncUrl: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calcs, pane]);
+  }, [pane, pathOrderId]);
 
   const pay = async (id: string) => {
     setBusy(true);
@@ -882,7 +884,7 @@ function ClientCabinetInner() {
     }
     return item;
   });
-  const hideHeaderTitle = pane === "dashboard" || pane === "new";
+  const hideHeaderTitle = pane === "dashboard" || pane === "new" || pane === "order";
   const bellNotes = liveBellNotes(calcs, path("/orders"), unreadCount);
 
   return (
@@ -995,37 +997,41 @@ function ClientCabinetInner() {
             }}
           />
           )}
-          {selected && (pane === "orders" || pane === "dashboard") && (
-            <OrderDetailDrawer
-              open
-              title={`${selected.number} · ${selected.title}`}
-              onClose={closeCalc}
-            >
-              <OrderDetail
-                selected={selected}
-                brokers={brokers}
-                me={me}
-                preferredBrokerUserId={preferredBrokerUserId}
-                busy={busy}
-                embedded
-                onPreferred={setPreferredBrokerUserId}
-                onPay={() => pay(selected.id)}
-                onTopupThenPay={() => topupThenPay(selected.id, selected.tariff?.priceRub ?? 0)}
-                onFeedback={(reaction, comment) => submitFeedback(selected.id, reaction, comment)}
-              >
-                <OrderChat
-                  selected={selected}
-                  chat={chat}
-                  waitingOn={waitingOn}
-                  chatMsg={chatMsg}
-                  busy={busy}
-                  onChatMsg={setChatMsg}
-                  onSend={sendChat}
-                />
-              </OrderDetail>
-            </OrderDetailDrawer>
-          )}
         </>
+      )}
+      {pane === "order" && (
+        selected ? (
+          <OrderDetail
+            selected={selected}
+            brokers={brokers}
+            me={me}
+            preferredBrokerUserId={preferredBrokerUserId}
+            busy={busy}
+            ordersHref={path("/orders")}
+            tnvedHref={path("/tnved")}
+            onPreferred={setPreferredBrokerUserId}
+            onPay={() => pay(selected.id)}
+            onTopupThenPay={() => topupThenPay(selected.id, selected.tariff?.priceRub ?? 0)}
+            onFeedback={(reaction, comment) => submitFeedback(selected.id, reaction, comment)}
+          >
+            <OrderChat
+              selected={selected}
+              chat={chat}
+              waitingOn={waitingOn}
+              chatMsg={chatMsg}
+              busy={busy}
+              onChatMsg={setChatMsg}
+              onSend={sendChat}
+            />
+          </OrderDetail>
+        ) : (
+          <VedEmptyState
+            title="Заявка не найдена"
+            hint="Нет доступа или неверный адрес."
+            actionLabel="К заявкам"
+            onAction={closeCalc}
+          />
+        )
       )}
 
       {pane === "new" && (
@@ -1167,7 +1173,7 @@ function ClientCabinetInner() {
           calcsWithChat={calcs.filter((c) =>
             ["IN_REVIEW", "DONE", "SLA_RISK", "QUEUED"].includes(c.status)
           )}
-          orderHrefFor={(id) => `${path("/orders")}?id=${encodeURIComponent(id)}`}
+          orderHrefFor={(id) => `${path("/orders")}/${id}`}
           box={supportBox}
           onBox={(next) => {
             setSupportBox(next);

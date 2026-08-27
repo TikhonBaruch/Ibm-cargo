@@ -215,7 +215,7 @@ export function ClientSuperappHome({
               feedPreview.map((c, i) => (
                 <Link
                   key={c.id}
-                  href={`${path("/orders")}?id=${encodeURIComponent(c.id)}`}
+                  href={`${path("/orders")}/${c.id}`}
                   className="go-active"
                 >
                   <div className="ga-art">

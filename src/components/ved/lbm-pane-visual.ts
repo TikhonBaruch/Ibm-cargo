@@ -64,6 +64,21 @@ export function wizardStepClass(stepN: number, current: number): string {
   return "";
 }
 
+/** Lab 47892 timeline chrome (dots). Progress from live D8, not demo draft/pay/ai. */
+export function clientOrderTimeline(input: {
+  status: string;
+  paidAt?: string | null;
+}): { labels: string[]; current: number } {
+  const labels = ["Параметры", "Оплата", "Код", "Платежи", "Файл"];
+  const { status, paidAt } = input;
+  if (status === "DONE") return { labels, current: 4 };
+  if (status === "CANCELLED") return { labels, current: 0 };
+  if (BROKER_STATUSES.has(status)) return { labels, current: 3 };
+  if (PAY_STATUSES.has(status) && !paidAt) return { labels, current: 1 };
+  if (AI_STATUSES.has(status)) return { labels, current: 2 };
+  return { labels, current: 0 };
+}
+
 export function tariffMiniBlurb(code: string): string {
   if (code === "EXPRESS") return "1 позиция, только AI — без очереди брокера при high conf";
   if (code === "STANDARD") return "До 3 позиций · очередь брокера после оплаты";
@@ -153,7 +168,10 @@ export function liveBellNotes(
   ordersHref: string,
   unreadCount = 0,
 ): LiveBellNote[] {
-  const orderUrl = (id: string) => `${ordersHref}?id=${encodeURIComponent(id)}`;
+  const orderUrl = (id: string) => {
+    const base = ordersHref.replace(/\/$/, "");
+    return `${base}/${id}`;
+  };
   const notes: LiveBellNote[] = [];
   if (unreadCount > 0) {
     notes.push({
@@ -225,7 +243,7 @@ export function resolveClientSearch(input: {
       hs.includes(query)
     );
   });
-  if (hit) return `${input.path("/orders")}?id=${encodeURIComponent(hit.id)}`;
+  if (hit) return `${input.path("/orders")}/${hit.id}`;
   if (query.includes("брок") || input.brokerNames.some((n) => n.toLowerCase().includes(query))) {
     return input.path("/brokers");
   }
@@ -253,6 +271,7 @@ export function clientNavHighlight(pathname: string, nav: Array<{ href: string; 
 
   if (
     p.endsWith("/orders") ||
+    /\/orders\/[^/]+$/.test(p) ||
     p.endsWith("/new") ||
     p.endsWith("/shipping") ||
     p.endsWith("/brokers") ||

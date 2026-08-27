@@ -94,7 +94,7 @@ export function ClearancePane({
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
                 <Link
-                  href={`${ordersHref}?id=${encodeURIComponent(order.id)}`}
+                  href={`${ordersHref.replace(/\/$/, "")}/${order.id}`}
                   className="btn btn-ghost btn-sm"
                 >
                   Открыть

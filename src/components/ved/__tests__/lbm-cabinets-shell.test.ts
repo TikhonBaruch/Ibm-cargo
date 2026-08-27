@@ -29,6 +29,7 @@ describe("lbm cabinet chrome mapping", () => {
 
   it("highlights orders for wizard, brokers, shipping and factory deep-links", () => {
     expect(clientNavHighlight("/cabinet/new", NAV)).toBe("/cabinet/orders");
+    expect(clientNavHighlight("/cabinet/orders/abc", NAV)).toBe("/cabinet/orders");
     expect(clientNavHighlight("/cabinet/brokers", NAV)).toBe("/cabinet/orders");
     expect(clientNavHighlight("/cabinet/shipping", NAV)).toBe("/cabinet/orders");
     expect(clientNavHighlight("/cabinet/balance", NAV)).toBe("/cabinet/profile");

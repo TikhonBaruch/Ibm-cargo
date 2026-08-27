@@ -83,17 +83,16 @@ describe("public surface hygiene", () => {
   });
 
   it("keeps a gap between stepper numbers and labels (C13)", () => {
-    const order = fs.readFileSync(
-      path.join(repoRoot, "src/components/ved/client/OrderDetail.tsx"),
-      "utf8",
-    );
     const css = fs.readFileSync(
       path.join(repoRoot, "src/components/ved/lbm-cabinets-live.css"),
       "utf8",
     );
-    expect(order).toContain("wiz-step-lab");
+    const order = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/OrderDetail.tsx"),
+      "utf8",
+    );
     expect(order).toContain("view-client");
-    expect(css).toContain("wiz-step-lab");
+    expect(order).toContain("timeline");
     expect(css).toContain("0.4em");
   });
 
@@ -104,6 +103,32 @@ describe("public surface hygiene", () => {
     );
     expect(order).toContain("Страна происхождения");
     expect(order).toContain("originCountryRuLabel");
+  });
+
+  it("locks live order card to lab 47892 page chrome (C15)", () => {
+    const order = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/OrderDetail.tsx"),
+      "utf8",
+    );
+    const cabinet = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/ClientCabinet.tsx"),
+      "utf8",
+    );
+    const visual = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/lbm-pane-visual.ts"),
+      "utf8",
+    );
+    expect(order).toContain("timeline");
+    expect(order).toContain("clientOrderTimeline");
+    expect(visual).toContain("Параметры");
+    expect(visual).toContain("Платежи");
+    expect(order).toContain("Доплатить по этой заявке");
+    expect(order).toContain("order-svc");
+    expect(order).toContain("НДС 22%");
+    expect(order).toContain("ПП 1637");
+    expect(order).not.toContain("НДС 20%");
+    expect(cabinet).not.toContain("OrderDetailDrawer");
+    expect(cabinet).toContain("pane === \"order\"");
   });
 
   it("obscure login page has no role/CMS label", () => {

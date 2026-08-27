@@ -74,8 +74,23 @@
   align-items: center;
   gap: 0.4em;
 }
-.order-full .wiz-steps.labeled .wiz-step-lab {
-  margin-inline-start: 0.15em;
+.order-full .order-hold-form {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+  opacity: 0.78;
+}
+.order-full .order-hold-upgrades button,
+.order-full .order-hold-drop,
+.order-full .order-hold-svc {
+  pointer-events: none;
+}
+.order-full .order-hold-upgrades button {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.order-full .order-hold-svc {
+  opacity: 0.78;
 }
 .lbm-live-client .wiz-hs-dashes {
   display: flex;

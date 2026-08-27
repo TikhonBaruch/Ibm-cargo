@@ -267,6 +267,7 @@ app/client/**              # Next routes UI lab
 | **C12** | Single `/cabinet/new`: панель «Уточняем для точности кода» (lab clarify) после описания + страна. [`plan-lbm-bro-newcalc-clarify.md`](./plan-lbm-bro-newcalc-clarify.md) | Не на `/cabinet/tnved`; не в multi; heuristic не переписывать |
 | **C13** | Stepper заявки: зазор «1 Товар 2 Оплата 3 Брокер 4 PDF». Drawer порталится в `body` (вне `.view-client`) — CSS labeled не жил | Не менять D8 шаги; не трогать broker/admin drawers |
 | **C14** | На карточке заявки показать страну происхождения (header + ТН ВЭД блок). Селект create — полный каталог `ORIGIN_COUNTRIES`, не 6 пунктов | Не менять API required; не выдумывать страну если её нет |
+| **C15** | Карточка заявки = страница `/cabinet/orders/[id]` (chrome lab 47892). Drawer off. Hold: upgrade / payments form / ship-ТО. [`plan-lbm-bro-order-page.md`](./plan-lbm-bro-order-page.md) | Не НДС 20%; не Код/Таможня/Под ключ domain; не «передать брокеру» без оплаты |
 | **D** | Адаптер lab `DemoProvider` → `/api/v1` (если lab ещё нужен). Тарифы D10. Убрать stubs по мере готовности | Не менять D8/D10/D11 «ради красоты» |
 | **E** | Lab `/client` остаётся референсом. Prod-лицо клиента = `/cabinet` (`homePathForRole` + login). Proto-bar **off** на live | Не `Vercel Root=lbm` — канон Root **`.`** ([`deploy.md`](./deploy.md)) |
 
@@ -328,6 +329,7 @@ app/client/**              # Next routes UI lab
 | Фаза C12: single `/cabinet/new` панель уточнений (lab clarify) | **этот PR** · [`plan-lbm-bro-newcalc-clarify.md`](./plan-lbm-bro-newcalc-clarify.md) |
 | Фаза C13: зазор в stepper заявки (`1 Товар`, не `1Товар`) | **этот PR** |
 | Фаза C14: страна происхождения на карточке заявки | **этот PR** |
+| Фаза C15: заявка = страница lab 47892, не drawer | **этот PR** · [`plan-lbm-bro-order-page.md`](./plan-lbm-bro-order-page.md) |
 | Фаза D: lab → `/api/v1` | later |
 | ADR cutover lab как единственное prod-лицо | не нужно: prod = `/cabinet` |
 
@@ -362,6 +364,10 @@ app/client/**              # Next routes UI lab
 ### C14 — страна происхождения на заявке
 
 На live OrderDetail страна была только в нижнем card (`Страна:`) и часто как ISO. Показать **Страна происхождения · Китай** под заголовком и в блоке ТН ВЭД (`originCountryRuLabel` из `field-suggest`: calc.country или `items[0].attrs.originCountry`). Селект `/cabinet/new` берёт тот же каталог, плюс «ЕС».
+
+### C15 — заявка отдельной страницей (lab 47892)
+
+Drawer снят. Live `/cabinet/orders/[id]` копирует chrome `ClientOrderPage`: timeline точек, HS+cover, facts, документы, aside next/платежи/брокер/события. Upgrade / payments-form / Перевозка-ТО — слоты с disabled CTA. Цифры — НДС 22% / ПП 1637. Канон: [`plan-lbm-bro-order-page.md`](./plan-lbm-bro-order-page.md).
 
 ### C4 — leftover inner panes
 

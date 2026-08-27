@@ -279,6 +279,7 @@ export function calcThumb(c: Calc, index = 0): string {
 
 export function clientPane(pathname: string): string {
   const p = (pathname || "/").replace(/\/$/, "") || "/";
+  if (/\/orders\/[^/]+$/.test(p)) return "order";
   if (p.endsWith("/orders")) return "orders";
   if (p.endsWith("/factory")) return "factory";
   if (p.endsWith("/new")) return "new";
@@ -292,6 +293,16 @@ export function clientPane(pathname: string): string {
   if (p.endsWith("/guide")) return "guide";
   if (p.endsWith("/clearance")) return "clearance";
   return "dashboard";
+}
+
+export function orderIdFromPath(pathname: string): string | null {
+  const m = (pathname || "").replace(/\/$/, "").match(/\/orders\/([^/?#]+)$/);
+  return m?.[1] || null;
+}
+
+export function clientOrderHref(ordersHref: string, id: string): string {
+  const base = ordersHref.replace(/\/$/, "");
+  return `${base}/${id}`;
 }
 
 export function maxPositionsForTariffCode(code: string): number {
