@@ -19,7 +19,7 @@
 1. Канон правила: `docs/knowledge/ved-frontend-boundary.mdc` (`alwaysApply`) + sync в `.cursor/rules/`.
 2. Инструкция доступов: `docs/handover/FRONTEND.md`.
 3. Пример env без секретов: `docs/handover/env.frontend.example`.
-4. Pack: `scripts/pack-frontend-handover.sh` → zip в артефакты (не в git). В zip: UI-дерево без `containers/` и без `.env`; библиотека Cursor; конверт секретов **без** prod DB/S3/AI. Локальный `NEXTAUTH_SECRET` можно сгенерировать только как заглушку localhost — не прод.
+4. Pack: `scripts/pack-frontend-handover.sh` → zip в артефакты (конверт с localhost secret, не в git). Публичный zip: `bash scripts/pack-frontend-handover.sh --github` → `docs/handover/lbm-frontend-handover.zip` **без** секретов (запрос владельца: выложить архив на GitHub).
 5. KB индекс + `test:structure` на наличие правила.
 
 ## Проверка

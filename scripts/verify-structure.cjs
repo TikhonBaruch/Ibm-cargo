@@ -409,6 +409,24 @@ for (const rule of [
   }
 }
 
+{
+  const zipRel = "docs/handover/lbm-frontend-handover.zip";
+  if (exists(zipRel)) {
+    const { execFileSync } = require("node:child_process");
+    let listing = "";
+    try {
+      listing = execFileSync("unzip", ["-l", path.join(root, zipRel)], {
+        encoding: "utf8",
+      });
+    } catch (e) {
+      errors.push(`cannot list ${zipRel}: ${e && e.message ? e.message : e}`);
+    }
+    if (listing.includes("SECRETS-ENVELOPE.txt")) {
+      errors.push(`${zipRel} must not contain SECRETS-ENVELOPE.txt`);
+    }
+  }
+}
+
 if (errors.length) {
   console.error("\n✖ test:structure failed:\n");
   for (const e of errors) console.error(`  - ${e}`);

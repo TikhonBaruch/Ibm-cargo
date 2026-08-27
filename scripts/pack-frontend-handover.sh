@@ -75,9 +75,16 @@ This archive must not contain and the frontend contractor must not add:
 Rule: docs/knowledge/ved-frontend-boundary.mdc (immutable)
 EOF
 
-LOCAL_SECRET="$(openssl rand -base64 32 | tr -d '\n')"
-umask 077
-cat > "${DEST}/SECRETS-ENVELOPE.txt" << EOF
+# Public GitHub zip: no generated secrets. Private artifact zip may include a localhost envelope.
+GITHUB_ZIP=0
+for arg in "$@"; do
+  if [[ "${arg}" == "--github" ]]; then GITHUB_ZIP=1; fi
+done
+
+if [[ "${GITHUB_ZIP}" -eq 0 ]]; then
+  LOCAL_SECRET="$(openssl rand -base64 32 | tr -d '\n')"
+  umask 077
+  cat > "${DEST}/SECRETS-ENVELOPE.txt" << EOF
 # Fill on the OWNER machine. Do not commit. Do not put production DB/S3/AI here.
 # Generated localhost-only NEXTAUTH_SECRET (not production):
 NEXTAUTH_SECRET=${LOCAL_SECRET}
@@ -95,6 +102,14 @@ QWEN_API_KEY=
 LLM_SERVICE_URL=
 OCR_SERVICE_URL=
 EOF
+else
+  cat > "${DEST}/NO-SECRETS.txt" << 'EOF'
+This GitHub copy has no tokens, DATABASE_URL, S3, or LLM keys.
+Local NEXTAUTH_SECRET: openssl rand -base64 32
+Copy docs/handover/env.frontend.example → .env on your machine.
+Do not add production secrets to this zip.
+EOF
+fi
 
 # Sanity: refuse if a prod-looking secret leaked from the workspace copy
 if grep -R -E --binary-files=without-match \
@@ -103,14 +118,20 @@ if grep -R -E --binary-files=without-match \
   echo "pack-frontend-handover: refused — secret-like string in payload" >&2
   exit 2
 fi
-if grep -q 'DATABASE_URL=postgresql' "${DEST}/SECRETS-ENVELOPE.txt"; then
+if [[ -f "${DEST}/SECRETS-ENVELOPE.txt" ]] && grep -q 'DATABASE_URL=postgresql' "${DEST}/SECRETS-ENVELOPE.txt"; then
   echo "pack-frontend-handover: refused — DATABASE_URL filled" >&2
   exit 2
 fi
 
 ZIP="${OUT_DIR}/${NAME}.zip"
 ( cd "${STAGE}" && zip -qr "${ZIP}" "${NAME}" )
-chmod 600 "${ZIP}" 2>/dev/null || true
+if [[ "${GITHUB_ZIP}" -eq 1 ]]; then
+  mkdir -p "${ROOT}/docs/handover"
+  cp "${ZIP}" "${ROOT}/docs/handover/lbm-frontend-handover.zip"
+  echo "wrote ${ROOT}/docs/handover/lbm-frontend-handover.zip"
+else
+  chmod 600 "${ZIP}" 2>/dev/null || true
+fi
 
 echo "wrote ${ZIP}"
 unzip -l "${ZIP}" | tail -n 5

@@ -54,8 +54,17 @@ npm install
 
 ## 5. Архив
 
+Публичная копия **без секретов** (скачать с GitHub):
+
+- Файл в репо: [`docs/handover/lbm-frontend-handover.zip`](./lbm-frontend-handover.zip)
+- Raw: https://github.com/TikhonBaruch/Ibm-cargo/raw/cursor/frontend-handover-e1f0/docs/handover/lbm-frontend-handover.zip
+
+На странице файла нажмите **Download raw file**. В zip нет `DATABASE_URL`, S3, LLM-ключей и PAT.
+
+Пересобрать публичный zip:
+
 ```bash
-bash scripts/pack-frontend-handover.sh
+bash scripts/pack-frontend-handover.sh --github
 ```
 
-Zip пишется в каталог артефактов агента (не в git). Внутри: UI-файлы без `containers/` и без `.env`; библиотека правил; `SECRETS-ENVELOPE.txt` с **пустым** местом под PAT/token владельца и сгенерированным localhost `NEXTAUTH_SECRET` (не прод).
+Вариант с localhost `NEXTAUTH_SECRET` (не в git): `bash scripts/pack-frontend-handover.sh` → артефакты агента.
