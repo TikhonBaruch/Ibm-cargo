@@ -3,6 +3,7 @@ import { getClarificationQuestions } from "@/lbm-bro/lib/clarify-ai";
 import {
   appendClarifyBlock,
   compositionFromClarify,
+  hsHintFromClarify,
   unansweredClarifyParts,
   wizardDraftForClarify,
 } from "../new-calc-clarify";
@@ -53,6 +54,30 @@ describe("new-calc clarify helper (C12)", () => {
     expect(next).toContain("Ответ: чёрный");
     expect(compositionFromClarify({ composition: "100% хлопок" }, "носки")).toBe("100% хлопок");
     expect(compositionFromClarify({}, "носки")).toBe("носки");
+  });
+
+  it("asks milk form chips and maps dry milk to heading 040210", async () => {
+    const qs = await getClarificationQuestions({
+      wizard: wizardDraftForClarify("молоко", "Китай"),
+      step: 1,
+    });
+    expect(qs[0]?.id).toBe("tnved-form");
+    expect(qs[0]?.text).toMatch(/молоко/i);
+    const labels = (qs[0]?.options || []).map((o) => o.label).join(" ");
+    expect(labels).toMatch(/Питьевое/);
+    expect(labels).toMatch(/Сухое/);
+    expect(labels).toMatch(/Сгущённое/);
+    expect(qs.map((q) => q.id)).not.toContain("kind");
+    const dry = qs[0]?.options?.find((o) => o.label.includes("Сухое"));
+    expect(dry?.hsHeading).toBe("040210");
+    expect(
+      hsHintFromClarify(qs, { "tnved-form": dry?.value || "" }),
+    ).toBe("040210");
+    expect(
+      hsHintFromClarify(qs, {
+        "tnved-form": qs[0]?.options?.find((o) => o.id === "fresh")?.value || "",
+      }),
+    ).toBe("0401");
   });
 
   it("skips already-applied ids and empty answers", () => {

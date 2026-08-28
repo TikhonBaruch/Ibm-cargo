@@ -46,3 +46,18 @@ export function compositionFromClarify(
   if (fromQ) return fromQ;
   return fallback.trim();
 }
+
+/** Draft HS heading from a family-pack chip. Not hsCodeFinal (D15). */
+export function hsHintFromClarify(
+  questions: ClarificationQuestion[],
+  answers: Record<string, string>,
+): string | undefined {
+  for (const q of questions) {
+    const ans = (answers[q.id] || "").trim();
+    if (!ans) continue;
+    const hit = q.options?.find((o) => o.value === ans || o.label === ans);
+    const hs = hit?.hsHeading?.replace(/\D/g, "");
+    if (hs && [2, 4, 6, 8, 10].includes(hs.length)) return hs;
+  }
+  return undefined;
+}

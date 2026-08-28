@@ -9,6 +9,7 @@ import {
   LAPTOP_SIZE, MATERIAL, SPORTS_KIND, TEXTILE_DENSITY, TEXTILE_WIDTH, TOOL_KIND, TOY_AGE, TOY_MATERIAL,
   YES_NO_DOCS, withCustomOption,
 } from "./clarify-options";
+import { hintTreeQuestions, hintTreeSkipQuestionIds } from "@/lib/ved/tnved-hint-trees";
 
 export type { ClarifyOption } from "./clarify-options";
 
@@ -155,6 +156,7 @@ const CATEGORY_KEYS: Record<Exclude<Category, "generic">, string[]> = {
     "чай ", "кофе ", "специи", "бакалея", "сладост", "шоколад", "снек",
     "батончик", "бад", "витамин", "протеин", "сухофрукт", "мёд", "мед ",
     "орех", "консерв", "макарон", "рис ", "мука", "сок ", "напиток",
+    "молок", "сливки", "сгущен", "кефир", "йогурт", "творог",
   ],
   baby: [
     "детск", "для малыш", "подгузник", "коляск", "бутылочк", "соска",
@@ -750,7 +752,16 @@ export async function getClarificationQuestions({ wizard, step }: ClarifyInput):
   if (step === 1) {
     if (!desc) return [];
     const category = detectCategory(desc);
-    qs.push(...questionsForCategory(desc, category));
+    const skip = new Set(hintTreeSkipQuestionIds(desc));
+    const packQs = hintTreeQuestions(desc).map((q) =>
+      choiceQ(
+        { id: q.id, required: false, text: q.text, hint: q.hint },
+        q.options,
+        { allowCustom: true },
+      ),
+    );
+    const catQs = questionsForCategory(desc, category).filter((q) => !skip.has(q.id));
+    qs.push(...packQs, ...catQs);
 
     if (!docsOk && coreReady(desc, category)) {
       qs.push(choiceQ({

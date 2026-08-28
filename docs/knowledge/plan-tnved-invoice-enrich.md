@@ -33,3 +33,7 @@
 ## C20 follow-up
 
 Связи между уже существующими кодами: [`plan-tnved-relations.md`](./plan-tnved-relations.md). Дерево не трогаем; overlay `related` + дети `parentCode`.
+
+## C21 follow-up
+
+Семейные чипы на заявке: [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md).

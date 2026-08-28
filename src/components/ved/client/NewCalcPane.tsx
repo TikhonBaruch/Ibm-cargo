@@ -15,6 +15,7 @@ import { originCountrySelectOptions, resolveOriginCountryCode } from "@/lib/ved/
 import {
   appendClarifyBlock,
   compositionFromClarify,
+  hsHintFromClarify,
   unansweredClarifyParts,
   wizardDraftForClarify,
 } from "./new-calc-clarify";
@@ -193,6 +194,7 @@ export function NewCalcPane({
       clarifyAnswers,
       items[0]?.attrs?.composition || nextDesc,
     );
+    const hsHint = hsHintFromClarify(visibleClarifyQs, clarifyAnswers);
     onForm({ title, description: nextDesc });
     const next = [...items];
     if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
@@ -202,6 +204,7 @@ export function NewCalcPane({
       attrs: {
         ...next[0].attrs,
         composition,
+        ...(hsHint && !next[0].attrs?.hsHint ? { hsHint } : {}),
       },
     };
     onItems(next);
