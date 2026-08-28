@@ -54,13 +54,13 @@ C34  Track A payments (ЮKassa) — вне D27 polish
 
 ### C28 — Ship & verify (ближайший)
 
-| Шаг | Действие | Done when |
-|-----|----------|-----------|
-| C28a | Merge PR #19 → `main` / Preview | pay-first на Preview URL |
-| C28b | Ручной: `/cabinet/new` → Далее → Оплата → код только после pay | HS = `—` до pay |
-| C28c | `TEST_API_URL=<preview> npm run smoke:mvp` (+ seed fallback ok) | PASS |
-| C28d | `npm run test:classify-cascade` на CI | PASS |
-| C28e | KB: `current-app` — C18–C27 **на main** | запись |
+| Шаг | Действие | Done when | Status |
+|-----|----------|-----------|--------|
+| C28a | Merge PR #19 → `main` / Preview | pay-first на Preview URL | **human/ops** (ветка готова) |
+| C28b | Ручной: `/cabinet/new` → Далее → Оплата → код только после pay | HS = `—` до pay | ready in branch |
+| C28c | `TEST_API_URL=<preview> npm run smoke:mvp` (+ seed fallback ok) | PASS | prod smoke PASS (seed) |
+| C28d | `npm run test:classify-cascade` на CI | PASS | in branch |
+| C28e | KB: `current-app` — C18–C27 **на main** | запись | after merge |
 
 **Ownership:** Client + Core. Без новых domain writers.
 
@@ -68,12 +68,12 @@ C34  Track A payments (ЮKassa) — вне D27 polish
 
 После оплаты клиент должен видеть тот же нарратив, что lab step 4.
 
-| Шаг | Что |
-|-----|-----|
-| C29a | Шаг 3 NewCalc: AiRunCard → HS + conf + «Почему» (уже частично) |
-| C29b | Опционально: `classify-preview` **после** pay (не до) — top-3 альтернативы на OrderDetail |
-| C29c | Copy: убрать противоречие «1 бесплатно» vs реальный `TariffPlan.priceRub` (EXPRESS 990) — честный first-calc policy **или** убрать freemium banner |
-| C29d | Unit hygiene: free-banner vs live price |
+| Шаг | Что | Status |
+|-----|-----|--------|
+| C29a | Шаг 3 NewCalc: AiRunCard → HS + conf + «Почему» (уже частично) | **done** |
+| C29b | `classify-preview` **после** pay (не до) — top-3 альтернативы на шаге 3 | **done** |
+| C29c | Copy: убрать «1 бесплатно» / 0 ₽ — всегда `TariffPlan.priceRub` | **done** |
+| C29d | Unit hygiene: free-banner vs live price | **done** |
 
 **Не:** `consumeFreeHs` в domain без ADR; НДС 20%.
 

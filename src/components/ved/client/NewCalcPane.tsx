@@ -23,6 +23,8 @@ import {
 } from "@/lib/ved/ai-classification-copy";
 import { clientOrderHsLabel, wizardStepClass } from "../lbm-pane-visual";
 import { AiRunCard } from "./AiRunCard";
+import type { HeuristicHsCandidate } from "@/lib/ved/ai-draft-engine";
+import { api } from "../VedShell";
 import { originCountrySelectOptions, resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import {
   appendClarifyBlock,
@@ -36,6 +38,7 @@ import {
   allPackChrome,
   fmtRub,
   liveCodeForPack,
+  liveWizardStepLabels,
   namedItemCount,
   packIdForLiveCode,
   previewPackFile,
@@ -45,9 +48,6 @@ import {
 } from "./new-calc-pack";
 
 const COUNTRY_OPTIONS = originCountrySelectOptions();
-
-const WIZ_STEP_LABELS = (firstFree: boolean) =>
-  ["Товар", firstFree ? "Бесплатно" : "Оплата", "Код"] as const;
 
 function createBusyLabel(phase: CreatePhase, busy: boolean): string {
   if (phase === "uploading") return "Загружаем фото…";
@@ -83,7 +83,6 @@ export function NewCalcPane({
   selected,
   me,
   preferredBrokerUserId,
-  hasPaidCalcBefore = false,
   ordersHref,
   onForm,
   onItems,
@@ -101,6 +100,7 @@ export function NewCalcPane({
   selected: Calc | null;
   me: Me | null;
   preferredBrokerUserId: string;
+  /** @deprecated C29c — live always charges TariffPlan; kept for call-site compat */
   hasPaidCalcBefore?: boolean;
   ordersHref: string;
   onForm: (patch: Partial<CalcForm>) => void;
@@ -128,8 +128,8 @@ export function NewCalcPane({
   const [clarifyAnswers, setClarifyAnswers] = useState<Record<string, string>>({});
   const [clarifyLoading, setClarifyLoading] = useState(false);
   const [clarifyAppliedIds, setClarifyAppliedIds] = useState<string[]>([]);
+  const [postPayAlts, setPostPayAlts] = useState<HeuristicHsCandidate[]>([]);
   const isPack = packMode === "multi";
-  const firstFree = !isPack && !hasPaidCalcBefore;
   const packId = packIdForLiveCode(
     isPack ? form.tariffCode || "STANDARD" : "EXPRESS"
   );
@@ -170,12 +170,7 @@ export function NewCalcPane({
     form.title.trim() ||
     desc.slice(0, 80) ||
     (isPack ? `Пакет ${packN} позиций` : "Новый товар");
-  const wizardTitles = [
-    "",
-    "Что ввозите?",
-    firstFree ? "Бесплатный просчёт" : "Оплата просчёта кода",
-    "Код ТН ВЭД",
-  ] as const;
+  const wizardTitles = ["", "Что ввозите?", "Оплата просчёта кода", "Код ТН ВЭД"] as const;
 
   useEffect(() => {
     if (!packModal) return;
@@ -185,6 +180,47 @@ export function NewCalcPane({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [packModal]);
+
+  /** C29b: cascade top-N only after pay (never pre-pay leak). */
+  useEffect(() => {
+    if (wizardStep !== 3 || !selected?.paidAt) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clear when leaving post-pay step
+      setPostPayAlts([]);
+      return;
+    }
+    const q = (
+      selected.description ||
+      selected.title ||
+      selected.items?.[0]?.name ||
+      ""
+    ).trim();
+    if (q.length < 3) {
+      setPostPayAlts([]);
+      return;
+    }
+    let alive = true;
+    void api<{ items: Array<{ hsCode: string; confidence: number; why: string }> }>(
+      `/api/v1/tnved/classify-preview?q=${encodeURIComponent(q)}&limit=3`,
+    )
+      .then((res) => {
+        if (!alive) return;
+        const items = Array.isArray(res?.items) ? res.items : [];
+        setPostPayAlts(
+          items.map((it, i) => ({
+            id: `post-${it.hsCode}-${i}`,
+            hsCode: it.hsCode,
+            confidence: it.confidence,
+            why: it.why,
+          })),
+        );
+      })
+      .catch(() => {
+        if (alive) setPostPayAlts([]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [wizardStep, selected]);
 
   useEffect(() => {
     if (!clarifyEnabled) return;
@@ -505,16 +541,14 @@ export function NewCalcPane({
             ← На главную
           </Link>
           <span className="go-kicker" style={{ display: "block", marginTop: 14 }}>
-            {isPack
-              ? "Просчёт кода ТН ВЭД ЕАЭС"
-              : "Первый код бесплатный · этот просчёт только ТН ВЭД"}
+            Просчёт кода ТН ВЭД ЕАЭС · код после оплаты
           </span>
           <h2>{wizardTitles[wizardStep]}</h2>
         </div>
       </div>
 
       <div className="wiz-steps labeled steps-3">
-        {WIZ_STEP_LABELS(firstFree).map((lab, i) => (
+        {liveWizardStepLabels().map((lab, i) => (
           <button
             key={lab}
             type="button"
@@ -545,21 +579,9 @@ export function NewCalcPane({
         <div className="wiz-main card" style={{ margin: 0 }}>
           {wizardStep === 2 ? (
             <>
-              {firstFree ? (
-                <div className="free-calc-banner">
-                  <span className="free-calc-stamp">1 бесплатно</span>
-                  <div>
-                    <strong>Первый просчёт — 0 ₽</strong>
-                    <p>
-                      Этот просчёт списывать не будем. Следующая заявка — уже по тарифу кода.
-                    </p>
-                  </div>
-                </div>
-              ) : null}
               <p className="wiz-lead">
-                {firstFree
-                  ? "Подтвердите просчёт — после этого AI подберёт код ТН ВЭД."
-                  : `Оплачивается пакет «${picked.name}»: только коды ТН ВЭД. Пошлина и НДС не входят.`}
+                Оплачивается пакет «{picked.name}»: только коды ТН ВЭД. Пошлина и НДС не входят.
+                После оплаты AI подберёт черновик кода.
               </p>
               <div className="wiz-pay-box">
                 <div className="pay-row">
@@ -576,7 +598,7 @@ export function NewCalcPane({
                     {picked.name} · {fmtRub(payAmount)} ₽
                   </strong>
                 </div>
-                {!firstFree ? <PayMath balance={balance} amount={payAmount} /> : null}
+                <PayMath balance={balance} amount={payAmount} />
               </div>
               <div className="field" style={{ marginTop: 16 }}>
                 <label>Предпочтительный брокер</label>
@@ -605,9 +627,7 @@ export function NewCalcPane({
                   >
                     {busy
                       ? createBusyLabel(createPhase, busy)
-                      : firstFree
-                        ? "Получить первый просчёт бесплатно"
-                        : `Оплатить ${fmtRub(payAmount)} ₽ и получить код`}
+                      : `Оплатить ${fmtRub(payAmount)} ₽ и получить код`}
                   </button>
                 ) : (
                   <Link href={`${homeHref}/balance`} className="btn btn-primary">
@@ -620,7 +640,7 @@ export function NewCalcPane({
             <>
               <p className="wiz-lead">
                 {previewHasHs
-                  ? "Код подобран. Финал подтверждает брокер (D15)."
+                  ? "Черновик кода готов. Финал подтверждает брокер (D15)."
                   : "AI уточняет код — обновится через минуту."}
               </p>
               {previewHasHs && selected ? (
@@ -651,6 +671,25 @@ export function NewCalcPane({
                     <strong>{classificationWhyTitle(selected)}</strong>
                     {classificationWhyBody(selected)}
                   </div>
+                  {postPayAlts.length > 0 ? (
+                    <div style={{ marginTop: 16 }}>
+                      <p className="meta" style={{ marginBottom: 8 }}>
+                        Альтернативы каскада (справочно, не финал):
+                      </p>
+                      <ul className="doc-list" style={{ gap: 8 }}>
+                        {postPayAlts.map((c) => (
+                          <li key={c.id} className="doc-chip" style={{ display: "block" }}>
+                            <div className="doc-info">
+                              <b>{c.hsCode}</b>
+                              <span className="meta">
+                                {Math.round(c.confidence * 100)}% · {c.why}
+                              </span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
                 </>
               ) : aiEnriching ? (
                 <AiRunCard title={aiRunTitle(true, isPack && packN >= MIN_PACK)} />
@@ -669,27 +708,14 @@ export function NewCalcPane({
           <p className="wiz-lead">
             {isPack
               ? "Прикрепите инвойс, таблицу или фото — читаем реальные позиции и считаем стоимость."
-              : "Одна позиция: описание товара и документы для кода ТН ВЭД."}
+              : "Одна позиция: описание товара и документы. Код ТН ВЭД откроется после оплаты."}
           </p>
-
-          {isPack ? null : (
-            <div className="free-calc-banner">
-              <span className="free-calc-stamp">1 бесплатно</span>
-              <div>
-                <strong>Первый просчёт — 0 ₽</strong>
-                <p>
-                  Один расчёт одной позиции бесплатный. Все следующие заявки уже по тарифам «Код»,
-                  «Таможня» или «Под ключ».
-                </p>
-              </div>
-            </div>
-          )}
 
           <div className="field">
             <label>Режим</label>
             <div className="amt-chips">
               <button type="button" className={!isPack ? "on" : ""} onClick={() => pickPack("one")}>
-                Одна позиция{isPack ? "" : " · 1 бесплатно"}
+                Одна позиция · {fmtRub(payAmount)} ₽
               </button>
               <button type="button" className={isPack ? "on" : ""} onClick={() => pickPack("m20")}>
                 Мультипозиция
@@ -960,15 +986,13 @@ export function NewCalcPane({
                 <span className="gt-kicker">
                   {wizardStep >= 3 && previewHasHs && selected
                     ? classificationHeroKicker(selected, false)
-                    : firstFree && wizardStep < 3
-                      ? "Первый просчёт · 0 ₽"
-                      : wizardStep < 3
-                        ? isPack
-                          ? packN
-                            ? `Пакет ${packN} позиций · после оплаты`
-                            : "Код после оплаты"
+                    : wizardStep < 3
+                      ? isPack
+                        ? packN
+                          ? `Пакет ${packN} позиций · после оплаты`
                           : "Код после оплаты"
-                        : "Код ТН ВЭД ЕАЭС"}
+                        : "Код после оплаты"
+                      : "Код ТН ВЭД ЕАЭС"}
                 </span>
                 <div className="order-hs-code" style={{ fontSize: "1.35rem", marginTop: 8 }}>
                   {wizardStep >= 3 && previewHasHs && previewHs ? previewHs : "— — —"}
@@ -989,11 +1013,9 @@ export function NewCalcPane({
                       (classificationWhyBody(selected).length > 160 ? "…" : "")
                     : wizardStep === 2
                       ? picked.summary
-                      : firstFree && wizardStep < 3
-                        ? "Один расчёт бесплатный. Следующие заявки — по тарифам."
-                        : isPack
-                          ? "Приложите файл — после оплаты AI проставит код каждой строке"
-                          : "Сначала товар и тариф, затем оплата — код откроется после неё."}
+                      : isPack
+                        ? "Приложите файл — после оплаты AI проставит код каждой строке"
+                        : "Сначала товар и тариф, затем оплата — код откроется после неё."}
                 </p>
               </div>
             </div>
@@ -1017,16 +1039,14 @@ export function NewCalcPane({
             <div className="pay-row">
               <span>Тариф</span>
               <strong>
-                {isPack ? `${picked.name} · ${fmtRub(picked.priceRub)} ₽` : "первый · 0 ₽"}
+                {picked.name} · {fmtRub(payAmount)} ₽
               </strong>
             </div>
             <p className="meta" style={{ marginTop: 10 }}>
               Этот просчёт — только код ТН ВЭД. Таможню считаем отдельно.
             </p>
             <p className="meta" style={{ marginTop: 10 }}>
-              {isPack
-                ? picked.summary
-                : "Первый просчёт бесплатно. Дальше 990 ₽ за один код."}
+              {picked.summary}
             </p>
           </div>
         </aside>
