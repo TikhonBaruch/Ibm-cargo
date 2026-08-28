@@ -11,6 +11,15 @@ import { originCountryRuLabel } from "@/lib/ved/field-suggest";
 import { landedFromAiDraft } from "@/lib/ved/landed-cost";
 import { formatTestModeLlmNotice } from "@/lib/ved/ai-drain-retry";
 import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
+import {
+  aiRunTitle,
+  calcConfidencePct,
+  classificationHeroKicker,
+  classificationWhyBody,
+  classificationWhyTitle,
+  needsClassificationClarify,
+} from "@/lib/ved/ai-classification-copy";
+import { AiRunCard } from "./AiRunCard";
 import { UpgradeTile } from "@/lbm-bro/components/upgrade-tile";
 import { OrderCover } from "@/lbm-bro/components/order-cover";
 import { HsLinesTable } from "@/lbm-bro/components/hs-lines";
@@ -39,7 +48,8 @@ function clientLlmSoftFailNotice(calc: Calc): string | null {
   return null;
 }
 
-function itemsAsHsLines(items: Calc["items"]): HsLine[] {
+function itemsAsHsLines(items: Calc["items"], confPct: number | null): HsLine[] {
+  const conf = confPct ?? 0;
   return (items || []).map((it, i) => ({
     id: it.id,
     n: i + 1,
@@ -48,7 +58,7 @@ function itemsAsHsLines(items: Calc["items"]): HsLine[] {
     price: it.unitPrice != null ? String(it.unitPrice) : "",
     currency: "USD",
     hs: it.hsCodeFinal || it.hsCodeAi || "—",
-    conf: 0,
+    conf,
     why: it.description || "",
     risk: "",
     status: it.hsCodeFinal ? "ok" : it.hsCodeAi ? "run" : "wait",
@@ -93,9 +103,11 @@ export function OrderDetail({
     ["AI_READY", "AWAITING_PAYMENT"].includes(selected.status) && !selected.paidAt;
   const llmNotice = clientLlmSoftFailNotice(selected);
   const enrichPending = isAiDrainPending(selected);
-  const conf =
-    selected.confidence ??
-    (typeof selected.aiDraft?.confidence === "number" ? selected.aiDraft.confidence : null);
+  const confPct = calcConfidencePct(selected);
+  const needsClarify = needsClassificationClarify(selected);
+  const whyTitle = classificationWhyTitle(selected);
+  const whyBody = classificationWhyBody(selected);
+  const heroKicker = classificationHeroKicker(selected, enrichPending);
   const timeline = clientOrderTimeline({
     status: selected.status,
     paidAt: selected.paidAt,
@@ -114,7 +126,7 @@ export function OrderDetail({
     selected.preferredBrokerUser?.name ||
     brokers.find((b) => b.user.id === selected.preferredBrokerUserId)?.user.name ||
     "—";
-  const lines = itemsAsHsLines(selected.items);
+  const lines = itemsAsHsLines(selected.items, confPct);
   const docs = (selected.items || []).filter((it) => it.mediaUrl);
   const hasCalc = (selected.dutyRub ?? 0) > 0 || (selected.vatRub ?? 0) > 0;
   const nextTitle = payable
@@ -155,58 +167,94 @@ export function OrderDetail({
 
       <div className="order-full-grid">
         <div className="order-full-col">
-          <section className={`order-hs${hasHs ? "" : " empty"}`}>
-            <div className="order-hs-copy">
-              <span className="gt-kicker">{hasHs ? "Код ТН ВЭД ЕАЭС" : "Код ещё считается"}</span>
-              <div className="order-hs-code">{hasHs ? hs : "— — —"}</div>
-              {originLabel ? (
-                <p className="meta" style={{ margin: "8px 0 0" }}>
-                  Страна происхождения · {originLabel}
-                </p>
-              ) : null}
-              <p>
-                {selected.description ||
-                  "Черновик кода. Финал подтверждает брокер."}
-              </p>
-              {conf != null ? (
-                <>
-                  <div className="order-hs-conf">
-                    <span>Уверенность AI {Math.round(conf * 100)}%</span>
-                  </div>
-                  <div className="conf">
-                    <i style={{ width: `${Math.round(conf * 100)}%` }} />
-                  </div>
-                </>
-              ) : (
-                <div className="order-hs-conf">Confidence: —</div>
-              )}
-              {hasHs ? (
-                <Link
-                  href={`${tnvedHref}?hs=${encodeURIComponent(hs)}`}
-                  className="btn btn-ghost btn-sm"
-                  style={{ marginTop: 14 }}
-                >
-                  Справочник ТН ВЭД
-                </Link>
-              ) : null}
-              <div className="alert-box ok-box">
-                <strong>Риск</strong>
-                Уточнит брокер
+          {enrichPending ? (
+            <AiRunCard
+              title={aiRunTitle(enrichPending, lines.length >= 2)}
+              lines={lines.length >= 2 ? lines : undefined}
+              compactTable
+            />
+          ) : null}
+
+          {enrichPending && !hasHs ? null : (
+            <section className={`order-hs${hasHs ? "" : " empty"}`}>
+              <div className="order-hs-copy">
+                <span className="gt-kicker">{heroKicker}</span>
+                <div className="order-hs-code">{hasHs ? hs : "— — —"}</div>
+                {originLabel ? (
+                  <p className="meta" style={{ margin: "8px 0 0" }}>
+                    Страна происхождения · {originLabel}
+                  </p>
+                ) : null}
+                {enrichPending && hasHs ? (
+                  <p className="meta" style={{ margin: "10px 0 0" }}>
+                    Предварительный черновик. Точный код обновится через 1–2 минуты.
+                  </p>
+                ) : null}
+                {!enrichPending ? (
+                  <>
+                    {confPct != null ? (
+                      <>
+                        <div className="order-hs-conf">
+                          <span>
+                            {lines.length >= 2 ? "Средняя уверенность AI" : "Уверенность AI"} {confPct}%
+                          </span>
+                        </div>
+                        <div className="conf">
+                          <i style={{ width: `${confPct}%` }} />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="order-hs-conf">Уверенность AI: —</div>
+                    )}
+                    <div
+                      className={`alert-box ${needsClarify ? "warn-box" : "ok-box"}`}
+                      style={{ marginTop: 14 }}
+                    >
+                      <strong>{whyTitle}</strong>
+                      {whyBody}
+                    </div>
+                    {selected.aiDraft?.llmEnrich ? (
+                      <p className="meta" style={{ margin: "10px 0 0" }}>
+                        Уточнено {selected.aiDraft.llmEnrich}. Финал подтверждает брокер.
+                      </p>
+                    ) : null}
+                  </>
+                ) : confPct != null && hasHs ? (
+                  <>
+                    <div className="order-hs-conf">
+                      <span>Уверенность AI {confPct}% · предварительно</span>
+                    </div>
+                    <div className="conf">
+                      <i style={{ width: `${confPct}%` }} />
+                    </div>
+                  </>
+                ) : null}
+                {hasHs ? (
+                  <Link
+                    href={`${tnvedHref}?hs=${encodeURIComponent(hs)}`}
+                    className="btn btn-ghost btn-sm"
+                    style={{ marginTop: 14 }}
+                  >
+                    Справочник ТН ВЭД
+                  </Link>
+                ) : null}
               </div>
-            </div>
-            <div
-              className={`order-hs-media${isOrderPlaceholder(resolveOrderImage(cover)) ? " placeholder" : ""}`}
-              aria-hidden
-            >
-              <OrderCover src={cover} />
-            </div>
-          </section>
+              <div
+                className={`order-hs-media${isOrderPlaceholder(resolveOrderImage(cover)) ? " placeholder" : ""}`}
+                aria-hidden
+              >
+                <OrderCover src={cover} />
+              </div>
+            </section>
+          )}
 
           {lines.length >= 2 ? (
             <div className="card">
               <h3>Позиции инвойса</h3>
               <p className="meta" style={{ margin: "0 0 12px" }}>
-                Код ТН ВЭД по каждой строке. Таможня справа — НДС 22% и сбор ПП 1637.
+                Код ТН ВЭД по каждой строке
+                {confPct != null ? ` · средняя уверенность ${confPct}%` : ""}. Таможня справа — НДС 22% и сбор
+                ПП 1637.
               </p>
               <HsLinesTable lines={lines} />
             </div>
@@ -372,12 +420,6 @@ export function OrderDetail({
             </div>
           </div>
 
-          {enrichPending && (
-            <div className="alert-box" role="status">
-              <strong>Уточняем ТН ВЭД…</strong>
-              Предварительный код. Точный ответ AI обычно приходит за 1–2 минуты.
-            </div>
-          )}
           {llmNotice && (
             <div className="alert-box warn-box" role="status">
               <strong>Тестовый режим · AI</strong>

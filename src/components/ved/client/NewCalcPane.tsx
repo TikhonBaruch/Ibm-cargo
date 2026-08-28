@@ -11,6 +11,16 @@ import {
 } from "@/lbm-bro/lib/clarify-ai";
 import type { Broker, Calc, CalcForm, CatalogSku, CreatePhase, FormItem, TariffOption } from "./types";
 import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
+import {
+  aiRunTitle,
+  calcConfidencePct,
+  classificationHeroKicker,
+  classificationWhyBody,
+  classificationWhyTitle,
+  needsClassificationClarify,
+} from "@/lib/ved/ai-classification-copy";
+import { clientOrderHsLabel } from "../lbm-pane-visual";
+import { AiRunCard } from "./AiRunCard";
 import { originCountrySelectOptions, resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import {
   appendClarifyBlock,
@@ -126,6 +136,12 @@ export function NewCalcPane({
   const goodsText = form.description || form.title;
   const clarifyEnabled = !isPack;
   const visibleClarifyQs = clarifyEnabled ? clarifyQs : [];
+  const aiEnriching = createPhase === "enriching" || (selected ? isAiDrainPending(selected) : false);
+  const previewHs = selected
+    ? clientOrderHsLabel({ hsCode: selected.hsCode, hsCodeFinal: selected.hsCodeFinal })
+    : null;
+  const previewHasHs = Boolean(previewHs && previewHs !== "—");
+  const previewConf = selected ? calcConfidencePct(selected) : null;
 
   useEffect(() => {
     if (!packModal) return;
@@ -737,28 +753,55 @@ export function NewCalcPane({
         </div>
 
         <aside className="wiz-side">
-          <div className="order-hs" style={{ minHeight: 220, gridTemplateColumns: "1fr" }}>
-            <div className="order-hs-copy">
-              <span className="gt-kicker">
-                {isPack
-                  ? packN
-                    ? `Пакет ${packN} позиций · после оплаты`
-                    : "Код после оплаты"
-                  : "Первый просчёт · 0 ₽"}
-              </span>
-              <div className="wiz-hs-dashes" aria-hidden>
-                <i />
-                <i />
-                <i />
-                <i />
+          {aiEnriching ? (
+            <AiRunCard title={aiRunTitle(true, isPack && packN >= MIN_PACK)} />
+          ) : (
+            <div className="order-hs" style={{ minHeight: 220, gridTemplateColumns: "1fr" }}>
+              <div className="order-hs-copy">
+                <span className="gt-kicker">
+                  {previewHasHs && selected
+                    ? classificationHeroKicker(selected, false)
+                    : isPack
+                      ? packN
+                        ? `Пакет ${packN} позиций · после оплаты`
+                        : "Код после оплаты"
+                      : "Первый просчёт · 0 ₽"}
+                </span>
+                {previewHasHs && previewHs ? (
+                  <>
+                    <div className="order-hs-code" style={{ fontSize: "1.35rem", marginTop: 8 }}>
+                      {previewHs}
+                    </div>
+                    {previewConf != null ? (
+                      <>
+                        <div className="order-hs-conf">
+                          <span>Уверенность AI {previewConf}%</span>
+                        </div>
+                        <div className="conf">
+                          <i style={{ width: `${previewConf}%` }} />
+                        </div>
+                      </>
+                    ) : null}
+                  </>
+                ) : (
+                  <div className="wiz-hs-dashes" aria-hidden>
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                  </div>
+                )}
+                <p>
+                  {previewHasHs && selected
+                    ? classificationWhyBody(selected).slice(0, 160) +
+                      (classificationWhyBody(selected).length > 160 ? "…" : "")
+                    : isPack
+                      ? "Приложите файл — после оплаты AI проставит код каждой строке"
+                      : "Один расчёт бесплатный. Следующие заявки — по тарифам."}
+                </p>
               </div>
-              <p>
-                {isPack
-                  ? "Приложите файл — после оплаты AI проставит код каждой строке"
-                  : "Один расчёт бесплатный. Следующие заявки — по тарифам."}
-              </p>
             </div>
-          </div>
+          )}
           <div className="card" style={{ margin: 0 }}>
             <h3>По заявке</h3>
             <div className="pay-row">
@@ -802,14 +845,23 @@ export function NewCalcPane({
             </Link>
           </div>
           {isAiDrainPending(selected) ? (
-            <p className="alert-box" style={{ marginTop: 12 }}>
-              Уточняем ТН ВЭД… Предварительный код уже есть; точный обновится через 1–2 мин.
-            </p>
-          ) : selected.aiDraft?.llmEnrich ? (
-            <p className="meta" style={{ marginTop: 12, color: "var(--ok)" }}>
-              Код уточнён ({selected.aiDraft.llmEnrich}
-              {selected.hsCode ? ` · ${selected.hsCode}` : ""}).
-            </p>
+            <div style={{ marginTop: 12 }}>
+              <AiRunCard title="AI подбирает код" />
+            </div>
+          ) : previewHasHs ? (
+            <div
+              className={`alert-box ${needsClassificationClarify(selected) ? "warn-box" : "ok-box"}`}
+              style={{ marginTop: 12 }}
+            >
+              <strong>{classificationWhyTitle(selected)}</strong>
+              {classificationWhyBody(selected)}
+              {selected.aiDraft?.llmEnrich ? (
+                <span className="meta" style={{ display: "block", marginTop: 8 }}>
+                  Уточнено {selected.aiDraft.llmEnrich}
+                  {selected.hsCode ? ` · ${selected.hsCode}` : ""}.
+                </span>
+              ) : null}
+            </div>
           ) : null}
         </div>
       )}

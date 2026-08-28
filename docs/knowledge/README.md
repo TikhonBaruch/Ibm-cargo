@@ -123,6 +123,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-tnved-invoice-enrich.md  # C19: инвойсные имена + ФТС/ЕЭК 2026 notes, не scrape
   plan-tnved-relations.md       # C20: связи not/variant/part/kit + дети parentCode
   plan-tnved-hint-trees.md      # C21: семейные развилки на /cabinet/new (молоко питьевое/сухое/сгущённое)
+  plan-live-ai-result-ux.md     # C22: live ai-run + «Почему этот код» на карточке заявки
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
@@ -184,6 +185,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: инвойс + дополнения 2026 (C19) | [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md) · `tnved:load -- --search-extras` |
 | ТН ВЭД: связи кодов (C20) | [`plan-tnved-relations.md`](./plan-tnved-relations.md) · related overlay + children parentCode |
 | ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
+| Live UX результата AI (C22) | [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) · ai-run · disclaimer · conf |
 | Флаги скрытия лишнего (завод / SKU) | [`plan-cabinet-feature-flags.md`](./plan-cabinet-feature-flags.md) · паттерн `shippingUiEnabled` |
 | Производители: propose / approve | [`plan-manufacturer-proposals.md`](./plan-manufacturer-proposals.md) |
 | UX Sprint 1–2 (петли кабинетов) | [`plan-cabinets-ux-sprints.md`](./plan-cabinets-ux-sprints.md) |
