@@ -3124,8 +3124,8 @@ const server = http.createServer(async (req, res) => {
         : [...found]
             .sort((a, b) => {
               const d =
-                scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits }) -
-                scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits });
+                scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits, phrase: q }) -
+                scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits, phrase: q });
               return d || String(a.code).localeCompare(String(b.code));
             })
             .slice(0, limit);

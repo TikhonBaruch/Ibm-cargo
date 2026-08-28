@@ -120,6 +120,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-lbm-bro-max-match.md  # C16: максимальный visual match live↔lab без ломки domain
   plan-lbm-bro-tnved-dir.md  # C17: /cabinet/tnved chrome lab, данные GET /api/v1/tnved
   plan-lbm-bro-tnved-catalog.md # C18: lab tnved.json → Postgres + поиск как в lab
+  plan-tnved-invoice-enrich.md  # C19: инвойсные имена + ФТС/ЕЭК 2026 notes, не scrape
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
@@ -178,6 +179,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: открытые слои → одна карточка | [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) · ФНС TNVED.7z + ЕТТ/НСИ, не scrape |
 | ТН ВЭД: собрать все легальные слои | [`plan-tnved-collect.md`](./plan-tnved-collect.md) · TWS fill local, не Alta |
 | ТН ВЭД: каталог lab → Postgres (C18) | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) · `tnved:load -- --lab` |
+| ТН ВЭД: инвойс + дополнения 2026 (C19) | [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md) · `tnved:load -- --search-extras` |
 | Флаги скрытия лишнего (завод / SKU) | [`plan-cabinet-feature-flags.md`](./plan-cabinet-feature-flags.md) · паттерн `shippingUiEnabled` |
 | Производители: propose / approve | [`plan-manufacturer-proposals.md`](./plan-manufacturer-proposals.md) |
 | UX Sprint 1–2 (петли кабинетов) | [`plan-cabinets-ux-sprints.md`](./plan-cabinets-ux-sprints.md) |

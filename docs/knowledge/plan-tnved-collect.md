@@ -147,3 +147,13 @@ npm run tnved:load -- --lab
 
 Канон: [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md). Запрет `--full` на sweb остаётся.
 
+## C19 (инвойс + ФТС/ЕЭК 2026 notes)
+
+Дополнить **существующие** коды коммерческими именами инвойса (RU/EN/CN) и why из открытых разъяснений ФТС № 641 / ЕЭК 2026. Не scrape Альта/TKS. Не новые листья без официального title.
+
+```bash
+npm run tnved:load -- --search-extras
+```
+
+Канон: [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md).
+

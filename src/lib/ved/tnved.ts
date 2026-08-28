@@ -123,6 +123,8 @@ export async function countTnvedDirectoryStats(db: Pick<Prisma.TransactionClient
 }
 
 /** Stems so «футболка» hits notes token «футболк» (lab alias keys). */
+const TNVED_SEARCH_STOP = new Set(["для", "или", "без", "the", "and", "for", "with", "from"]);
+
 export function tnvedSearchStems(query: string): string[] {
   const q = String(query || "")
     .trim()
@@ -132,7 +134,7 @@ export function tnvedSearchStems(query: string): string[] {
   const words = q
     .replace(/[-_/\\,.;:()[\]{}+]+/g, " ")
     .split(/\s+/)
-    .filter((w) => w.length >= 3);
+    .filter((w) => w.length >= 3 && !TNVED_SEARCH_STOP.has(w));
   const tokens = words.length ? words : q.length >= 2 ? [q] : [];
   const out: string[] = [];
   const seen = new Set<string>();
@@ -151,7 +153,7 @@ export function tnvedSearchStems(query: string): string[] {
 
 export function scoreTnvedSearchHit(
   row: { code: string; titleRu?: string | null; notes?: string | null; isLeaf?: boolean; level?: number },
-  opts: { stems: string[]; digits: string },
+  opts: { stems: string[]; digits: string; phrase?: string },
 ): number {
   const notes = String(row.notes || "")
     .toLowerCase()
@@ -161,8 +163,13 @@ export function scoreTnvedSearchHit(
     .replace(/ё/g, "е");
   const lead = notes.split(/\n+/)[0] || "";
   const noteParts = notes.split(/[,\n;]+/).map((p) => p.trim()).filter(Boolean);
+  const phrase = String(opts.phrase || "")
+    .trim()
+    .toLowerCase()
+    .replace(/ё/g, "е");
   let score = 0;
   if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
+  if (phrase.length >= 5 && notes.includes(phrase)) score += 90;
   for (const s of opts.stems) {
     if (!s) continue;
     if (noteParts.some((p) => p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`))) score += 80;
@@ -211,6 +218,10 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
     or.push({ titleRu: { contains: stem, mode: "insensitive" } });
     or.push({ notes: { contains: stem, mode: "insensitive" } });
   }
+  if (!codeOnly && q.length >= 4) {
+    or.push({ notes: { contains: q, mode: "insensitive" } });
+    or.push({ titleRu: { contains: q, mode: "insensitive" } });
+  }
   const pool = codeOnly ? Math.min(50, Math.max(limit * 4, 24)) : 500;
   const rows = await db.tnvedCode.findMany({
     where: {
@@ -223,8 +234,8 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
   });
   return [...rows]
     .sort((a, b) => {
-      const d = scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits })
-        - scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits });
+      const d = scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits, phrase: q })
+        - scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits, phrase: q });
       return d || a.code.localeCompare(b.code);
     })
     .slice(0, limit);

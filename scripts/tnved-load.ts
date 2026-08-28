@@ -46,20 +46,27 @@ function dbHint() {
   }
 }
 
+function readAliasList(rel: string): Array<{ code: string; keys: string[]; why?: string }> {
+  const p = path.join(root, rel);
+  if (!existsSync(p)) return [];
+  return JSON.parse(readFileSync(p, "utf8")) as Array<{ code: string; keys: string[]; why?: string }>;
+}
+
 function loadProjectSearchPack() {
   const indexPath = path.join(root, "public/lbm-bro/data/tnved-index.json");
-  const aliasPath = path.join(root, "src/lbm-bro/lib/hs-aliases.json");
-  const synPath = path.join(root, "src/lib/ved/tnved-demo-synonyms.json");
-  const heuristicPath = path.join(root, "src/lib/ved/ai-draft-rules.json");
   const index = existsSync(indexPath)
     ? (JSON.parse(readFileSync(indexPath, "utf8")) as {
         entries?: Array<[string, string, string[], number]>;
         aliasTokens?: Record<string, string[]>;
       })
     : undefined;
-  const aliases = existsSync(aliasPath)
-    ? (JSON.parse(readFileSync(aliasPath, "utf8")) as Array<{ code: string; keys: string[]; why?: string }>)
-    : [];
+  const aliases = [
+    ...readAliasList("src/lbm-bro/lib/hs-aliases.json"),
+    ...readAliasList("src/lib/ved/tnved-invoice-aliases.json"),
+    ...readAliasList("src/lib/ved/tnved-fts-2026-notes.json"),
+  ];
+  const synPath = path.join(root, "src/lib/ved/tnved-demo-synonyms.json");
+  const heuristicPath = path.join(root, "src/lib/ved/ai-draft-rules.json");
   const synonyms = existsSync(synPath)
     ? (JSON.parse(readFileSync(synPath, "utf8")) as Record<string, string>)
     : {};
