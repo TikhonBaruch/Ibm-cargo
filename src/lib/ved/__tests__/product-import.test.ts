@@ -9,10 +9,21 @@ import {
   classifyImportRows,
   isXlsxFilename,
   isPdfFilename,
+  enrichImportCreateAttrs,
 } from "../product-import";
 import { sheetTableFromText, attrsFromOcrText } from "../pdf-table";
 
 describe("product-import", () => {
+  it("enrichImportCreateAttrs fills origin ISO-2 and composition", () => {
+    const enriched = enrichImportCreateAttrs(
+      { name: "MacBook Pro", description: "Apple laptop", attrs: { brand: "Apple" } },
+      { originIso: "CN" }
+    );
+    expect(enriched.originCountry).toBe("CN");
+    expect(enriched.composition).toMatch(/Apple laptop/);
+    expect(enriched.brand).toBe("Apple");
+  });
+
   it("parseProductCsv handles semicolon delimiter", () => {
     const { headers, rows } = parseProductCsv(
       "Наименование;Количество;Цена\nMacBook;1;2000\niPhone;2;800"

@@ -49,7 +49,7 @@ function clientLlmSoftFailNotice(calc: Calc): string | null {
   return null;
 }
 
-function itemsAsHsLines(items: Calc["items"], confPct: number | null): HsLine[] {
+function itemsAsHsLines(items: Calc["items"], confPct: number | null, revealed: boolean): HsLine[] {
   const conf = confPct ?? 0;
   return (items || []).map((it, i) => ({
     id: it.id,
@@ -58,11 +58,17 @@ function itemsAsHsLines(items: Calc["items"], confPct: number | null): HsLine[] 
     qty: it.qty != null ? String(it.qty) : "",
     price: it.unitPrice != null ? String(it.unitPrice) : "",
     currency: "USD",
-    hs: it.hsCodeFinal || it.hsCodeAi || "—",
-    conf,
+    hs: revealed ? it.hsCodeFinal || it.hsCodeAi || "—" : "—",
+    conf: revealed ? conf : 0,
     why: it.description || "",
     risk: "",
-    status: it.hsCodeFinal ? "ok" : it.hsCodeAi ? "run" : "wait",
+    status: revealed
+      ? it.hsCodeFinal
+        ? "ok"
+        : it.hsCodeAi
+          ? "run"
+          : "wait"
+      : "wait",
   }));
 }
 
@@ -129,7 +135,7 @@ export function OrderDetail({
     selected.preferredBrokerUser?.name ||
     brokers.find((b) => b.user.id === selected.preferredBrokerUserId)?.user.name ||
     "—";
-  const lines = itemsAsHsLines(selected.items, confPct);
+  const lines = itemsAsHsLines(selected.items, confPct, codeRevealed);
   const docs = (selected.items || []).filter((it) => it.mediaUrl);
   const hasCalc = (selected.dutyRub ?? 0) > 0 || (selected.vatRub ?? 0) > 0;
   const nextTitle = payable

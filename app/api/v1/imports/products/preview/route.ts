@@ -13,6 +13,7 @@ import {
   parseProductPdf,
   mapCsvToRows,
   classifyImportRows,
+  enrichImportCreateAttrs,
   isXlsxFilename,
   isPdfFilename,
   type SheetTable,
@@ -20,6 +21,7 @@ import {
 import { findBestPrecedent } from "@/lib/ved/verified-determinations";
 import { buildCascadeDraft } from "@/lib/ved/tnved-classify";
 import { maxPositionsForTariff } from "@/lib/ved/domain";
+import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import type { TariffCode } from "@prisma/client";
 
 const jsonSchema = z.object({
@@ -224,17 +226,27 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const originIso =
+      resolveOriginCountryCode(String(country || "")) ||
+      (String(country || "").trim().length === 2
+        ? String(country).trim().toUpperCase()
+        : null);
+    const rows = classified.map((r) => ({
+      ...r,
+      attrs: enrichImportCreateAttrs(r, { country, originIso }),
+    }));
+
     return NextResponse.json({
       tariffCode,
       maxRows,
-      rowCount: classified.length,
+      rowCount: rows.length,
       summary: {
-        matchedPrecedent: classified.filter((r) => r.rowStatus === "MATCHED_PRECEDENT").length,
-        classifiedNew: classified.filter((r) => r.rowStatus === "CLASSIFIED_NEW").length,
-        lowConfidence: classified.filter((r) => r.rowStatus === "LOW_CONFIDENCE").length,
-        parseError: classified.filter((r) => r.rowStatus === "PARSE_ERROR").length,
+        matchedPrecedent: rows.filter((r) => r.rowStatus === "MATCHED_PRECEDENT").length,
+        classifiedNew: rows.filter((r) => r.rowStatus === "CLASSIFIED_NEW").length,
+        lowConfidence: rows.filter((r) => r.rowStatus === "LOW_CONFIDENCE").length,
+        parseError: rows.filter((r) => r.rowStatus === "PARSE_ERROR").length,
       },
-      rows: classified,
+      rows,
     });
   } catch (e) {
     return NextResponse.json(

@@ -72,8 +72,22 @@ MacBook Pro 16,Apple ноутбук портативный,1,2500,Apple
       description: r.description || r.name,
       qty: r.qty || 1,
       unitPrice: r.unitPrice || 0,
-      attrs: r.hsCode ? { hsHint: r.hsCode } : undefined,
+      attrs: {
+        originCountry: r.attrs?.originCountry || "CN",
+        composition: r.attrs?.composition || r.description || r.name,
+        ...(r.hsCode || r.attrs?.hsHint
+          ? { hsHint: r.hsCode || r.attrs?.hsHint }
+          : {}),
+        ...(r.attrs?.brand ? { brand: r.attrs.brand } : {}),
+      },
     }));
+
+  for (const it of items) {
+    if (!it.attrs.originCountry || String(it.attrs.originCountry).length !== 2) {
+      throw new Error(`missing originCountry on ${it.name}`);
+    }
+    if (!it.attrs.composition) throw new Error(`missing composition on ${it.name}`);
+  }
 
   const createRes = await fetch(`${BASE}/api/v1/calculations`, {
     method: "POST",

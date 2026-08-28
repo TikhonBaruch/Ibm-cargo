@@ -171,6 +171,15 @@ export function scoreTnvedSearchHit(
   let score = 0;
   if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
   if (phrase.length >= 5 && notes.includes(phrase)) score += 90;
+  // CJK invoice tokens (充电宝, T恤) are short but exact in notes — same boost.
+  else if (
+    phrase.length >= 2 &&
+    phrase.length < 5 &&
+    /[\u4e00-\u9fff]/.test(phrase) &&
+    notes.includes(phrase)
+  ) {
+    score += 90;
+  }
   for (const s of opts.stems) {
     if (!s) continue;
     if (noteParts.some((p) => p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`))) score += 80;
@@ -219,7 +228,8 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
     or.push({ titleRu: { contains: stem, mode: "insensitive" } });
     or.push({ notes: { contains: stem, mode: "insensitive" } });
   }
-  if (!codeOnly && q.length >= 4) {
+  const phraseMin = /[\u4e00-\u9fff]/.test(q) ? 2 : 4;
+  if (!codeOnly && q.length >= phraseMin) {
     or.push({ notes: { contains: q, mode: "insensitive" } });
     or.push({ titleRu: { contains: q, mode: "insensitive" } });
   }

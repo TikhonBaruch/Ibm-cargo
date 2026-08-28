@@ -283,3 +283,35 @@ export async function classifyImportRows(
   }
   return out;
 }
+
+/**
+ * Fill create-required attrs (D24): ISO-2 origin + composition.
+ * Used by import preview → create and CSV smoke so rows always pass validation.
+ */
+export function enrichImportCreateAttrs(
+  row: { name: string; description?: string; attrs?: ProductAttrs | null },
+  opts?: { country?: string | null; originIso?: string | null }
+): ProductAttrs {
+  const base = sanitizeProductAttrs(row.attrs || {}) || {};
+  const origin =
+    String(base.originCountry || "")
+      .trim()
+      .toUpperCase()
+      .slice(0, 2) ||
+    String(opts?.originIso || "")
+      .trim()
+      .toUpperCase()
+      .slice(0, 2) ||
+    undefined;
+  const composition =
+    String(base.composition || "").trim() ||
+    String(row.description || row.name || "")
+      .trim()
+      .slice(0, 500) ||
+    undefined;
+  return sanitizeProductAttrs({
+    ...base,
+    ...(origin && origin.length === 2 ? { originCountry: origin } : {}),
+    ...(composition ? { composition } : {}),
+  })!;
+}
