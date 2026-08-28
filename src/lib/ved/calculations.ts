@@ -135,6 +135,7 @@ export async function createAndDraftCalculation(opts: {
   // Optional OCR enrich on items with mediaUrl (fail-open; client attrs win).
   const ocrUrl = (process.env.OCR_SERVICE_URL || "").replace(/\/$/, "");
   const { extractWithOcr, mergeAttrs } = await import("./ocr");
+  let ocrTextForDraft = "";
   const itemsWithOcr = await Promise.all(
     itemsWithSku.map(async (it) => {
       if (!it.mediaUrl || !ocrUrl) return it;
@@ -158,6 +159,9 @@ export async function createAndDraftCalculation(opts: {
             ? { engine: extracted.engine, confidence: extracted.confidence }
             : { skipped: true },
         });
+        if (extracted?.text?.trim() && !ocrTextForDraft) {
+          ocrTextForDraft = extracted.text.trim().slice(0, 4000);
+        }
         if (!extracted?.attrs) return it;
         return { ...it, attrs: mergeAttrs(it.attrs, extracted.attrs) };
       } catch (e) {
@@ -236,6 +240,7 @@ export async function createAndDraftCalculation(opts: {
       name: itemsWithOcr[0]?.name,
       attrs: sanitizeProductAttrs(itemsWithOcr[0]?.attrs as ProductAttrs) || undefined,
       shipmentValue: invoice.storedShipmentValue,
+      ocrText: ocrTextForDraft || undefined,
       // Accurate HS comes from AI_DRAIN (after()+poll ≤2m); avoid double DeepSeek on create.
       skipLlmEnrich: willAiDrain,
     });

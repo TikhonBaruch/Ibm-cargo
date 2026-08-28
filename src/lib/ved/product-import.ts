@@ -207,6 +207,12 @@ export type ClassifyRowDeps = {
     confidence: number;
     engine: string;
   } | null>;
+  /** C26: deterministic cascade before LLM. */
+  classifyCascade?: (input: PrecedentMatchInput) => Promise<{
+    hsCode: string;
+    confidence: number;
+    engine: string;
+  } | null>;
   classifyLlm: (input: PrecedentMatchInput) => Promise<{
     hsCode: string;
     confidence: number;
@@ -243,6 +249,18 @@ export async function classifyImportRows(
           confidence: prec.confidence,
           engine: prec.engine,
           llmEnrich: prec.engine,
+        });
+        continue;
+      }
+      const cascade = await deps.classifyCascade?.(input);
+      if (cascade && cascade.confidence >= low) {
+        out.push({
+          ...row,
+          rowStatus: "CLASSIFIED_NEW",
+          hsCode: cascade.hsCode,
+          confidence: cascade.confidence,
+          engine: cascade.engine,
+          llmEnrich: cascade.engine,
         });
         continue;
       }

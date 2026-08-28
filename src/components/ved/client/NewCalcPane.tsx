@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { StatusPill } from "../VedShell";
+import { api } from "../VedShell";
 import { ClarifyField } from "@/lbm-bro/components/clarify-field";
 import { Icon } from "@/lbm-bro/components/icon";
 import {
@@ -21,6 +22,7 @@ import {
 } from "@/lib/ved/ai-classification-copy";
 import { clientOrderHsLabel } from "../lbm-pane-visual";
 import { AiRunCard } from "./AiRunCard";
+import { HsHintCandidates } from "./HsHintCandidates";
 import { originCountrySelectOptions, resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import {
   appendClarifyBlock,
@@ -116,6 +118,9 @@ export function NewCalcPane({
   const [clarifyAnswers, setClarifyAnswers] = useState<Record<string, string>>({});
   const [clarifyLoading, setClarifyLoading] = useState(false);
   const [clarifyAppliedIds, setClarifyAppliedIds] = useState<string[]>([]);
+  const [cascadeHints, setCascadeHints] = useState<
+    Array<{ id: string; hsCode: string; confidence: number; why: string }>
+  >([]);
   const isPack = packMode === "multi";
   const packId = packIdForLiveCode(form.tariffCode || "STANDARD");
   const picked = resolvePackChrome(isPack && packId === "one" ? "m20" : packId, tariffs);
@@ -186,6 +191,42 @@ export function NewCalcPane({
       window.clearTimeout(t);
     };
   }, [clarifyEnabled, goodsText, countryLabel]);
+
+  useEffect(() => {
+    if (isPack) {
+      setCascadeHints([]);
+      return;
+    }
+    const q = goodsText.trim();
+    if (q.length < 4) {
+      setCascadeHints([]);
+      return;
+    }
+    let alive = true;
+    const t = window.setTimeout(() => {
+      void api<{ items: Array<{ hsCode: string; confidence: number; why: string }> }>(
+        `/api/v1/tnved/classify-preview?q=${encodeURIComponent(q)}&limit=3`,
+      )
+        .then((res) => {
+          if (!alive) return;
+          setCascadeHints(
+            (res.items || []).map((row, i) => ({
+              id: `cascade-${i}-${row.hsCode}`,
+              hsCode: row.hsCode,
+              confidence: row.confidence,
+              why: row.why,
+            })),
+          );
+        })
+        .catch(() => {
+          if (alive) setCascadeHints([]);
+        });
+    }, 400);
+    return () => {
+      alive = false;
+      window.clearTimeout(t);
+    };
+  }, [isPack, goodsText]);
 
   const setGoodsText = (raw: string) => {
     const title = raw.trim().split("\n")[0]?.slice(0, 120) || raw.trim().slice(0, 80);
@@ -624,6 +665,21 @@ export function NewCalcPane({
                   onChange={(e) => setGoodsText(e.target.value)}
                 />
               </div>
+              {cascadeHints.length ? (
+                <HsHintCandidates
+                  candidates={cascadeHints}
+                  selectedHs={items[0]?.attrs?.hsHint || undefined}
+                  onPick={(hsCode) => {
+                    const next = [...items];
+                    if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
+                    next[0] = {
+                      ...next[0],
+                      attrs: { ...(next[0].attrs || {}), hsHint: hsCode.replace(/\D/g, "").slice(0, 10) },
+                    };
+                    onItems(next);
+                  }}
+                />
+              ) : null}
               <div className="field">
                 <label>Страна происхождения</label>
                 <select value={countryLabel} onChange={(e) => setCountry(e.target.value)}>

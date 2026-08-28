@@ -108,7 +108,7 @@ export type TnvedSearchOpts = {
   headingOnly?: boolean;
 };
 
-type TnvedDb = Pick<Prisma.TransactionClient, "tnvedCode" | "tnvedDutyRate">;
+export type TnvedDb = Pick<Prisma.TransactionClient, "tnvedCode" | "tnvedDutyRate">;
 
 export async function countActiveTnvedCodes(db: Pick<Prisma.TransactionClient, "tnvedCode">) {
   return db.tnvedCode.count({ where: { isActive: true } });

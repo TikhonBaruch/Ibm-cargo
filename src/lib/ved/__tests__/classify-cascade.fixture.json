@@ -1,0 +1,10 @@
+[
+  { "q": "充电宝", "expectHsPrefix": "850760", "minConf": 0.84 },
+  { "q": "纯棉T恤", "expectHsPrefix": "610910", "minConf": 0.84 },
+  { "q": "футболка хлопок", "expectHsPrefix": "610910", "minConf": 0.84 },
+  { "q": "smartphone iPhone 15", "expectHsPrefix": "851713", "minConf": 0.84 },
+  { "q": "ноутбук MacBook Pro", "expectHsPrefix": "847130", "minConf": 0.84 },
+  { "q": "кроссовки sport", "expectHsPrefix": "640411", "minConf": 0.84 },
+  { "q": "ipad tablet планшет", "expectHsPrefix": "847130", "minConf": 0, "mustNotMatch": "847130" },
+  { "q": "8471 30 000 0", "expectHsPrefix": "847130", "minConf": 0.9 }
+]

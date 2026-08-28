@@ -18,6 +18,7 @@ import {
   type SheetTable,
 } from "@/lib/ved/product-import";
 import { findBestPrecedent } from "@/lib/ved/verified-determinations";
+import { buildCascadeDraft } from "@/lib/ved/tnved-classify";
 import { maxPositionsForTariff } from "@/lib/ved/domain";
 import type { TariffCode } from "@prisma/client";
 
@@ -178,6 +179,19 @@ export async function POST(req: NextRequest) {
         const m = await findBestPrecedent(prisma, input);
         if (!m) return null;
         return { hsCode: m.hsCode, confidence: m.confidence, engine: m.engine };
+      },
+      classifyCascade: async (input) => {
+        const d = await buildCascadeDraft(prisma, {
+          name: input.name,
+          description: input.description || input.name,
+          title: input.name,
+        });
+        if (!d?.hsCode) return null;
+        return {
+          hsCode: d.hsCode,
+          confidence: d.confidence,
+          engine: d.engine || "cascade-v1",
+        };
       },
       classifyLlm: async (input) => {
         if (!llmOn) return null;

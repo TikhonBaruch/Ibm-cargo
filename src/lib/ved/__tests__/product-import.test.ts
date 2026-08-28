@@ -100,6 +100,21 @@ describe("product-import", () => {
     expect(classifyLlm).not.toHaveBeenCalled();
   });
 
+  it("classifyImportRows uses cascade before LLM", async () => {
+    const rows = mapCsvToRows(["name"], [["充电宝"]]);
+    const findPrecedent = vi.fn().mockResolvedValue(null);
+    const classifyCascade = vi.fn().mockResolvedValue({
+      hsCode: "8507 60 000 0",
+      confidence: 0.88,
+      engine: "cascade-v1",
+    });
+    const classifyLlm = vi.fn();
+    const result = await classifyImportRows(rows, { findPrecedent, classifyCascade, classifyLlm });
+    expect(result[0].rowStatus).toBe("CLASSIFIED_NEW");
+    expect(result[0].engine).toBe("cascade-v1");
+    expect(classifyLlm).not.toHaveBeenCalled();
+  });
+
   it("classifyImportRows falls back to LLM", async () => {
     const rows = mapCsvToRows(["name"], [["Unknown gadget"]]);
     const findPrecedent = vi.fn().mockResolvedValue(null);
