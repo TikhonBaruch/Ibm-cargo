@@ -6,6 +6,7 @@ import { z } from "zod";
 import type { Prisma } from "@prisma/client";
 import { DEFAULT_IMPORT_VAT_PERCENT } from "./customs-fees";
 import { layerGToHint, matchLayerG } from "./tnved-layer-g";
+import { relationsForCode, type TnvedRelation } from "./tnved-relations";
 
 export const TNVED_LEVELS = [2, 4, 6, 8, 10] as const;
 export type TnvedLevel = (typeof TNVED_LEVELS)[number];
@@ -268,6 +269,8 @@ export type TnvedCardSource = {
   asOf: string | null;
 };
 
+export type TnvedCardChild = TnvedCardAncestor & { isLeaf: boolean };
+
 export type TnvedCard = {
   code: string;
   codeDisplay: string;
@@ -277,6 +280,8 @@ export type TnvedCard = {
   isLeaf: boolean;
   notes: string | null;
   ancestors: TnvedCardAncestor[];
+  children: TnvedCardChild[];
+  related: TnvedRelation[];
   rate: TnvedCardRate | null;
   paymentsHint: { vatPct: number; feeRule: string };
   measuresHint: {
@@ -364,6 +369,8 @@ export function assembleTnvedCard(input: {
     rates?: unknown[];
   };
   ancestors: TnvedCardAncestor[];
+  children?: TnvedCardChild[];
+  related?: TnvedRelation[];
 }): TnvedCard {
   const rates = Array.isArray(input.row.rates) ? input.row.rates : [];
   return {
@@ -375,6 +382,8 @@ export function assembleTnvedCard(input: {
     isLeaf: Boolean(input.row.isLeaf),
     notes: input.row.notes ?? null,
     ancestors: input.ancestors,
+    children: input.children ?? [],
+    related: input.related ?? relationsForCode(input.row.code),
     rate: pickEttRate(rates as Parameters<typeof pickEttRate>[0]),
     paymentsHint: { vatPct: DEFAULT_IMPORT_VAT_PERCENT, feeRule: TNVED_FEE_RULE },
     measuresHint: layerGToHint(matchLayerG(input.row.code)),
@@ -401,9 +410,16 @@ export async function getTnvedCard(db: TnvedDb, codeInput: string): Promise<Tnve
   const row = await getTnvedByCode(db, codeInput);
   if (!row) return null;
   const ancestorCodes = hsCodeAncestors(row.code).filter((c) => c !== row.code);
-  const found = ancestorCodes.length
-    ? await db.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
-    : [];
+  const [found, childRows] = await Promise.all([
+    ancestorCodes.length
+      ? db.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
+      : Promise.resolve([]),
+    db.tnvedCode.findMany({
+      where: { parentCode: row.code, isActive: true },
+      orderBy: { code: "asc" },
+      take: 16,
+    }),
+  ]);
   const byCode = new Map(found.map((a) => [a.code, a]));
   const ancestors: TnvedCardAncestor[] = ancestorCodes
     .map((c) => byCode.get(c))
@@ -414,7 +430,14 @@ export async function getTnvedCard(db: TnvedDb, codeInput: string): Promise<Tnve
       titleRu: a.titleRu,
       level: a.level,
     }));
-  return assembleTnvedCard({ row, ancestors });
+  const children: TnvedCardChild[] = childRows.map((c) => ({
+    code: c.code,
+    codeDisplay: c.codeDisplay,
+    titleRu: c.titleRu,
+    level: c.level,
+    isLeaf: Boolean(c.isLeaf),
+  }));
+  return assembleTnvedCard({ row, ancestors, children });
 }
 
 function toOptionalDate(value: string | Date | null | undefined): Date | null | undefined {

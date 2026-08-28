@@ -38,7 +38,7 @@
 
 **Upload:** `POST /api/v1/uploads` → `{ url, storage: "local"|"s3" }`. Compose: volume `ved_uploads`; `GET /uploads/ved/[uuid]` — [`runbook.md`](../../runbook.md).  
 **CSV/XLSX/PDF:** `POST /api/v1/imports/products/preview` → grid; create через обычный `POST /calculations` (UI: «Создать заявку из таблицы»).  
-**ТН ВЭД:** `GET /api/v1/tnved/search` на `/cabinet/tnved` (C17 chrome + C18 каталог lab в Postgres: стемы, `heading=1`, шапка `total`) и `?leafOnly=1` с NewCalc (`HsCodeAutocomplete`) пишет только `attrs.hsHint`, не `hsCodeFinal` (D15). Поиск: `titleRu` / `notes` (алиасы/индекс) / префикс кода. В мастере после выбора — ссылка «Карточка кода» (`VedDetailDrawer`). Local fill ставок = `tws-csv` (не НСИ). Не LLM-CTA (D27).
+**ТН ВЭД:** `GET /api/v1/tnved/search` на `/cabinet/tnved` (C17 chrome + C18 каталог lab в Postgres: стемы, `heading=1`, шапка `total`) и `?leafOnly=1` с NewCalc (`HsCodeAutocomplete`) пишет только `attrs.hsHint`, не `hsCodeFinal` (D15). Поиск: `titleRu` / `notes` (алиасы/индекс) / префикс кода. Карточка `GET :code` отдаёт `related` (C20 развилки) и `children` (дерево). В мастере после выбора — ссылка «Карточка кода» (`VedDetailDrawer`). Local fill ставок = `tws-csv` (не НСИ). Не LLM-CTA (D27).
 
 ## Panes (файлы)
 

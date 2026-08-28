@@ -49,6 +49,8 @@ describe("TN VED card envelope", () => {
     expect(card.disclaimer).toMatch(/брокер/i);
     expect(card.ancestors).toHaveLength(2);
     expect(card.titleRu).toMatch(/портативн/i);
+    expect(card.related.map((r) => r.code)).toEqual(expect.arrayContaining(["8471410000", "8517130000"]));
+    expect(card.children).toEqual([]);
     expect(card.sources.map((s) => s.layer)).toEqual(["A", "B", "C", "D", "G"]);
   });
 

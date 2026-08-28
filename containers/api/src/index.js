@@ -3145,9 +3145,16 @@ const server = http.createServer(async (req, res) => {
       });
       if (!row) return json(res, 404, { error: "Not found" });
       const ancestorCodes = hsCodeAncestors(row.code).filter((c) => c !== row.code);
-      const found = ancestorCodes.length
-        ? await prisma.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
-        : [];
+      const [found, childRows] = await Promise.all([
+        ancestorCodes.length
+          ? prisma.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
+          : Promise.resolve([]),
+        prisma.tnvedCode.findMany({
+          where: { parentCode: row.code, isActive: true },
+          orderBy: { code: "asc" },
+          take: 16,
+        }),
+      ]);
       const byCode = new Map(found.map((a) => [a.code, a]));
       const ancestors = ancestorCodes
         .map((c) => byCode.get(c))
@@ -3158,7 +3165,14 @@ const server = http.createServer(async (req, res) => {
           titleRu: a.titleRu,
           level: a.level,
         }));
-      return json(res, 200, assembleTnvedCard(row, ancestors));
+      const children = childRows.map((c) => ({
+        code: c.code,
+        codeDisplay: c.codeDisplay,
+        titleRu: c.titleRu,
+        level: c.level,
+        isLeaf: Boolean(c.isLeaf),
+      }));
+      return json(res, 200, assembleTnvedCard(row, ancestors, { children }));
     }
 
     if (req.method === "POST" && url.pathname === "/v1/tnved/import") {

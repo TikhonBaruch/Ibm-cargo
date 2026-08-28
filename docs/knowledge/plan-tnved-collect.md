@@ -157,3 +157,9 @@ npm run tnved:load -- --search-extras
 
 Канон: [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md).
 
+## C20 (связи / зависимости)
+
+Дерево `parentCode` целое. Overlay `tnved-relations.json` (не путать / вариант / целое↔части / комплект инвойса) + дети на карточке. Notes через `--search-extras`. Не junction-таблица.
+
+Канон: [`plan-tnved-relations.md`](./plan-tnved-relations.md).
+

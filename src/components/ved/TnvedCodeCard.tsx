@@ -1,4 +1,6 @@
 import type { TnvedCard } from "@/lib/ved/tnved";
+import { formatHsCode } from "@/lib/ved/tnved";
+import { TNVED_RELATION_KIND_LABEL, type TnvedRelationKind } from "@/lib/ved/tnved-relations";
 
 function formatDuty(card: TnvedCard): string {
   const rate = card.rate;
@@ -39,6 +41,42 @@ export function TnvedCodeCard({ card }: { card: TnvedCard }) {
               </li>
             ))}
           </ol>
+        </div>
+      )}
+
+      {(card.children || []).length > 0 && (
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
+            Внутри позиции
+          </p>
+          <ul className="mt-1 space-y-1">
+            {(card.children || []).map((c) => (
+              <li key={c.code} className="text-xs text-[#0f172a]">
+                <span className="font-mono font-medium">{c.codeDisplay}</span>
+                <span className="text-[var(--kb-muted)]"> — {c.titleRu}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {(card.related || []).length > 0 && (
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
+            Связанные коды
+          </p>
+          <ul className="mt-1 space-y-2">
+            {(card.related || []).map((rel) => (
+              <li key={`${rel.kind}-${rel.code}`} className="text-xs text-[#0f172a]">
+                <span className="font-medium text-[var(--kb-muted)]">
+                  {TNVED_RELATION_KIND_LABEL[rel.kind as TnvedRelationKind] || rel.kind}
+                  {": "}
+                </span>
+                <span className="font-mono font-medium">{formatHsCode(rel.code) || rel.code}</span>
+                <span className="text-[var(--kb-muted)]"> — {rel.why}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

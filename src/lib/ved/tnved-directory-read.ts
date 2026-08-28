@@ -20,7 +20,14 @@ export type DirectoryCardLike = {
   rate?: DirectoryDutyRate;
   paymentsHint?: { vatPct?: number | null; feeRule?: string | null };
   disclaimer?: string | null;
-  ancestors?: Array<{ titleRu?: string | null }>;
+  ancestors?: Array<{ code?: string; codeDisplay?: string | null; titleRu?: string | null }>;
+  children?: Array<{
+    code?: string;
+    codeDisplay?: string | null;
+    titleRu?: string | null;
+    isLeaf?: boolean;
+  }>;
+  related?: Array<{ code: string; kind?: string; why?: string }>;
   measuresHint?: {
     excisePossible?: boolean;
     utilSborPossible?: boolean;

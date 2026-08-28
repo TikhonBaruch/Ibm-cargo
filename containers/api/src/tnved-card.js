@@ -26,6 +26,57 @@ const overlay = (() => {
   return { rules: [] };
 })();
 
+const relationsOverlay = (() => {
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const candidates = [
+    path.join(here, "tnved-relations.json"),
+    path.join(here, "../../../src/lib/ved/tnved-relations.json"),
+  ];
+  for (const p of candidates) {
+    try {
+      return JSON.parse(readFileSync(p, "utf8"));
+    } catch {
+      /* try next */
+    }
+  }
+  return { edges: [] };
+})();
+
+function normalizeHsDigits(input) {
+  const digits = String(input || "").replace(/\D/g, "");
+  if (![2, 4, 6, 8, 10].includes(digits.length)) return null;
+  return digits;
+}
+
+const RELATION_KINDS = new Set(["not", "variant", "part", "kit"]);
+
+function buildRelationIndex(file) {
+  const map = new Map();
+  const push = (fromRaw, toRaw, kind, why) => {
+    const from = normalizeHsDigits(fromRaw);
+    const to = normalizeHsDigits(toRaw);
+    if (!from || !to || from === to) return;
+    const row = map.get(from) || [];
+    if (row.some((r) => r.code === to && r.kind === kind)) return;
+    row.push({ code: to, kind, why });
+    map.set(from, row);
+  };
+  for (const edge of file.edges || []) {
+    if (!RELATION_KINDS.has(edge.kind)) continue;
+    push(edge.from, edge.to, edge.kind, edge.why);
+    if (edge.symmetric !== false) push(edge.to, edge.from, edge.kind, edge.why);
+  }
+  return map;
+}
+
+const relationIndex = buildRelationIndex(relationsOverlay);
+
+export function relationsForCode(codeRaw) {
+  const code = normalizeHsDigits(codeRaw);
+  if (!code) return [];
+  return relationIndex.get(code) || [];
+}
+
 function matchLayerG(code) {
   const digits = String(code || "").replace(/\D/g, "");
   if (digits.length < 2) return [];
@@ -115,8 +166,9 @@ export function pickEttRate(rates) {
   };
 }
 
-export function assembleTnvedCard(row, ancestors) {
+export function assembleTnvedCard(row, ancestors, extra) {
   const rates = Array.isArray(row.rates) ? row.rates : [];
+  const more = extra || {};
   return {
     code: row.code,
     codeDisplay: row.codeDisplay,
@@ -126,6 +178,8 @@ export function assembleTnvedCard(row, ancestors) {
     isLeaf: Boolean(row.isLeaf),
     notes: row.notes ?? null,
     ancestors: ancestors || [],
+    children: more.children || [],
+    related: more.related || relationsForCode(row.code),
     rate: pickEttRate(rates),
     paymentsHint: { vatPct: DEFAULT_IMPORT_VAT_PERCENT, feeRule: TNVED_FEE_RULE },
     measuresHint: layerGToHint(matchLayerG(row.code)),
