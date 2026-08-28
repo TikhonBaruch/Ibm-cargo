@@ -159,7 +159,7 @@ npm run tnved:load -- --search-extras
 
 ## C20 (связи / зависимости)
 
-Дерево `parentCode` целое. Overlay `tnved-relations.json` (не путать / вариант / целое↔части / комплект инвойса) + дети на карточке. Notes через `--search-extras`. Не junction-таблица.
+Дерево `parentCode` целое. Overlay `tnved-relation-edges.json` (не путать / вариант / целое↔части / комплект инвойса) + дети на карточке. Notes через `--search-extras`. Не junction-таблица.
 
 Канон: [`plan-tnved-relations.md`](./plan-tnved-relations.md).
 

@@ -21,7 +21,7 @@
 
 ## Структура
 
-1. `tnved-relations.json` — направленные рёбра `from→to` на **существующих** кодах (`not` / `variant` / `part` / `kit`).
+1. `tnved-relation-edges.json` — направленные рёбра `from→to` на **существующих** кодах (`not` / `variant` / `part` / `kit`).
 2. `GET /v1/tnved/:code` — `related[]` из JSON + `children[]` из `parentCode` (лимит 16). Dual-path.
 3. `--search-extras` дописывает why + цифры связанного кода в `notes` (поиск находит оба).
 4. UI: `/cabinet/tnved` чипы «Не путать / Вариант»; drawer `TnvedCodeCard` — список.

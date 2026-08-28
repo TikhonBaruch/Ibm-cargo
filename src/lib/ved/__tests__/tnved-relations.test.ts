@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import overlay from "../tnved-relations.json";
+import overlay from "../tnved-relation-edges.json";
 import {
   relationFocusCodes,
   relationsAsSearchExtras,

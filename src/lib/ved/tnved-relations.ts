@@ -3,7 +3,7 @@
  * this overlay is git-canonical like invoice aliases — not a junction table.
  * Keep this file free of `tnved.ts` imports (card assembler imports us).
  */
-import overlayJson from "./tnved-relations.json";
+import overlayJson from "./tnved-relation-edges.json";
 
 function normalizeHsCode(input: string | null | undefined): string | null {
   if (!input) return null;

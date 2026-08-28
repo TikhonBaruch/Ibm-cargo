@@ -13,7 +13,7 @@ RUN npm ci --omit=dev
 COPY prisma ./prisma
 COPY containers/api/src ./src
 COPY src/lib/ved/tnved-layer-g.json ./src/tnved-layer-g.json
-COPY src/lib/ved/tnved-relations.json ./src/tnved-relations.json
+COPY src/lib/ved/tnved-relation-edges.json ./src/tnved-relation-edges.json
 
 RUN npx prisma generate --schema=./prisma/schema.prisma \
   && chown -R appuser:appuser /app

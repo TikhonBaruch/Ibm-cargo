@@ -29,8 +29,8 @@ const overlay = (() => {
 const relationsOverlay = (() => {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const candidates = [
-    path.join(here, "tnved-relations.json"),
-    path.join(here, "../../../src/lib/ved/tnved-relations.json"),
+    path.join(here, "tnved-relation-edges.json"),
+    path.join(here, "../../../src/lib/ved/tnved-relation-edges.json"),
   ];
   for (const p of candidates) {
     try {
