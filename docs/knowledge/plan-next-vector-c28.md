@@ -1,0 +1,154 @@
+# План: следующий вектор после C18–C27 (C28+)
+
+**Дата:** 2026-08-28. **D33.**  
+Канон: [`plan-global.md`](./plan-global.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) · [`product.md`](./product.md) D27.
+
+## 1. Идея
+
+Закрыть **разрыв lab ↔ live** и **дыры справочника**, не уходя в Growth (ЮKassa / mesh / shipping).  
+Вектор последних циклов — каталог → поиск → cascade → pay-first. Следующий — **качество кода после оплаты**, **легальные слои карточки**, **стабильный Preview smoke**.
+
+## 2. Анализ: где мы сейчас
+
+### Сделано (ветка / PR #19 → merge)
+
+| ID | Что | Эффект |
+|----|-----|--------|
+| C18 | lab ∪ ФНС → Postgres (~31k / ~15k leaves) | live `/cabinet/tnved` ≈ lab поиск |
+| C19–C21 | invoice aliases, relations, hint-trees | инвойс CN/RU + clarify packs |
+| C22 | AiRunCard + disclaimer | UX результата как lab step 4 |
+| C23–C27 | cascade-v1 + OCR glue + audit | draft до heuristic/LLM |
+| Pay-first | Товар → Оплата → Код; hide HS до `paidAt` | как lab, без «бесплатного» кода |
+| Smoke unblock | mvp fallback seed; CSV attrs | prod smoke без mock topup |
+
+### Gaps (прогон + сверка lab)
+
+| Gap | Серьёзность | Почему |
+|-----|-------------|--------|
+| Preview SSO блокирует curl/agents | ops | Deployment Protection; Visit Preview only |
+| Prod ещё без pay-first / cascade | merge | ibm-cargo-phi = старый UI до merge |
+| Слой B ЕТТ на sweb = `null` | product | карточка без пошлины; local TWS ≠ НСИ |
+| Слой D/E (PSN / решения ЕЭК) слабо на карточке | product | notes soup, нет join решений |
+| Cascade hints убраны с NewCalc (pay-first) | UX | после оплаты нет top-N «почему» на шаге 3 |
+| Vision OCR / ключи | Growth | C25 glue есть; E2E hold |
+| Voice / freemium narrative | lab-only | не D27 MVP |
+| БД-2 мало реальных approve | quality | cascade часто → heuristic |
+| `classify-preview` 404 на prod | deploy | маршрут только в ветке |
+
+### Не трогать в этом векторе
+
+Browser Tesseract · `tnved.json` в client · scrape Альта/TKS · `tnved:load -- --full` на sweb · shipping UI · LLM-as-CTA · финал без брокера (D15).
+
+## 3. Структура фаз
+
+```text
+C28  ship + verify pay-first / cascade на Preview+prod
+C29  post-pay code UX (шаг «Код» = lab step 4 полностью)
+C30  справочник: слой B/D на карточке (легально)
+C31  качество cascade + БД-2 seed из approve
+C32  Preview DevEx (SSO bypass для smoke / docs)
+—— hold ——
+C33  vision OCR E2E (ключ + compose)
+C34  Track A payments (ЮKassa) — вне D27 polish
+```
+
+### C28 — Ship & verify (ближайший)
+
+| Шаг | Действие | Done when |
+|-----|----------|-----------|
+| C28a | Merge PR #19 → `main` / Preview | pay-first на Preview URL |
+| C28b | Ручной: `/cabinet/new` → Далее → Оплата → код только после pay | HS = `—` до pay |
+| C28c | `TEST_API_URL=<preview> npm run smoke:mvp` (+ seed fallback ok) | PASS |
+| C28d | `npm run test:classify-cascade` на CI | PASS |
+| C28e | KB: `current-app` — C18–C27 **на main** | запись |
+
+**Ownership:** Client + Core. Без новых domain writers.
+
+### C29 — Post-pay code experience
+
+После оплаты клиент должен видеть тот же нарратив, что lab step 4.
+
+| Шаг | Что |
+|-----|-----|
+| C29a | Шаг 3 NewCalc: AiRunCard → HS + conf + «Почему» (уже частично) |
+| C29b | Опционально: `classify-preview` **после** pay (не до) — top-3 альтернативы на OrderDetail |
+| C29c | Copy: убрать противоречие «1 бесплатно» vs реальный `TariffPlan.priceRub` (EXPRESS 990) — честный first-calc policy **или** убрать freemium banner |
+| C29d | Unit hygiene: free-banner vs live price |
+
+**Не:** `consumeFreeHs` в domain без ADR; НДС 20%.
+
+### C30 — Карточка справочника (слои B/D)
+
+Цель: карточка `/cabinet/tnved` ближе к «Таксе», без scrape.
+
+| Шаг | Слой | Источник |
+|-----|------|----------|
+| C30a | B fill на **local** already TWS — документ status на prod (`null` + «нет в НСИ») | честный UI |
+| C30b | Повторный probe НСИ СТНВЭДСТ / KZ v4 | [`plan-tnved-collect.md`](./plan-tnved-collect.md) |
+| C30c | PSN выдержка → поле карточки (не token soup) | jsonl → `GET :code` |
+| C30d | ЕЭК решения: join по 10-digit если есть в индексе | overlay, fail-open |
+
+Load: только `tnved:load -- --search-extras` / точечный upsert; **не** wipe rates на sweb.
+
+### C31 — Качество определения
+
+| Шаг | Что |
+|-----|-----|
+| C31a | Расширить `classify-cascade.fixture.json` (20–30 must-cover из реальных инвойсов) |
+| C31b | Admin/ops: после N approve проверить рост БД-2; smoke precedent |
+| C31c | Alias pack: топ ошибок поиска (CN short tokens) → notes via `--search-extras` |
+| C31d | Dual-path: cascade в `containers/api` create = Next (если ещё gap) |
+
+### C32 — Preview / smoke DevEx
+
+| Шаг | Что |
+|-----|-----|
+| C32a | Docs: Visit Preview + `ALLOW_MOCK_TOPUP` checklist (частично в staging) |
+| C32b | Опционально: Vercel Protection bypass token для CI (ops, не код агента) |
+| C32c | `smoke:standalone` зелёный на Preview после C28 |
+
+### Hold (после C28–C32)
+
+| ID | Тема | Триггер |
+|----|------|---------|
+| C33 | Vision OCR E2E | OCR key + UI upload path |
+| C34 | ЮKassa live | Track A keys; выкл mock |
+| — | Voice / proto-bar | не MVP |
+| — | Shipping / factory CTA | D27 hold |
+
+## 4. Приоритет (Impact × Effort)
+
+| ID | Impact | Effort | MoSCoW |
+|----|--------|--------|--------|
+| C28 | высокий | низкий | **Must** |
+| C29c freemium honesty | высокий | низкий | **Must** |
+| C29a–b post-pay UX | средний | средний | Should |
+| C30a honest duty null | средний | низкий | Should |
+| C30b–d B/D/E layers | высокий | высокий | Could |
+| C31 fixtures + aliases | высокий | средний | Should |
+| C32 SSO bypass | средний | ops | Could |
+| C33–C34 | высокий | высокий | Won't (сейчас) |
+
+## 5. Проверка
+
+```bash
+npm run test:ci
+npm run test:classify-cascade
+TEST_API_URL=<preview> npm run smoke:mvp
+TEST_API_URL=<preview> npm run smoke:csv-import
+# ручной: pay-first + /cabinet/tnved «ноутбук» / «充电宝»
+```
+
+## 6. Связь с горизонтом
+
+| plan-global этап | Этот вектор |
+|------------------|-------------|
+| 1 поиск ТН ВЭД | C28–C31 усиливают |
+| 2 базы + ИИ | C31 БД-2; C33 vision later |
+| 3 mesh | **не** в C28–C32 |
+| 4–5 фото/флаги | hold |
+
+## 7. Закрытие цикла
+
+После каждой фазы C28–C32: `test:ci` → Preview smoke → запись статуса в этот файл + [`current-app.md`](./current-app.md).  
+Merge без KB — не сдача (D33).
