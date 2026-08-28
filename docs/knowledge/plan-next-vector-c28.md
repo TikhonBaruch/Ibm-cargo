@@ -81,12 +81,12 @@ C34  Track A payments (ЮKassa) — вне D27 polish
 
 Цель: карточка `/cabinet/tnved` ближе к «Таксе», без scrape.
 
-| Шаг | Слой | Источник |
-|-----|------|----------|
-| C30a | B fill на **local** already TWS — документ status на prod (`null` + «нет в НСИ») | честный UI |
-| C30b | Повторный probe НСИ СТНВЭДСТ / KZ v4 | [`plan-tnved-collect.md`](./plan-tnved-collect.md) |
-| C30c | PSN выдержка → поле карточки (не token soup) | jsonl → `GET :code` |
-| C30d | ЕЭК решения: join по 10-digit если есть в индексе | overlay, fail-open |
+| Шаг | Слой | Источник | Status |
+|-----|------|----------|--------|
+| C30a | B fill: честный UI `нет в НСИ` / `fill (не НСИ)` для tws-csv | `formatCardDutyLabel` | **done** |
+| C30b | Повторный probe НСИ СТНВЭДСТ / KZ v4 | [`plan-tnved-collect.md`](./plan-tnved-collect.md) | **ops hold** |
+| C30c | PSN → `explanation` на карточке (notes + must-cover overlay) | json → `GET :code` | **done** |
+| C30d | ЕЭК решения: join по 10-digit, fail-open empty index | overlay | **done** (index empty until ETL) |
 
 Load: только `tnved:load -- --search-extras` / точечный upsert; **не** wipe rates на sweb.
 

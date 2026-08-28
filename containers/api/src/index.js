@@ -3164,6 +3164,7 @@ const server = http.createServer(async (req, res) => {
           codeDisplay: a.codeDisplay,
           titleRu: a.titleRu,
           level: a.level,
+          notes: a.notes ?? null,
         }));
       const children = childRows.map((c) => ({
         code: c.code,

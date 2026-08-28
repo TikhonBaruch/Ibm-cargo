@@ -361,6 +361,39 @@ export function TnvedDirectoryPane({
                   <div className="v">{read.vatPct}%</div>
                 </div>
               </div>
+              {read.explanation ? (
+                <div style={{ marginTop: 14 }}>
+                  <p className="meta" style={{ marginBottom: 6 }}>
+                    Пояснения ЕЭК (PSN)
+                  </p>
+                  <strong style={{ display: "block", fontSize: "0.9rem" }}>
+                    {read.explanation.heading}
+                  </strong>
+                  <p className="meta" style={{ marginTop: 6, lineHeight: 1.45 }}>
+                    {read.explanation.excerpt}
+                  </p>
+                </div>
+              ) : null}
+              {read.classificationDecisions.length ? (
+                <div style={{ marginTop: 14 }}>
+                  <p className="meta" style={{ marginBottom: 6 }}>
+                    Решения ЕЭК о классификации
+                  </p>
+                  <ul className="tnved-notes">
+                    {read.classificationDecisions.map((d) => (
+                      <li key={`${d.code}-${d.title}`}>
+                        {d.url ? (
+                          <a href={d.url} target="_blank" rel="noreferrer">
+                            {d.title}
+                          </a>
+                        ) : (
+                          d.title
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
               <ul className="tnved-notes">
                 {read.notes.map((n) => (
                   <li key={n}>{n}</li>

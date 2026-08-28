@@ -3,7 +3,7 @@
   "$id": "https://lbm.local/contracts/d-tnved.core.json",
   "title": "D-TNVED core reference directory",
   "description": "TN VED (HS) nomenclature tree + duty hints (D24). GET :code returns the opendata card envelope (layers A–G). Lookup/import; broker still edits item HS text until directory is authoritative.",
-  "x-contractVersion": 3,
+  "x-contractVersion": 4,
   "x-owner": "containers/api",
   "x-transport": [
     "GET /v1/tnved/search",
@@ -95,6 +95,14 @@
           "description": "C20 overlay: not / variant / part / kit. Not a Prisma junction."
         },
         "rate": { "type": ["object", "null"] },
+        "explanation": {
+          "type": ["object", "null"],
+          "description": "C30c layer D: PSN excerpt (notes or must-cover overlay), not alias tokens"
+        },
+        "classificationDecisions": {
+          "type": "array",
+          "description": "C30d layer E: EEC classification decisions by 10-digit (fail-open empty)"
+        },
         "paymentsHint": {
           "type": "object",
           "required": ["vatPct", "feeRule"],
