@@ -289,10 +289,13 @@ function ClientCabinetInner() {
     return { url: data.url };
   };
 
-  const createCalc = async (override?: {
-    items?: FormItem[];
-    form?: Partial<CalcForm>;
-  }) => {
+  const createCalc = async (
+    override?: {
+      items?: FormItem[];
+      form?: Partial<CalcForm>;
+    },
+    opts?: { payAfter?: boolean; stayOnNew?: boolean }
+  ) => {
     setBusy(true);
     setCreatePhase("creating");
     setError("");
@@ -347,7 +350,8 @@ function ClientCabinetInner() {
               }
             : {}),
           tariffCode: f.tariffCode,
-          preferredBrokerUserId: f.preferredBrokerUserId || undefined,
+          preferredBrokerUserId:
+            f.preferredBrokerUserId || preferredBrokerUserId || undefined,
           items: payloadItems,
         }),
       });
@@ -358,8 +362,34 @@ function ClientCabinetInner() {
         calc = await waitForAiEnrich(calc, (id) => api<Calc>(`/api/v1/calculations/${id}`));
         setSelected(calc);
       }
-      setPreferredBrokerUserId(calc.preferredBrokerUserId || f.preferredBrokerUserId || "");
-      if (isAiDrainPending(calc)) {
+      setPreferredBrokerUserId(calc.preferredBrokerUserId || f.preferredBrokerUserId || preferredBrokerUserId || "");
+
+      if (opts?.payAfter) {
+        setCreatePhase("paying");
+        const price = calc.tariff?.priceRub ?? 0;
+        calc = await api<Calc>(`/api/v1/calculations/${calc.id}/pay`, {
+          method: "POST",
+          body: JSON.stringify({
+            preferredBrokerUserId: preferredBrokerUserId || f.preferredBrokerUserId || null,
+          }),
+        });
+        setSelected(calc);
+        setCalcs((list) => list.map((c) => (c.id === calc.id ? { ...c, ...calc } : c)));
+        if (price > 0) {
+          setMe((m) =>
+            m?.company
+              ? {
+                  ...m,
+                  company: {
+                    ...m.company,
+                    balanceRub: Math.max(0, (m.company.balanceRub ?? 0) - price),
+                  },
+                }
+              : m
+          );
+        }
+        toast("Тариф оплачен · код открыт", { variant: "ok" });
+      } else if (isAiDrainPending(calc)) {
         toast(
           `${calc.number}: предварительный код готов, уточнение продолжается в фоне`,
           { variant: "ok" }
@@ -367,6 +397,7 @@ function ClientCabinetInner() {
       } else {
         toast(`Готово ${calc.number}`, { variant: "ok" });
       }
+
       const requestId = search.get("request");
       if (requestId && calc.id) {
         await api(`/api/v1/factory/requests/${requestId}/link-calc`, {
@@ -375,11 +406,16 @@ function ClientCabinetInner() {
         }).catch(() => undefined);
       }
       await reload();
+      if (opts?.stayOnNew) {
+        return calc;
+      }
       deepOpenedRef.current = calc.id;
       await openCalc(calc);
+      return calc;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Ошибка");
       toast(e instanceof Error ? e.message : "Ошибка создания", { variant: "error" });
+      throw e;
     } finally {
       setBusy(false);
       setCreatePhase("idle");
@@ -1077,10 +1113,14 @@ function ClientCabinetInner() {
           busy={busy}
           createPhase={createPhase}
           selected={selected}
+          me={me}
+          preferredBrokerUserId={preferredBrokerUserId}
+          hasPaidCalcBefore={calcs.some((c) => c.paidAt)}
           ordersHref={path("/orders")}
+          onPreferred={setPreferredBrokerUserId}
           onForm={(patch) => setForm((f) => ({ ...f, ...patch }))}
           onItems={setItems}
-          onCreate={createCalc}
+          onCreate={(override, opts) => createCalc(override, opts)}
           onUpload={async (file, index) => {
             try {
               setCreatePhase("uploading");

@@ -18,6 +18,7 @@ import {
   classificationWhyBody,
   classificationWhyTitle,
   needsClassificationClarify,
+  shouldRevealClientDraftHs,
 } from "@/lib/ved/ai-classification-copy";
 import { AiRunCard } from "./AiRunCard";
 import { UpgradeTile } from "@/lbm-bro/components/upgrade-tile";
@@ -116,7 +117,9 @@ export function OrderDetail({
     hsCode: selected.hsCode,
     hsCodeFinal: selected.hsCodeFinal,
   });
-  const hasHs = hs !== "—";
+  const codeRevealed = shouldRevealClientDraftHs(selected);
+  const hasHs = codeRevealed && hs !== "—";
+  const displayHs = codeRevealed ? hs : "— — —";
   const cover = selected.items?.find((it) => it.mediaUrl)?.mediaUrl;
   const originLabel = originCountryRuLabel(
     selected.country,
@@ -178,8 +181,10 @@ export function OrderDetail({
           {enrichPending && !hasHs ? null : (
             <section className={`order-hs${hasHs ? "" : " empty"}`}>
               <div className="order-hs-copy">
-                <span className="gt-kicker">{heroKicker}</span>
-                <div className="order-hs-code">{hasHs ? hs : "— — —"}</div>
+                <span className="gt-kicker">
+                  {codeRevealed ? heroKicker : payable ? "Код после оплаты" : heroKicker}
+                </span>
+                <div className="order-hs-code">{displayHs}</div>
                 {originLabel ? (
                   <p className="meta" style={{ margin: "8px 0 0" }}>
                     Страна происхождения · {originLabel}
@@ -190,7 +195,7 @@ export function OrderDetail({
                     Предварительный черновик. Точный код обновится через 1–2 минуты.
                   </p>
                 ) : null}
-                {!enrichPending ? (
+                {!enrichPending && codeRevealed ? (
                   <>
                     {confPct != null ? (
                       <>
@@ -229,7 +234,7 @@ export function OrderDetail({
                     </div>
                   </>
                 ) : null}
-                {hasHs ? (
+                {codeRevealed && hasHs ? (
                   <Link
                     href={`${tnvedHref}?hs=${encodeURIComponent(hs)}`}
                     className="btn btn-ghost btn-sm"
@@ -248,7 +253,7 @@ export function OrderDetail({
             </section>
           )}
 
-          {lines.length >= 2 ? (
+          {lines.length >= 2 && codeRevealed ? (
             <div className="card">
               <h3>Позиции инвойса</h3>
               <p className="meta" style={{ margin: "0 0 12px" }}>

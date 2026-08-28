@@ -7,6 +7,7 @@ import {
   classificationWhyBody,
   classificationWhyTitle,
   needsClassificationClarify,
+  shouldRevealClientDraftHs,
 } from "../ai-classification-copy";
 
 describe("C22 ai classification copy", () => {
@@ -49,5 +50,16 @@ describe("C22 ai classification copy", () => {
     expect(classificationHeroKicker(calc, true)).toBe("Предварительный код ТН ВЭД");
     expect(classificationHeroKicker(calc, false)).toBe("Код ТН ВЭД ЕАЭС");
     expect(classificationHeroKicker({}, true)).toBe("AI подбирает код");
+  });
+
+  it("hides draft HS until tariff paid", () => {
+    const locked = {
+      status: "AI_READY",
+      hsCode: "8471300000",
+      confidence: 0.82,
+    };
+    const unlocked = { ...locked, paidAt: "2026-01-01T00:00:00.000Z" };
+    expect(shouldRevealClientDraftHs(locked)).toBe(false);
+    expect(shouldRevealClientDraftHs(unlocked)).toBe(true);
   });
 });

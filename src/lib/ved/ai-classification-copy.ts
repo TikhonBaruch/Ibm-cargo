@@ -56,6 +56,15 @@ export function hasDraftHs(calc: CalcLike): boolean {
   return hs.length > 0 && hs !== "—";
 }
 
+/** Draft HS is stored on create but shown only after tariff pay (lab pay-first UX). */
+export function shouldRevealClientDraftHs(calc: CalcLike & { status?: string; paidAt?: string | null }): boolean {
+  if (!hasDraftHs(calc)) return false;
+  if (calc.paidAt) return true;
+  const status = String(calc.status || "");
+  if (status === "AI_READY" || status === "AWAITING_PAYMENT") return false;
+  return true;
+}
+
 export function needsClassificationClarify(calc: CalcLike): boolean {
   if (!hasDraftHs(calc)) return true;
   const ratio = calcConfidenceRatio(calc);
