@@ -56,6 +56,13 @@ describe("tnved-classify-aliases", () => {
     });
     expect(laptop).toBe(0);
   });
+
+  it("C31c: smartwatch → 8517 62, not quartz 91", () => {
+    const smart = matchClassifyAlias("smartwatch");
+    expect(smart?.alias.code).toMatch(/^851762/);
+    const quartz = matchClassifyAlias("wrist watch quartz");
+    expect(quartz?.alias.code).toMatch(/^910211/);
+  });
 });
 
 describe("classifyTnvedCascade", () => {
