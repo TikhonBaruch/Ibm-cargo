@@ -49,6 +49,7 @@ const knowledgeRequired = [
   "docs/knowledge/design-interactive.md",
   "docs/knowledge/design-parity.md",
   "docs/knowledge/design-patterns.md",
+  "docs/knowledge/plan-mobile-client-lbm.md",
   "docs/knowledge/environments.md",
   "docs/knowledge/staging.md",
   "docs/knowledge/roadmap.md",

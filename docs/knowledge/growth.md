@@ -56,7 +56,9 @@ Emitters (api + Next `calculations.ts`) шлют контрактные имен
 
 ## Mobile
 
-Референс и прототип: [`design-interactive.md`](./design-interactive.md) · `docs/design/refs/wireframe-cargo-broker-mobile.html`.
+План сборки (D33): [`plan-mobile-client-lbm.md`](./plan-mobile-client-lbm.md) — блок → логин/пароль → цепочка клиента на skin lbm-bro.  
+Референс / прототип: [`design-interactive.md`](./design-interactive.md) · `docs/design/refs/wireframe-cargo-broker-mobile.html`.  
+As-is: responsive web `/cabinet` (нет RN/Capacitor/client PWA).
 
 ## Реальный AI
 
