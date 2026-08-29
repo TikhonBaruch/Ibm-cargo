@@ -15,10 +15,103 @@
   .lbm-live-client .view-client .cl-side {
     top: 0;
   }
+  .lbm-live-client .view-client .cl-top {
+    flex-wrap: wrap !important;
+    gap: 10px;
+    padding: 12px 14px 0;
+    align-items: center;
+  }
+  .lbm-live-client .view-client .cl-top > .cl-title {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+  .lbm-live-client .view-client .cl-search {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+  .lbm-live-client .view-client .cl-top-actions {
+    flex-shrink: 0;
+    margin-left: 0 !important;
+  }
+  .lbm-live-client .view-client .cl-top-actions .avatar {
+    display: none;
+  }
+  .lbm-live-client .view-client .cl-content,
+  .lbm-live-client .view-client .cl-content:has(.go-dash),
+  .lbm-live-client .view-client .cl-content:has(.wiz-full),
+  .lbm-live-client .view-client .cl-content:has(.order-full) {
+    padding: 12px 14px 48px !important;
+  }
+  /* Compact CTA: keep icon, hide long label that overflows ~390px. */
+  .lbm-live-client .view-client .cl-top-actions .cl-new-label {
+    display: none;
+  }
+  .lbm-live-client .view-client .cl-top-actions .btn-primary.btn-sm {
+    padding-inline: 11px;
+    min-width: 42px;
+    justify-content: center;
+  }
+  .lbm-live-client .view-client .wiz-steps.labeled {
+    gap: 6px;
+  }
+  .lbm-live-client .view-client .wiz-steps.labeled button {
+    white-space: normal !important;
+    min-width: 0;
+    padding: 8px 4px;
+    font-size: 11px;
+    line-height: 1.15;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .lbm-live-client .view-client .wiz-steps.labeled .wiz-step-lab {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lbm-live-client .view-client .cl-title h1 {
+    font-size: 1.15rem !important;
+    line-height: 1.25 !important;
+  }
+  .lbm-live-client .view-client .cl-top .sub {
+    margin-top: 4px;
+  }
+  /* Home module grid: stack hero full-width, avoid side overlap. */
+  .lbm-live-client .view-client .go-grid {
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: none !important;
+  }
+  .lbm-live-client .view-client .go-grid .go-tile.hero,
+  .lbm-live-client .view-client .go-grid > .go-tile:first-child,
+  .lbm-live-client .view-client .go-grid .hm.hero {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+  .lbm-live-client .view-client .go-grid .go-tile.orders,
+  .lbm-live-client .view-client .go-grid .go-tile.chats,
+  .lbm-live-client .view-client .go-grid .go-tile.faq,
+  .lbm-live-client .view-client .go-grid .go-tile.guide {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+  .lbm-live-client .view-client .cl-nav-tile {
+    min-width: 108px;
+  }
+  .lbm-live-client .view-client .home-mods {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .lbm-live-client .view-client .home-mods .hm.hero {
+    grid-column: 1 / -1;
+  }
 }
 @media (max-width: 960px) {
   .lbm-live-ops .side {
     top: 0;
+  }
+  .lbm-live-ops .side-brand {
+    display: none !important;
   }
 }
 .lbm-live-ops .topbar {
