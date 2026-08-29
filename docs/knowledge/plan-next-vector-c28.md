@@ -97,7 +97,7 @@ Load: только `tnved:load -- --search-extras` / точечный upsert; **
 | C31a | Расширить `classify-cascade.fixture.json` (~37 must-cover RU/EN/CN) | **done** |
 | C31b | Admin/ops: после N approve проверить рост БД-2; smoke precedent | ops |
 | C31c | Alias pack: CN/RU short tokens (jeans, filters, brake pads, smartwatch≠91) | **done** |
-| C31d | Dual-path: cascade в `containers/api` create = Next (если ещё gap) | next |
+| C31d | Dual-path: cascade в `containers/api` create = Next | **done** |
 
 Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-invoice-aliases.json` + lab `910211` exclude smartwatch.
 

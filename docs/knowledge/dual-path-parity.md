@@ -8,7 +8,7 @@ Gate: same behaviour when `USE_DOMAIN_API=0` (Prisma in Next) and `=1` (proxy �
 
 | Path | Next | `containers/api` | Notes |
 |------|------|------------------|-------|
-| Create + draft | `createAndDraftCalculation` | `POST /v1/calculations` | attrs / tnvedCode / events; invoice FX + `landedWithoutFreight`; **enqueue `AI_DRAIN`** если `llmEnrichEnabled` и задан OCR/LLM URL |
+| Create + draft | `createAndDraftCalculation` | `POST /v1/calculations` | attrs / tnvedCode / events; invoice FX + `landedWithoutFreight`; **cascade-v1** (C31d: alias/code/token) before AI service; **enqueue `AI_DRAIN`** если `llmEnrichEnabled` и задан OCR/LLM URL |
 | Attr suggest chips | `POST /api/v1/calculations/attr-suggest` | same | heuristic fill-stage; UI never calls LLM |
 | Pay | `payCalculation` | `POST …/pay` | ledger + QUEUED/DONE; outbox |
 | Claim | `claimCalculation` | `POST …/claim` | preferred window; **acceptingJobs** |

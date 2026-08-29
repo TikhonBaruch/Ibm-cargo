@@ -29,6 +29,7 @@ import { handleFactoryOrderRoutes, handleManufacturerOrderRoutes } from "./sku-o
 import { handleManufacturerDirectoryRoutes } from "./manufacturer-directory.js";
 import { assembleTnvedCard, hsCodeAncestors } from "./tnved-card.js";
 import { tnvedSearchWhere, tnvedSearchStems, scoreTnvedSearchHit } from "./tnved-helpers.js";
+import { buildCascadeDraft, pickCascadeOrHeuristic } from "./tnved-classify.js";
 import { suggestProductAttrs } from "./attr-suggest.js";
 import { shouldEnqueueAiDrain, runAiDrainPipeline } from "./ai-pipeline.js";
 import { isAllowedMediaUrl } from "./media-url.js";
@@ -1851,6 +1852,19 @@ const server = http.createServer(async (req, res) => {
       }
       if (!precedentApplied) {
       try {
+        const cascade = await buildCascadeDraft(prisma, {
+          title: body.title,
+          description: body.description,
+          name: itemsForCreate[0]?.name || body.title,
+          country: body.country,
+          shipmentValue: body.shipmentValue,
+          ocrText: body.ocrText || itemsForCreate[0]?.ocrText || null,
+        });
+        draft = pickCascadeOrHeuristic(cascade, draft);
+      } catch {
+        /* keep fallback */
+      }
+      try {
         const aiRes = await fetch(`${aiUrl}/v1/draft`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1866,7 +1880,7 @@ const server = http.createServer(async (req, res) => {
         });
         if (aiRes.ok) draft = await aiRes.json();
       } catch {
-        /* keep fallback */
+        /* keep cascade/fallback */
       }
       if (llmUrl && !draft.llmEnrich) {
         const createSettings = await getPlatformSettings();

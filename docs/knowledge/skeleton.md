@@ -1,7 +1,7 @@
 # Каркас проекта (skeleton)
 
 Единая карта структуры и запретов для агентов и CI.  
-Индекс KB: [`README.md`](./README.md). Инварианты: [`decisions.md`](./decisions.md) (D1–D33). Ownership: [`branches.md`](./branches.md).  
+Индекс KB: [`README.md`](./README.md). Инварианты: [`decisions.md`](./decisions.md) (D1–D37). Ownership: [`branches.md`](./branches.md).  
 Данные товаров / ТН ВЭД / история: [`data-model.md`](./data-model.md) (D24).  
 Инкотермс / комментарии ICC (Growth hold): [`incoterms.md`](./incoterms.md).  
 Таможенные платежи (НДС 22% / сбор ПП 1637): [`customs-payments.md`](./customs-payments.md).  
@@ -79,7 +79,7 @@ AGENTS.md                 # Правила для агентов
 
 - [ ] Есть письменный план в `docs/knowledge/` **до** кода (D33)?
 - [ ] Какая ветвь (1/2/3)? Папка ownership совпадает?
-- [ ] Нужен ли новый ADR или хватает D1–D33 / containerization C*?
+- [ ] Нужен ли новый ADR или хватает D1–D37 / containerization C*?
 - [ ] UI от baseline D14 / `ved-ui-cabinets-baseline` (не откатывать к MVP-шеллу / `CabinetsApp`)?
 - [ ] Кабинет UX: empty state / drawer / toast по [`cabinets/ux-saas.md`](./cabinets/ux-saas.md); очередь клиент→брокер→админ?
 - [ ] Unit на инвариант в `src/lib/ved/__tests__/`?

@@ -23,7 +23,7 @@
 | Целевой клиент / ценность / стратегия (D29) | [`target-client.md`](./target-client.md) |
 | Статус кода прямо сейчас | [`current-app.md`](./current-app.md) |
 | Что делать дальше (фазы / post-polish) | [`roadmap.md`](./roadmap.md) · **горизонт 1–5:** [`plan-global.md`](./plan-global.md) · [`plan-mvp-polish.md`](./plan-mvp-polish.md) · **P0 Track A:** [`plan-track-a-p0.md`](./plan-track-a-p0.md) · **техдолг:** [`plan-tech-debt.md`](./plan-tech-debt.md) · **цикл фичи:** [`feature-cycle.md`](./feature-cycle.md) |
-| Решение «почему так» | [`decisions.md`](./decisions.md) (D1–D34) |
+| Решение «почему так» | [`decisions.md`](./decisions.md) (D1–D37) |
 | Структура данных (товары / ТН ВЭД / история) | [`data-model.md`](./data-model.md) (D24) |
 | Инкотермс / комментарии ICC (Growth, не MVP CTA) | [`incoterms.md`](./incoterms.md) |
 | Таможенные платежи (НДС/сбор; акциз/утиль/НТМ = триггер) | [`customs-payments.md`](./customs-payments.md) · смета без доставки: [`plan-landed-without-freight.md`](./plan-landed-without-freight.md) · карточка ТН ВЭД из opendata: [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) |
@@ -54,7 +54,7 @@ AGENTS.md                    # краткие правила агента
 docs/knowledge/              # единая KB (этот каталог)
   README.md                  # индекс (этот файл)
   skeleton.md                # каркас папок, запреты, checklist
-  decisions.md               # ADR-lite D1–D34
+  decisions.md               # ADR-lite D1–D37
   product.md                 # vision + фокус MVP частник (D27)
   target-client.md           # persona / ценность / стратегия (D29)
   branches.md                # ownership трёх ветвей
