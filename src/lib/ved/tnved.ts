@@ -145,7 +145,8 @@ export function tnvedSearchStems(query: string): string[] {
   const seen = new Set<string>();
   for (const t of tokens) {
     const variants = [t];
-    if (t.length >= 6) variants.push(t.slice(0, -1));
+    // RU household: «кепка» must hit notes token «кепки»; threshold 5 (was 6).
+    if (t.length >= 5) variants.push(t.slice(0, -1));
     if (t.length >= 8) variants.push(t.slice(0, -2));
     for (const v of variants) {
       if (v.length < 2 || seen.has(v)) continue;

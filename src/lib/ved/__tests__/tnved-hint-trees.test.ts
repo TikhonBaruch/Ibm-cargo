@@ -42,4 +42,11 @@ describe("C21 TNVED hint trees", () => {
     expect(matchHintPack("носки")).toBeNull();
     expect(hintTreeQuestions("носки")).toEqual([]);
   });
+
+  it("headgear pack maps кепка to 6505003000", () => {
+    expect(matchHintPack("кепка")?.id).toBe("headgear");
+    const qs = hintTreeQuestions("кепка");
+    expect(qs[0].options.find((o) => o.id === "cap")?.hsHeading).toBe("6505003000");
+    expect(qs[0].options.find((o) => o.id === "hat")?.hsHeading).toBe("6505009000");
+  });
 });

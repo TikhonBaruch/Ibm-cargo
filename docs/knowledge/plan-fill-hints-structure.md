@@ -87,3 +87,17 @@ Wizard API · LLM CTA на clarify · автозалив attrs без клика
 | Extended vitest fill suite | **done** |
 | Live API probe | **done** (prod) |
 | Wire orphan UI back to NewCalc | **hold** — отдельный цикл после продукта |
+| Critical HS: кепка/молоко/кеды | **fixed** на ветке `cursor/tnved-cap-milk-footwear-e1f0` |
+
+## 7. Critical probe — кепка / молоко / кеды / кроссовки (2026-08-29)
+
+| Запрос | До (prod) | После фикса |
+|--------|-----------|-------------|
+| **кепка** | search **empty** (notes=`кепки`, stem не резал 5 букв); alias нет | stem `кепк`; alias `6505003000`; C21 `headgear`; attr 6505 |
+| **бейсболка / шапка** | search empty | aliases 6505 00 30 / 90 (+ `--search-extras` для notes шапка) |
+| **молоко** | search OK; classify miss bare «молоко» | `=молоко` → 0401 + exclude сухое/йогурт |
+| **кеды / кроссовки** | search/classify OK | pack + chip «прочая обувь» |
+| **кеды текстиль** | **attr → 6203 одежда** | footwear first; apparel без `текстил` |
+
+Регресс: `critical-hs-queries.test.ts` + cascade fixtures. После merge: `tnved:load -- --search-extras` на sweb.
+

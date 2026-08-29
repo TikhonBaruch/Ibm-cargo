@@ -45,13 +45,15 @@ const FILL_CASES: FillCase[] = [
   { id: "tee", desc: "майка", firstQ: "tnved-form", pack: "knit-top", attrChips: true, attrHs: /6109/ },
   { id: "tee-cotton", desc: "майка хлопок", firstQ: "tnved-form", pack: "knit-top", attrChips: true, attrHs: /6109/ },
   { id: "jeans", desc: "джинсы", firstQ: "composition", pack: null, attrChips: true },
-  { id: "sneakers", desc: "кроссовки Nike", firstQ: "tnved-form", pack: "footwear", attrChips: false },
+  { id: "sneakers", desc: "кроссовки Nike", firstQ: "tnved-form", pack: "footwear", attrChips: true, attrHs: /6404/ },
+  { id: "keds", desc: "кеды", firstQ: "tnved-form", pack: "footwear", attrChips: true, attrHs: /6404/ },
+  { id: "cap", desc: "кепка", firstQ: "tnved-form", pack: "headgear", attrChips: true, attrHs: /6505/ },
   { id: "laptop", desc: "ноутбуки Lenovo ThinkPad 14", firstQ: "tnved-form", pack: "computers", attrChips: true, attrHs: /8471/ },
   // Смартфон сейчас матчит pack computers (общий electronics tree) — зафиксировано тестом.
   { id: "phone", desc: "смартфон", firstQ: "tnved-form", pack: "computers", attrChips: true, attrHs: /8517/ },
-  { id: "milk", desc: "молоко", firstQ: "tnved-form", pack: "milk", attrChips: false },
-  { id: "dry-milk", desc: "сухое молоко порошок", firstQ: "tnved-form", pack: "milk", attrChips: false },
-  { id: "yogurt", desc: "йогурт", firstQ: "tnved-form", pack: "milk", attrChips: false },
+  { id: "milk", desc: "молоко", firstQ: "tnved-form", pack: "milk", attrChips: true, attrHs: /0401/ },
+  { id: "dry-milk", desc: "сухое молоко порошок", firstQ: "tnved-form", pack: "milk", attrChips: true, attrHs: /0401/ },
+  { id: "yogurt", desc: "йогурт", firstQ: "tnved-form", pack: "milk", attrChips: true, attrHs: /0401/ },
   { id: "tea", desc: "зелёный чай", firstQ: "tnved-form", pack: "tea-coffee", attrChips: false },
   { id: "coffee", desc: "кофе в зёрнах", firstQ: "tnved-form", pack: "tea-coffee", attrChips: false },
   { id: "cream", desc: "крем для лица", firstQ: "tnved-form", pack: "cosmetics", attrChips: false },
@@ -99,7 +101,9 @@ describe("fill-hints structure — query guard (suggest API)", () => {
   it("schema field is q not query — empty q → local top-N only", () => {
     // Documents contract: callers must send { kind, q }. Zod defaults missing q to "".
     expect(guardSuggestQuery("").ok).toBe(false);
-    expect(filterFieldSuggestions("itemName", "", 8).map((e) => e.value)).toContain("майка");
+    const top = filterFieldSuggestions("itemName", "", 8).map((e) => e.value);
+    expect(top.length).toBe(8);
+    expect(top).toContain("кепка");
   });
 });
 
@@ -121,13 +125,11 @@ describe("fill-hints structure — attr-suggest heuristic catalog", () => {
     },
   );
 
-  it("gap: footwear and dairy lack dedicated attr rules (clarify/C21 cover fill)", () => {
-    const shoes = heuristicAttrSuggest({ name: "кроссовки" });
-    expect(shoes.attrs.hsHint).toBeUndefined();
-    expect(shoes.notes[0]).toMatch(/состав|материал|тип/i);
-
-    const milk = heuristicAttrSuggest({ name: "молоко" });
-    expect(milk.attrs.hsHint).toBeUndefined();
+  it("footwear / dairy / headgear have dedicated attr rules (no chapter steal)", () => {
+    expect(heuristicAttrSuggest({ name: "кроссовки" }).attrs.hsHint || "").toMatch(/6404/);
+    expect(heuristicAttrSuggest({ name: "молоко" }).attrs.hsHint || "").toMatch(/0401/);
+    expect(heuristicAttrSuggest({ name: "кепка" }).attrs.hsHint || "").toMatch(/6505/);
+    expect(heuristicAttrSuggest({ name: "кеды текстиль" }).attrs.hsHint || "").not.toMatch(/6203/);
   });
 });
 
@@ -290,6 +292,7 @@ describe("fill-hints structure — end-to-end fill scripts (no HTTP)", () => {
       "milk",
       "tea-coffee",
       "chocolate",
+      "headgear",
       "knit-top",
       "footwear",
       "computers",
@@ -308,6 +311,7 @@ describe("fill-hints structure — end-to-end fill scripts (no HTTP)", () => {
     }
     expect(matchHintPack("майка")?.id).toBe("knit-top");
     expect(matchHintPack("кроссовки")?.id).toBe("footwear");
+    expect(matchHintPack("кепка")?.id).toBe("headgear");
     expect(matchHintPack("наушники")?.id).toBe("headphones");
   });
 });
