@@ -44,7 +44,7 @@ export function OrderChat({
   };
 
   return (
-    <div>
+    <div className="order-chat-panel">
       <div className="card-head" style={{ marginBottom: 10 }}>
         <div>
           <h3 style={{ marginBottom: 0 }}>Чат с брокером</h3>
@@ -76,6 +76,7 @@ export function OrderChat({
           value={chatMsg}
           onChange={(e) => onChatMsg(e.target.value)}
           placeholder="Сообщение брокеру"
+          aria-label="Сообщение брокеру"
         />
         <input
           ref={fileRef}
@@ -91,6 +92,7 @@ export function OrderChat({
           disabled={uploading || busy}
           onClick={() => fileRef.current?.click()}
           className="btn btn-ghost btn-sm"
+          aria-label="Прикрепить файл"
         >
           📎
         </button>

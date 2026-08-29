@@ -181,20 +181,20 @@ M6  PWA / store wrapper (hold until M5 green)
 
 ### M4 — Заявки + деталь + PDF
 
-| Шаг | Что |
-|-----|-----|
-| M4a | Список `.cl-order-grid` full-width cards |
-| M4b | `/cabinet/orders/[id]` — timeline D8, смета, next-step |
-| M4c | PDF при `DONE` |
-| M4d | Empty / loading / error состояния (D32) |
+| Шаг | Что | Status |
+|-----|-----|--------|
+| M4a | Список `.cl-order-grid` full-width cards | **done** |
+| M4b | `/cabinet/orders/[id]` — timeline D8, смета, next-step | **done** — sticky `order-next` |
+| M4c | PDF при `DONE` | **done** — primary CTA list + detail |
+| M4d | Empty / loading / error состояния (D32) | **done** — `VedEmptyState` |
 
 ### M5 — Чат
 
-| Шаг | Что |
-|-----|-----|
-| M5a | Support list + unread badge |
-| M5b | Order chat after QUEUED/IN_REVIEW (как live) |
-| M5c | Poll / soft refresh; без voice |
+| Шаг | Что | Status |
+|-----|-----|--------|
+| M5a | Support list + unread badge | **done** — im-shell + tab badge |
+| M5b | Order chat after QUEUED/IN_REVIEW (как live) | **done** — `order-chat` polish |
+| M5c | Poll / soft refresh; без voice | **done** — existing poll; voice = DesignerStub null |
 
 ### M6 — PWA / native (hold)
 
@@ -273,9 +273,8 @@ npm run smoke:mvp   # при running app + seed
 
 ## 11. Следующий шаг агента / человека
 
-**Сейчас:** M0–M3 chrome **done** на `cursor/mobile-client-m1-e1f0`.  
-**Дальше:** M4 orders list/detail polish → M5 chat.  
-**Не начинать** M6 native без зелёного M4–M5.  
+**Сейчас:** M0–M5 chrome **done** на `cursor/mobile-client-m1-e1f0`.  
+**Дальше:** M6 PWA/native — hold.  
 **Стек:** поверх `cursor/tnved-invoice-enrich-e1f0` (lbm-bro live skin).
 
 Параллельно: ТН ВЭД / C31 — [`plan-next-vector-c28.md`](./plan-next-vector-c28.md).

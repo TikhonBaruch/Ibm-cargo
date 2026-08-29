@@ -152,4 +152,4 @@ CMS (posts, telegram, gallery…) — только **SUPER_ADMIN** на obscure 
 Opt-in провайдеры и smokes: [`growth.md`](./growth.md), [`testing-branches.md`](./testing-branches.md).  
 C5 slim cutover — после `smoke:gateway` ([`web-slim.md`](./web-slim.md)).  
 Vision OCR/Risk: [`product.md`](./product.md).  
-**Mobile client:** [`plan-mobile-client-lbm.md`](./plan-mobile-client-lbm.md) — M1 login + tabbar chrome на lbm-bro; native/PWA hold. Сначала зелёный `npm run test:ci`.
+**Mobile client:** [`plan-mobile-client-lbm.md`](./plan-mobile-client-lbm.md) — M0–M5 mobile web chrome на lbm-bro; M6 PWA/native hold.

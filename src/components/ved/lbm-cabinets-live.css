@@ -175,6 +175,136 @@
   .lbm-live-client .view-client .cl-order-grid {
     grid-template-columns: 1fr !important;
   }
+
+  /* M4 — orders list */
+  .lbm-live-client .view-client .orders-pane .filter-chips {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    margin: 10px 0 14px;
+    scrollbar-width: none;
+  }
+  .lbm-live-client .view-client .orders-pane .filter-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .lbm-live-client .view-client .orders-pane .filter-chips button {
+    flex: 0 0 auto;
+  }
+  .lbm-live-client .view-client .cl-order {
+    grid-template-columns: 64px 1fr !important;
+    gap: 12px !important;
+    align-items: start !important;
+    padding: 12px !important;
+    min-height: 88px;
+  }
+  .lbm-live-client .view-client .cl-order .ph {
+    width: 64px !important;
+    height: 64px !important;
+  }
+  .lbm-live-client .view-client .cl-order .right {
+    grid-column: 2;
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-items: start !important;
+    text-align: left !important;
+    margin-top: 6px;
+  }
+  .lbm-live-client .view-client .cl-order-actions {
+    width: 100%;
+  }
+  .lbm-live-client .view-client .cl-order-actions .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+  .lbm-live-client .view-client .cl-order-pdf {
+    min-width: 72px;
+  }
+
+  /* M4 — order detail */
+  .lbm-live-client .view-client .order-full .timeline {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .lbm-live-client .view-client .order-full .timeline::-webkit-scrollbar {
+    display: none;
+  }
+  .lbm-live-client .view-client .order-full .timeline button {
+    min-width: 72px;
+  }
+  .lbm-live-client .view-client .order-aside .order-next {
+    position: sticky;
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    z-index: 45;
+    margin-bottom: 8px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+  }
+  .lbm-live-client .view-client .order-aside .order-next .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+  .lbm-live-client .view-client .order-facts {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* M5 — support + order chat */
+  .lbm-live-client .view-client .cl-content:has(.im-shell) {
+    padding: 8px 10px 12px !important;
+  }
+  .lbm-live-client .view-client .im-shell {
+    min-height: calc(100dvh - 168px - env(safe-area-inset-bottom, 0px)) !important;
+    border-radius: 20px !important;
+  }
+  .lbm-live-client .view-client .im-row {
+    min-height: 64px;
+    padding: 12px !important;
+  }
+  .lbm-live-client .view-client .im-back {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+  }
+  .lbm-live-client .view-client .im-blank-acts {
+    display: grid !important;
+    gap: 10px;
+  }
+  .lbm-live-client .view-client .im-blank-acts .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .lbm-live-client .view-client .order-chat .chat-box,
+  .lbm-live-client .view-client .order-chat-panel .chat-box {
+    max-height: min(42vh, 320px);
+    min-height: 160px;
+  }
+  .lbm-live-client .view-client .order-chat .chat-row,
+  .lbm-live-client .view-client .order-chat-panel .chat-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .lbm-live-client .view-client .order-chat .chat-row input[type="text"],
+  .lbm-live-client .view-client .order-chat .chat-row > input:not([type="file"]),
+  .lbm-live-client .view-client .order-chat-panel .chat-row > input:not([type="file"]) {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+  .lbm-live-client .view-client .order-chat .chat-row .btn-primary,
+  .lbm-live-client .view-client .order-chat-panel .chat-row .btn-primary {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
 }
 
 /* Bottom tabbar — hidden on desktop, shown ≤980px */

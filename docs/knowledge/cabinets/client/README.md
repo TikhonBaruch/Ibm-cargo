@@ -4,7 +4,7 @@
 **Routes web:** `app/cabinet/*` · **Extract:** `containers/client/app/*` (:3003, `NEXT_PUBLIC_CLIENT_BASE`)  
 **Flag:** `NEXT_PUBLIC_SHIPPING_UI` — UI «Перевозка» (default **off**)  
 **UI lab:** референс суперприложения на `/client` (`src/lbm-bro`). Live лицо — этот контейнер (`LbmCabinetsShell`). План: [`plan-lbm-bro-visual.md`](../../plan-lbm-bro-visual.md).  
-**Mobile:** [`plan-mobile-client-lbm.md`](../../plan-mobile-client-lbm.md) — M0–M3 done (login, tabbar, home polish, EXPRESS wizard); M4+ orders/chat.
+**Mobile:** [`plan-mobile-client-lbm.md`](../../plan-mobile-client-lbm.md) — M0–M5 done (login → home → new → orders/PDF → chat); M6 PWA/native hold.
 
 ## Nav (`getClientNav`)
 

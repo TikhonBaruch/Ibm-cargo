@@ -108,6 +108,10 @@ describe("public surface hygiene", () => {
     expect(live).toContain("lbm-m-hide");
     expect(live).toContain("wiz-pack-multi");
     expect(live).toContain('data-wiz-step="1"');
+    expect(live).toContain("orders-pane");
+    expect(live).toContain("order-next");
+    expect(live).toContain("order-chat");
+    expect(live).toContain("im-shell");
   });
 
   it("keeps a gap between stepper numbers and labels (C13)", () => {
