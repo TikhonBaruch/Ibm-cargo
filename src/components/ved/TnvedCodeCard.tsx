@@ -143,15 +143,21 @@ export function TnvedCodeCard({ card }: { card: TnvedCard }) {
 
       {card.measuresHint.excisePossible ||
       card.measuresHint.utilSborPossible ||
+      card.measuresHint.ecoFeePossible ||
       card.measuresHint.ntmPossible ? (
         <div className="rounded-2xl bg-white p-3 shadow-sm">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
             Меры (триггер)
           </p>
           <ul className="mt-2 space-y-1 text-xs text-[#0f172a]">
-            {card.measuresHint.excisePossible ? <li>Акциз: возможно (НК РФ ст. 181)</li> : null}
+            {card.measuresHint.excisePossible ? <li>Акциз: возможно (НК РФ ст. 181 — сверить вид товара)</li> : null}
             {card.measuresHint.utilSborPossible ? (
               <li>Утильсбор: возможно (ПП 1291 / 81 — нужны категория, возраст, мощность)</li>
+            ) : null}
+            {card.measuresHint.ecoFeePossible ? (
+              <li>
+                Экосбор РОП: возможно (ПП 2414 — товар и/или упаковка; не путать с утильсбором ТС)
+              </li>
             ) : null}
             {card.measuresHint.ntmPossible ? (
               <li>НТМ: возможно (сверить единый перечень ЕЭК)</li>

@@ -101,6 +101,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-client-tnved-search.md # Client: combobox ТН ВЭД по справочнику (этап 1)
   plan-tnved-demo-corpus.md  # Демо-корпус TnvedCode: точные полные ряды (~50 листьев), не Track B
   plan-tnved-opendata-card.md # Открытые слои ТН ВЭД → одна карточка (ETL, не scrape)
+  plan-tnved-layer-g-extra.md # Акциз / утиль / экосбор РОП → префиксы TnvedCode (триггеры)
   plan-tnved-collect.md      # Собрать все легальные слои (TWS fill, PDF ЕТТ, решения)
   plan-cabinet-feature-flags.md # Этап 1: скрыть завод/SKU (паттерн shipping)
   plan-public-surface-hygiene.md # Демо на /login оставить; SUPER-константы кодировать; robots не трогать

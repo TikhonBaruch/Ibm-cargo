@@ -322,8 +322,9 @@ export type TnvedCard = {
   measuresHint: {
     excisePossible: boolean;
     utilSborPossible: boolean;
+    ecoFeePossible: boolean;
     ntmPossible: boolean;
-    hits: Array<{ flag: string; source: string; prefix: string }>;
+    hits: Array<{ flag: string; source: string; prefix: string; group?: string }>;
   };
   sources: TnvedCardSource[];
   disclaimer: string;
@@ -364,9 +365,9 @@ export const TNVED_CARD_SOURCES: TnvedCardSource[] = [
   },
   {
     layer: "G",
-    title: "Акциз / утиль / НТМ — триггеры НПА (не ставка)",
+    title: "Акциз / утиль / экосбор РОП / НТМ — триггеры НПА (не ставка)",
     url: null,
-    asOf: "2026-01-01",
+    asOf: "2026-08-29",
   },
 ];
 
