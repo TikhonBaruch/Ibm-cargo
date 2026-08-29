@@ -56,7 +56,7 @@ C34  Track A payments (ЮKassa) — вне D27 polish
 
 | Шаг | Действие | Done when | Status |
 |-----|----------|-----------|--------|
-| C28a | Merge PR **#16** → `main` (внутри уже #19 C19–C31) | pay-first на ibm-cargo-phi | **blocked human** — playbook [`plan-merge-ops-unblock.md`](./plan-merge-ops-unblock.md) |
+| C28a | Merge PR **#16** → `main` (внутри уже #19 C19–C31) | pay-first на ibm-cargo-phi | **done** 2026-08-31 (`b7418aa`) |
 | C28b | Ручной: `/cabinet/new` → Далее → Оплата → код только после pay | HS = `—` до pay | ready in #16 |
 | C28c | `TEST_API_URL=<preview> npm run smoke:mvp` (+ seed fallback ok) | PASS | after O1–O3 |
 | C28d | `npm run test:classify-cascade` на CI | PASS | in #16 |
@@ -103,11 +103,13 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 
 ### C32 — Preview / smoke DevEx
 
-| Шаг | Что |
-|-----|-----|
-| C32a | Docs: Visit Preview + `ALLOW_MOCK_TOPUP` checklist (частично в staging) |
-| C32b | Опционально: Vercel Protection bypass token для CI (ops, не код агента) |
-| C32c | `smoke:standalone` зелёный на Preview после C28 |
+Канон: [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md).
+
+| Шаг | Что | Status |
+|-----|-----|--------|
+| C32a | Docs: Visit Preview + `ALLOW_MOCK_TOPUP` checklist | **done** |
+| C32b | Protection Bypass for Automation + `install-vercel-bypass` в smoke | **docs/helper done**; secret = human ops |
+| C32c | `smoke:standalone` зелёный на Preview после C28 | **blocked SSO** (2026-08-29) до bypass secret |
 
 ### Hold (после C28–C32)
 

@@ -8,6 +8,7 @@
  *   npm run smoke:mvp
  *   TEST_API_URL=http://localhost:3000 npm run smoke:mvp
  */
+import "./lib/install-vercel-bypass.mjs";
 const BASE = process.env.TEST_API_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
 const BROKER_EMAIL = process.env.BROKER_EMAIL || "broker@example.com";
 const BROKER_PASSWORD = process.env.BROKER_PASSWORD || "demo1234";

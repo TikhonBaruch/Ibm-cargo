@@ -3,6 +3,7 @@
  * Smoke: CSV preview → create calculation from import rows.
  *   TEST_API_URL=http://localhost:3000 node scripts/smoke-csv-import.mjs
  */
+import "./lib/install-vercel-bypass.mjs";
 const BASE = process.env.TEST_API_URL || "http://localhost:3000";
 const CLIENT_EMAIL = process.env.CLIENT_EMAIL || "client@example.com";
 const CLIENT_PASSWORD = process.env.CLIENT_PASSWORD || "demo1234";
