@@ -56,6 +56,7 @@ const knowledgeRequired = [
   "docs/knowledge/plan-classify-cascade-c23.md",
   "docs/knowledge/plan-next-vector-c28.md",
   "docs/knowledge/plan-c32-preview-devex.md",
+  "docs/knowledge/plan-fill-hints-structure.md",
   "docs/knowledge/environments.md",
   "docs/knowledge/staging.md",
   "docs/knowledge/roadmap.md",

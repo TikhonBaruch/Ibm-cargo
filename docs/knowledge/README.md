@@ -127,11 +127,8 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-classify-cascade-c23.md  # C23–C27: domain cascade + OCR glue + audit
   plan-next-vector-c28.md       # после C27: ship pay-first, post-pay UX, слои B/D, quality
   plan-merge-ops-unblock.md     # исполнение: merge #16 + draft chain + Preview/prod ops
-<<<<<<< Updated upstream
   plan-c32-preview-devex.md     # C32: Visit Preview + ALLOW_MOCK_TOPUP + SSO bypass smoke
-=======
-  plan-offline-first-hs-brief.md # C35 brief: offline-first HS + DeepSeek on miss (до плана)
->>>>>>> Stashed changes
+  plan-fill-hints-structure.md  # аудит слоёв подсказок NewCalc (C12/C21 vs orphan chips)
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
@@ -182,7 +179,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | Broker QC loop (feedback → broker) | [`plan-broker-qc-loop.md`](./plan-broker-qc-loop.md) · [`cabinets/broker/`](./cabinets/broker/) |
 | Брокер: уточнить описание / доп. сборы | [`plan-broker-desc-fees.md`](./plan-broker-desc-fees.md) |
 | Брокер: пустые attrs only | [`plan-broker-empty-attrs.md`](./plan-broker-empty-attrs.md) |
-| Client: подсказки NewCalc | [`plan-newcalc-hints.md`](./plan-newcalc-hints.md) |
+| Client: подсказки NewCalc | [`plan-newcalc-hints.md`](./plan-newcalc-hints.md) · **структура слоёв:** [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) |
 | Client: LLM/heuristic chips + 👍 черновик | [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) |
 | Client: typeahead полей (словарь) | [`plan-field-suggest.md`](./plan-field-suggest.md) |
 | Client: поиск ТН ВЭД (combobox справочника) | [`plan-client-tnved-search.md`](./plan-client-tnved-search.md) · этап 1 [`plan-global.md`](./plan-global.md) |
@@ -195,14 +192,8 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
 | Live UX результата AI (C22) | [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) · ai-run · disclaimer · conf |
 | Classify cascade C23–C27 | [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · cascade-v1 · classify-preview · import |
-<<<<<<< Updated upstream
 | Следующий вектор C28+ | [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · ship · post-pay UX · слои B/D · quality · [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md) |
 | Разблокировка merge + ops | [`plan-merge-ops-unblock.md`](./plan-merge-ops-unblock.md) · #16 MERGED · далее #22–#25 · Preview secrets |
-=======
-| Следующий вектор C28+ | [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · ship · post-pay UX · слои B/D · quality · **C35 brief** |
-| Разблокировка merge + ops | [`plan-merge-ops-unblock.md`](./plan-merge-ops-unblock.md) · #16 MERGED · далее #22–#25 · Preview secrets |
-| C35 offline-first HS (brief → plan) | [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) · precedent+cascade до DeepSeek · потоки A∥B |
->>>>>>> Stashed changes
 | Флаги скрытия лишнего (завод / SKU) | [`plan-cabinet-feature-flags.md`](./plan-cabinet-feature-flags.md) · паттерн `shippingUiEnabled` |
 | Производители: propose / approve | [`plan-manufacturer-proposals.md`](./plan-manufacturer-proposals.md) |
 | UX Sprint 1–2 (петли кабинетов) | [`plan-cabinets-ux-sprints.md`](./plan-cabinets-ux-sprints.md) |
