@@ -105,6 +105,76 @@
   .lbm-live-client .view-client .home-mods .hm.hero {
     grid-column: 1 / -1;
   }
+
+  /* M2: home — brand/hero first, hide stub chrome on phone */
+  .lbm-live-client .view-client .lbm-m-hide {
+    display: none !important;
+  }
+  .lbm-live-client .view-client .go-greet {
+    margin-bottom: 14px !important;
+  }
+  .lbm-live-client .view-client .go-greet-copy h2 {
+    font-size: 1.55rem !important;
+  }
+  .lbm-live-client .view-client .go-greet-copy p {
+    font-size: 14px !important;
+  }
+  .lbm-live-client .view-client .go-tile.hero {
+    min-height: 188px !important;
+    padding: 20px 18px 18px !important;
+  }
+  .lbm-live-client .view-client .go-tile.hero .gt-title {
+    font-size: 1.28rem !important;
+    max-width: none !important;
+  }
+  .lbm-live-client .view-client .go-tile .gt-art {
+    opacity: 0.85;
+    transform: scale(0.92);
+    transform-origin: bottom right;
+  }
+  .lbm-live-client .view-client .go-feed .filter-chips {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    padding-bottom: 4px;
+    margin-bottom: 10px !important;
+    scrollbar-width: none;
+  }
+  .lbm-live-client .view-client .go-feed .filter-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .lbm-live-client .view-client .go-feed .filter-chips button {
+    flex: 0 0 auto;
+  }
+  .lbm-live-client .view-client .go-active {
+    min-height: 72px;
+    padding: 12px !important;
+  }
+
+  /* M3: new-calc — single column EXPRESS path */
+  .lbm-live-client .view-client .wiz-full[data-wiz-step="1"] .wiz-side,
+  .lbm-live-client .view-client .wiz-full[data-wiz-step="2"] .wiz-side {
+    display: none !important;
+  }
+  .lbm-live-client .view-client .wiz-full[data-wiz-pack="0"] .wiz-pack-multi {
+    display: none !important;
+  }
+  .lbm-live-client .view-client .wiz-head h2 {
+    font-size: 1.35rem !important;
+    line-height: 1.2 !important;
+  }
+  .lbm-live-client .view-client .wiz-pay-box .pay-row {
+    font-size: 13px;
+  }
+  .lbm-live-client .view-client .wiz-main .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+  .lbm-live-client .view-client .cl-order-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* Bottom tabbar — hidden on desktop, shown ≤980px */

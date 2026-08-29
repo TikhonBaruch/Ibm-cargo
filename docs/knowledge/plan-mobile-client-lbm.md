@@ -164,20 +164,20 @@ M6  PWA / store wrapper (hold until M5 green)
 
 | Шаг | Что | Паттерн |
 |-----|-----|---------|
-| M2a | Tabbar sticky bottom (Главная · Заявки · +Новый · Чат · Компания) | **done** (chrome; home polish next) |
-| M2b | `.go-dash` greet + hero tile «Новый просчёт» | next — `ClientSuperappHome` |
-| M2c | Лента активных заявок / filter chips | next |
-| M2d | Скрыть shipping/factory/commercial invoice | next / honest skin |
+| M2a | Tabbar sticky bottom (Главная · Заявки · +Новый · Чат · Компания) | **done** |
+| M2b | `.go-dash` greet + hero tile «Новый просчёт» | **done** — mobile hero/greet polish |
+| M2c | Лента активных заявок / filter chips | **done** — chips scroll + touch cards |
+| M2d | Скрыть shipping/factory/commercial invoice | **done** — stubs `lbm-m-hide`; factory already C6 |
 
 ### M3 — Новый просчёт → оплата
 
 | Шаг | Что | Инвариант |
 |-----|-----|-----------|
-| M3a | Wizard mobile: один столбец `.wiz-full` | шаги Товар → Оплата → (код после pay) |
-| M3b | `POST /api/v1/calculations` | D10 limit |
-| M3c | Выбор тарифа + `POST …/pay` (mock topup ok non-prod) | D11 |
-| M3d | Не показывать финальный HS как «решение таможни» | C22 / cascade honesty |
-| M3e | EXPRESS path first (1 позиция); multipack later | снизить scope |
+| M3a | Wizard mobile: один столбец `.wiz-full` | **done** — side hidden на шагах 1–2 |
+| M3b | `POST /api/v1/calculations` | **done** (existing domain) |
+| M3c | Выбор тарифа + `POST …/pay` | **done** (existing; full-width CTA) |
+| M3d | Не показывать финальный HS как «решение таможни» | **done** (C22 copy) |
+| M3e | EXPRESS path first (1 позиция); multipack later | **done** — hide Мультипозиция ≤980px |
 
 ### M4 — Заявки + деталь + PDF
 
@@ -273,9 +273,9 @@ npm run smoke:mvp   # при running app + seed
 
 ## 11. Следующий шаг агента / человека
 
-**Сейчас:** M0–M1 + tabbar chrome **done** на ветке `cursor/mobile-client-m1-e1f0`.  
-**Дальше:** M2b–d home polish → M3 new calc/pay.  
-**Не начинать** M6 native без зелёного M3–M5.  
+**Сейчас:** M0–M3 chrome **done** на `cursor/mobile-client-m1-e1f0`.  
+**Дальше:** M4 orders list/detail polish → M5 chat.  
+**Не начинать** M6 native без зелёного M4–M5.  
 **Стек:** поверх `cursor/tnved-invoice-enrich-e1f0` (lbm-bro live skin).
 
 Параллельно: ТН ВЭД / C31 — [`plan-next-vector-c28.md`](./plan-next-vector-c28.md).

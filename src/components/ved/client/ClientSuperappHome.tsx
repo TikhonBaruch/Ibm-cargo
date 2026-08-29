@@ -60,7 +60,7 @@ export function ClientSuperappHome({
           <p>Выберите модуль — как в суперприложении</p>
         </div>
 
-        <div className="go-quick-wrap">
+        <div className="go-quick-wrap lbm-m-hide">
           <div className="go-quick">
             <Link href={`${path("/support")}?open=support`} className="go-quick-btn consult">
               <span className="gq-ico">
@@ -249,7 +249,7 @@ export function ClientSuperappHome({
       </div>
 
       <div className="go-svc-wrap">
-        <div className="go-sec-label">
+        <div className="go-sec-label lbm-m-hide">
           <span>Сопровождение груза</span>
         </div>
         <DesignerStub
@@ -259,24 +259,38 @@ export function ClientSuperappHome({
           compact
         />
         <div className="go-svc">
-          <Link
-            href={path("/shipping")}
-            className={`go-tile svc ship${showShipping ? "" : " is-stub"}`}
-          >
-            <div className="gt-ico">
-              <Icon name="truck" />
-            </div>
-            <div className="gt-title">Грузоперевозки</div>
-            <div className="gt-sub">Только наземная доставка · фуры · Китай, Турция, ЕС → РФ</div>
-            <div className="gt-more">
-              {showShipping ? "Открыть" : "Макет"} <span>›</span>
-            </div>
-            <div className="gt-art art-ship" aria-hidden>
-              <div className="cab" />
-              <div className="trail" />
-            </div>
-          </Link>
-          <Link href={path("/clearance")} className="go-tile svc clear is-stub">
+          {showShipping ? (
+            <Link href={path("/shipping")} className="go-tile svc ship">
+              <div className="gt-ico">
+                <Icon name="truck" />
+              </div>
+              <div className="gt-title">Грузоперевозки</div>
+              <div className="gt-sub">Только наземная доставка · фуры · Китай, Турция, ЕС → РФ</div>
+              <div className="gt-more">
+                Открыть <span>›</span>
+              </div>
+              <div className="gt-art art-ship" aria-hidden>
+                <div className="cab" />
+                <div className="trail" />
+              </div>
+            </Link>
+          ) : (
+            <Link href={path("/shipping")} className="go-tile svc ship is-stub lbm-m-hide">
+              <div className="gt-ico">
+                <Icon name="truck" />
+              </div>
+              <div className="gt-title">Грузоперевозки</div>
+              <div className="gt-sub">Только наземная доставка · фуры · Китай, Турция, ЕС → РФ</div>
+              <div className="gt-more">
+                Макет <span>›</span>
+              </div>
+              <div className="gt-art art-ship" aria-hidden>
+                <div className="cab" />
+                <div className="trail" />
+              </div>
+            </Link>
+          )}
+          <Link href={path("/clearance")} className="go-tile svc clear is-stub lbm-m-hide">
             <div className="gt-ico">
               <Icon name="shield" />
             </div>
