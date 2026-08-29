@@ -167,25 +167,31 @@ export function ProductCsvImport({
   };
 
   const toItems = (): FormItem[] =>
-    usable.slice(0, maxPos).map((r) => ({
-      name: r.name,
-      ...(showInvoice ? { qty: r.qty ?? 1, unitPrice: r.unitPrice ?? 0 } : { qty: 1, unitPrice: 0 }),
-      attrs: r.attrs
-        ? {
-            brand: r.attrs.brand,
-            material: r.attrs.material,
-            composition: r.attrs.composition,
-            manufacturerName: r.attrs.manufacturerName,
-            originCountry: r.attrs.originCountry,
-            hsHint: r.hsCode || r.attrs.hsHint,
-            ...(showInvoice && r.attrs.netWeightKg != null
-              ? { netWeightKg: String(r.attrs.netWeightKg) }
-              : {}),
-          }
-        : r.hsCode
-          ? { hsHint: r.hsCode }
-          : undefined,
-    }));
+    usable.slice(0, maxPos).map((r) => {
+      const composition =
+        r.attrs?.composition?.trim() ||
+        r.description?.trim() ||
+        r.name.trim();
+      const originCountry =
+        r.attrs?.originCountry?.trim().toUpperCase().slice(0, 2) ||
+        (country.trim().length === 2 ? country.trim().toUpperCase() : "") ||
+        "CN";
+      return {
+        name: r.name,
+        ...(showInvoice ? { qty: r.qty ?? 1, unitPrice: r.unitPrice ?? 0 } : { qty: 1, unitPrice: 0 }),
+        attrs: {
+          brand: r.attrs?.brand,
+          material: r.attrs?.material,
+          composition,
+          manufacturerName: r.attrs?.manufacturerName,
+          originCountry,
+          hsHint: r.hsCode || r.attrs?.hsHint,
+          ...(showInvoice && r.attrs?.netWeightKg != null
+            ? { netWeightKg: String(r.attrs.netWeightKg) }
+            : {}),
+        },
+      };
+    });
 
   const apply = (create: boolean) => {
     if (!usable.length) {

@@ -23,7 +23,7 @@
 | Целевой клиент / ценность / стратегия (D29) | [`target-client.md`](./target-client.md) |
 | Статус кода прямо сейчас | [`current-app.md`](./current-app.md) |
 | Что делать дальше (фазы / post-polish) | [`roadmap.md`](./roadmap.md) · **горизонт 1–5:** [`plan-global.md`](./plan-global.md) · [`plan-mvp-polish.md`](./plan-mvp-polish.md) · **P0 Track A:** [`plan-track-a-p0.md`](./plan-track-a-p0.md) · **техдолг:** [`plan-tech-debt.md`](./plan-tech-debt.md) · **цикл фичи:** [`feature-cycle.md`](./feature-cycle.md) |
-| Решение «почему так» | [`decisions.md`](./decisions.md) (D1–D34) |
+| Решение «почему так» | [`decisions.md`](./decisions.md) (D1–D37) |
 | Структура данных (товары / ТН ВЭД / история) | [`data-model.md`](./data-model.md) (D24) |
 | Инкотермс / комментарии ICC (Growth, не MVP CTA) | [`incoterms.md`](./incoterms.md) |
 | Таможенные платежи (НДС/сбор; акциз/утиль/НТМ = триггер) | [`customs-payments.md`](./customs-payments.md) · смета без доставки: [`plan-landed-without-freight.md`](./plan-landed-without-freight.md) · карточка ТН ВЭД из opendata: [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) |
@@ -54,7 +54,7 @@ AGENTS.md                    # краткие правила агента
 docs/knowledge/              # единая KB (этот каталог)
   README.md                  # индекс (этот файл)
   skeleton.md                # каркас папок, запреты, checklist
-  decisions.md               # ADR-lite D1–D34
+  decisions.md               # ADR-lite D1–D37
   product.md                 # vision + фокус MVP частник (D27)
   target-client.md           # persona / ценность / стратегия (D29)
   branches.md                # ownership трёх ветвей
@@ -120,6 +120,12 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-lbm-bro-max-match.md  # C16: максимальный visual match live↔lab без ломки domain
   plan-lbm-bro-tnved-dir.md  # C17: /cabinet/tnved chrome lab, данные GET /api/v1/tnved
   plan-lbm-bro-tnved-catalog.md # C18: lab tnved.json → Postgres + поиск как в lab
+  plan-tnved-invoice-enrich.md  # C19: инвойсные имена + ФТС/ЕЭК 2026 notes, не scrape
+  plan-tnved-relations.md       # C20: связи not/variant/part/kit + дети parentCode
+  plan-tnved-hint-trees.md      # C21: семейные развилки на /cabinet/new (молоко питьевое/сухое/сгущённое)
+  plan-live-ai-result-ux.md     # C22: live ai-run + «Почему этот код» на карточке заявки
+  plan-classify-cascade-c23.md  # C23–C27: domain cascade + OCR glue + audit
+  plan-next-vector-c28.md       # после C27: ship pay-first, post-pay UX, слои B/D, quality
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
@@ -178,6 +184,12 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: открытые слои → одна карточка | [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) · ФНС TNVED.7z + ЕТТ/НСИ, не scrape |
 | ТН ВЭД: собрать все легальные слои | [`plan-tnved-collect.md`](./plan-tnved-collect.md) · TWS fill local, не Alta |
 | ТН ВЭД: каталог lab → Postgres (C18) | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) · `tnved:load -- --lab` |
+| ТН ВЭД: инвойс + дополнения 2026 (C19) | [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md) · `tnved:load -- --search-extras` |
+| ТН ВЭД: связи кодов (C20) | [`plan-tnved-relations.md`](./plan-tnved-relations.md) · related overlay + children parentCode |
+| ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
+| Live UX результата AI (C22) | [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) · ai-run · disclaimer · conf |
+| Classify cascade C23–C27 | [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · cascade-v1 · classify-preview · import |
+| Следующий вектор C28+ | [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · ship · post-pay UX · слои B/D · quality |
 | Флаги скрытия лишнего (завод / SKU) | [`plan-cabinet-feature-flags.md`](./plan-cabinet-feature-flags.md) · паттерн `shippingUiEnabled` |
 | Производители: propose / approve | [`plan-manufacturer-proposals.md`](./plan-manufacturer-proposals.md) |
 | UX Sprint 1–2 (петли кабинетов) | [`plan-cabinets-ux-sprints.md`](./plan-cabinets-ux-sprints.md) |

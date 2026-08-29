@@ -1,0 +1,32 @@
+{
+  "asOf": "2026-08-08",
+  "sourceUrl": "https://eec.eaeunion.org/comission/department/catr/psn/",
+  "note": "Must-cover group leads for card layer D. Full PSN body lives in compose notes.jsonl after tnved:compose; this overlay is fail-open when DB notes lack ЕЭК PSN.",
+  "groups": {
+    "61": {
+      "heading": "Группа 61 — предметы одежды трикотажные",
+      "excerpt": "Одежда и принадлежности к одежде, трикотажные машинного или ручного вязания. Материал, конструкция и назначение влияют на субпозицию; полный текст пояснений — на сайте ЕЭК (PSN).",
+      "url": "https://eec.eaeunion.org/comission/department/catr/psn/"
+    },
+    "62": {
+      "heading": "Группа 62 — предметы одежды, кроме трикотажных",
+      "excerpt": "Одежда и принадлежности к одежде, кроме трикотажных. Состав ткани и крой уточняют код; это ориентир справочника, не решение ФТС.",
+      "url": "https://eec.eaeunion.org/comission/department/catr/psn/"
+    },
+    "84": {
+      "heading": "Группа 84 — реакторы, котлы, оборудование",
+      "excerpt": "Механические устройства и вычислительные машины (в т.ч. позиция 8471). Портативные машины массой не более 10 кг обычно относят к 8471 30; полный текст пояснений — ЕЭК PSN.",
+      "url": "https://eec.eaeunion.org/comission/department/catr/psn/"
+    },
+    "85": {
+      "heading": "Группа 85 — электрические машины и оборудование",
+      "excerpt": "Электрические машины, аппаратура и их части (телефоны, аккумуляторы и др.). Функция и комплектация определяют субпозицию; сверяйте пояснения ЕЭК к группе 85.",
+      "url": "https://eec.eaeunion.org/comission/department/catr/psn/"
+    },
+    "87": {
+      "heading": "Группа 87 — средства наземного транспорта",
+      "excerpt": "Автомобили и прочие средства наземного транспорта. Мощность, тип топлива и комплектация влияют на код и меры (акциз / утиль); пояснения — ЕЭК PSN.",
+      "url": "https://eec.eaeunion.org/comission/department/catr/psn/"
+    }
+  }
+}

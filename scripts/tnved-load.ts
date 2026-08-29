@@ -23,6 +23,8 @@ import {
   notesByCodeFromLabSearch,
   STALE_INDEX_REMAP,
 } from "../src/lib/ved/tnved-lab-catalog";
+import { relationFocusCodes, relationsAsSearchExtras } from "../src/lib/ved/tnved-relations";
+import { hintTreeFocusCodes, hintTreesAsSearchExtras } from "../src/lib/ved/tnved-hint-trees";
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -46,20 +48,27 @@ function dbHint() {
   }
 }
 
+function readAliasList(rel: string): Array<{ code: string; keys: string[]; why?: string }> {
+  const p = path.join(root, rel);
+  if (!existsSync(p)) return [];
+  return JSON.parse(readFileSync(p, "utf8")) as Array<{ code: string; keys: string[]; why?: string }>;
+}
+
 function loadProjectSearchPack() {
   const indexPath = path.join(root, "public/lbm-bro/data/tnved-index.json");
-  const aliasPath = path.join(root, "src/lbm-bro/lib/hs-aliases.json");
-  const synPath = path.join(root, "src/lib/ved/tnved-demo-synonyms.json");
-  const heuristicPath = path.join(root, "src/lib/ved/ai-draft-rules.json");
   const index = existsSync(indexPath)
     ? (JSON.parse(readFileSync(indexPath, "utf8")) as {
         entries?: Array<[string, string, string[], number]>;
         aliasTokens?: Record<string, string[]>;
       })
     : undefined;
-  const aliases = existsSync(aliasPath)
-    ? (JSON.parse(readFileSync(aliasPath, "utf8")) as Array<{ code: string; keys: string[]; why?: string }>)
-    : [];
+  const aliases = [
+    ...readAliasList("src/lbm-bro/lib/hs-aliases.json"),
+    ...readAliasList("src/lib/ved/tnved-invoice-aliases.json"),
+    ...readAliasList("src/lib/ved/tnved-fts-2026-notes.json"),
+  ];
+  const synPath = path.join(root, "src/lib/ved/tnved-demo-synonyms.json");
+  const heuristicPath = path.join(root, "src/lib/ved/ai-draft-rules.json");
   const synonyms = existsSync(synPath)
     ? (JSON.parse(readFileSync(synPath, "utf8")) as Record<string, string>)
     : {};
@@ -75,6 +84,20 @@ function loadProjectSearchPack() {
     why?: string;
   }>;
   const packed = notesByCodeFromLabSearch({ aliases, index, synonyms, heuristic });
+  const relationExtras = relationsAsSearchExtras();
+  const hintExtras = hintTreesAsSearchExtras();
+  for (const extraMap of [relationExtras, hintExtras]) {
+    for (const [code, extra] of extraMap) {
+      const tokens = packed.tokens.get(code) || [];
+      tokens.push(...extra.tokens);
+      packed.tokens.set(code, tokens);
+      if (extra.why.length) {
+        const why = packed.why.get(code) || [];
+        why.push(...extra.why);
+        packed.why.set(code, why);
+      }
+    }
+  }
   return { packed, aliases, synonyms, heuristic };
 }
 
@@ -94,6 +117,8 @@ async function mergeSearchExtras() {
   for (const c of Object.keys(synonyms)) focus.add(c.replace(/\D/g, ""));
   for (const r of heuristic) if (r.hsCode) focus.add(String(r.hsCode).replace(/\D/g, ""));
   for (const targets of Object.values(STALE_INDEX_REMAP)) for (const t of targets) focus.add(t);
+  for (const c of relationFocusCodes()) focus.add(c);
+  for (const c of hintTreeFocusCodes()) focus.add(c);
   let updated = 0;
   let skipped = 0;
   for (const code of focus) {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   MIN_PACK,
   liveCodeForPack,
+  liveWizardStepLabels,
   namedItemCount,
   packIdForLiveCode,
   resolvePackChrome,
@@ -37,5 +38,13 @@ describe("new-calc pack chrome (C11)", () => {
         { name: "B", qty: 1, unitPrice: 0 },
       ]),
     ).toBe(2);
+  });
+
+  it("C29c: single pack chrome uses live EXPRESS price (no freemium 0 ₽)", () => {
+    const one = resolvePackChrome("one", tariffs);
+    expect(one.priceRub).toBe(990);
+    expect(one.summary).toContain("990");
+    expect(one.summary).not.toContain("бесплатн");
+    expect(liveWizardStepLabels()).toEqual(["Товар", "Оплата", "Код"]);
   });
 });

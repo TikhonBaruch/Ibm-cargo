@@ -22,9 +22,9 @@ describe("C18 lab TN VED catalog", () => {
     expect(notesFromSearchTokens(["x".repeat(50)], 20)?.length).toBe(20);
   });
 
-  it("tnvedSearchStems keeps футболк from футболка", () => {
-    expect(tnvedSearchStems("футболка")).toEqual(expect.arrayContaining(["футболка", "футболк"]));
-    expect(tnvedSearchStems("ноутбук")).toEqual(expect.arrayContaining(["ноутбук"]));
+  it("tnvedSearchStems drops stopwords so фен для волос keeps фен", () => {
+    expect(tnvedSearchStems("фен для волос")).toEqual(expect.arrayContaining(["фен", "волос"]));
+    expect(tnvedSearchStems("фен для волос")).not.toContain("для");
   });
 
   it("labCatalogToImportItems sorts parents first and omits empty notes", () => {
@@ -124,5 +124,77 @@ describe("C18 lab TN VED catalog", () => {
       { stems: ["поло"], digits: "" },
     );
     expect(polo).toBeGreaterThan(meat);
+  });
+
+  it("scoreTnvedSearchHit boosts full invoice phrase in notes", async () => {
+    const { scoreTnvedSearchHit } = await import("../tnved");
+    const dryer = scoreTnvedSearchHit(
+      {
+        code: "8516310000",
+        titleRu: "Сушилки для волос",
+        notes: "Электросушилки для волос (фен / hair dryer / 吹风机).\nфен для волос, hair dryer",
+        isLeaf: true,
+        level: 10,
+      },
+      { stems: ["фен", "волос"], digits: "", phrase: "фен для волос" },
+    );
+    const shampoo = scoreTnvedSearchHit(
+      {
+        code: "3305100000",
+        titleRu: "Шампуни",
+        notes: null,
+        isLeaf: true,
+        level: 10,
+      },
+      { stems: ["фен", "волос"], digits: "", phrase: "фен для волос" },
+    );
+    expect(dryer).toBeGreaterThan(shampoo);
+  });
+
+  it("scoreTnvedSearchHit boosts short CJK invoice tokens in notes", async () => {
+    const { scoreTnvedSearchHit } = await import("../tnved");
+    const power = scoreTnvedSearchHit(
+      {
+        code: "8507600000",
+        titleRu: "Аккумуляторы литий-ионные",
+        notes: "Портативные литий-ионные аккумуляторы / powerbank / 充电宝.",
+        isLeaf: true,
+        level: 10,
+      },
+      { stems: ["充电宝"], digits: "", phrase: "充电宝" },
+    );
+    const cable = scoreTnvedSearchHit(
+      {
+        code: "8544429009",
+        titleRu: "Прочие",
+        notes: null,
+        isLeaf: true,
+        level: 10,
+      },
+      { stems: ["充电宝"], digits: "", phrase: "充电宝" },
+    );
+    expect(power).toBeGreaterThan(cable);
+  });
+
+  it("invoice and FTS 2026 packs only use 2-10 digit codes and known tokens", async () => {
+    const invoice = (await import("../tnved-invoice-aliases.json")).default as Array<{
+      code: string;
+      keys: string[];
+    }>;
+    const fts = (await import("../tnved-fts-2026-notes.json")).default as Array<{
+      code: string;
+      keys: string[];
+      why: string;
+    }>;
+    for (const row of [...invoice, ...fts]) {
+      expect(row.code).toMatch(/^\d{2,10}$/);
+      expect(row.keys.length).toBeGreaterThan(0);
+    }
+    const packed = notesByCodeFromLabSearch({ aliases: [...invoice, ...fts] });
+    expect(packed.tokens.get("8507600000")).toEqual(expect.arrayContaining(["充电宝", "power bank"]));
+    expect(packed.tokens.get("6109100000")).toEqual(expect.arrayContaining(["t恤"]));
+    expect(packed.why.get("8543400000")?.[0]).toMatch(/8543 40/);
+    expect(packed.why.get("8543900000")?.[0]).toMatch(/8543 90/);
+    expect(packed.tokens.get("3215110001")).toEqual(expect.arrayContaining(["полиграфическая краска черная"]));
   });
 });

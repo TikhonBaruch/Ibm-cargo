@@ -1,15 +1,10 @@
 import type { TnvedCard } from "@/lib/ved/tnved";
+import { formatHsCode } from "@/lib/ved/tnved";
+import { formatCardDutyLabel } from "@/lib/ved/tnved-card-layers";
+import { TNVED_RELATION_KIND_LABEL, type TnvedRelationKind } from "@/lib/ved/tnved-relations";
 
 function formatDuty(card: TnvedCard): string {
-  const rate = card.rate;
-  if (!rate || (rate.dutyPct == null && rate.dutyRubPerUnit == null)) {
-    return "нет в источнике ЕТТ";
-  }
-  if (rate.dutyKind === "SPECIFIC" && rate.dutyRubPerUnit != null) {
-    return `${rate.dutyRubPerUnit} ₽${rate.unit ? ` / ${rate.unit}` : ""}`;
-  }
-  if (rate.dutyPct != null) return `${rate.dutyPct} %`;
-  return "нет в источнике ЕТТ";
+  return formatCardDutyLabel(card.rate);
 }
 
 /** Slide-over body: official HS name, tree, ETT rate, RF payments. D32 — not a new page. */
@@ -42,6 +37,42 @@ export function TnvedCodeCard({ card }: { card: TnvedCard }) {
         </div>
       )}
 
+      {(card.children || []).length > 0 && (
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
+            Внутри позиции
+          </p>
+          <ul className="mt-1 space-y-1">
+            {(card.children || []).map((c) => (
+              <li key={c.code} className="text-xs text-[#0f172a]">
+                <span className="font-mono font-medium">{c.codeDisplay}</span>
+                <span className="text-[var(--kb-muted)]"> — {c.titleRu}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {(card.related || []).length > 0 && (
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
+            Связанные коды
+          </p>
+          <ul className="mt-1 space-y-2">
+            {(card.related || []).map((rel) => (
+              <li key={`${rel.kind}-${rel.code}`} className="text-xs text-[#0f172a]">
+                <span className="font-medium text-[var(--kb-muted)]">
+                  {TNVED_RELATION_KIND_LABEL[rel.kind as TnvedRelationKind] || rel.kind}
+                  {": "}
+                </span>
+                <span className="font-mono font-medium">{formatHsCode(rel.code) || rel.code}</span>
+                <span className="text-[var(--kb-muted)]"> — {rel.why}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="rounded-2xl bg-white p-3 shadow-sm">
         <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
           Платежи
@@ -61,10 +92,54 @@ export function TnvedCodeCard({ card }: { card: TnvedCard }) {
           </div>
         </dl>
         <p className="mt-2 text-[11px] text-[var(--kb-muted)]">
-          НДС и сбор — канон РФ, не колонка классификатора. Акциз / утиль / НТМ — только
-          триггер «возможно» по НПА, без ставки.
+          НДС и сбор — канон РФ, не колонка классификатора. «нет в НСИ» — нет официальной ставки
+          СТНВЭДСТ; fill TWS не выдаём за НСИ. Акциз / утиль / НТМ — только триггер «возможно».
         </p>
       </div>
+
+      {card.explanation ? (
+        <div className="rounded-2xl bg-white p-3 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
+            Пояснения ЕЭК (PSN)
+          </p>
+          <p className="mt-1 text-xs font-medium text-[#0f172a]">{card.explanation.heading}</p>
+          <p className="mt-1 text-xs text-[var(--kb-muted)]">{card.explanation.excerpt}</p>
+          {card.explanation.url ? (
+            <a
+              className="mt-2 inline-block text-[11px] text-[#2b72f4]"
+              href={card.explanation.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Полный текст на сайте ЕЭК
+            </a>
+          ) : null}
+        </div>
+      ) : null}
+
+      {(card.classificationDecisions || []).length > 0 ? (
+        <div className="rounded-2xl bg-white p-3 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
+            Решения ЕЭК о классификации
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {card.classificationDecisions.map((d) => (
+              <li key={`${d.code}-${d.title}`} className="text-xs text-[#0f172a]">
+                {d.url ? (
+                  <a href={d.url} target="_blank" rel="noreferrer" className="text-[#2b72f4]">
+                    {d.title}
+                  </a>
+                ) : (
+                  d.title
+                )}
+                {d.asOf ? (
+                  <span className="text-[var(--kb-muted)]"> · {d.asOf}</span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {card.measuresHint.excisePossible ||
       card.measuresHint.utilSborPossible ||

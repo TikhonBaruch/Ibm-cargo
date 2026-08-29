@@ -7,16 +7,30 @@ export function normalizeHsCode(input) {
   return digits;
 }
 
+export function formatHsCode(code) {
+  const digits = normalizeHsCode(code);
+  if (!digits) return null;
+  if (digits.length === 10) {
+    return `${digits.slice(0, 4)} ${digits.slice(4, 6)} ${digits.slice(6, 9)} ${digits.slice(9)}`;
+  }
+  const parts = [];
+  for (let i = 0; i < digits.length; i += 2) {
+    parts.push(digits.slice(i, i + 2));
+  }
+  return parts.join(" ");
+}
+
 export function tnvedSearchStems(query) {
   const q = String(query || "")
     .trim()
     .toLowerCase()
     .replace(/ё/g, "е");
   if (!q) return [];
+  const stop = new Set(["для", "или", "без", "the", "and", "for", "with", "from"]);
   const words = q
     .replace(/[-_/\\,.;:()[\]{}+]+/g, " ")
     .split(/\s+/)
-    .filter((w) => w.length >= 3);
+    .filter((w) => w.length >= 3 && !stop.has(w));
   const tokens = words.length ? words : q.length >= 2 ? [q] : [];
   const out = [];
   const seen = new Set();
@@ -33,7 +47,7 @@ export function tnvedSearchStems(query) {
   return out;
 }
 
-export function scoreTnvedSearchHit(row, { stems, digits }) {
+export function scoreTnvedSearchHit(row, { stems, digits, phrase }) {
   const notes = String(row.notes || "")
     .toLowerCase()
     .replace(/ё/g, "е");
@@ -42,8 +56,13 @@ export function scoreTnvedSearchHit(row, { stems, digits }) {
     .replace(/ё/g, "е");
   const lead = notes.split(/\n+/)[0] || "";
   const noteParts = notes.split(/[,\n;]+/).map((p) => p.trim()).filter(Boolean);
+  const full = String(phrase || "")
+    .trim()
+    .toLowerCase()
+    .replace(/ё/g, "е");
   let score = 0;
   if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
+  if (full.length >= 5 && notes.includes(full)) score += 90;
   for (const s of stems || []) {
     if (!s) continue;
     if (noteParts.some((p) => p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`))) score += 80;
@@ -78,6 +97,10 @@ export function tnvedSearchWhere(q, { leafOnly = false, headingOnly = false } = 
   for (const stem of stems.length ? stems : [q]) {
     or.push({ titleRu: { contains: stem, mode: "insensitive" } });
     or.push({ notes: { contains: stem, mode: "insensitive" } });
+  }
+  if (!codeOnly && String(q || "").trim().length >= 4) {
+    or.push({ notes: { contains: q, mode: "insensitive" } });
+    or.push({ titleRu: { contains: q, mode: "insensitive" } });
   }
   return {
     isActive: true,

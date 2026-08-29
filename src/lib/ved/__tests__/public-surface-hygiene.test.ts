@@ -59,15 +59,19 @@ describe("public surface hygiene", () => {
     expect(isSuperAdminLoginPath(`${SUPER_ADMIN_BASE}/login`)).toBe(true);
   });
 
-  it("locks live /cabinet/new to designer first-step chrome (C10/C11/C12)", () => {
+  it("locks live /cabinet/new to pay-first chrome (C10–C12, C29c honest tariff)", () => {
     const src = fs.readFileSync(
       path.join(repoRoot, "src/components/ved/client/NewCalcPane.tsx"),
       "utf8",
     );
     expect(src).toContain("Что ввозите?");
-    expect(src).toContain("Первый код бесплатный");
-    expect(src).toContain("Бесплатно");
-    expect(src).toContain("Первый просчёт — 0 ₽");
+    expect(src).toContain("Оплата просчёта кода");
+    expect(src).toContain("Код после оплаты");
+    expect(src).toContain("liveWizardStepLabels");
+    expect(src).not.toContain("Первый код бесплатный");
+    expect(src).not.toContain("Первый просчёт — 0 ₽");
+    expect(src).not.toContain("1 бесплатно");
+    expect(src).not.toContain("free-calc-banner");
     expect(src).toContain("Перетащите фото товара или сделайте снимок");
     expect(src).toContain("Документы и фото");
     expect(src).toContain("По заявке");
@@ -78,9 +82,27 @@ describe("public surface hygiene", () => {
     expect(src).toContain("ClarifyField");
     expect(src).toContain("getClarificationQuestions");
     expect(src).toContain("Пока пропустить");
+    expect(src).toContain("classify-preview");
     expect(src).not.toContain("tariff-mini");
     expect(src).not.toContain("ProductCsvImport");
     expect(src).not.toContain("HsCodeAutocomplete");
+  });
+
+  it("keeps mobile client shell after desktop cl-side rules (C-mobile)", () => {
+    const css = fs.readFileSync(
+      path.join(repoRoot, "src/lbm-bro/globals.css"),
+      "utf8",
+    );
+    const live = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/lbm-cabinets-live.css"),
+      "utf8",
+    );
+    const sideDesktop = css.indexOf(".view-client .cl-side {");
+    const mobileStrip = css.indexOf("Mobile strip AFTER desktop rules");
+    expect(sideDesktop).toBeGreaterThan(-1);
+    expect(mobileStrip).toBeGreaterThan(sideDesktop);
+    expect(live).toContain("cl-new-label");
+    expect(live).toContain("flex-wrap: wrap !important");
   });
 
   it("keeps a gap between stepper numbers and labels (C13)", () => {

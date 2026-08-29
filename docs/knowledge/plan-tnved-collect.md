@@ -147,3 +147,25 @@ npm run tnved:load -- --lab
 
 Канон: [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md). Запрет `--full` на sweb остаётся.
 
+## C19 (инвойс + ФТС/ЕЭК 2026 notes)
+
+Дополнить **существующие** коды коммерческими именами инвойса (RU/EN/CN) и why из открытых разъяснений ФТС № 641 / ЕЭК 2026. Не scrape Альта/TKS. Не новые листья без официального title.
+
+```bash
+npm run tnved:load -- --search-extras
+```
+
+Канон: [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md).
+
+## C20 (связи / зависимости)
+
+Дерево `parentCode` целое. Overlay `tnved-relation-edges.json` (не путать / вариант / целое↔части / комплект инвойса) + дети на карточке. Notes через `--search-extras`. Не junction-таблица.
+
+Канон: [`plan-tnved-relations.md`](./plan-tnved-relations.md).
+
+## C21 (деревья подсказок)
+
+Семейные packs на `/cabinet/new` (молоко: питьевое / сухое / сгущённое → 0401 / 040210 / 040299). Не 14 948 деревьев. Пастеризация не код.
+
+Канон: [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md).
+

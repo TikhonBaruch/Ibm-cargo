@@ -290,8 +290,8 @@ export function LbmCabinetsShell({
                     </div>
                   ) : null}
                   {newCalcHref ? (
-                    <Link href={newCalcHref} className="btn btn-primary btn-sm">
-                      <Icon name="plus" /> Новый просчёт
+                    <Link href={newCalcHref} className="btn btn-primary btn-sm" aria-label="Новый просчёт">
+                      <Icon name="plus" /> <span className="cl-new-label">Новый просчёт</span>
                     </Link>
                   ) : null}
                   {actions}

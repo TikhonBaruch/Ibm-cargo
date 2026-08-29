@@ -8,7 +8,7 @@ Gate: same behaviour when `USE_DOMAIN_API=0` (Prisma in Next) and `=1` (proxy �
 
 | Path | Next | `containers/api` | Notes |
 |------|------|------------------|-------|
-| Create + draft | `createAndDraftCalculation` | `POST /v1/calculations` | attrs / tnvedCode / events; invoice FX + `landedWithoutFreight`; **enqueue `AI_DRAIN`** если `llmEnrichEnabled` и задан OCR/LLM URL |
+| Create + draft | `createAndDraftCalculation` | `POST /v1/calculations` | attrs / tnvedCode / events; invoice FX + `landedWithoutFreight`; **cascade-v1** (C31d: alias/code/token) before AI service; **enqueue `AI_DRAIN`** если `llmEnrichEnabled` и задан OCR/LLM URL |
 | Attr suggest chips | `POST /api/v1/calculations/attr-suggest` | same | heuristic fill-stage; UI never calls LLM |
 | Pay | `payCalculation` | `POST …/pay` | ledger + QUEUED/DONE; outbox |
 | Claim | `claimCalculation` | `POST …/claim` | preferred window; **acceptingJobs** |
@@ -33,8 +33,8 @@ Gate: same behaviour when `USE_DOMAIN_API=0` (Prisma in Next) and `=1` (proxy �
 | Published catalog | `GET /v1/catalog/skus` | same | CLIENT/BROKER; PUBLISHED only |
 | Create + SKU FK | `items[].manufacturerSkuId` | same | snapshot attrs; optional |
 | Brokers PATCH | moderation + **acceptingJobs** | Next `PATCH /api/v1/brokers` (web session); domain list/me already dual-path | admin pause ≠ `/brokers/me` |
-| GET TN VED card | `getTnvedCard` | `GET /v1/tnved/:code` | envelope: ancestors + rate (ETT or null) + paymentsHint 22%/ПП 1637 |
-| GET TN VED search | `searchTnvedCodes` + `total` | `GET /v1/tnved/search` | stems / `heading=1` / empty q → `{ items:[], total }` |
+| GET TN VED card | `getTnvedCard` | `GET /v1/tnved/:code` | envelope: ancestors + **children** (parentCode, max 16) + **related** (C20 overlay) + rate (ETT or null) + paymentsHint 22%/ПП 1637 |
+| GET TN VED search | `searchTnvedCodes` + `total` | `GET /v1/tnved/search` | stems / phrase-in-notes / `heading=1` / empty q → `{ items:[], total }` |
 | Orch retry | `POST /api/v1/platform/orch` | Next-only admin session (Prisma helpers) | FAILED/DEAD → requeue |
 
 ## Ops / observability

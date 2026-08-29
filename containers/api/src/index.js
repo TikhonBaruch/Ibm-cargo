@@ -29,6 +29,7 @@ import { handleFactoryOrderRoutes, handleManufacturerOrderRoutes } from "./sku-o
 import { handleManufacturerDirectoryRoutes } from "./manufacturer-directory.js";
 import { assembleTnvedCard, hsCodeAncestors } from "./tnved-card.js";
 import { tnvedSearchWhere, tnvedSearchStems, scoreTnvedSearchHit } from "./tnved-helpers.js";
+import { buildCascadeDraft, pickCascadeOrHeuristic } from "./tnved-classify.js";
 import { suggestProductAttrs } from "./attr-suggest.js";
 import { shouldEnqueueAiDrain, runAiDrainPipeline } from "./ai-pipeline.js";
 import { isAllowedMediaUrl } from "./media-url.js";
@@ -1851,6 +1852,19 @@ const server = http.createServer(async (req, res) => {
       }
       if (!precedentApplied) {
       try {
+        const cascade = await buildCascadeDraft(prisma, {
+          title: body.title,
+          description: body.description,
+          name: itemsForCreate[0]?.name || body.title,
+          country: body.country,
+          shipmentValue: body.shipmentValue,
+          ocrText: body.ocrText || itemsForCreate[0]?.ocrText || null,
+        });
+        draft = pickCascadeOrHeuristic(cascade, draft);
+      } catch {
+        /* keep fallback */
+      }
+      try {
         const aiRes = await fetch(`${aiUrl}/v1/draft`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1866,7 +1880,7 @@ const server = http.createServer(async (req, res) => {
         });
         if (aiRes.ok) draft = await aiRes.json();
       } catch {
-        /* keep fallback */
+        /* keep cascade/fallback */
       }
       if (llmUrl && !draft.llmEnrich) {
         const createSettings = await getPlatformSettings();
@@ -3124,8 +3138,8 @@ const server = http.createServer(async (req, res) => {
         : [...found]
             .sort((a, b) => {
               const d =
-                scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits }) -
-                scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits });
+                scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits, phrase: q }) -
+                scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits, phrase: q });
               return d || String(a.code).localeCompare(String(b.code));
             })
             .slice(0, limit);
@@ -3145,9 +3159,16 @@ const server = http.createServer(async (req, res) => {
       });
       if (!row) return json(res, 404, { error: "Not found" });
       const ancestorCodes = hsCodeAncestors(row.code).filter((c) => c !== row.code);
-      const found = ancestorCodes.length
-        ? await prisma.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
-        : [];
+      const [found, childRows] = await Promise.all([
+        ancestorCodes.length
+          ? prisma.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
+          : Promise.resolve([]),
+        prisma.tnvedCode.findMany({
+          where: { parentCode: row.code, isActive: true },
+          orderBy: { code: "asc" },
+          take: 16,
+        }),
+      ]);
       const byCode = new Map(found.map((a) => [a.code, a]));
       const ancestors = ancestorCodes
         .map((c) => byCode.get(c))
@@ -3157,8 +3178,16 @@ const server = http.createServer(async (req, res) => {
           codeDisplay: a.codeDisplay,
           titleRu: a.titleRu,
           level: a.level,
+          notes: a.notes ?? null,
         }));
-      return json(res, 200, assembleTnvedCard(row, ancestors));
+      const children = childRows.map((c) => ({
+        code: c.code,
+        codeDisplay: c.codeDisplay,
+        titleRu: c.titleRu,
+        level: c.level,
+        isLeaf: Boolean(c.isLeaf),
+      }));
+      return json(res, 200, assembleTnvedCard(row, ancestors, { children }));
     }
 
     if (req.method === "POST" && url.pathname === "/v1/tnved/import") {

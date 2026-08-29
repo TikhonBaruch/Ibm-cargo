@@ -11,6 +11,7 @@ import {
   directoryWizardHref,
   type DirectoryCardLike,
 } from "@/lib/ved/tnved-directory-read";
+import { TNVED_RELATION_KIND_LABEL, type TnvedRelationKind } from "@/lib/ved/tnved-relations";
 import { api } from "../VedShell";
 
 /** Same labels as lab chips; queries are short tokens for live Postgres contains-search. */
@@ -162,6 +163,15 @@ export function TnvedDirectoryPane({
       })
     : newCalcHref;
 
+  function openLinkedCode(code: string, titleRu?: string | null) {
+    setGroup("");
+    setQuery(code);
+    setPicked({ code, titleRu: titleRu || "" });
+  }
+
+  const related = card?.related || [];
+  const children = card?.children || [];
+
   return (
     <>
       <div className="card-head">
@@ -300,6 +310,47 @@ export function TnvedDirectoryPane({
               <p className="meta" style={{ marginTop: 8, lineHeight: 1.45 }}>
                 {read.why}
               </p>
+              {related.length ? (
+                <div style={{ marginTop: 12 }}>
+                  <p className="meta" style={{ marginBottom: 6 }}>
+                    Связанные коды
+                  </p>
+                  <div className="filter-chips">
+                    {related.map((rel) => (
+                      <button
+                        key={`${rel.kind}-${rel.code}`}
+                        type="button"
+                        onClick={() => openLinkedCode(rel.code)}
+                        title={rel.why || ""}
+                      >
+                        {TNVED_RELATION_KIND_LABEL[rel.kind as TnvedRelationKind] || "Связь"}{" "}
+                        {formatHsCode(rel.code) || rel.code}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              {children.length ? (
+                <div style={{ marginTop: 12 }}>
+                  <p className="meta" style={{ marginBottom: 6 }}>
+                    Внутри позиции
+                  </p>
+                  <div className="filter-chips">
+                    {children
+                      .filter((c) => c.code)
+                      .map((c) => (
+                        <button
+                          key={c.code}
+                          type="button"
+                          onClick={() => openLinkedCode(c.code!, c.titleRu)}
+                          title={c.titleRu || ""}
+                        >
+                          {c.codeDisplay || formatHsCode(c.code) || c.code}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              ) : null}
               <div className="metric-row" style={{ marginTop: 14 }}>
                 <div className="metric">
                   <div className="k">Пошлина, ориентир</div>
@@ -310,6 +361,39 @@ export function TnvedDirectoryPane({
                   <div className="v">{read.vatPct}%</div>
                 </div>
               </div>
+              {read.explanation ? (
+                <div style={{ marginTop: 14 }}>
+                  <p className="meta" style={{ marginBottom: 6 }}>
+                    Пояснения ЕЭК (PSN)
+                  </p>
+                  <strong style={{ display: "block", fontSize: "0.9rem" }}>
+                    {read.explanation.heading}
+                  </strong>
+                  <p className="meta" style={{ marginTop: 6, lineHeight: 1.45 }}>
+                    {read.explanation.excerpt}
+                  </p>
+                </div>
+              ) : null}
+              {read.classificationDecisions.length ? (
+                <div style={{ marginTop: 14 }}>
+                  <p className="meta" style={{ marginBottom: 6 }}>
+                    Решения ЕЭК о классификации
+                  </p>
+                  <ul className="tnved-notes">
+                    {read.classificationDecisions.map((d) => (
+                      <li key={`${d.code}-${d.title}`}>
+                        {d.url ? (
+                          <a href={d.url} target="_blank" rel="noreferrer">
+                            {d.title}
+                          </a>
+                        ) : (
+                          d.title
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
               <ul className="tnved-notes">
                 {read.notes.map((n) => (
                   <li key={n}>{n}</li>

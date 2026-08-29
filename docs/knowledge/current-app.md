@@ -2,7 +2,7 @@
 
 Репозиторий: `Ibm-cargo (this repo)` — Next.js App Router + Prisma + NextAuth + Telegram.
 
-Единая KB: [`README.md`](./README.md) · каркас: [`skeleton.md`](./skeleton.md) · ADR: [`decisions.md`](./decisions.md) D1–D34.  
+Единая KB: [`README.md`](./README.md) · каркас: [`skeleton.md`](./skeleton.md) · ADR: [`decisions.md`](./decisions.md) D1–D37.  
 План / smoke: [`roadmap.md`](./roadmap.md) · [`staging.md`](./staging.md).  
 Фокус MVP (D27): ТН ВЭД → брокер-QC → PDF; без logistics/LLM/ЮKassa в текущем CTA — [`product.md`](./product.md).  
 Стратегия persona / сеть (D29): [`target-client.md`](./target-client.md).  
@@ -119,7 +119,7 @@ MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ o
 | D26+D27 + polish UX | **на `origin/main`**; sweb schema synced; `S3_OBJECT_ACL` on Vercel; prod smoke mvp/full **PASS** | [`runbook.md`](./runbook.md) · [`roadmap.md`](./roadmap.md) §Post-polish · [`staging.md`](./staging.md) |
 | Broker chat threads UI + DevEx (`setup`, `.nvmrc`) | **done** на `main` (merge chat-threads) | [`design-parity.md`](./design-parity.md) |
 | Shipping UI go-live | **hold (D27)** — код готов, flag **off**; не включать `NEXT_PUBLIC_SHIPPING_UI=1` как MVP CTA | [`roadmap.md`](./roadmap.md) §2.2 · `cabinet-features.ts` |
-| Полный каталог ТН ВЭД | **C18 2026-08-27:** `tnved:load -- --lab` + `--search-extras` в sweb `newlsu_lbm`. **31 706** кодов · **14 948** листьев · **15 014** вариаций. Поиск ранжирует alias-notes. Production: https://ibm-cargo-phi.vercel.app | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) |
+| Полный каталог ТН ВЭД | **C18–C31d** lab ∪ ФНС + cascade fixtures (~37) + pay-first + card layers B/D/E + **dual-path cascade** в `containers/api` (ветка PR #19). **Mobile:** sticky nav strip + header wrap. Prod: https://ibm-cargo-phi.vercel.app (до merge — без pay-first). **Дальше:** [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) C32 + merge | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) |
 | LLM-as-CTA / matcher UX | **hold (D27)** — heuristic-v1; `LLM_SERVICE_URL` только opt-in fail-open | [`ai-pipeline.md`](./ai-pipeline.md) · [`growth.md`](./growth.md) |
 | TN VED search/UI attrs/events | **done** (polish §2.5) | [`data-model.md`](./data-model.md) · [`roadmap.md`](./roadmap.md) |
 | Real ЮKassa / notify на prod | Track A ops — mock topup + SMTP_FROM; **нужен RESEND + ЮKassa host** | [`plan-track-a-p0.md`](./plan-track-a-p0.md) · `npm run ops:track-a` |
