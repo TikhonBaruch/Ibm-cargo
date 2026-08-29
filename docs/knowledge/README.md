@@ -130,6 +130,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
+  plan-mobile-client-lbm.md     # mobile client: блок → login → D27 chain на skin lbm-bro
   containerization.md        # C1–C5, Compose vs Vercel, инвентарь as-is/будущее
   cabinets/                  # UI-инвентарь client/broker/admin + correctness + ux-saas + ui-guide
   …
@@ -148,7 +149,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | DB-процесс | [`db-process.md`](./db-process.md) | Очередность записей, tx, инвентарь (D23/D24/D26) |
 | Ops | [`runbook.md`](./runbook.md), [`deploy.md`](./deploy.md), [`environments.md`](./environments.md), [`staging.md`](./staging.md), [`roadmap.md`](./roadmap.md), [`feature-cycle.md`](./feature-cycle.md), [`plan-global.md`](./plan-global.md), [`plan-mvp-polish.md`](./plan-mvp-polish.md), [`plan-precedent-bulk.md`](./plan-precedent-bulk.md), [`plan-ocr-vision.md`](./plan-ocr-vision.md), [`plan-ai-mesh.md`](./plan-ai-mesh.md), [`plan-track-a-p0.md`](./plan-track-a-p0.md), [`plan-tech-debt.md`](./plan-tech-debt.md), [`plan-cabinets-d32.md`](./plan-cabinets-d32.md), [`admin-ops.md`](./admin-ops.md), [`dual-path-parity.md`](./dual-path-parity.md) | Env, smoke, dual-path F19, notify F17, цикл фичи, горизонт 1–5, MVP polish, precedent/CSV/PDF, OCR vision hold, конвейер расшифровки, Track A P0, tech-debt, кабинеты D32, ADMIN D28 |
 | Инфра | [`containerization.md`](./containerization.md) (as-is + P1–P3), [`../containers.md`](../containers.md), [`../../containers/README.md`](../../containers/README.md), [`monorepo.md`](./monorepo.md), [`deploy.md`](./deploy.md), [`web-slim.md`](./web-slim.md), [`database.md`](./database.md), [`environments.md`](./environments.md) | Compose 14+ocr scaffold, приоритеты extract, Vercel, C5 |
-| UX | [`design.md`](./design.md), [`design-baseline.md`](./design-baseline.md), [`design-interactive.md`](./design-interactive.md), [`design-parity.md`](./design-parity.md), [`design-patterns.md`](./design-patterns.md), [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md), [`cabinets/ux-saas.md`](./cabinets/ux-saas.md), [`cabinets/ui-guide.md`](./cabinets/ui-guide.md), [`../design/refs/`](../design/refs/), skills `ved-ui` / `ved-notify` | Baseline D14, **D32 паттерны**, live chrome lbm-bro, lab `/client`, toast, parity, удобство, **сравнение ролей** |
+| UX | [`design.md`](./design.md), [`design-baseline.md`](./design-baseline.md), [`design-interactive.md`](./design-interactive.md), [`design-parity.md`](./design-parity.md), [`design-patterns.md`](./design-patterns.md), [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md), [`plan-mobile-client-lbm.md`](./plan-mobile-client-lbm.md), [`cabinets/ux-saas.md`](./cabinets/ux-saas.md), [`cabinets/ui-guide.md`](./cabinets/ui-guide.md), [`../design/refs/`](../design/refs/) | Baseline D14, **D32**, live lbm-bro, lab `/client`, **mobile client plan**, toast, parity |
 | Тесты | [`testing.md`](./testing.md), [`testing-branches.md`](./testing-branches.md) | unit / smoke / e2e + gaps |
 | As-is / AI | [`current-app.md`](./current-app.md), [`ai-pipeline.md`](./ai-pipeline.md) | Что реально работает + интегрированные решения |
 | Кабинеты по контейнерам | [`cabinets/`](./cabinets/) | Инвентарь UI + взаимодействия + correctness (client/broker/admin/shared) |
@@ -161,6 +162,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 |--------|---------|
 | Позиционирование / persona / ценность | [`product.md`](./product.md) (D27) → [`target-client.md`](./target-client.md) (D29) |
 | Интерактивный дизайн (веб/мобилка) | [`design-interactive.md`](./design-interactive.md) → [`../design/refs/`](../design/refs/) |
+| Сборка mobile client (login→D27) | [`plan-mobile-client-lbm.md`](./plan-mobile-client-lbm.md) → lab `/client` / lbm-bro tokens |
 | Сверка экрана с моком | [`design-parity.md`](./design-parity.md) → `cargo-broker-cabinets.html` |
 | Новый UI-экран / компонент | **D32** [`design-patterns.md`](./design-patterns.md) → существующий паттерн, не с нуля |
 | Новый визуал кабинетов (lbm-bro) | [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) → live `/cabinet` `/broker` `/admin`; lab `/client` референс |

@@ -151,4 +151,5 @@ CMS (posts, telegram, gallery…) — только **SUPER_ADMIN** на obscure 
 План фаз: [`roadmap.md`](./roadmap.md) · пошагово polish: [`plan-mvp-polish.md`](./plan-mvp-polish.md).  
 Opt-in провайдеры и smokes: [`growth.md`](./growth.md), [`testing-branches.md`](./testing-branches.md).  
 C5 slim cutover — после `smoke:gateway` ([`web-slim.md`](./web-slim.md)).  
-Vision OCR/Risk/mobile: [`product.md`](./product.md). Сначала зелёный `npm run test:ci`.
+Vision OCR/Risk: [`product.md`](./product.md).  
+**Mobile client:** [`plan-mobile-client-lbm.md`](./plan-mobile-client-lbm.md) — M1 login + tabbar chrome на lbm-bro; native/PWA hold. Сначала зелёный `npm run test:ci`.

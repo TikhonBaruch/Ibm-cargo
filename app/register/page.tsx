@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
-import { LandingAuthShell } from "@/components/landing/LandingAuthShell";
+import { LbmAuthShell } from "@/components/ved/LbmAuthShell";
 
 export default function RegisterPage() {
   const [companyName, setCompanyName] = useState("");
@@ -48,20 +47,21 @@ export default function RegisterPage() {
   };
 
   return (
-    <LandingAuthShell
+    <LbmAuthShell
       title="Регистрация импортёра"
       subtitle="Откроем кабинет компании — дальше можно создать первый просчёт."
       active="register"
     >
-      <form onSubmit={handleSubmit}>
-        {error && (
+      <form onSubmit={handleSubmit} noValidate>
+        {error ? (
           <div className="pill warn" style={{ marginBottom: 14, display: "block", padding: "10px 14px" }}>
             {error}
           </div>
-        )}
+        ) : null}
         <div className="field">
-          <label>Компания</label>
+          <label htmlFor="reg-company">Компания</label>
           <input
+            id="reg-company"
             type="text"
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
@@ -71,12 +71,13 @@ export default function RegisterPage() {
           />
         </div>
         <div className="field">
-          <label>ИНН (необязательно)</label>
-          <input type="text" value={inn} onChange={(e) => setInn(e.target.value)} />
+          <label htmlFor="reg-inn">ИНН (необязательно)</label>
+          <input id="reg-inn" type="text" value={inn} onChange={(e) => setInn(e.target.value)} />
         </div>
         <div className="field">
-          <label>Контактное лицо</label>
+          <label htmlFor="reg-name">Контактное лицо</label>
           <input
+            id="reg-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -85,8 +86,9 @@ export default function RegisterPage() {
           />
         </div>
         <div className="field">
-          <label>Email</label>
+          <label htmlFor="reg-email">Email</label>
           <input
+            id="reg-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -95,8 +97,9 @@ export default function RegisterPage() {
           />
         </div>
         <div className="field">
-          <label>Пароль (мин. 6 символов)</label>
+          <label htmlFor="reg-password">Пароль (мин. 6 символов)</label>
           <input
+            id="reg-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -105,15 +108,10 @@ export default function RegisterPage() {
             autoComplete="new-password"
           />
         </div>
-        <div className="modal-actions" style={{ justifyContent: "stretch", marginTop: 8 }}>
-          <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: "100%" }}>
-            {loading ? "Регистрация…" : "Зарегистрироваться"}
-          </button>
-        </div>
-        <p className="auth-hint">
-          Уже есть аккаунт? <Link href="/login">Войти</Link>
-        </p>
+        <button type="submit" className="btn btn-primary" disabled={loading} style={{ marginTop: 8 }}>
+          {loading ? "Регистрация…" : "Зарегистрироваться"}
+        </button>
       </form>
-    </LandingAuthShell>
+    </LbmAuthShell>
   );
 }
