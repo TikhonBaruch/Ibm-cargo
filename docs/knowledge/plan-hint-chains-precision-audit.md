@@ -1,8 +1,8 @@
 # План: проверка точности цепочек подсказок (все packs, max precision)
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **implementing** — **P0** merged (#37); **P1** matrix fixture + vitest (этот PR).  
-Канон: [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) (H0–H5) · [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) · [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · D15 / D27 / D32.
+**Статус:** **P0/P1/P5** on main (#37/#38) · **P4+P6** this PR · **P2** #39 · **P3** #40 · **P7** open.  
+Канон: [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) (H0–H5) · [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) · [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · [`staging.md`](./staging.md) §P6 · D15 / D27 / D32.
 
 Связанный страх продукта: запрос **«огурец»** снова тянет **одежду / молоко / чужой pack**; при этом огурец бывает **свежий** или **маринованный/консервы**.
 
@@ -23,8 +23,8 @@
 | H4 aliases | **частичная** | 0707/0702/0701 invoice | Нет полного produce leaf set; ops `--search-extras` может быть не прогнан на prod DB |
 | Search score | **средняя** | boundary + denylist | Live directory top-N не зафиксирован fixture’ом на все families |
 | Cascade | **высокая** на must-cover | C35e ≥60% offline-hit | Produce только 3 строки; нет cross-steal asserts в fixture |
-| Attr-suggest | **низкая** для produce | RULE на socks/footwear/… | **Нет produce RULE** → generic; UI chips orphan на NewCalc |
-| Clarify apply | **средняя** | chips → `hsHint` heading | Нет unit: apply «маринованный» → **2001**, не 0707; «свежий» → 0707 |
+| Attr-suggest | **средняя+** для produce | RULE socks/footwear/… + **produce clarify-only (P4)** | UI chips orphan на NewCalc (H1 fill-hints); live H6 post-merge |
+| Clarify apply | **высокая** unit (P2 #39) | chips → `hsHint` 0707/0711/2001 | Merge #39 human; NewCalc manual H7 |
 
 ### Ответ на «огурец → одежда?»
 
@@ -113,12 +113,12 @@ Ownership: Core (`tnved-hint-trees`, morph, cascade) + Client clarify apply. UI 
 | ID | Что | Done when | MoSCoW |
 |----|-----|-----------|--------|
 | **P0** | Этот план + ссылки в README / morph audit | merged docs | **done** (#37) |
-| **P1** | Fixture `hint-pack-precision.json` + vitest: все packs × pos/neg | 100% на golden | **done** (этот PR) |
-| **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | **Must** |
-| **P3** | Search + cascade rows для маринованных / корнишонов; false-friend одежда | unit green | **Must** |
-| **P4** | Attr-suggest: produce RULE **или** KB «clarify-only» + test | нет silent generic на «огурец» | **Should** |
-| **P5** | `npm run test:hint-precision` в CI рядом с morphology | script + docs | **done** (with P1) |
-| **P6** | Live checklist staging (NewCalc + search) | PASS notes in staging.md | **Should** |
+| **P1** | Fixture `hint-pack-precision.json` + vitest: все packs × pos/neg | 100% на golden | **done** (#38) |
+| **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | PR #39 |
+| **P3** | Search + cascade rows для маринованных / корнишонов; false-friend одежда | unit green | PR #40 |
+| **P4** | Attr-suggest: produce RULE **clarify-only** + test | нет silent generic на «огурец» | **done** (this PR) |
+| **P5** | `npm run test:hint-precision` в CI рядом с morphology | script + docs | **done** (#38) |
+| **P6** | Live checklist staging (NewCalc + search) | PASS notes in staging.md | **done** (this PR; H6 post-merge) |
 | **P7** | Trigger hygiene (короткие stems вроде `лук`) + denylist expansion | miss-log driven | **Could** |
 
 ---
@@ -165,10 +165,23 @@ npm run test:ci
 
 ---
 
+### P4 notes (this PR)
+
+- RULE id `produce` in `attr-suggest.ts`: огурец/томат/… (+ plurals); **clarify-only** via `extra.clarifyPack=produce-fresh` + notes; default `hsHint` **0707** (not apparel/dairy).
+- Helper `attrSuggestIsClarifyOnly()`; unit + critical-hs asserts.
+
+### P6 notes (this PR)
+
+- Checklist H1–H7 in [`staging.md`](./staging.md) §P6; live search `огурец` **PASS** on prod 2026-08-31.
+- H6 attr-suggest live: re-probe after this PR deploys to prod.
+
+---
+
 ## 10. Следующий шаг
 
-1. ~~Merge план P0~~ **done** (#37).  
-2. Merge этот PR (**P1**).  
-3. Impl **P2–P3** (apply fork + cascade/search).  
+1. ~~P0/P1/P5~~ **done** (#37/#38).  
+2. Merge **P4+P6** (this PR) + human merge **#39** (P2) / **#40** (P3).  
+3. Post-merge: H6 live attr-suggest on prod.  
+4. Optional **P7** short triggers (`лук`).  
 
 Agent cannot merge — нужен human.

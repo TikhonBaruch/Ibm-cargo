@@ -93,6 +93,24 @@ const RULES: CatalogRule[] = [
     notes: ["Питьевое молоко 0401; сухое 0402 10; сгущёнка 0402 99; йогурт/кефир 0403."],
   },
   {
+    /**
+     * P4 clarify-only: do not leave silent generic purpose on «огурец».
+     * Form (свежий / рассол / консервы) → C21 produce-fresh chips on NewCalc.
+     */
+    id: "produce",
+    test: /огурец|огурц|помидор|томат|картофел|картошк|морков|капуст|баклажан|кабачок|тыква|свекл|корнишон|cucumber|tomato|potato|carrot|gherkin|pickle|黄瓜|番茄|土豆/i,
+    attrs: {
+      purpose: "овощи / fresh produce",
+      composition: "уточните вид: свежие / временно консервированные / готовые консервы",
+      extra: { foodKind: "овощи", clarifyPack: "produce-fresh" },
+      hsHint: "0707",
+    },
+    notes: [
+      "clarify-only: на /cabinet/new выберите форму (свежий 0707 / рассол 0711 / маринад·консервы 2001).",
+      "Не одежда (61) и не молочка (04) — pack produce-fresh.",
+    ],
+  },
+  {
     id: "tee",
     test: /майк|футболк|t-?shirt|tee\b|поло\b/i,
     attrs: {
@@ -193,4 +211,10 @@ export function attrSuggestHasChips(result: AttrSuggestResult): boolean {
       a.hsHint ||
       (a.extra && Object.keys(a.extra).length)
   );
+}
+
+/** P4: produce (and similar) — chips exist but form fork is C21 clarify, not silent generic. */
+export function attrSuggestIsClarifyOnly(result: AttrSuggestResult): boolean {
+  if (result.attrs.extra?.clarifyPack) return true;
+  return result.notes.some((n) => /clarify-only/i.test(n));
 }
