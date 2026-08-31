@@ -15,7 +15,7 @@ Gate: same behaviour when `USE_DOMAIN_API=0` (Prisma in Next) and `=1` (proxy �
 | Map items | PATCH items | same | soft tnved; item.description; extraFee; empty attrs fill |
 | Reclassify | `POST …/reclassify` | same | WorkMapping feedback → LLM (skip precedent); stays `IN_REVIEW` |
 | Import preview | `POST /api/v1/imports/products/preview` | Next-only (`mustStayOnNext`) | CSV/XLSX/PDF → rows + precedent/LLM classify; D10 limit |
-| Approve | approve + PDF + outbox-in-tx | same | D26; write-back `verified_determinations` |
+| Approve | approve + PDF + outbox-in-tx | same | D26; write-back `verified_determinations`; **C35d** fingerprint attrs list + CN tokenize identical Next↔api |
 | Chat SUPPORT | create / reply / status | same | admin inbox + archive; `box=` filter |
 | Chat unread ADMIN | `GET chat?scope=unread` | same | `countAdminUnread` — OPEN + waitingOn BROKER |
 | Brokers list | marketplace + acceptingJobs | same | empty if marketplace off |

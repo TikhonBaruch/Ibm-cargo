@@ -142,6 +142,8 @@ DATABASE_URL=… npm run ops:precedent-count -- --days 7
 
 **Done when:** `total` ↑ после N broker `approve`; повторный create → `llmEnrich=precedent-v1` + `skipReason=offline-hit:precedent-v1`; CSV → `MATCHED_PRECEDENT` (`npm run smoke:precedent-csv`).
 
+**C35d note:** whitespace/case/punct/attrs-order уже в canon; код — dual-path attrs parity + CN tokens в `tokenize` (пустой fp на `充电宝` был miss). Не сворачивать CN↔RU синонимы в fingerprint (это aliases / B2).
+
 Эквивалент SQL (psql / admin):
 
 ```sql

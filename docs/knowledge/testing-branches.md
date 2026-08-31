@@ -94,6 +94,8 @@ flowchart TB
 | `npm run smoke:chain-llm` | S1–S3 + upload GET + LLM enrich (compose) |
 | `npm run smoke:precedent-csv` | precedent-v1 + skipReason + CSV preview (compose local DB) |
 | `npm run ops:precedent-count` | C35c B1: COUNT verified_determinations |
+| `npm run test:tnved-morphology` | H5 A–E + critical HS |
+| `npm run test:classify-cascade` | must-cover + C35e offline-hit ≥60% |
 | `npm run smoke:csv-import` | CSV preview → create |
 | `npm run smoke:pdf-import` | PDF text-layer table preview |
 | `npm run smoke:pdf-import` | PDF text-layer table preview |

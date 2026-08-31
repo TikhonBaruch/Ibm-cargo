@@ -5,6 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { matchHintPack, hintTreeQuestions } from "../tnved-hint-trees";
 import { scoreTnvedSearchHit, tnvedSearchStems } from "../tnved";
+import { matchClassifyAlias } from "../tnved-classify-aliases";
 import {
   hasTokenOrPrefix,
   householdStemVariants,
@@ -108,14 +109,31 @@ describe("block E negative / fail-open", () => {
     expect(tnvedSearchStems("для")).toEqual([]);
     expect(matchHintPack("для")).toBeNull();
   });
+
+  it("garbage query does not match produce or milk packs", () => {
+    expect(matchHintPack("asdfqwer zxcv")).toBeNull();
+    expect(matchHintPack("!!!")).toBeNull();
+    expect(tnvedQueryStems("   ")).toEqual([]);
+  });
 });
 
-describe("block C critical HS regression (stems only)", () => {
+describe("block C critical HS regression", () => {
   it("кепка still hits notes кепки", () => {
     const score = scoreTnvedSearchHit(
       { code: "6505003000", notes: "фуражки, кепки, козырьками", isLeaf: true, level: 10 },
       { stems: tnvedSearchStems("кепка"), digits: "", phrase: "кепка" }
     );
     expect(score).toBeGreaterThan(20);
+  });
+
+  it.each([
+    ["молоко", "0401"],
+    ["кеды", "640411"],
+    ["ноутбук", "847130"],
+    ["огурец", "0707"],
+  ] as const)("%s classify alias stays on chapter %s", (q, prefix) => {
+    const hit = matchClassifyAlias(q);
+    expect(hit, q).toBeTruthy();
+    expect(hit!.alias.code.replace(/\D/g, "").startsWith(prefix)).toBe(true);
   });
 });

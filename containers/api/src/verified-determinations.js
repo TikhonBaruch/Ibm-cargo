@@ -18,11 +18,12 @@ export const PRECEDENT_SCAN_LIMIT = Math.min(
 );
 
 function tokenize(text) {
-  return String(text || "")
+  const normalized = String(text || "")
     .toLowerCase()
-    .replace(/ё/g, "е")
-    .split(/[^a-zа-я0-9]+/i)
-    .filter((t) => t.length >= 3);
+    .replace(/ё/g, "е");
+  // Latin/Cyrillic words ≥3 chars; keep CJK runs (CN) — parity with Next.
+  const tokens = normalized.match(/[a-zа-я0-9]{3,}|[\u4e00-\u9fff]+/g);
+  return tokens || [];
 }
 
 export function buildCanonicalText(input) {
@@ -31,10 +32,14 @@ export function buildCanonicalText(input) {
     input.title,
     input.description,
     input.attrs?.brand,
-    input.attrs?.sku,
-    input.attrs?.material,
-    input.attrs?.purpose,
     input.attrs?.model,
+    input.attrs?.material,
+    input.attrs?.composition,
+    input.attrs?.purpose,
+    input.attrs?.extra?.sku,
+    input.attrs?.extra?.color,
+    input.attrs?.extra?.ageGroup,
+    input.attrs?.extra?.garmentType,
   ].filter(Boolean);
   return parts
     .join(" ")

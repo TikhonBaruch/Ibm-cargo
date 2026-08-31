@@ -42,11 +42,12 @@ export type PrecedentMatchResult = {
 };
 
 export function tokenize(text: string): string[] {
-  return String(text || "")
+  const normalized = String(text || "")
     .toLowerCase()
-    .replace(/ё/g, "е")
-    .split(/[^a-zа-я0-9]+/i)
-    .filter((t) => t.length >= 3);
+    .replace(/ё/g, "е");
+  // Latin/Cyrillic words ≥3 chars; keep CJK runs (CN) so fingerprint is non-empty.
+  const tokens = normalized.match(/[a-zа-я0-9]{3,}|[\u4e00-\u9fff]+/g);
+  return tokens || [];
 }
 
 /** Canonical text for fingerprint + lexical scoring. */
