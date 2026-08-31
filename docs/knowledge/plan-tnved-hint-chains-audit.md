@@ -1,11 +1,12 @@
 # План: аудит цепочек подсказок ТН ВЭД (морфология + false friends)
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **planned** (решения §8 зафиксированы; код — после C35a).  
+**Статус:** **implementing** — H1+H2+H3 на `cursor/tnved-hint-morphology-e1f0` (после C35a на main).  
 Канон: [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) · [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md).
 
 Связанный кейс: **«огурец»** в подсказках/поиске ведёт не туда (или в пустоту), рядом «йогурт» / молочные направления.  
-PR плана: [#32](https://github.com/TikhonBaruch/Ibm-cargo/pull/32).
+PR плана: [#32](https://github.com/TikhonBaruch/Ibm-cargo/pull/32) **merged**.  
+Impl: `src/lib/ved/tnved-query-match.ts` · pack `produce-fresh` · dual-path `containers/api/src/tnved-helpers.js`.
 
 ---
 
@@ -103,12 +104,12 @@ MoSCoW первого morph-PR: **H1+H2+H3 Must**; H4/H5 Should (можно foll
 
 | ID | Что | Done when | MoSCoW |
 |----|-----|-----------|--------|
-| **H0** | KB этот план + решения §4 | merged docs (#32) | **Must** |
-| **H1** | Stems: `огурец`→`огурц` (+ household endings); блок A | search HIT singular | **Must** |
-| **H2** | Notes: boundary/token score; denylist из B | unit false-friend | **Must** |
-| **H3** | C21 pack `produce-fresh` + clarify; блок D | pack on «огурец» | **Must** (1-й morph PR) |
+| **H0** | KB этот план + решения §4 | merged docs (#32) | **done** |
+| **H1** | Stems: `огурец`→`огурц` (+ household endings); блок A | search HIT singular | **done** (impl PR) |
+| **H2** | Notes: boundary/token score; denylist из B | unit false-friend | **done** (impl PR) |
+| **H3** | C21 pack `produce-fresh` + clarify; блок D | pack on «огурец» | **done** (impl PR) |
 | **H4** | Alias/search-extras notes для produce | `tnved:load -- --search-extras` | Should |
-| **H5** | Audit script / CI прогон A–E | `npm run test:…` | Should |
+| **H5** | Audit script / CI прогон A–E | `npm run test:…` | Should (unit A–E in morph PR) |
 
 Impl ветка: `cursor/tnved-hint-morphology-e1f0` (от `main` после C35a).
 
@@ -140,7 +141,7 @@ npm run test:ci
 
 ## 8. Следующий шаг
 
-1. **Merge #32** (этот план).  
-2. **C35a:** merge #31 (plan) → #33 (gate + dual-path).  
-3. Impl **`cursor/tnved-hint-morphology-e1f0`:** H1+H2+H3 по §4.  
-4. H4/H5 — follow-up при необходимости.
+1. ~~Merge #32~~ **done**.  
+2. ~~C35a #31+#33~~ **done**.  
+3. Merge morph PR `cursor/tnved-hint-morphology-e1f0` (H1+H2+H3).  
+4. H4/H5 — follow-up при необходимости · C35c B1 smoke.

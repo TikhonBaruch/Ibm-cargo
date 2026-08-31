@@ -11,6 +11,12 @@ import {
 } from "./tnved-card-layers";
 import { layerGToHint, matchLayerG } from "./tnved-layer-g";
 import { relationsForCode, type TnvedRelation } from "./tnved-relations";
+import {
+  hasTokenOrPrefix,
+  isFalseFriendPair,
+  notesStemMatchKind,
+  tnvedQueryStems,
+} from "./tnved-query-match";
 
 export const TNVED_LEVELS = [2, 4, 6, 8, 10] as const;
 export type TnvedLevel = (typeof TNVED_LEVELS)[number];
@@ -127,34 +133,9 @@ export async function countTnvedDirectoryStats(db: Pick<Prisma.TransactionClient
   return { total, leaves, variations };
 }
 
-/** Stems so «футболка» hits notes token «футболк» (lab alias keys). */
-const TNVED_SEARCH_STOP = new Set(["для", "или", "без", "the", "and", "for", "with", "from"]);
-
+/** Stems so «футболка» hits notes token «футболк» (lab alias keys). H1: household endings. */
 export function tnvedSearchStems(query: string): string[] {
-  const q = String(query || "")
-    .trim()
-    .toLowerCase()
-    .replace(/ё/g, "е");
-  if (!q) return [];
-  const words = q
-    .replace(/[-_/\\,.;:()[\]{}+]+/g, " ")
-    .split(/\s+/)
-    .filter((w) => w.length >= 3 && !TNVED_SEARCH_STOP.has(w));
-  const tokens = words.length ? words : q.length >= 2 ? [q] : [];
-  const out: string[] = [];
-  const seen = new Set<string>();
-  for (const t of tokens) {
-    const variants = [t];
-    // RU household: «кепка» must hit notes token «кепки»; threshold 5 (was 6).
-    if (t.length >= 5) variants.push(t.slice(0, -1));
-    if (t.length >= 8) variants.push(t.slice(0, -2));
-    for (const v of variants) {
-      if (v.length < 2 || seen.has(v)) continue;
-      seen.add(v);
-      out.push(v);
-    }
-  }
-  return out;
+  return tnvedQueryStems(query);
 }
 
 export function scoreTnvedSearchHit(
@@ -168,11 +149,24 @@ export function scoreTnvedSearchHit(
     .toLowerCase()
     .replace(/ё/g, "е");
   const lead = notes.split(/\n+/)[0] || "";
-  const noteParts = notes.split(/[,\n;]+/).map((p) => p.trim()).filter(Boolean);
   const phrase = String(opts.phrase || "")
     .trim()
     .toLowerCase()
     .replace(/ё/g, "е");
+  const queryForFriends = phrase || opts.stems.join(" ");
+
+  // H2 denylist: produce query must not score dairy hitchhike rows.
+  if (isFalseFriendPair(queryForFriends, `${notes}\n${title}`)) {
+    let score = 0;
+    if (opts.digits.length >= 2 && row.code.startsWith(opts.digits)) {
+      score += 100;
+      if (row.code === opts.digits) score += 50;
+    }
+    if (row.isLeaf) score += 15;
+    score += Number(row.level || 0);
+    return score;
+  }
+
   let score = 0;
   if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
   if (phrase.length >= 5 && notes.includes(phrase)) score += 90;
@@ -187,11 +181,11 @@ export function scoreTnvedSearchHit(
   }
   for (const s of opts.stems) {
     if (!s) continue;
-    if (noteParts.some((p) => p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`))) score += 80;
-    else if (notes.includes(s)) score += 25;
+    const kind = notesStemMatchKind(notes, s);
+    if (kind === "token") score += 80;
+    else if (kind === "substring") score += 25;
     if (title.includes(s)) {
-      const word = new RegExp(`(?:^|[^а-яa-z0-9])${s}(?:[^а-яa-z0-9]|$)`, "i");
-      score += word.test(title) ? 35 : 8;
+      score += hasTokenOrPrefix(title, s) ? 35 : 8;
     }
   }
   if (opts.digits.length >= 2 && row.code.startsWith(opts.digits)) {
