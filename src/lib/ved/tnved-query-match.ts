@@ -23,6 +23,22 @@ export const TNVED_FALSE_FRIEND_PAIRS: ReadonlyArray<{ query: string; block: str
   { query: "огур", block: "кефир" },
 ];
 
+/**
+ * P7: short C21 pack triggers (len ≤4) must not hitchhike longer unrelated tokens.
+ * Canon: plan-hint-chains-precision-audit.md §P7.
+ */
+export const SHORT_TRIGGER_FALSE_FRIENDS: ReadonlyArray<{ stem: string; block: string }> = [
+  { stem: "поло", block: "полотенц" },
+  { stem: "кофе", block: "кофеин" },
+  { stem: "крем", block: "брюле" },
+  { stem: "крем", block: "brulee" },
+  { stem: "pod", block: "ipod" },
+  { stem: "pod", block: "airpod" },
+];
+
+/** Bare «перец» is spice/veg ambiguous (0904 vs 0709) — require sweet/bell qualifiers. */
+export const PRODUCE_PEPPER_REQUIRE_QUALIFIER = true;
+
 export function normalizeTnvedQueryText(s: string): string {
   return String(s || "")
     .trim()
@@ -131,6 +147,38 @@ export function isFalseFriendPair(query: string, hitText: string): boolean {
     }
   }
   return false;
+}
+
+/** True when a short pack stem should be ignored because the query is a known hitchhike. */
+export function isShortTriggerFalseFriend(stem: string, desc: string): boolean {
+  const s = normalizeTnvedQueryText(stem);
+  const q = normalizeTnvedQueryText(desc);
+  if (!s || !q) return false;
+  for (const { stem: st, block } of SHORT_TRIGGER_FALSE_FRIENDS) {
+    if (s !== st) continue;
+    if (q.includes(block) || hasTokenOrPrefix(q, block)) return true;
+  }
+  return false;
+}
+
+/**
+ * P7 pack-trigger match policy:
+ * - multi-word keys → substring (order as authored, e.g. «перец слад»)
+ * - len ≤ 3 → exact token boundary only («лук», «чай»; no «луковица» via bare лук — use «луков»)
+ * - len === 4 → token or prefix, minus SHORT_TRIGGER_FALSE_FRIENDS («поло»≠«полотенце»)
+ * - len ≥ 5 → substring (existing C21 stems: огурц, помидор, …)
+ */
+export function packTriggerMatches(desc: string, raw: string): boolean {
+  const q = normalizeTnvedQueryText(desc);
+  const p = normalizeTnvedQueryText(raw).trim();
+  if (!q || !p) return false;
+  if (/\s/.test(p)) return q.includes(p);
+  if (p.length <= 3) return hasTokenBoundary(q, p);
+  if (p.length === 4) {
+    if (isShortTriggerFalseFriend(p, q)) return false;
+    return hasTokenBoundary(q, p) || hasTokenOrPrefix(q, p);
+  }
+  return q.includes(p);
 }
 
 /**

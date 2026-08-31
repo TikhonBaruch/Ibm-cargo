@@ -1,7 +1,7 @@
 # План: проверка точности цепочек подсказок (все packs, max precision)
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **implementing** — **P0** merged (#37); **P1** matrix fixture + vitest (этот PR).  
+**Статус:** **P0/P1/P5** on main (#37/#38) · **P7** this PR · P2 #39 · P3 #40 · P4+P6 #41 · human merge.  
 Канон: [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) (H0–H5) · [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) · [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · D15 / D27 / D32.
 
 Связанный страх продукта: запрос **«огурец»** снова тянет **одежду / молоко / чужой pack**; при этом огурец бывает **свежий** или **маринованный/консервы**.
@@ -18,7 +18,7 @@
 
 | Слой | Зрелость | Что уже есть | Дыры |
 |------|----------|--------------|------|
-| C21 packs | **средняя+** | 14 packs в `tnved-hint-tree-packs.json`; `produce-fresh` с fork 0707 / 0711 / 2001 | Нет матрицы «каждый pack × чужие queries → null»; слабые exclude на triggers (`лук` короткий и т.п.) |
+| C21 packs | **высокая** на golden + short-trigger | 14 packs; produce fork; P7 `packTriggerMatches` | miss-log driven denylist growth |
 | Morph H1–H3 | **высокая** на кейсе огурец≠йогурт | stems, denylist, unit A–E | Корпус A–E **узкий** относительно всех packs |
 | H4 aliases | **частичная** | 0707/0702/0701 invoice | Нет полного produce leaf set; ops `--search-extras` может быть не прогнан на prod DB |
 | Search score | **средняя** | boundary + denylist | Live directory top-N не зафиксирован fixture’ом на все families |
@@ -113,20 +113,20 @@ Ownership: Core (`tnved-hint-trees`, morph, cascade) + Client clarify apply. UI 
 | ID | Что | Done when | MoSCoW |
 |----|-----|-----------|--------|
 | **P0** | Этот план + ссылки в README / morph audit | merged docs | **done** (#37) |
-| **P1** | Fixture `hint-pack-precision.json` + vitest: все packs × pos/neg | 100% на golden | **done** (этот PR) |
-| **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | **Must** |
-| **P3** | Search + cascade rows для маринованных / корнишонов; false-friend одежда | unit green | **Must** |
-| **P4** | Attr-suggest: produce RULE **или** KB «clarify-only» + test | нет silent generic на «огурец» | **Should** |
-| **P5** | `npm run test:hint-precision` в CI рядом с morphology | script + docs | **done** (with P1) |
-| **P6** | Live checklist staging (NewCalc + search) | PASS notes in staging.md | **Should** |
-| **P7** | Trigger hygiene (короткие stems вроде `лук`) + denylist expansion | miss-log driven | **Could** |
+| **P1** | Fixture `hint-pack-precision.json` + vitest: все packs × pos/neg | 100% на golden | **done** (#38) |
+| **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | PR #39 |
+| **P3** | Search + cascade rows для маринованных / корнишонов; false-friend одежда | unit green | PR #40 |
+| **P4** | Attr-suggest: produce RULE **или** KB «clarify-only» + test | нет silent generic на «огурец» | PR #41 |
+| **P5** | `npm run test:hint-precision` в CI рядом с morphology | script + docs | **done** (#38) |
+| **P6** | Live checklist staging (NewCalc + search) | PASS notes in staging.md | PR #41 |
+| **P7** | Trigger hygiene (короткие stems) + denylist + pepper policy | unit green | **done** (this PR) |
 
 ---
 
 ## 7. Проверка (команды)
 
 ```bash
-# P1
+# P1 + P7
 npm run test:hint-precision
 npm run test:tnved-morphology
 npx vitest run src/lib/ved/__tests__/tnved-hint-trees.test.ts
@@ -136,6 +136,7 @@ npm run test:ci
 # live (P6)
 # /cabinet/new → «огурец» → chips 0707/0711/2001; не майка/йогурт
 # search «огурец» → 07xx; «йогурт» → 0403
+# P7: «полотенце»≠knit-top; «перец» bare ≠ produce; «сладкий перец» → produce
 ```
 
 ---
@@ -147,7 +148,8 @@ npm run test:ci
 - Ломать milk ради produce без boundary-test  
 - Автозалив attrs без клика (D15)  
 - Скрейп Альта / полный стеммер  
-- Считать C35e ≥60% заменой pack-precision (разные метрики)
+- Считать C35e ≥60% заменой pack-precision (разные метрики)  
+- Bare «перец» → produce (специи 0904 vs овощи 0709)
 
 ---
 
@@ -159,16 +161,33 @@ npm run test:ci
 | [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) | ссылка §след. шаг → precision |
 | [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) | gap H3 dairy/produce |
 | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) | produce fork |
-| [`testing-branches.md`](./testing-branches.md) | `test:hint-precision` |
+| [`testing-branches.md`](./testing-branches.md) | `test:hint-precision` (+ short-triggers) |
 | [`staging.md`](./staging.md) | live P6 |
 | [`current-app.md`](./current-app.md) | зрелость packs после ship |
 
 ---
 
+### P7 notes (this PR)
+
+**Policy** (`packTriggerMatches` in `tnved-query-match.ts`, used by C21 `matchHintPack`):
+
+| Trigger length | Match |
+|----------------|--------|
+| multi-word | substring as authored (`перец слад`) |
+| ≤3 | exact token boundary only (`лук`, `чай`) |
+| =4 | token **or** prefix, minus `SHORT_TRIGGER_FALSE_FRIENDS` (`поло`≠`полотенце`, `кофе`≠`кофеин`) |
+| ≥5 | substring (`огурц`→`огурцы`, `луков`→`луковица`) |
+
+**Produce:** add `луков`, sweet/bell pepper phrases; **no** bare `перец` (spice ambiguity).
+
+**Tests:** `hint-short-triggers.test.ts` folded into `npm run test:hint-precision`.
+
+---
+
 ## 10. Следующий шаг
 
-1. ~~Merge план P0~~ **done** (#37).  
-2. Merge этот PR (**P1**).  
-3. Impl **P2–P3** (apply fork + cascade/search).  
+1. ~~P0/P1/P5~~ **done** (#37/#38).  
+2. Human merge **#39–#41** (P2–P6) + **this PR** (P7).  
+3. Post-merge: staging H6 attr-suggest; miss-log → extend `SHORT_TRIGGER_FALSE_FRIENDS` as needed.  
 
 Agent cannot merge — нужен human.
