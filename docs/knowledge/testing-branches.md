@@ -25,7 +25,8 @@ flowchart TB
 | `test:structure` + `test:contracts` | ownership, contracts files + examples | Runtime API |
 | `smoke:full` | S1–S3 spine STANDARD (+upload attach); retry/timeout broker+PDF | PATCH correction, chat |
 | `smoke:chain-llm` | Compose/local: upload POST+GET, create w/ `llmEnrich`, pay→broker→PDF | Vercel без corpus mount |
-| `smoke:precedent-csv` | chain seed + second create `precedent-v1` + CSV `MATCHED_PRECEDENT` | Vercel / remote DB |
+| `smoke:precedent-csv` | chain seed + second create `precedent-v1` + `skipReason=offline-hit:precedent-v1` + CSV `MATCHED_PRECEDENT` | Vercel / remote DB |
+| `ops:precedent-count` | count `verified_determinations` (C35c B1) | нужен `DATABASE_URL` app DB |
 | `smoke:csv-import` | preview → create calc from CSV rows (STANDARD ≤3) | — |
 | `smoke:pdf-import` | text-layer PDF → preview rows | scanned PDF / vision |
 | `smoke:ocr-vision` | **TODO** — JPEG → `ocr-vision-v1` via extract-table | без `OPENAI_API_KEY`; см. [`plan-ocr-vision.md`](./plan-ocr-vision.md) |
@@ -91,7 +92,8 @@ flowchart TB
 | `npm run test:ci` | unit → structure → contracts → verify |
 | `npm run smoke:full` | S1–S3 |
 | `npm run smoke:chain-llm` | S1–S3 + upload GET + LLM enrich (compose) |
-| `npm run smoke:precedent-csv` | precedent-v1 + CSV preview (compose local DB) |
+| `npm run smoke:precedent-csv` | precedent-v1 + skipReason + CSV preview (compose local DB) |
+| `npm run ops:precedent-count` | C35c B1: COUNT verified_determinations |
 | `npm run smoke:csv-import` | CSV preview → create |
 | `npm run smoke:pdf-import` | PDF text-layer table preview |
 | `npm run smoke:pdf-import` | PDF text-layer table preview |

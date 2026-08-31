@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 /**
- * Precedent + CSV import smoke:
+ * Precedent + CSV import smoke (C35c B1):
  *   1) full chain approve → seeds VerifiedDetermination
  *   2) second create with same description → llmEnrich=precedent-v1
+ *      + skipReason=offline-hit:precedent-v1 (C35a/C35c, no LLM)
  *   3) CSV preview → MATCHED_PRECEDENT row
+ *
+ * Ops count (separate DB recipe): npm run ops:precedent-count
  *
  *   TEST_API_URL=http://localhost:3000 node scripts/smoke-precedent-csv.mjs
  */
@@ -101,8 +104,12 @@ async function main() {
   console.log(" 1. Client login OK");
 
   const calc = await createCalc(jar, "precedent-check");
-  const enrich = calc.aiDraft?.llmEnrich || calc.llmEnrich;
-  console.log(` 2. Second create #${calc.number} llmEnrich=${enrich}`);
+  const draft = calc.aiDraft && typeof calc.aiDraft === "object" ? calc.aiDraft : {};
+  const enrich = draft.llmEnrich || calc.llmEnrich;
+  const skipReason = draft.skipReason || calc.skipReason;
+  console.log(
+    ` 2. Second create #${calc.number} llmEnrich=${enrich} skipReason=${skipReason || "—"}`
+  );
 
   const csv = `Наименование,Описание\n${PRODUCT_ITEM_NAME},${PRODUCT_DESC}`;
   const previewRes = await fetch(`${BASE}/api/v1/imports/products/preview`, {
@@ -117,7 +124,7 @@ async function main() {
   if (!previewRes.ok) throw new Error(`preview failed: ${JSON.stringify(preview)}`);
   const row = preview.rows?.[0];
   console.log(
-    ` 3. CSV preview rowStatus=${row?.rowStatus} hs=${row?.hsCode || "—"}`
+    ` 3. CSV preview rowStatus=${row?.rowStatus} hs=${row?.hsCode || "—"} skipReason=${row?.skipReason || "—"}`
   );
   if (row?.rowStatus !== "MATCHED_PRECEDENT" && row?.rowStatus !== "CLASSIFIED_NEW") {
     throw new Error(`unexpected row status: ${row?.rowStatus}`);
@@ -125,11 +132,23 @@ async function main() {
   if (enrich !== "precedent-v1") {
     throw new Error(`expected precedent-v1 on second create, got ${enrich}`);
   }
+  if (skipReason !== "offline-hit:precedent-v1") {
+    throw new Error(
+      `expected skipReason offline-hit:precedent-v1 on second create, got ${skipReason}`
+    );
+  }
   if (row.rowStatus !== "MATCHED_PRECEDENT") {
     throw new Error(`expected CSV MATCHED_PRECEDENT, got ${row.rowStatus}`);
   }
+  if (row.skipReason && row.skipReason !== "offline-hit:precedent-v1") {
+    throw new Error(
+      `expected CSV skipReason offline-hit:precedent-v1 or absent, got ${row.skipReason}`
+    );
+  }
 
-  console.log(`\n✅ Precedent smoke OK (enrich=${enrich}, csv=${row.rowStatus})`);
+  console.log(
+    `\n✅ Precedent smoke OK (enrich=${enrich}, skipReason=${skipReason}, csv=${row.rowStatus})`
+  );
 }
 
 main().catch((e) => {

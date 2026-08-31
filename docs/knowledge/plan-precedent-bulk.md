@@ -130,6 +130,34 @@ Smoke: `npm run smoke:precedent-vector` (skip без `OPENAI_API_KEY`).
 
 ---
 
+## Ops: count БД-2 (C35c B1) ✅
+
+Admin UI покрытия Won't (C35). Рост `verified_determinations` меряем ops-скриптом / SQL.
+
+```bash
+# Compose / local postgres that backs the app (not host .env pointing at wrong DB)
+DATABASE_URL=postgresql://lbm:lbm@localhost:5432/lbm npm run ops:precedent-count
+DATABASE_URL=… npm run ops:precedent-count -- --days 7
+```
+
+**Done when:** `total` ↑ после N broker `approve`; повторный create → `llmEnrich=precedent-v1` + `skipReason=offline-hit:precedent-v1`; CSV → `MATCHED_PRECEDENT` (`npm run smoke:precedent-csv`).
+
+Эквивалент SQL (psql / admin):
+
+```sql
+SELECT COUNT(*) AS total FROM verified_determinations;
+SELECT quality, COUNT(*) FROM verified_determinations GROUP BY quality;
+SELECT COUNT(*) FILTER (WHERE "approvedAt" >= NOW() - INTERVAL '14 days') AS last_14d
+  FROM verified_determinations;
+SELECT "hsCodeDigits", COUNT(*) AS n
+  FROM verified_determinations
+  GROUP BY 1 ORDER BY n DESC LIMIT 10;
+```
+
+Связь: [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · [`runbook.md`](./runbook.md) §Precedent ops.
+
+---
+
 ## Hold (следующие итерации)
 
 | Тема | Статус |

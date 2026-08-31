@@ -23,7 +23,8 @@ Preview / результаты prod smoke: [`staging.md`](./staging.md). Пла�
 | Compose local media | volume `ved_uploads` → `public/uploads/ved`; entrypoint `containers/web/docker-entrypoint.sh` chown; serve via `app/uploads/ved/[filename]/route.ts` (`GET /uploads/ved/*`) |
 | Compose LLM enrich | profile `scale`/`full`: service `llm` :4500; mount `./containers/llm/data/tnved/normalized:/data/tnved:ro`; `LLM_SERVICE_URL=http://llm:4500`; gate `llmEnrichEnabled` |
 | Compose DB (Mode B) | `api`/`web`/`worker` → **in-network** `postgresql://lbm:lbm@postgres:5432/lbm` (host `.env` `DATABASE_URL` на sweb **не** подставляется — нужно для `verified_determinations` write-back) |
-| Precedent smoke | `npm run smoke:precedent-csv` после `smoke:chain-llm` (локальный postgres) |
+| Precedent smoke | `npm run smoke:precedent-csv` после `smoke:chain-llm` (локальный postgres) — ожидает `precedent-v1` + `skipReason=offline-hit:precedent-v1` |
+| Precedent ops count (C35c) | `DATABASE_URL=… npm run ops:precedent-count` — total↑ после approve; SQL в [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) §Ops |
 | Client shipping UI | off by default; `NEXT_PUBLIC_SHIPPING_UI=1` to show «Перевозка» |
 | Factory / manufacturer helpers | Vercel Pro: `NEXT_PUBLIC_FACTORY_UI=1` (Production+Preview). Local default off. Shows client «Завод», manufacturer `/pools`, SKU helpers, admin «Производители» |
 | Jobs tick (Pro cron) | `*/15 * * * *` → `/api/v1/internal/jobs-tick` (SLA + outbox drain + AI_DRAIN claim). **`CRON_SECRET` must be set** — Vercel only sends Bearer when it exists; `NEXTAUTH_SECRET` alone is not enough for Cron. AI overlay only if `OCR_SERVICE_URL` / `LLM_SERVICE_URL` set |
@@ -127,7 +128,8 @@ Local: `node containers/ocr/src/index.js` → `curl :4700/health` + extract.
 npm run smoke:payments   # topup stub/mock → balance↑
 npm run smoke:full       # seed client: create→pay→claim→approve (retry/timeout на flaky Vercel)
 npm run smoke:chain-llm  # compose/local: upload GET + create w/ llmEnrich + pay→broker→PDF
-npm run smoke:precedent-csv  # precedent-v1 + CSV preview (local postgres)
+npm run smoke:precedent-csv  # precedent-v1 + skipReason + CSV MATCHED_PRECEDENT
+DATABASE_URL=… npm run ops:precedent-count  # C35c B1: count verified_determinations
 npm run smoke:csv-import     # CSV preview → create
 npm run smoke:pdf-import     # text-layer PDF → preview
 npm run smoke:reclassify     # broker LLM reclassify (compose)

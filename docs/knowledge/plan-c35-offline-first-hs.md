@@ -1,11 +1,11 @@
 # План: C35 offline-first HS + DeepSeek только на miss
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **implementing** — фаза **C35a** код готов (#33), ждёт merge; dual-path folded.  
+**Статус:** **implementing** — **C35a** на `main` (#33); **C35c** B1 (этот PR): ops count + smoke `skipReason`.  
 Бриф: [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md).  
 Канон: [`ai-pipeline.md`](./ai-pipeline.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) · [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · D27 / D35 / D36.
 
-**Код:** PR [#33](https://github.com/TikhonBaruch/Ibm-cargo/pull/33) `cursor/c35-offline-first-impl-e1f0` (включает план #31). Ортогонально: morph hints [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) (#32).
+**Код:** C35a [#33](https://github.com/TikhonBaruch/Ibm-cargo/pull/33). C35c branch `cursor/c35c-precedent-smoke-e1f0`. Morph hints [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) **merged** в `main`.
 
 ---
 
@@ -57,7 +57,7 @@ create / import row
 
 | ID | Тема | MoSCoW | Done when |
 |----|------|--------|-----------|
-| **B1** | Рост БД-2 + smoke precedent | **Must** | после N approve: count↑; повторный create → `precedent-v1` без LLM (`smoke:precedent-csv`) |
+| **B1** | Рост БД-2 + smoke precedent | **Must** | после N approve: `ops:precedent-count` total↑; повторный create → `precedent-v1` + `skipReason=offline-hit:precedent-v1` (`smoke:precedent-csv`) |
 | **B2** | Alias / critical queries | **Should** | уже сильно закрыто C31/#24/O4; держать fixture зелёным; новые aliases только по miss-логам |
 | **B3** | Нормализация fingerprint (attrs / CN-RU) | **Should** | unit: эквивалентные описания → один fingerprint / lexical hit |
 | **B4** | Bulk seed approved CSV | **Could** | только если B1 мало данных; D15 no synthetic |
@@ -68,16 +68,16 @@ create / import row
 ## 4. Фазы реализации (после merge плана)
 
 ```text
-C35a  A1+A2 gate + skipReason + unit (Next) + dual-path api  ← **code done, await merge #33**
+C35a  A1+A2 gate + skipReason + unit (Next) + dual-path api  ← **done on main (#33)**
 C35b  Dual-path containers/api зеркало A1  ← **folded into C35a**
-C35c  B1 smoke precedent + KB ops count recipe
+C35c  B1 smoke precedent + KB ops count recipe  ← **this PR**
 C35d  B3 fingerprint normalize (если miss в fixture)
 C35e  Метрики на must-cover corpus ≥ цели §5; A4 checklist
 —— hold ——
 A3 shadow · B4 bulk · B5 vector · admin UI
 ```
 
-**Параллельный трек (не C35):** после merge C35a — morph hints H1–H3 ([`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) §4). C35c можно после morph или следом.
+**Параллельный трек (не C35):** morph hints H1–H3 ([`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) §4) — [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) **merged**.
 
 Ownership: A → Core/orch; B → Core; UI panes **не** трогать в Must.
 
@@ -119,7 +119,8 @@ npm run test:unit          # gate + fingerprint
 npm run test:classify-cascade
 npm run test:ci
 TEST_API_URL=<host> npm run smoke:mvp
-TEST_API_URL=<host> npm run smoke:precedent-csv   # compose/keys as needed
+TEST_API_URL=<host> npm run smoke:precedent-csv   # precedent-v1 + skipReason + CSV
+DATABASE_URL=<app-db> npm run ops:precedent-count # C35c B1 count↑
 # dual-path: USE_DOMAIN_API=0 vs 1 create smoke узкий
 ```
 
@@ -146,17 +147,18 @@ TEST_API_URL=<host> npm run smoke:precedent-csv   # compose/keys as needed
 | [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) | C35 → planned |
 | [`ai-pipeline.md`](./ai-pipeline.md) | gate LLM skip + skipReason |
 | [`dual-path-parity.md`](./dual-path-parity.md) | строка create/import gate |
+| [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) | §Ops count recipe |
+| [`runbook.md`](./runbook.md) | ops:precedent-count |
 | [`current-app.md`](./current-app.md) | после ship |
 
 ---
 
 ## 10. Следующий шаг человека / агента
 
-**Статус очереди:** #32 и #31 **merged** в `main`.
+**Статус очереди:** #31/#32/#33/#34 **merged**. C35c = этот PR.
 
-1. Merge [#33](https://github.com/TikhonBaruch/Ibm-cargo/pull/33) — C35a gate + dual-path (этот PR).  
-2. Impl morph `cursor/tnved-hint-morphology-e1f0` (H1+H2+H3) по [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md).  
-3. C35c B1 smoke precedent (можно после morph).
+1. Merge этот PR (C35c).  
+2. Далее C35d/C35e по miss; H4/H5 optional после стабильности.
 
 Не смешивать с Preview SSO ops / mobile #21 / ЮKassa.  
 Agent cannot merge — нужен human.
