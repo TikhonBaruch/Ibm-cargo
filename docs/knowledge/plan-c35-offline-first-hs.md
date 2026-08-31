@@ -5,7 +5,7 @@
 Бриф: [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md).  
 Канон: [`ai-pipeline.md`](./ai-pipeline.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) · [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · D27 / D35 / D36.
 
-**Код:** C35a [#33](https://github.com/TikhonBaruch/Ibm-cargo/pull/33). C35c branch `cursor/c35c-precedent-smoke-e1f0`. Ортогонально: morph hints [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) (human merge).
+**Код:** C35a [#33](https://github.com/TikhonBaruch/Ibm-cargo/pull/33). C35c branch `cursor/c35c-precedent-smoke-e1f0`. Morph hints [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) **merged** в `main`.
 
 ---
 
@@ -77,7 +77,7 @@ C35e  Метрики на must-cover corpus ≥ цели §5; A4 checklist
 A3 shadow · B4 bulk · B5 vector · admin UI
 ```
 
-**Параллельный трек (не C35):** morph hints H1–H3 ([`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) §4) — PR [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) await human merge.
+**Параллельный трек (не C35):** morph hints H1–H3 ([`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) §4) — [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) **merged**.
 
 Ownership: A → Core/orch; B → Core; UI panes **не** трогать в Must.
 
@@ -155,11 +155,10 @@ DATABASE_URL=<app-db> npm run ops:precedent-count # C35c B1 count↑
 
 ## 10. Следующий шаг человека / агента
 
-**Статус очереди:** #31/#32/#33 **merged**. C35c = этот PR.
+**Статус очереди:** #31/#32/#33/#34 **merged**. C35c = этот PR.
 
 1. Merge этот PR (C35c).  
-2. Merge [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) morph H1–H3 (human).  
-3. Далее C35d/C35e по miss; H4/H5 optional после стабильности.
+2. Далее C35d/C35e по miss; H4/H5 optional после стабильности.
 
 Не смешивать с Preview SSO ops / mobile #21 / ЮKassa.  
 Agent cannot merge — нужен human.
