@@ -18,15 +18,10 @@
 | Ownership / пакеты (D35) | [`PACKAGES.md`](src/lib/ved/PACKAGES.md) · [`branches.md`](docs/knowledge/branches.md) |
 | AI / цепочки / D36 | [`plan-ai-chains-1-2-3.md`](docs/knowledge/plan-ai-chains-1-2-3.md) · [`environments.md`](docs/knowledge/environments.md) · [`plan-zero-llm-coupling.md`](docs/knowledge/plan-zero-llm-coupling.md) |
 | Backup taurus (D37) | [`plan-taurus-backup-core.md`](docs/knowledge/plan-taurus-backup-core.md) — **read-only, не трогать** |
-<<<<<<< HEAD
-| UI (D14/D32) | Skill `.cursor/skills/ved-ui` · [`design-patterns.md`](docs/knowledge/design-patterns.md) |
+| UI (D14/D32) | [`design-patterns.md`](docs/knowledge/design-patterns.md) · [`ved-ui-patterns.mdc`](docs/knowledge/ved-ui-patterns.mdc) · lab [`plan-lbm-bro-visual.md`](docs/knowledge/plan-lbm-bro-visual.md) · Skill `.cursor/skills/ved-ui` |
 | Фронтенд-хандовер (другой ПК) | [`plan-frontend-handover.md`](docs/knowledge/plan-frontend-handover.md) · [`FRONTEND.md`](docs/handover/FRONTEND.md) · [`ved-frontend-boundary.mdc`](docs/knowledge/ved-frontend-boundary.mdc) |
-| Notify | Skill `.cursor/skills/ved-notify` |
-=======
-| UI (D14/D32) | [`design-patterns.md`](docs/knowledge/design-patterns.md) · [`ved-ui-patterns.mdc`](docs/knowledge/ved-ui-patterns.mdc) · lab [`plan-lbm-bro-visual.md`](docs/knowledge/plan-lbm-bro-visual.md) |
-| Notify | [`runbook.md`](docs/knowledge/runbook.md) §Notify · [`dual-path-parity.md`](docs/knowledge/dual-path-parity.md) |
+| Notify | [`runbook.md`](docs/knowledge/runbook.md) §Notify · [`dual-path-parity.md`](docs/knowledge/dual-path-parity.md) · Skill `.cursor/skills/ved-notify` |
 | Rules (локально) | Канон `docs/knowledge/ved-*.mdc`; в checkout: `npm run sync:cursor-rules` → `.cursor/rules/` (gitignored) |
->>>>>>> origin/main
 | As-is / деплой / тесты | [`current-app.md`](docs/knowledge/current-app.md) · [`deploy.md`](docs/knowledge/deploy.md) · [`testing-branches.md`](docs/knowledge/testing-branches.md) |
 
 Полный индекс: [`docs/knowledge/README.md`](docs/knowledge/README.md).
