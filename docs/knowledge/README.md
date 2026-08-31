@@ -130,7 +130,9 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-merge-ops-unblock.md     # исполнение: merge #16 + draft chain + Preview/prod ops
   plan-c32-preview-devex.md     # C32: Visit Preview + ALLOW_MOCK_TOPUP + SSO bypass smoke
   plan-fill-hints-structure.md  # аудит слоёв подсказок NewCalc (C12/C21 vs orphan chips)
-  plan-offline-first-hs-brief.md # C35 brief: offline-first HS + DeepSeek on miss (до плана)
+  plan-offline-first-hs-brief.md # C35 brief: offline-first HS + DeepSeek on miss
+  plan-c35-offline-first-hs.md   # C35 plan: gate LLM on miss + БД-2 (до кода)
+  plan-tnved-hint-chains-audit.md # морфология/false friends (огурец≠йогурт); §4 locked → morph after C35a
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
@@ -192,11 +194,12 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: инвойс + дополнения 2026 (C19) | [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md) · `tnved:load -- --search-extras` |
 | ТН ВЭД: связи кодов (C20) | [`plan-tnved-relations.md`](./plan-tnved-relations.md) · related overlay + children parentCode |
 | ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
+| ТН ВЭД: морфология / false friends | [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) · огурец≠йогурт · после C35a → morph H1–H3 |
 | Live UX результата AI (C22) | [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) · ai-run · disclaimer · conf |
 | Classify cascade C23–C27 | [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · cascade-v1 · classify-preview · import |
 | Следующий вектор C28+ | [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · ship · post-pay UX · слои B/D · quality · [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md) · **C35 brief** |
 | Разблокировка merge + ops | [`plan-merge-ops-unblock.md`](./plan-merge-ops-unblock.md) · #16 MERGED · stack PR → Preview secrets |
-| C35 offline-first HS (brief → plan) | [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) · precedent+cascade до DeepSeek · потоки A∥B |
+| C35 offline-first HS (brief → **plan**) | [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) · [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · gate LLM on miss · потоки A∥B |
 | Флаги скрытия лишнего (завод / SKU) | [`plan-cabinet-feature-flags.md`](./plan-cabinet-feature-flags.md) · паттерн `shippingUiEnabled` |
 | Производители: propose / approve | [`plan-manufacturer-proposals.md`](./plan-manufacturer-proposals.md) |
 | UX Sprint 1–2 (петли кабинетов) | [`plan-cabinets-ux-sprints.md`](./plan-cabinets-ux-sprints.md) |
