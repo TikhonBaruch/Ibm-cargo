@@ -4,7 +4,8 @@
 **Цикл D33.** Этот файл — **план до кода** (горизонт, не один PR). Каждый этап — отдельные циклы: план среза → реализация → `test:ci` → Hobby → KB.  
 Канон: [`feature-cycle.md`](./feature-cycle.md) · [`product.md`](./product.md) (D27) · ADR D26 / D32 / D33 / D34.  
 Детализация срезов: [`plan-ai-mesh.md`](./plan-ai-mesh.md) · [`plan-ocr-vision.md`](./plan-ocr-vision.md) · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) · [`plan-cabinets-d32.md`](./plan-cabinets-d32.md) · [`plan-newcalc-hints.md`](./plan-newcalc-hints.md).  
-**Активный срез (pay-first / cascade / C31):** [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md).
+**Активный срез (pay-first / cascade / C31):** [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md).  
+**Следующий диалог (этап 2 → офлайн):** C35 brief [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) — детальный план до кода.
 
 Брокер из процесса **не исчезает**. Код скрытых поверхностей **не удалять**: прятать флагами, как перевозка (`cabinet-features.ts` / `NEXT_PUBLIC_SHIPPING_UI`).
 

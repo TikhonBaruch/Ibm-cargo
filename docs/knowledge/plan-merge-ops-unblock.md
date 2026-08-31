@@ -74,6 +74,12 @@ C35: только brief; `plan-c35-*.md` / код — следующий диа�
 | 1 Merge #16 | **done** | MERGED 2026-08-31 `b7418aa` |
 | 2 Retarget chain | **done** | ветки пересобраны cherry-pick на `main`; #22 MERGEABLE ready |
 | 3 Ops | blocked human | Vercel MCP needsAuth — O1–O4 в таблице выше |
-| 4 Verify/KB | partial | playbook + C28a статус в next-vector; C28e после merge |
+| 4 Verify/KB | partial | C28a done; **prod login FAIL** 2026-08-31 (demo seed / DATABASE_URL); stack consolidated PR |
+| 2b Consolidate | **done** | один PR `cursor/stack-c32-to-layer-g-e1f0` = #22–#25 + C35 brief |
 
 После merge #16 агент: retarget #22–#26 → `main`, undraft по порядку, комментарии, smoke-помощь, KB C28e.
+
+
+## Ops note (2026-08-31)
+
+Prod https://ibm-cargo-phi.vercel.app `/login` с `client@example.com` / `demo1234` → **неверный пароль**. `/health` → `databaseUrl: true`, значит URL есть, но **нет seed демо** или БД не `newlsu_lbm`. Починить seed/`DATABASE_URL` до ручного pay-first check.
