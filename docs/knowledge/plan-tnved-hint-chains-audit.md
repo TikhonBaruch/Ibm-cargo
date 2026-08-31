@@ -143,5 +143,6 @@ npm run test:ci
 1. ~~Merge #32~~ **done**.  
 2. ~~C35a #31+#33~~ **done**.  
 3. ~~Morph H1–H3 #34~~ **done**.  
-4. ~~H4/H5~~ **done** в follow-up с C35d/e.  
-5. Ops: при необходимости `tnved:load -- --search-extras` на app DB.
+4. ~~H4/H5~~ **done** (#36).  
+5. Ops: при необходимости `tnved:load -- --search-extras` на app DB.  
+6. **Следующий аудит точности (все packs):** [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) — cross-family + огурец свежий/маринованный.
