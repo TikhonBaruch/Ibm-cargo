@@ -57,6 +57,8 @@ export type AiDraftResult = {
   engine?: string;
   /** Present when optional LLM enrich ran (S6). */
   llmEnrich?: string;
+  /** C35: why LLM was skipped — e.g. offline-hit:cascade-v1 */
+  skipReason?: string;
   /** True while BackgroundJob AI_DRAIN is running — client should wait before treating hsCode as final. */
   llmEnrichPending?: boolean;
 };

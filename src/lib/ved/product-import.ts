@@ -7,6 +7,8 @@ import type { ProductAttrs } from "./product-description";
 import { sanitizeProductAttrs } from "./product-description";
 import type { PrecedentMatchInput } from "./verified-determinations";
 import { sheetTableFromText, type SheetTable } from "./pdf-table";
+import { shouldSkipLlmClassify } from "./llm-skip-gate";
+import { CASCADE_CONF_THRESHOLD } from "./tnved-classify";
 
 export type { SheetTable } from "./pdf-table";
 export { sheetTableFromText } from "./pdf-table";
@@ -28,6 +30,8 @@ export type ClassifiedImportRow = ParsedImportRow & {
   confidence?: number;
   engine?: string;
   llmEnrich?: string;
+  /** C35: offline-hit / llm-low-conf tag */
+  skipReason?: string;
 };
 
 /** Minimal RFC4180-ish CSV parser (quoted fields). */
@@ -221,12 +225,12 @@ export type ClassifyRowDeps = {
   lowConfidenceThreshold?: number;
 };
 
-/** Per-row: precedent first, then LLM classify. Fail-open per row. */
+/** Per-row: precedent → cascade (C35 skip gate) → LLM. Fail-open per row. */
 export async function classifyImportRows(
   rows: ParsedImportRow[],
   deps: ClassifyRowDeps
 ): Promise<ClassifiedImportRow[]> {
-  const low = deps.lowConfidenceThreshold ?? 0.55;
+  const low = deps.lowConfidenceThreshold ?? CASCADE_CONF_THRESHOLD;
   const out: ClassifiedImportRow[] = [];
 
   for (const row of rows) {
@@ -242,6 +246,11 @@ export async function classifyImportRows(
     try {
       const prec = await deps.findPrecedent(input);
       if (prec) {
+        const skip = shouldSkipLlmClassify({
+          engine: prec.engine,
+          llmEnrich: prec.engine,
+          confidence: prec.confidence,
+        });
         out.push({
           ...row,
           rowStatus: "MATCHED_PRECEDENT",
@@ -249,23 +258,39 @@ export async function classifyImportRows(
           confidence: prec.confidence,
           engine: prec.engine,
           llmEnrich: prec.engine,
+          ...(skip.skipReason ? { skipReason: skip.skipReason } : {}),
         });
         continue;
       }
       const cascade = await deps.classifyCascade?.(input);
-      if (cascade && cascade.confidence >= low) {
-        out.push({
-          ...row,
-          rowStatus: "CLASSIFIED_NEW",
-          hsCode: cascade.hsCode,
-          confidence: cascade.confidence,
+      if (cascade) {
+        const skip = shouldSkipLlmClassify({
           engine: cascade.engine,
           llmEnrich: cascade.engine,
+          confidence: cascade.confidence,
         });
-        continue;
+        if (skip.skip) {
+          out.push({
+            ...row,
+            rowStatus: "CLASSIFIED_NEW",
+            hsCode: cascade.hsCode,
+            confidence: cascade.confidence,
+            engine: cascade.engine,
+            llmEnrich: cascade.engine,
+            skipReason: skip.skipReason,
+          });
+          continue;
+        }
       }
       const llm = await deps.classifyLlm(input);
       if (llm) {
+        const lowTag =
+          cascade &&
+          shouldSkipLlmClassify({
+            engine: cascade.engine,
+            llmEnrich: cascade.engine,
+            confidence: cascade.confidence,
+          }).skipReason;
         out.push({
           ...row,
           rowStatus: llm.confidence < low ? "LOW_CONFIDENCE" : "CLASSIFIED_NEW",
@@ -273,6 +298,25 @@ export async function classifyImportRows(
           confidence: llm.confidence,
           engine: llm.engine,
           llmEnrich: llm.engine,
+          ...(lowTag ? { skipReason: lowTag } : { skipReason: "llm-miss" }),
+        });
+        continue;
+      }
+      // Fail-open: keep cascade if it cleared prefer threshold but not LLM skip.
+      if (cascade && cascade.confidence >= CASCADE_CONF_THRESHOLD) {
+        const skip = shouldSkipLlmClassify({
+          engine: cascade.engine,
+          llmEnrich: cascade.engine,
+          confidence: cascade.confidence,
+        });
+        out.push({
+          ...row,
+          rowStatus: cascade.confidence < low ? "LOW_CONFIDENCE" : "CLASSIFIED_NEW",
+          hsCode: cascade.hsCode,
+          confidence: cascade.confidence,
+          engine: cascade.engine,
+          llmEnrich: cascade.engine,
+          ...(skip.skipReason ? { skipReason: skip.skipReason } : {}),
         });
         continue;
       }

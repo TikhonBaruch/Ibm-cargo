@@ -4,6 +4,7 @@
  */
 import { createHash } from "node:crypto";
 import { isAllowedMediaUrl } from "./media-url.js";
+import { shouldSkipLlmClassify } from "./llm-skip-gate.js";
 
 function resolveAiChainId(env = process.env) {
   const raw = String(env.AI_CHAIN_ID || env.LLM_CHAIN_ID || "2").trim().toLowerCase();
@@ -149,6 +150,43 @@ export async function runAiDrainPipeline(prisma, { calculationId, recordCall, co
   if (!llmUrl) {
     if (describeFailed) return { ok: false, visionDescription, error: describeFailed };
     return { ok: true, visionDescription, skipped: true, engine: "ocr-only" };
+  }
+
+  // C35a: skip provider classify when sync offline draft already confident.
+  {
+    const draftGate = (calc.aiDraft && typeof calc.aiDraft === "object" ? calc.aiDraft : {}) || {};
+    const conf =
+      typeof draftGate.confidence === "number" && Number.isFinite(draftGate.confidence)
+        ? draftGate.confidence
+        : typeof calc.confidence === "number"
+          ? calc.confidence
+          : 0;
+    const skip = shouldSkipLlmClassify({
+      engine: draftGate.engine,
+      llmEnrich: draftGate.llmEnrich,
+      confidence: conf,
+    });
+    if (skip.skip) {
+      const nextDraft = {
+        ...draftGate,
+        llmEnrich: draftGate.llmEnrich || skip.offlineEngine,
+        skipReason: skip.skipReason,
+        llmEnrichPending: false,
+        chainId,
+        ...(visionDescription ? { visionDescription: String(visionDescription).slice(0, 2000) } : {}),
+      };
+      await prisma.calculation.update({
+        where: { id: calc.id },
+        data: { aiDraft: nextDraft },
+      });
+      return {
+        ok: true,
+        visionDescription,
+        skipped: true,
+        hsCode: draftGate.hsCode || calc.hsCode || null,
+        engine: skip.offlineEngine,
+      };
+    }
   }
 
   const classifyCall = await recordCall({

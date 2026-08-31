@@ -123,7 +123,27 @@ describe("product-import", () => {
     const result = await classifyImportRows(rows, { findPrecedent, classifyCascade, classifyLlm });
     expect(result[0].rowStatus).toBe("CLASSIFIED_NEW");
     expect(result[0].engine).toBe("cascade-v1");
+    expect(result[0].skipReason).toBe("offline-hit:cascade-v1");
     expect(classifyLlm).not.toHaveBeenCalled();
+  });
+
+  it("classifyImportRows calls LLM when cascade conf is below LLM_SKIP_CONF", async () => {
+    const rows = mapCsvToRows(["name"], [["гаджет"]]);
+    const findPrecedent = vi.fn().mockResolvedValue(null);
+    const classifyCascade = vi.fn().mockResolvedValue({
+      hsCode: "8517 13 000 0",
+      confidence: 0.6,
+      engine: "cascade-v1",
+    });
+    const classifyLlm = vi.fn().mockResolvedValue({
+      hsCode: "8517 13 000 0",
+      confidence: 0.85,
+      engine: "llm-openai-v1",
+    });
+    const result = await classifyImportRows(rows, { findPrecedent, classifyCascade, classifyLlm });
+    expect(classifyLlm).toHaveBeenCalled();
+    expect(result[0].engine).toBe("llm-openai-v1");
+    expect(result[0].skipReason).toBe("llm-low-conf:cascade-v1");
   });
 
   it("classifyImportRows falls back to LLM", async () => {
@@ -137,5 +157,6 @@ describe("product-import", () => {
     const result = await classifyImportRows(rows, { findPrecedent, classifyLlm });
     expect(result[0].rowStatus).toBe("CLASSIFIED_NEW");
     expect(result[0].hsCode).toBe("8517 13 000 0");
+    expect(result[0].skipReason).toBe("llm-miss");
   });
 });

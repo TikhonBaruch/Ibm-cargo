@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { AiDraftResult } from "./domain";
 import { buildHeuristicDraft } from "./ai-draft-engine";
 import { enrichDraftWithLlm } from "./llm-enrich";
+import { applyLlmSkipToDraft, shouldSkipLlmClassify } from "./llm-skip-gate";
 import { tryPrecedentDraft } from "./precedent-enrich";
 import { getPlatformSettings } from "./settings";
 import { buildCascadeDraft, pickCascadeOrHeuristic } from "./tnved-classify";
@@ -72,5 +73,13 @@ export async function requestAiDraft(input: {
   }
 
   if (settings.llmEnrichEnabled === false || input.skipLlmEnrich) return draftBase;
-  return enrichDraftWithLlm(input, draftBase);
+
+  // C35a: do not call DeepSeek/LLM when cascade/precedent already confident.
+  const skip = shouldSkipLlmClassify(draftBase);
+  if (skip.skip) return applyLlmSkipToDraft(draftBase, skip);
+  const withReason = skip.skipReason
+    ? ({ ...draftBase, skipReason: skip.skipReason } as AiDraftResult)
+    : draftBase;
+
+  return enrichDraftWithLlm(input, withReason);
 }
