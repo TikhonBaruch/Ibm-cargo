@@ -50,13 +50,14 @@ C32  Preview DevEx (SSO bypass для smoke / docs)
 —— hold ——
 C33  vision OCR E2E (ключ + compose)
 C34  Track A payments (ЮKassa) — вне D27 polish
+C35  offline-first HS + DeepSeek on miss (brief → plan → code)
 ```
 
 ### C28 — Ship & verify (ближайший)
 
 | Шаг | Действие | Done when | Status |
 |-----|----------|-----------|--------|
-| C28a | Merge PR **#16** → `main` (внутри уже #19 C19–C31) | pay-first на ibm-cargo-phi | **blocked human** — playbook [`plan-merge-ops-unblock.md`](./plan-merge-ops-unblock.md) |
+| C28a | Merge PR **#16** → `main` (внутри уже #19 C19–C31) | pay-first на ibm-cargo-phi | **done** 2026-08-31 (`b7418aa`) |
 | C28b | Ручной: `/cabinet/new` → Далее → Оплата → код только после pay | HS = `—` до pay | ready in #16 |
 | C28c | `TEST_API_URL=<preview> npm run smoke:mvp` (+ seed fallback ok) | PASS | after O1–O3 |
 | C28d | `npm run test:classify-cascade` на CI | PASS | in #16 |
@@ -103,11 +104,13 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 
 ### C32 — Preview / smoke DevEx
 
-| Шаг | Что |
-|-----|-----|
-| C32a | Docs: Visit Preview + `ALLOW_MOCK_TOPUP` checklist (частично в staging) |
-| C32b | Опционально: Vercel Protection bypass token для CI (ops, не код агента) |
-| C32c | `smoke:standalone` зелёный на Preview после C28 |
+Канон: [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md).
+
+| Шаг | Что | Status |
+|-----|-----|--------|
+| C32a | Docs: Visit Preview + `ALLOW_MOCK_TOPUP` checklist | **done** |
+| C32b | Protection Bypass for Automation + `install-vercel-bypass` в smoke | **docs/helper done**; secret = human ops |
+| C32c | `smoke:standalone` зелёный на Preview после C28 | **blocked SSO** (2026-08-29) до bypass secret |
 
 ### Hold (после C28–C32)
 
@@ -115,8 +118,21 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 |----|------|---------|
 | C33 | Vision OCR E2E | OCR key + UI upload path |
 | C34 | ЮKassa live | Track A keys; выкл mock |
+| **C35** | **Offline-first HS + DeepSeek только на miss** (цепочки ∥ структура БД-2) | Бриф готов → детальный план до кода: [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) |
 | — | Voice / proto-bar | не MVP |
 | — | Shipping / factory CTA | D27 hold |
+
+### C35 — Offline-first classify (brief, не код)
+
+**Идея:** не звать DeepSeek/LLM на каждый запрос; часть определений — precedent + cascade + corpus в БД; параллельно вести поток A (gate/метрики цепочек) и поток B (наполнение БД-2 / aliases).
+
+| Шаг | Что | Status |
+|-----|-----|--------|
+| C35-brief | Точная постановка задачи, метрики-кандидаты, вопросы §8 | **done** — [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) |
+| C35-plan | Ответы на вопросы брифа → `plan-c35-offline-first-hs.md` (фазы A∥B) | **next dialogue** |
+| C35-impl | Код только после C35-plan | blocked |
+
+**Не смешивать** с C33 vision E2E и C34 ЮKassa.
 
 ## 4. Приоритет (Impact × Effort)
 
@@ -130,6 +146,7 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 | C31 fixtures + aliases | высокий | средний | Should |
 | C32 SSO bypass | средний | ops | Could |
 | C33–C34 | высокий | высокий | Won't (сейчас) |
+| C35 offline-first HS | высокий | средний→высокий | **Should** (после C28 ship; сначала plan) |
 
 ## 5. Проверка
 
@@ -146,8 +163,8 @@ TEST_API_URL=<preview> npm run smoke:csv-import
 | plan-global этап | Этот вектор |
 |------------------|-------------|
 | 1 поиск ТН ВЭД | C28–C31 усиливают |
-| 2 базы + ИИ | C31 БД-2; C33 vision later |
-| 3 mesh | **не** в C28–C32 |
+| 2 базы + ИИ | C31 БД-2; **C35 offline-first** ([brief](./plan-offline-first-hs-brief.md)); C33 vision later |
+| 3 mesh | **не** в C28–C32; C35 не = multi-LLM router |
 | 4–5 фото/флаги | hold |
 
 ## 7. Закрытие цикла

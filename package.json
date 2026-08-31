@@ -52,6 +52,7 @@
     "backfill:precedent-embeddings": "node scripts/backfill-precedent-embeddings.mjs",
     "smoke:mvp": "node scripts/smoke-mvp-path.mjs",
     "smoke:standalone": "node scripts/smoke-standalone.mjs",
+    "probe:preview": "node scripts/probe-preview-access.mjs",
     "ops:track-a": "node scripts/ops-track-a-check.mjs",
     "tnved:fetch": "node scripts/tnved-fetch.mjs",
     "tnved:normalize": "ts-node --project scripts/tsconfig.tnved.json --transpile-only scripts/tnved-normalize.ts",

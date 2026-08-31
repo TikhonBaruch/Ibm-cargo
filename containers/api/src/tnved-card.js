@@ -158,7 +158,13 @@ function matchLayerG(code) {
     const prefix = prefixes.find((p) => digits.startsWith(p));
     if (!prefix) continue;
     seen.add(rule.flag);
-    hits.push({ flag: rule.flag, source: rule.source, url: rule.url ?? null, prefix });
+    hits.push({
+      flag: rule.flag,
+      source: rule.source,
+      url: rule.url ?? null,
+      prefix,
+      ...(rule.group ? { group: rule.group } : {}),
+    });
   }
   return hits;
 }
@@ -167,8 +173,14 @@ function layerGToHint(hits) {
   return {
     excisePossible: hits.some((h) => h.flag === "excisePossible"),
     utilSborPossible: hits.some((h) => h.flag === "utilSborPossible"),
+    ecoFeePossible: hits.some((h) => h.flag === "ecoFeePossible"),
     ntmPossible: hits.some((h) => h.flag === "ntmPossible"),
-    hits,
+    hits: hits.map((h) => ({
+      flag: h.flag,
+      source: h.source,
+      prefix: h.prefix,
+      ...(h.group ? { group: h.group } : {}),
+    })),
   };
 }
 
@@ -205,9 +217,9 @@ export const TNVED_CARD_SOURCES = [
   },
   {
     layer: "G",
-    title: "Акциз / утиль / НТМ — триггеры НПА (не ставка)",
+    title: "Акциз / утиль / экосбор РОП / НТМ — триггеры НПА (не ставка)",
     url: null,
-    asOf: "2026-01-01",
+    asOf: "2026-08-29",
   },
 ];
 

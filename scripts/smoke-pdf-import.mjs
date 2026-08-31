@@ -3,6 +3,7 @@
  * Smoke: PDF table import preview (text-layer PDF → same classify pipeline).
  *   TEST_API_URL=http://localhost:3000 node scripts/smoke-pdf-import.mjs
  */
+import "./lib/install-vercel-bypass.mjs";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 
 const BASE = process.env.TEST_API_URL || "http://localhost:3000";

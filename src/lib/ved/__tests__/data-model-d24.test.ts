@@ -113,6 +113,7 @@ describe("D24 TN VED helpers", () => {
 
   it("tnvedSearchStems stems household queries", () => {
     expect(tnvedSearchStems("футболка")).toContain("футболк");
+    expect(tnvedSearchStems("кепка")).toEqual(expect.arrayContaining(["кепка", "кепк"]));
   });
 
   it("getTnvedByCode normalizes display form", async () => {

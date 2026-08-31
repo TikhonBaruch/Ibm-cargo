@@ -40,6 +40,7 @@ export type DirectoryCardLike = {
   measuresHint?: {
     excisePossible?: boolean;
     utilSborPossible?: boolean;
+    ecoFeePossible?: boolean;
     ntmPossible?: boolean;
   };
 };
@@ -125,6 +126,7 @@ export function directoryReadFromCard(
   const flags: string[] = [];
   if (m?.excisePossible) flags.push("акциз");
   if (m?.utilSborPossible) flags.push("утильсбор");
+  if (m?.ecoFeePossible) flags.push("экосбор РОП");
   if (m?.ntmPossible) flags.push("НТМ");
   const riskLabel = flags.length
     ? `Возможны ${flags.join(" / ")} — уточнит брокер`

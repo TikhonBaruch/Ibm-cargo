@@ -117,11 +117,13 @@ function main() {
   const leaves = nodes.filter((n) => n.isLeaf);
   let excise = 0;
   let util = 0;
+  let eco = 0;
   let ntm = 0;
   for (const leaf of leaves) {
     const hits = matchLayerG(leaf.code);
     if (hits.some((h) => h.flag === "excisePossible")) excise += 1;
     if (hits.some((h) => h.flag === "utilSborPossible")) util += 1;
+    if (hits.some((h) => h.flag === "ecoFeePossible")) eco += 1;
     if (hits.some((h) => h.flag === "ntmPossible")) ntm += 1;
   }
   const summary = {
@@ -134,6 +136,7 @@ function main() {
     layerG: {
       excisePossibleLeaves: excise,
       utilSborPossibleLeaves: util,
+      ecoFeePossibleLeaves: eco,
       ntmPossibleLeaves: ntm,
     },
     payments: { vatPct: 22, feeRule: "ПП 1637" },

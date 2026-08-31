@@ -38,4 +38,10 @@ describe("attr-suggest", () => {
     expect(out.attrs.material).toBe("трикотаж");
     expect(out.attrs.hsHint).toMatch(/6115/);
   });
+
+  it("does not map кеды текстиль to apparel 62xx", () => {
+    const out = heuristicAttrSuggest({ name: "кеды текстиль" });
+    expect(out.attrs.hsHint).toMatch(/6404/);
+    expect(out.attrs.purpose).toMatch(/обув/i);
+  });
 });
