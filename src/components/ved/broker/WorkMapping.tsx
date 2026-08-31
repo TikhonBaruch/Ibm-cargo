@@ -12,6 +12,8 @@ import { applyTnvedRowHint, type Calc, type MapRow } from "./types";
 import { FactorySkuSnapshot } from "./FactorySkuSnapshot";
 import { BrokerAttrsFill } from "./BrokerAttrsFill";
 import { LandedWithoutFreightCard } from "../LandedWithoutFreightCard";
+import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
+import { formatRub } from "../lbm-pane-visual";
 
 export function WorkMapping({
   selected,
@@ -69,13 +71,14 @@ export function WorkMapping({
 }) {
   const [approvePreview, setApprovePreview] = useState(false);
   const [cardCode, setCardCode] = useState<string | null>(null);
+  const showInvoice = commercialInvoiceUiEnabled();
   useEffect(() => {
     setApprovePreview(false);
   }, [selected?.id]);
   if (!selected) {
     return (
-      <div className="rounded-[28px] bg-white p-4 shadow-sm">
-        <h2 className="mb-3 font-semibold">Карточка</h2>
+      <div className="card">
+        <h3>Карточка</h3>
         <p className="text-sm text-[#7a7f89]">Выберите заявку</p>
       </div>
     );
@@ -85,11 +88,43 @@ export function WorkMapping({
   const extraFeeMissing = extraFeeEdit > 0 && !extraFeeNote.trim();
 
   return (
-    <div className="rounded-[28px] bg-white p-4 shadow-sm">
-      <h2 className="mb-3 font-semibold">Карточка {selected.number}</h2>
+    <div className="card">
+      <h3>Карточка {selected.number}</h3>
       <div className="space-y-3 text-sm">
         <div className="font-medium">{selected.title}</div>
-        {(selected.description || selected.country || selected.shipmentValue) && (
+        <div className="metric-row">
+          <div className="metric">
+            <div className="k">ТН ВЭД (AI)</div>
+            <div className="v" style={{ fontSize: "1rem" }}>
+              {selected.hsCode || "—"}
+            </div>
+          </div>
+          <div className="metric">
+            <div className="k">Уверенность</div>
+            <div className="v" style={{ fontSize: "1.2rem" }}>
+              {selected.confidence != null ? `${Math.round(selected.confidence * 100)}%` : "—"}
+            </div>
+          </div>
+        </div>
+        <div className="breakdown">
+          <div>
+            <span>Пошлина</span>
+            <strong>{formatRub(selected.dutyRub ?? 0)}</strong>
+          </div>
+          <div>
+            <span>НДС 22%</span>
+            <strong>{formatRub(selected.vatRub ?? 0)}</strong>
+          </div>
+          <div>
+            <span>Сбор ПП 1637</span>
+            <strong>{formatRub(selected.feeRub ?? 0)}</strong>
+          </div>
+          <div>
+            <span>Итого</span>
+            <strong>{formatRub(selected.totalPaymentsRub ?? 0)}</strong>
+          </div>
+        </div>
+        {(selected.description || selected.country || (commercialInvoiceUiEnabled() && selected.shipmentValue)) && (
           <div className="rounded-2xl bg-slate-50 px-3 py-2 text-xs text-[#0f172a]">
             {selected.description && (
               <>
@@ -101,7 +136,9 @@ export function WorkMapping({
             )}
             <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[#7a7f89]">
               {selected.country && <span>Страна: {selected.country}</span>}
-              {selected.shipmentValue && <span>Партия: {selected.shipmentValue}</span>}
+              {commercialInvoiceUiEnabled() && selected.shipmentValue ? (
+                <span>Партия: {selected.shipmentValue}</span>
+              ) : null}
             </div>
           </div>
         )}
@@ -182,7 +219,7 @@ export function WorkMapping({
                       a.brand && `бренд: ${a.brand}`,
                       a.material && `мат.: ${a.material}`,
                       a.originCountry && `origin: ${a.originCountry}`,
-                      a.netWeightKg != null && `${a.netWeightKg} кг`,
+                      commercialInvoiceUiEnabled() && a.netWeightKg != null && `${a.netWeightKg} кг`,
                       a.hsHint && `hint: ${a.hsHint}`,
                     ].filter(Boolean)
                   : [];
@@ -231,7 +268,7 @@ export function WorkMapping({
                         }}
                       />
                     </label>
-                    <div className="mt-2 grid grid-cols-3 gap-2">
+                    <div className={`mt-2 grid gap-2 ${showInvoice ? "grid-cols-3" : "grid-cols-2"}`}>
                       <label className="block text-xs">
                         Пошлина
                         <input
@@ -254,6 +291,7 @@ export function WorkMapping({
                           }
                         />
                       </label>
+                      {showInvoice ? (
                       <label className="block text-xs">
                         Цена ед.
                         <input
@@ -265,6 +303,7 @@ export function WorkMapping({
                           }
                         />
                       </label>
+                      ) : null}
                     </div>
                   </li>
                 );
@@ -282,7 +321,7 @@ export function WorkMapping({
                     <th className="pr-1 py-1">Δ HS</th>
                     <th className="pr-1 py-1">Пошлина</th>
                     <th className="pr-1 py-1">НДС</th>
-                    <th className="py-1">Цена ед.</th>
+                    {showInvoice ? <th className="py-1">Цена ед.</th> : null}
                   </tr>
                 </thead>
                 <tbody>
@@ -345,6 +384,7 @@ export function WorkMapping({
                             }
                           />
                         </td>
+                        {showInvoice ? (
                         <td className="py-1">
                           <input
                             type="number"
@@ -355,6 +395,7 @@ export function WorkMapping({
                             }
                           />
                         </td>
+                        ) : null}
                       </tr>
                     );
                   })}

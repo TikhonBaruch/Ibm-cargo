@@ -32,37 +32,28 @@ export function DashboardPane({
     .slice(0, 6);
 
   return (
-    <section className="mb-6 space-y-5">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <section>
+      <div className="stats">
         {[
           { v: calcs.length, k: "Просчётов (live)" },
           { v: calcs.filter((c) => c.status === "QUEUED").length, k: "В очереди" },
           { v: clients.length, k: "Клиентов" },
           { v: brokers.length, k: "Брокеров" },
         ].map((s) => (
-          <div
-            key={s.k}
-            className="rounded-[28px] border border-black/[0.04] bg-white px-5 py-4 shadow-sm"
-          >
-            <div className="text-3xl font-extrabold" style={{ fontFamily: "var(--kb-font-display)" }}>
-              {s.v}
-            </div>
-            <div className="mt-1 text-sm text-[var(--kb-muted)]">{s.k}</div>
+          <div key={s.k} className="stat">
+            <div className="v">{s.v}</div>
+            <div className="k">{s.k}</div>
           </div>
         ))}
       </div>
-      <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-          <div className="mb-3 flex items-center justify-between gap-2">
+      <div className="two">
+        <div className="card">
+          <div className="card-head">
             <div>
-              <h2 className="font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-                Статусы сейчас
-              </h2>
-              <p className="text-sm text-[var(--kb-muted)]">Без фейкового GMV — только live counts</p>
+              <h3>Статусы сейчас</h3>
+              <p>Без фейкового GMV — только live counts</p>
             </div>
-            <span className="rounded-full bg-[#dcfce7] px-2.5 py-0.5 text-xs font-bold text-[#16a34a]">
-              Живой
-            </span>
+            <span className="pill ok">Живой</span>
           </div>
           <div className="flex h-40 items-end gap-2">
             {(() => {
@@ -81,7 +72,7 @@ export function DashboardPane({
                     style={{ height: `${Math.max(12, Math.round((count / max) * 120))}px` }}
                     title={`${label}: ${count}`}
                   />
-                  <span className="truncate text-[10px] text-[var(--kb-muted)]">
+                  <span className="truncate text-[10px] text-[var(--muted)]">
                     {label.replace("_", " ")}
                   </span>
                   <span className="text-xs font-bold">{count}</span>
@@ -90,10 +81,8 @@ export function DashboardPane({
             })()}
           </div>
         </div>
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-          <h2 className="mb-3 font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-            Требуют внимания
-          </h2>
+        <div className="card">
+          <h3>Требуют внимания</h3>
           <ul className="space-y-3 text-sm">
             {attentionCalcs.map((c) => (
               <li key={c.id} className="flex gap-3">
@@ -106,7 +95,7 @@ export function DashboardPane({
                   <strong>
                     {c.status === "SLA_RISK" ? "SLA risk" : "Низкий AI confidence"} · {c.number}
                   </strong>
-                  <div className="text-[var(--kb-muted)]">
+                  <div className="text-[var(--muted)]">
                     {c.title}
                     {c.confidence != null ? ` · ${Math.round(c.confidence * 100)}%` : ""}
                   </div>
@@ -118,7 +107,7 @@ export function DashboardPane({
                 <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#2b72f4]" />
                 <div>
                   <strong>Брокер на модерации</strong>
-                  <div className="text-[var(--kb-muted)]">{b.user.name}</div>
+                  <div className="text-[var(--muted)]">{b.user.name}</div>
                 </div>
               </li>
             ))}
@@ -127,7 +116,7 @@ export function DashboardPane({
                 <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
                 <div>
                   <strong>Выплата брокерам</strong>
-                  <div className="text-[var(--kb-muted)]">
+                  <div className="text-[var(--muted)]">
                     {pay.periodLabel} · {pay.amountRub.toLocaleString("ru-RU")} ₽ · {pay.status}
                   </div>
                 </div>
@@ -142,9 +131,9 @@ export function DashboardPane({
                   actionHref={bookingsHref}
                 />
                 {supportHref && (
-                  <p className="mt-2 text-center text-xs text-[var(--kb-muted)]">
+                  <p className="mt-2 text-center text-xs text-[var(--muted)]">
                     или{" "}
-                    <Link href={supportHref} className="font-semibold text-[#2b72f4] hover:underline">
+                    <Link href={supportHref} className="font-semibold" style={{ color: "var(--blue)" }}>
                       Поддержка
                     </Link>
                   </p>

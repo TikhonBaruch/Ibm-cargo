@@ -1,52 +1,77 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { StatusPill } from "../VedShell";
-import { ProductCsvImport } from "./ProductCsvImport";
-import type { Broker, Calc, CalcForm, CatalogSku, CreatePhase, FormItem, TariffOption } from "./types";
-import { formatTariffOption, maxPositionsForTariffCode } from "./types";
-import { SkuCatalogSelect } from "./SkuCatalogSelect";
-import { ManufacturerSuggest } from "./ManufacturerSuggest";
-import { AttrSuggestChips } from "./AttrSuggestChips";
-import { HsHintCandidates } from "./HsHintCandidates";
-import { FieldLabel, StageTip, newCalcStageTip } from "./NewCalcHints";
-import { FieldSuggest } from "./FieldSuggest";
-import { HsCodeAutocomplete } from "../HsCodeAutocomplete";
-import { TnvedCardDrawer } from "../TnvedCardDrawer";
-import { rankHeuristicCandidates } from "@/lib/ved/ai-draft-engine";
-import { factoryUiEnabled } from "@/lib/ved/cabinet-features";
+import { ClarifyField } from "@/lbm-bro/components/clarify-field";
+import { Icon } from "@/lbm-bro/components/icon";
+import { PayMath } from "@/lbm-bro/components/pay-math";
+import {
+  getClarificationQuestions,
+  type ClarificationQuestion,
+} from "@/lbm-bro/lib/clarify-ai";
+import type { Broker, Calc, CalcForm, CatalogSku, CreatePhase, FormItem, Me, TariffOption } from "./types";
+import { clientOrderHref } from "./types";
 import { isAiDrainPending } from "@/lib/ved/ai-drain-client";
-import { hasRequiredCreateAttrs } from "@/lib/ved/product-description";
-import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
-import { useVedToast } from "../feedback/VedToast";
+import {
+  aiRunTitle,
+  calcConfidencePct,
+  classificationHeroKicker,
+  classificationWhyBody,
+  classificationWhyTitle,
+  needsClassificationClarify,
+  shouldRevealClientDraftHs,
+} from "@/lib/ved/ai-classification-copy";
+import { clientOrderHsLabel, wizardStepClass } from "../lbm-pane-visual";
+import { AiRunCard } from "./AiRunCard";
+import type { HeuristicHsCandidate } from "@/lib/ved/ai-draft-engine";
+import { api } from "../VedShell";
+import { originCountrySelectOptions, resolveOriginCountryCode } from "@/lib/ved/field-suggest";
+import {
+  appendClarifyBlock,
+  compositionFromClarify,
+  hsHintFromClarify,
+  unansweredClarifyParts,
+  wizardDraftForClarify,
+} from "./new-calc-clarify";
+import {
+  MIN_PACK,
+  allPackChrome,
+  fmtRub,
+  liveCodeForPack,
+  liveWizardStepLabels,
+  namedItemCount,
+  packIdForLiveCode,
+  previewPackFile,
+  resolvePackChrome,
+  type PackId,
+  type PackMode,
+} from "./new-calc-pack";
 
-const inputClass = "w-full rounded-xl border border-slate-200 px-3 py-2 text-sm";
-const inputErrorClass = "w-full rounded-xl border border-amber-400 bg-amber-50/50 px-3 py-2 text-sm";
-
-function fieldClass(error: boolean): string {
-  return error ? inputErrorClass : inputClass;
-}
-
-function itemHasIdentity(it: FormItem): boolean {
-  return Boolean(it.name.trim() || it.manufacturerSkuId);
-}
-
-function itemRequiredAttrsOk(it: FormItem): boolean {
-  return hasRequiredCreateAttrs({
-    originCountry: it.attrs?.originCountry?.trim().toUpperCase(),
-    manufacturerName: it.attrs?.manufacturerName?.trim(),
-    composition: it.attrs?.composition?.trim(),
-  });
-}
+const COUNTRY_OPTIONS = originCountrySelectOptions();
 
 function createBusyLabel(phase: CreatePhase, busy: boolean): string {
   if (phase === "uploading") return "Загружаем фото…";
   if (phase === "enriching") return "Уточняем ТН ВЭД…";
+  if (phase === "paying") return "Оплата тарифа…";
   if (phase === "creating" || busy) return "Создаём заявку…";
-  return "Запустить AI-расчёт";
+  return "Далее";
 }
 
+function originIso(country: string): string {
+  const hit = COUNTRY_OPTIONS.find((c) => c.label === country || c.iso === country);
+  if (hit) return hit.iso;
+  return resolveOriginCountryCode(country) || "CN";
+}
+
+function homeFromOrders(ordersHref: string): string {
+  return ordersHref.replace(/\/orders\/?$/, "") || "/cabinet";
+}
+
+/**
+ * C10–C12: live `/cabinet/new` chrome = designer «Что ввозите?».
+ * Single: lab clarify panel after description + country. Multi: C11 pack, no clarify.
+ * Create still hits /api/v1 (D10 caps).
+ */
 export function NewCalcPane({
   form,
   items,
@@ -56,10 +81,13 @@ export function NewCalcPane({
   busy,
   createPhase = "idle",
   selected,
+  me,
+  preferredBrokerUserId,
   ordersHref,
   onForm,
   onItems,
   onCreate,
+  onPreferred,
   onUpload,
 }: {
   form: CalcForm;
@@ -70,628 +98,1019 @@ export function NewCalcPane({
   busy: boolean;
   createPhase?: CreatePhase;
   selected: Calc | null;
+  me: Me | null;
+  preferredBrokerUserId: string;
+  /** @deprecated C29c — live always charges TariffPlan; kept for call-site compat */
+  hasPaidCalcBefore?: boolean;
   ordersHref: string;
   onForm: (patch: Partial<CalcForm>) => void;
   onItems: (items: FormItem[]) => void;
-  onCreate: (override?: {
-    items?: FormItem[];
-    form?: Partial<CalcForm>;
-  }) => void | Promise<void>;
+  onCreate: (
+    override?: { items?: FormItem[]; form?: Partial<CalcForm> },
+    opts?: { payAfter?: boolean; stayOnNew?: boolean }
+  ) => void | Promise<Calc | void>;
+  onPreferred: (id: string) => void;
   onUpload: (file: File, index: number) => Promise<void>;
 }) {
-  const [cardCode, setCardCode] = useState<string | null>(null);
-  const [showRequiredErrors, setShowRequiredErrors] = useState(false);
-  const { toast } = useVedToast();
-  const factoryOn = factoryUiEnabled();
-  const tariffOptions = tariffs;
-  const maxPos = maxPositionsForTariffCode(form.tariffCode);
-  const canAdd = items.length < maxPos;
-  const namedItems = items.filter(itemHasIdentity);
-  const requiredAttrsOk =
-    namedItems.length > 0 && namedItems.every(itemRequiredAttrsOk);
-  // Soft UI: CTA enabled without required attrs; validate on click (API still hard-rejects).
-  const valid =
-    Boolean(form.title.trim() && form.description.trim() && namedItems.length > 0);
-  const tariffsReady = tariffOptions.length > 0;
-  const missingRequiredHint = namedItems.some((i) => !itemRequiredAttrsOk(i));
-  const highlightRequired = showRequiredErrors && missingRequiredHint;
+  void catalogSkus;
+  const fileRef = useRef<HTMLInputElement>(null);
+  const camRef = useRef<HTMLInputElement>(null);
+  const packFileRef = useRef<HTMLInputElement>(null);
+  const packCamRef = useRef<HTMLInputElement>(null);
+  const homeHref = homeFromOrders(ordersHref);
+  const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1);
+  const [packMode, setPackMode] = useState<PackMode>("single");
+  const [packModal, setPackModal] = useState(false);
+  const [packReading, setPackReading] = useState(false);
+  const [packFail, setPackFail] = useState(false);
+  const [packDocName, setPackDocName] = useState("");
+  const [clarifyQs, setClarifyQs] = useState<ClarificationQuestion[]>([]);
+  const [clarifyAnswers, setClarifyAnswers] = useState<Record<string, string>>({});
+  const [clarifyLoading, setClarifyLoading] = useState(false);
+  const [clarifyAppliedIds, setClarifyAppliedIds] = useState<string[]>([]);
+  const [postPayAlts, setPostPayAlts] = useState<HeuristicHsCandidate[]>([]);
+  const isPack = packMode === "multi";
+  const packId = packIdForLiveCode(
+    isPack ? form.tariffCode || "STANDARD" : "EXPRESS"
+  );
+  const picked = resolvePackChrome(isPack && packId === "one" ? "m20" : packId, tariffs);
+  const packs = allPackChrome(tariffs);
+  const desc = form.description.trim() || form.title.trim();
+  const photoUrl = items[0]?.mediaUrl;
+  const packN = namedItemCount(items);
+  const docCount = isPack ? (packDocName ? 1 : 0) : photoUrl ? 1 : 0;
+  const countryLabel =
+    COUNTRY_OPTIONS.find((c) => c.label === form.country)?.label ||
+    COUNTRY_OPTIONS.find((c) => c.iso === form.country)?.label ||
+    form.country ||
+    "Китай";
+  const validSingle = desc.length >= 5;
+  const validPack = packN >= MIN_PACK;
+  const valid = isPack ? validPack : validSingle;
+  const uploading = createPhase === "uploading" || packReading;
+  const goodsText = form.description || form.title;
+  const clarifyEnabled = !isPack;
+  const visibleClarifyQs = clarifyEnabled ? clarifyQs : [];
+  const aiEnriching =
+    createPhase === "enriching" ||
+    createPhase === "creating" ||
+    createPhase === "paying" ||
+    (selected ? isAiDrainPending(selected) : false);
+  const codeUnlocked = selected ? shouldRevealClientDraftHs(selected) : false;
+  const previewHs =
+    codeUnlocked && selected
+      ? clientOrderHsLabel({ hsCode: selected.hsCode, hsCodeFinal: selected.hsCodeFinal })
+      : null;
+  const previewHasHs = Boolean(previewHs && previewHs !== "—");
+  const previewConf = codeUnlocked && selected ? calcConfidencePct(selected) : null;
+  const payAmount = picked.priceRub;
+  const balance = me?.company?.balanceRub ?? 0;
+  const canPay = balance >= payAmount;
+  const productTitle =
+    form.title.trim() ||
+    desc.slice(0, 80) ||
+    (isPack ? `Пакет ${packN} позиций` : "Новый товар");
+  const wizardTitles = ["", "Что ввозите?", "Оплата просчёта кода", "Код ТН ВЭД"] as const;
 
-  const tryCreate = () => {
-    if (!requiredAttrsOk) {
-      setShowRequiredErrors(true);
-      toast(
-        "Заполните по каждой позиции: страну происхождения (ISO-2), производителя и состав — без этого заявка не создаётся.",
-        { variant: "error" },
-      );
+  useEffect(() => {
+    if (!packModal) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setPackModal(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [packModal]);
+
+  /** C29b: cascade top-N only after pay (never pre-pay leak). */
+  useEffect(() => {
+    if (wizardStep !== 3 || !selected?.paidAt) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clear when leaving post-pay step
+      setPostPayAlts([]);
       return;
     }
-    setShowRequiredErrors(false);
-    void onCreate();
-  };
-  const needsAttrsHint = false;
-  const hsText = `${form.title} ${form.description} ${items.map((i) => i.name).join(" ")}`;
-  const hsCandidates =
-    hsText.trim().length >= 8
-      ? rankHeuristicCandidates(
-          { title: form.title, description: `${form.description} ${items.map((i) => i.name).join(" ")}`, country: form.country },
-          3
-        )
-      : [];
-  const stageTip = newCalcStageTip({
-    form,
-    items,
-    hsCandidateCount: hsCandidates.length,
-    maxPos,
-    hasCatalog: catalogSkus.length > 0,
-    needsAttrsHint,
-  });
-  const pickHsHint = (hsCode: string) => {
-    const next = [...items];
-    const idx = next.findIndex((i) => !i.attrs?.hsHint?.trim());
-    const target = idx >= 0 ? idx : 0;
-    next[target] = {
-      ...next[target],
-      attrs: { ...next[target].attrs, hsHint: hsCode },
+    const q = (
+      selected.description ||
+      selected.title ||
+      selected.items?.[0]?.name ||
+      ""
+    ).trim();
+    if (q.length < 3) {
+      setPostPayAlts([]);
+      return;
+    }
+    let alive = true;
+    void api<{ items: Array<{ hsCode: string; confidence: number; why: string }> }>(
+      `/api/v1/tnved/classify-preview?q=${encodeURIComponent(q)}&limit=3`,
+    )
+      .then((res) => {
+        if (!alive) return;
+        const items = Array.isArray(res?.items) ? res.items : [];
+        setPostPayAlts(
+          items.map((it, i) => ({
+            id: `post-${it.hsCode}-${i}`,
+            hsCode: it.hsCode,
+            confidence: it.confidence,
+            why: it.why,
+          })),
+        );
+      })
+      .catch(() => {
+        if (alive) setPostPayAlts([]);
+      });
+    return () => {
+      alive = false;
     };
+  }, [wizardStep, selected]);
+
+  useEffect(() => {
+    if (!clarifyEnabled) return;
+    let alive = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async clarify fetch kickoff
+    setClarifyLoading(true);
+    const t = window.setTimeout(async () => {
+      try {
+        const qs = await getClarificationQuestions({
+          wizard: wizardDraftForClarify(goodsText, countryLabel),
+          step: 1,
+        });
+        if (!alive) return;
+        setClarifyQs(qs);
+        setClarifyLoading(false);
+        setClarifyAppliedIds([]);
+        setClarifyAnswers((prev) => {
+          const next: Record<string, string> = {};
+          qs.forEach((q) => {
+            next[q.id] = prev[q.id] ?? "";
+          });
+          return next;
+        });
+      } catch {
+        if (!alive) return;
+        setClarifyQs([]);
+        setClarifyLoading(false);
+      }
+    }, 350);
+
+    return () => {
+      alive = false;
+      window.clearTimeout(t);
+    };
+  }, [clarifyEnabled, goodsText, countryLabel]);
+
+  const setGoodsText = (raw: string) => {
+    const title = raw.trim().split("\n")[0]?.slice(0, 120) || raw.trim().slice(0, 80);
+    onForm({ title, description: raw });
+    if (isPack) return;
+    const next = [...items];
+    if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
+    next[0] = { ...next[0], name: title || next[0].name };
     onItems(next);
   };
 
-  return (
-    <section className="max-w-2xl">
-      {!tariffsReady && (
-        <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          Тарифы не загружены. Обновите страницу или проверьте /api/v1/tariffs.
-        </p>
-      )}
-      <div className="space-y-3 overflow-visible rounded-[28px] border border-black/[0.04] bg-white p-6 shadow-sm">
-        {/* One help surface: hide tip when required-error banner is up (same message). */}
-        {stageTip && !highlightRequired && <StageTip text={stageTip} />}
+  const setCountry = (label: string) => {
+    onForm({ country: label });
+  };
 
-        <FieldLabel
-          as="div"
-          label="Наименование заявки"
-          hint="Как вы узнаете заявку в списке — коротко и по сути партии. Начните вводить — появятся варианты (кроссовки, носки…)."
-        >
-          <FieldSuggest
-            kind="itemName"
-            className={inputClass}
-            placeholder="Например: кроссовки Nike, партия из Китая"
-            value={form.title}
-            onChange={(title) => onForm({ title })}
-          />
-        </FieldLabel>
+  const applyClarifications = () => {
+    const parts = unansweredClarifyParts(visibleClarifyQs, clarifyAnswers, clarifyAppliedIds);
+    if (!parts.length) return;
+    const nextDesc = appendClarifyBlock(goodsText, parts);
+    const title = nextDesc.trim().split("\n")[0]?.slice(0, 120) || nextDesc.trim().slice(0, 80);
+    const composition = compositionFromClarify(
+      clarifyAnswers,
+      items[0]?.attrs?.composition || nextDesc,
+    );
+    const hsHint = hsHintFromClarify(visibleClarifyQs, clarifyAnswers);
+    onForm({ title, description: nextDesc });
+    const next = [...items];
+    if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
+    next[0] = {
+      ...next[0],
+      name: title || next[0].name,
+      attrs: {
+        ...next[0].attrs,
+        composition,
+        ...(hsHint && !next[0].attrs?.hsHint ? { hsHint } : {}),
+      },
+    };
+    onItems(next);
+    setClarifyAppliedIds((ids) => [...ids, ...parts.map((p) => p.id)]);
+  };
 
-        <FieldLabel
-          as="div"
-          label="Описание партии"
-          hint="Что за товар, материал, назначение — от этого строится черновик ТН ВЭД. Начните вводить — появятся примеры формулировок."
-        >
-          <FieldSuggest
-            kind="partyDescription"
-            multiline
-            rows={3}
-            className={inputClass}
-            placeholder="Состав, назначение, упаковка — чем конкретнее, тем точнее черновик"
-            value={form.description}
-            onChange={(description) => onForm({ description })}
-          />
-        </FieldLabel>
+  const skipClarifications = () => {
+    if (!visibleClarifyQs.length) return;
+    setClarifyAppliedIds(visibleClarifyQs.map((q) => q.id));
+    setClarifyQs([]);
+  };
 
-        <HsHintCandidates
-          candidates={hsCandidates}
-          selectedHs={items[0]?.attrs?.hsHint}
-          onPick={pickHsHint}
-        />
+  const pickPack = (id: PackId) => {
+    if (id === "one") {
+      setPackMode("single");
+      setPackModal(false);
+      setPackFail(false);
+      onForm({ tariffCode: "EXPRESS" });
+      const first = items[0] ? { ...items[0] } : { name: "", qty: 1, unitPrice: 0 };
+      onItems([first]);
+      return;
+    }
+    setPackMode("multi");
+    onForm({ tariffCode: liveCodeForPack(id) });
+    if (namedItemCount(items) >= MIN_PACK) {
+      setPackModal(false);
+      return;
+    }
+    setPackModal(true);
+  };
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <FieldLabel
-            as="div"
-            label="Страна отправления"
-            hint="Откуда едет партия (не обязательно ISO)."
+  const applyPackItems = (next: FormItem[], filename: string) => {
+    const iso = originIso(countryLabel);
+    const capped = next.slice(0, picked.max).map((it) => ({
+      ...it,
+      qty: it.qty || 1,
+      unitPrice: it.unitPrice || 0,
+      attrs: {
+        ...it.attrs,
+        originCountry: it.attrs?.originCountry || iso,
+        composition: it.attrs?.composition?.trim() || it.name,
+      },
+    }));
+    onItems(capped);
+    const title = capped[0]?.name.slice(0, 120) || filename;
+    if (!form.description.trim()) {
+      onForm({ title, description: `Пакет ${capped.length} позиций` });
+    } else {
+      onForm({ title });
+    }
+  };
+
+  const addPhoto = (list: FileList | null) => {
+    const file = list?.[0];
+    if (!file) return;
+    void onUpload(file, 0);
+  };
+
+  const addPackFile = async (list: FileList | null) => {
+    const file = list?.[0];
+    if (!file || packReading) return;
+    setPackReading(true);
+    setPackFail(false);
+    setPackDocName(file.name);
+    try {
+      const { items: parsed } = await previewPackFile(file, {
+        tariffCode: picked.liveCode,
+        country: countryLabel,
+      });
+      if (parsed.length < MIN_PACK) {
+        setPackFail(true);
+        onItems([{ name: "", qty: 1, unitPrice: 0 }]);
+        return;
+      }
+      applyPackItems(parsed, file.name);
+      setPackFail(false);
+    } catch {
+      setPackFail(true);
+      onItems([{ name: "", qty: 1, unitPrice: 0 }]);
+    } finally {
+      setPackReading(false);
+    }
+  };
+
+  const resetMulti = () => {
+    setPackFail(false);
+    setPackDocName("");
+    onItems([{ name: "", qty: 1, unitPrice: 0 }]);
+    onForm({ title: "", description: "" });
+    setPackModal(false);
+  };
+
+  const buildCreatePayload = () => {
+    const iso = originIso(countryLabel);
+    if (isPack) {
+      const nextItems = items
+        .filter((it) => it.name.trim())
+        .slice(0, picked.max)
+        .map((it) => ({
+          ...it,
+          name: it.name.trim(),
+          attrs: {
+            ...it.attrs,
+            originCountry: it.attrs?.originCountry || iso,
+            composition: it.attrs?.composition?.trim() || it.name.trim() || desc,
+          },
+        }));
+      const title = form.title.trim() || `Пакет ${nextItems.length} позиций`;
+      return {
+        items: nextItems,
+        form: {
+          title,
+          description: desc || title,
+          country: countryLabel,
+          tariffCode: picked.liveCode,
+          preferredBrokerUserId,
+        },
+      };
+    }
+    const title = form.title.trim() || desc.slice(0, 80);
+    const base = items[0] || { name: "", qty: 1, unitPrice: 0 };
+    const nextItems: FormItem[] = [
+      {
+        ...base,
+        name: base.name.trim() || title,
+        attrs: {
+          ...base.attrs,
+          originCountry: base.attrs?.originCountry || iso,
+          composition: base.attrs?.composition?.trim() || desc,
+        },
+      },
+    ];
+    return {
+      items: nextItems,
+      form: {
+        title,
+        description: desc,
+        country: countryLabel,
+        tariffCode: "EXPRESS",
+        preferredBrokerUserId,
+      },
+    };
+  };
+
+  const goToPayStep = () => {
+    if (!valid) return;
+    setWizardStep(2);
+  };
+
+  const payAndCreate = () => {
+    if (!valid || busy) return;
+    void Promise.resolve(onCreate(buildCreatePayload(), { payAfter: true, stayOnNew: true }))
+      .then(() => setWizardStep(3))
+      .catch(() => undefined);
+  };
+
+  const tryCreate = () => {
+    goToPayStep();
+  };
+
+  const dropzone = (
+    kind: "photo" | "pack",
+    inputFile: typeof fileRef,
+    inputCam: typeof camRef,
+  ) => (
+    <>
+      <input
+        ref={inputFile}
+        type="file"
+        accept={
+          kind === "photo"
+            ? "image/jpeg,image/png,image/webp,image/*"
+            : ".csv,.xlsx,.xls,.pdf,image/jpeg,image/png,image/webp,text/csv,application/pdf"
+        }
+        hidden
+        onChange={(e) => {
+          if (kind === "photo") addPhoto(e.target.files);
+          else void addPackFile(e.target.files);
+          e.target.value = "";
+        }}
+      />
+      <input
+        ref={inputCam}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden
+        onChange={(e) => {
+          if (kind === "photo") addPhoto(e.target.files);
+          else void addPackFile(e.target.files);
+          e.target.value = "";
+        }}
+      />
+      <div
+        className={`dropzone${uploading ? " reading" : ""}`}
+        onClick={() => inputFile.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (kind === "photo") addPhoto(e.dataTransfer.files);
+          else void addPackFile(e.dataTransfer.files);
+        }}
+      >
+        <strong>
+          {packReading
+            ? "Читаем файл…"
+            : kind === "photo"
+              ? uploading
+                ? "Загружаем фото…"
+                : "Перетащите фото товара или сделайте снимок"
+              : "Перетащите invoice, packing list или таблицу"}
+        </strong>
+        <span className="meta">
+          {kind === "photo"
+            ? "JPG, PNG, WEBP · ИИ опишет товар · до 12 МБ"
+            : "CSV, PDF, JPG · читаем реальные позиции · до 12 МБ"}
+        </span>
+        <div className="dropzone-actions" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => inputFile.current?.click()}
+            disabled={uploading}
           >
-            <FieldSuggest
-              kind="shipCountry"
-              className={inputClass}
-              placeholder="Китай, Турция…"
-              value={form.country}
-              onChange={(country) => onForm({ country })}
-            />
-          </FieldLabel>
-          <FieldLabel
-            as="div"
-            label="Стоимость партии (инвойс)"
-            hint="Таможенная стоимость = инвойс × курс с запасом. Без международной доставки."
+            Выбрать файлы
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => inputCam.current?.click()}
+            disabled={uploading}
           >
-            <div className="flex min-w-0 gap-2">
-              <input
-                className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                placeholder="0"
-                inputMode="decimal"
-                value={form.shipmentValue}
-                onChange={(e) => onForm({ shipmentValue: e.target.value })}
-                aria-label="Сумма инвойса"
-              />
-              <select
-                className="w-[7.5rem] shrink-0 rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                value={form.shipmentCurrency}
-                onChange={(e) =>
-                  onForm({ shipmentCurrency: e.target.value as CalcForm["shipmentCurrency"] })
-                }
-                aria-label="Валюта инвойса"
-              >
-                <option value="USD">USD</option>
-                <option value="CNY">CNY</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </div>
-          </FieldLabel>
+            Снять фото
+          </button>
         </div>
+      </div>
+    </>
+  );
 
-        <FieldLabel
-          label="Тариф"
-          hint={
-            form.tariffCode === "EXPRESS"
-              ? "Экспресс: 1 позиция, только AI — без выбора брокера."
-              : `Лимит позиций: до ${maxPos}. Стандарт/Профи — очередь брокера после оплаты.`
-          }
-        >
-          <select
-            className={inputClass}
-            value={form.tariffCode}
-            disabled={!tariffsReady}
-            onChange={(e) => {
-              const code = e.target.value;
-              onForm({
-                tariffCode: code,
-                ...(code === "EXPRESS" ? { preferredBrokerUserId: "" } : {}),
-              });
-              const cap = maxPositionsForTariffCode(code);
-              if (items.length > cap) onItems(items.slice(0, cap));
+  return (
+    <section className="wiz-full">
+      <div className="wiz-head">
+        <div>
+          <Link href={homeHref} className="btn btn-ghost btn-sm">
+            ← На главную
+          </Link>
+          <span className="go-kicker" style={{ display: "block", marginTop: 14 }}>
+            Просчёт кода ТН ВЭД ЕАЭС · код после оплаты
+          </span>
+          <h2>{wizardTitles[wizardStep]}</h2>
+        </div>
+      </div>
+
+      <div className="wiz-steps labeled steps-3">
+        {liveWizardStepLabels().map((lab, i) => (
+          <button
+            key={lab}
+            type="button"
+            className={wizardStepClass(i + 1, wizardStep)}
+            onClick={() => {
+              if (wizardStep === 3 && selected?.paidAt) return;
+              if (i + 1 < wizardStep) setWizardStep((i + 1) as 1 | 2 | 3);
             }}
           >
-            {!tariffsReady && <option value={form.tariffCode}>Загрузка тарифов…</option>}
-            {tariffOptions.map((t) => (
-              <option key={t.id || t.code} value={t.code}>
-                {formatTariffOption(t)}
-              </option>
-            ))}
-          </select>
-        </FieldLabel>
+            <b>{i + 1}</b>
+            <span className="wiz-step-lab">{lab}</span>
+          </button>
+        ))}
+      </div>
 
-        {form.tariffCode !== "EXPRESS" ? (
-          <FieldLabel
-            label="Предпочтительный брокер"
-            hint="Необязательно — иначе заявка уйдёт в общую очередь после оплаты."
-          >
-            <select
-              className={inputClass}
-              value={form.preferredBrokerUserId}
-              onChange={(e) => onForm({ preferredBrokerUserId: e.target.value })}
-            >
-              <option value="">Авто из очереди</option>
-              {brokers.map((b) => (
-                <option key={b.id} value={b.user.id}>
-                  {b.user.name}
-                </option>
-              ))}
-            </select>
-          </FieldLabel>
-        ) : null}
-
-        <ProductCsvImport
-          tariffCode={form.tariffCode}
-          country={form.country}
-          shipmentValue={form.shipmentValue}
-          busy={busy}
-          maxPos={maxPos}
-          onApply={({ items: nextItems, titleHint, descriptionHint, create }) => {
-            const patch: Partial<CalcForm> = {};
-            if (!form.title.trim()) patch.title = titleHint;
-            if (!form.description.trim()) patch.description = descriptionHint;
-            if (create) {
-              void onCreate({
-                items: nextItems,
-                form: {
-                  title: form.title.trim() || titleHint,
-                  description: form.description.trim() || descriptionHint,
-                },
-              });
-              return;
+      {wizardStep === 3 && aiEnriching && !previewHasHs ? (
+        <div className="ai-run card" style={{ margin: 0 }}>
+          <AiRunCard
+            title={
+              createPhase === "paying"
+                ? "Оплата прошла — AI подбирает код"
+                : aiRunTitle(true, isPack && packN >= MIN_PACK)
             }
-            onItems(nextItems);
-            if (Object.keys(patch).length) onForm(patch);
-          }}
-        />
-
-        <div>
-          <div className="mb-2 flex items-center justify-between text-sm font-medium">
-            <span>Позиции (max {maxPos})</span>
-            <button
-              type="button"
-              disabled={!canAdd}
-              title={!canAdd ? `Лимит тарифа: ${maxPos}` : undefined}
-              className="text-[#2b72f4] disabled:opacity-40"
-              onClick={() => onItems([...items, { name: "", qty: 1, unitPrice: 0 }])}
-            >
-              + позиция
-            </button>
-          </div>
-          {!canAdd && (
-            <p className="mb-2 text-[11px] text-[var(--kb-muted)]">
-              Достигнут лимит тарифа ({maxPos}). Смените тариф или уберите лишнюю строку.
-            </p>
-          )}
-          <div className="space-y-3">
-            {items.map((it, idx) => (
-              <div key={idx} className="relative overflow-visible rounded-2xl border border-slate-100 p-3">
-                {factoryOn ? (
-                  <div className="mb-2">
-                    <ManufacturerSuggest
-                      value={{
-                        manufacturerName: it.attrs?.manufacturerName ?? "",
-                        companyId: it.attrs?.extra?.manufacturerCompanyId,
-                        proposalId: it.attrs?.extra?.manufacturerProposalId,
-                        status: it.attrs?.extra?.manufacturerProposalId
-                          ? "pending"
-                          : it.attrs?.extra?.manufacturerCompanyId
-                            ? "approved"
-                            : it.attrs?.manufacturerName
-                              ? "draft"
-                              : undefined,
-                      }}
-                      disabled={busy}
-                      onChange={(next) => {
-                        const copy = [...items];
-                        const extra = { ...(copy[idx].attrs?.extra || {}) };
-                        if (next.proposalId) extra.manufacturerProposalId = next.proposalId;
-                        else delete extra.manufacturerProposalId;
-                        if (next.companyId) extra.manufacturerCompanyId = next.companyId;
-                        else delete extra.manufacturerCompanyId;
-                        copy[idx] = {
-                          ...copy[idx],
-                          attrs: {
-                            ...copy[idx].attrs,
-                            manufacturerName: next.manufacturerName.trim() || undefined,
-                            extra: Object.keys(extra).length ? extra : undefined,
-                          },
-                        };
-                        onItems(copy);
-                      }}
-                    />
-                    <p className="mt-1 text-[11px] text-amber-800">Обязательно · производитель</p>
-                  </div>
-                ) : (
-                  <FieldLabel
-                    label="Производитель *"
-                    hint="Завод или бренд-изготовитель — нужен для точного кода ТН ВЭД."
-                  >
-                    <input
-                      className={`mb-2 ${fieldClass(highlightRequired && itemHasIdentity(it) && !String(it.attrs?.manufacturerName || "").trim())}`}
-                      placeholder="Lenovo PC HK Limited, Nike Vietnam…"
-                      value={it.attrs?.manufacturerName ?? ""}
-                      onChange={(e) => {
-                        const next = [...items];
-                        next[idx] = {
-                          ...next[idx],
-                          attrs: {
-                            ...next[idx].attrs,
-                            manufacturerName: e.target.value,
-                          },
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                )}
-                {factoryOn && it.manufacturerSkuId && (
-                  <SkuCatalogSelect
-                    skus={catalogSkus}
-                    item={it}
-                    onApply={(next) => {
-                      const copy = [...items];
-                      copy[idx] = next;
-                      onItems(copy);
-                    }}
-                  />
-                )}
-                <FieldLabel
-                  as="div"
-                  label={`Позиция ${idx + 1}`}
-                  hint="Краткое имя товара — начните вводить, появятся варианты (носки, ноут…)."
+          />
+        </div>
+      ) : (
+      <div className="wiz-grid">
+        <div className="wiz-main card" style={{ margin: 0 }}>
+          {wizardStep === 2 ? (
+            <>
+              <p className="wiz-lead">
+                Оплачивается пакет «{picked.name}»: только коды ТН ВЭД. Пошлина и НДС не входят.
+                После оплаты AI подберёт черновик кода.
+              </p>
+              <div className="wiz-pay-box">
+                <div className="pay-row">
+                  <span>Товар</span>
+                  <strong>{productTitle}</strong>
+                </div>
+                <div className="pay-row">
+                  <span>Происхождение</span>
+                  <strong>{countryLabel}</strong>
+                </div>
+                <div className="pay-row">
+                  <span>Тариф</span>
+                  <strong>
+                    {picked.name} · {fmtRub(payAmount)} ₽
+                  </strong>
+                </div>
+                <PayMath balance={balance} amount={payAmount} />
+              </div>
+              <div className="field" style={{ marginTop: 16 }}>
+                <label>Предпочтительный брокер</label>
+                <select
+                  value={preferredBrokerUserId}
+                  onChange={(e) => onPreferred(e.target.value)}
                 >
-                  <FieldSuggest
-                    kind="itemName"
-                    className={`mb-2 ${inputClass}`}
-                    placeholder="Например: носки, ноутбук, станок…"
-                    value={it.name}
-                    onChange={(name) => {
-                      const next = [...items];
-                      next[idx] = { ...next[idx], name };
-                      onItems(next);
-                    }}
-                  />
-                </FieldLabel>
-                <AttrSuggestChips
-                  title={form.title}
-                  description={form.description}
-                  item={it}
-                  itemIndex={idx}
-                  items={items}
-                  onItems={onItems}
-                />
-                <div className="mb-2 flex gap-2">
-                  <FieldLabel label="Кол-во">
-                    <input
-                      type="number"
-                      className={inputClass}
-                      placeholder="1"
-                      value={it.qty ?? ""}
-                      onChange={(e) => {
-                        const next = [...items];
-                        next[idx] = { ...next[idx], qty: Number(e.target.value) || undefined };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                  <FieldLabel label="Цена ед., USD">
-                    <input
-                      type="number"
-                      className={inputClass}
-                      placeholder="0"
-                      value={it.unitPrice ?? ""}
-                      onChange={(e) => {
-                        const next = [...items];
-                        next[idx] = {
-                          ...next[idx],
-                          unitPrice: Number(e.target.value) || undefined,
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                </div>
-
-                <div className="mb-2 grid gap-2 sm:grid-cols-2">
-                  <FieldLabel
-                    as="div"
-                    label="Страна происхождения *"
-                    hint="ISO-2: начните вводить код или название (CN, Китай…)."
+                  <option value="">Авто из очереди</option>
+                  {brokers.map((b) => (
+                    <option key={b.id} value={b.user.id}>
+                      {b.user.name} · ★ {b.rating.toFixed(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 18 }}>
+                <button type="button" className="btn btn-ghost" onClick={() => setWizardStep(1)}>
+                  Назад
+                </button>
+                {canPay ? (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    disabled={busy}
+                    onClick={payAndCreate}
                   >
-                    <FieldSuggest
-                      kind="originCountry"
-                      className={fieldClass(
-                        highlightRequired &&
-                          itemHasIdentity(it) &&
-                          String(it.attrs?.originCountry || "").trim().length !== 2
-                      )}
-                      placeholder="CN или Китай"
-                      value={it.attrs?.originCountry ?? ""}
-                      resolveBlur={(raw) => resolveOriginCountryCode(raw) || raw}
-                      onChange={(originCountry) => {
-                        const next = [...items];
-                        next[idx] = {
-                          ...next[idx],
-                          attrs: { ...next[idx].attrs, originCountry },
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                  <FieldLabel as="div" label="Состав *" hint="Материалы / волокна / комплектация.">
-                    <FieldSuggest
-                      kind="composition"
-                      className={fieldClass(
-                        highlightRequired &&
-                          itemHasIdentity(it) &&
-                          !String(it.attrs?.composition || "").trim()
-                      )}
-                      placeholder="хлопок 100% / aluminium + Li-ion…"
-                      value={it.attrs?.composition ?? ""}
-                      onChange={(composition) => {
-                        const next = [...items];
-                        next[idx] = {
-                          ...next[idx],
-                          attrs: { ...next[idx].attrs, composition },
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                  <FieldLabel as="div" label="Бренд">
-                    <FieldSuggest
-                      kind="brand"
-                      className={inputClass}
-                      placeholder="Nike, Samsung…"
-                      value={it.attrs?.brand ?? ""}
-                      onChange={(brand) => {
-                        const next = [...items];
-                        next[idx] = {
-                          ...next[idx],
-                          attrs: { ...next[idx].attrs, brand },
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                  <FieldLabel as="div" label="Материал">
-                    <FieldSuggest
-                      kind="material"
-                      className={inputClass}
-                      placeholder="Кожа, пластик, хлопок…"
-                      value={it.attrs?.material ?? ""}
-                      onChange={(material) => {
-                        const next = [...items];
-                        next[idx] = {
-                          ...next[idx],
-                          attrs: { ...next[idx].attrs, material },
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                  <FieldLabel label="Назначение / тип">
-                    <input
-                      className={inputClass}
-                      placeholder="одежда, верх"
-                      value={it.attrs?.purpose ?? ""}
-                      onChange={(e) => {
-                        const next = [...items];
-                        next[idx] = {
-                          ...next[idx],
-                          attrs: { ...next[idx].attrs, purpose: e.target.value },
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                  <FieldLabel label="Цвет">
-                    <input
-                      className={inputClass}
-                      placeholder="белый"
-                      value={it.attrs?.extra?.color ?? ""}
-                      onChange={(e) => {
-                        const next = [...items];
-                        const extra = { ...(next[idx].attrs?.extra || {}) };
-                        if (e.target.value.trim()) extra.color = e.target.value;
-                        else delete extra.color;
-                        next[idx] = {
-                          ...next[idx],
-                          attrs: {
-                            ...next[idx].attrs,
-                            extra: Object.keys(extra).length ? extra : undefined,
-                          },
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                  <FieldLabel label="Возраст" hint="Взрослый / детский — влияет на главу одежды.">
-                    <input
-                      className={inputClass}
-                      placeholder="взрослый"
-                      value={it.attrs?.extra?.ageGroup ?? ""}
-                      onChange={(e) => {
-                        const next = [...items];
-                        const extra = { ...(next[idx].attrs?.extra || {}) };
-                        if (e.target.value.trim()) extra.ageGroup = e.target.value;
-                        else delete extra.ageGroup;
-                        next[idx] = {
-                          ...next[idx],
-                          attrs: {
-                            ...next[idx].attrs,
-                            extra: Object.keys(extra).length ? extra : undefined,
-                          },
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                  <FieldLabel label="Вес нетто, кг">
-                    <input
-                      type="number"
-                      className={inputClass}
-                      placeholder="0"
-                      value={it.attrs?.netWeightKg ?? ""}
-                      onChange={(e) => {
-                        const next = [...items];
-                        next[idx] = {
-                          ...next[idx],
-                          attrs: { ...next[idx].attrs, netWeightKg: e.target.value },
-                        };
-                        onItems(next);
-                      }}
-                    />
-                  </FieldLabel>
-                  <div className="sm:col-span-2">
-                    <FieldLabel
-                      as="div"
-                      label="Код ТН ВЭД (черновик)"
-                      hint="Найдите код по названию или цифрам. Финал подтвердит брокер."
-                    >
-                      <HsCodeAutocomplete
-                        leafOnly
-                        className={inputClass}
-                        placeholder="смартфон или 8517"
-                        value={it.attrs?.hsHint ?? ""}
-                        onChange={(hsHint) => {
-                          const next = [...items];
-                          next[idx] = {
-                            ...next[idx],
-                            attrs: { ...next[idx].attrs, hsHint },
-                          };
-                          onItems(next);
-                        }}
-                        onOpenCard={setCardCode}
-                      />
-                    </FieldLabel>
+                    {busy
+                      ? createBusyLabel(createPhase, busy)
+                      : `Оплатить ${fmtRub(payAmount)} ₽ и получить код`}
+                  </button>
+                ) : (
+                  <Link href={`${homeHref}/balance`} className="btn btn-primary">
+                    Пополнить баланс
+                  </Link>
+                )}
+              </div>
+            </>
+          ) : wizardStep === 3 && selected?.paidAt ? (
+            <>
+              <p className="wiz-lead">
+                {previewHasHs
+                  ? "Черновик кода готов. Финал подтверждает брокер (D15)."
+                  : "AI уточняет код — обновится через минуту."}
+              </p>
+              {previewHasHs && selected ? (
+                <>
+                  <div className="metric-row">
+                    <div className="metric">
+                      <div className="k">ТН ВЭД</div>
+                      <div className="v" style={{ fontSize: "1.15rem" }}>
+                        {previewHs}
+                      </div>
+                    </div>
+                    {previewConf != null ? (
+                      <div className="metric">
+                        <div className="k">Уверенность</div>
+                        <div className="v">{previewConf}%</div>
+                      </div>
+                    ) : null}
+                  </div>
+                  {previewConf != null ? (
+                    <div className="conf">
+                      <i style={{ width: `${previewConf}%` }} />
+                    </div>
+                  ) : null}
+                  <div
+                    className={`alert-box ${needsClassificationClarify(selected) ? "warn-box" : "ok-box"}`}
+                    style={{ marginTop: 14 }}
+                  >
+                    <strong>{classificationWhyTitle(selected)}</strong>
+                    {classificationWhyBody(selected)}
+                  </div>
+                  {postPayAlts.length > 0 ? (
+                    <div style={{ marginTop: 16 }}>
+                      <p className="meta" style={{ marginBottom: 8 }}>
+                        Альтернативы каскада (справочно, не финал):
+                      </p>
+                      <ul className="doc-list" style={{ gap: 8 }}>
+                        {postPayAlts.map((c) => (
+                          <li key={c.id} className="doc-chip" style={{ display: "block" }}>
+                            <div className="doc-info">
+                              <b>{c.hsCode}</b>
+                              <span className="meta">
+                                {Math.round(c.confidence * 100)}% · {c.why}
+                              </span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </>
+              ) : aiEnriching ? (
+                <AiRunCard title={aiRunTitle(true, isPack && packN >= MIN_PACK)} />
+              ) : null}
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 18 }}>
+                <Link href={clientOrderHref(ordersHref, selected.id)} className="btn btn-primary">
+                  К заявке
+                </Link>
+                <Link href={ordersHref} className="btn btn-ghost">
+                  Все заявки
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+          <p className="wiz-lead">
+            {isPack
+              ? "Прикрепите инвойс, таблицу или фото — читаем реальные позиции и считаем стоимость."
+              : "Одна позиция: описание товара и документы. Код ТН ВЭД откроется после оплаты."}
+          </p>
+
+          <div className="field">
+            <label>Режим</label>
+            <div className="amt-chips">
+              <button type="button" className={!isPack ? "on" : ""} onClick={() => pickPack("one")}>
+                Одна позиция · {fmtRub(payAmount)} ₽
+              </button>
+              <button type="button" className={isPack ? "on" : ""} onClick={() => pickPack("m20")}>
+                Мультипозиция
+              </button>
+              {isPack ? (
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => setPackModal(true)}>
+                  Прикрепить файл
+                </button>
+              ) : null}
+            </div>
+            {isPack && packN >= MIN_PACK ? (
+              <div className="pack-quote">
+                <strong>В файле {packN} позиций</strong>
+                <span>
+                  Пакет «{picked.name}»: {fmtRub(picked.priceRub)} ₽
+                  <small> · до {picked.max} строк</small>
+                </span>
+              </div>
+            ) : isPack ? (
+              packDocName || packFail ? (
+                <span className="meta pack-read-fail">
+                  Не удалось вычитать позиции. Нужен CSV/Excel или более чёткое фото таблицы
+                  инвойса.
+                </span>
+              ) : (
+                <span className="meta">
+                  Прикрепите invoice, CSV или фото — читаем реальные строки и считаем стоимость.
+                </span>
+              )
+            ) : null}
+          </div>
+
+          {isPack ? (
+            <>
+              <div className="field">
+                <label>Комментарий к партии (необязательно)</label>
+                <textarea
+                  rows={3}
+                  placeholder="Например: поставка электроники, инвойс на 15 SKU"
+                  value={form.description}
+                  onChange={(e) => setGoodsText(e.target.value)}
+                />
+              </div>
+              <div className="field">
+                <label>Страна происхождения</label>
+                <select value={countryLabel} onChange={(e) => setCountry(e.target.value)}>
+                  {COUNTRY_OPTIONS.map((c) => (
+                    <option key={`${c.iso}-${c.label}`} value={c.label}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>Документы и фото</label>
+                {packModal ? null : dropzone("pack", packFileRef, packCamRef)}
+                {packDocName ? (
+                  <div className="doc-list">
+                    <div className="doc-chip">
+                      <div className="doc-info">
+                        <b>{packDocName}</b>
+                        <span className="meta">{packN >= MIN_PACK ? `${packN} позиций` : "прикреплён"}</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              {packN >= MIN_PACK ? (
+                <div className="field">
+                  <label>Позиции и характеристики</label>
+                  <div className="doc-list">
+                    {items
+                      .filter((it) => it.name.trim())
+                      .map((it, i) => (
+                        <div key={`${it.name}-${i}`} className="doc-chip">
+                          <div className="doc-info">
+                            <b>
+                              {i + 1}. {it.name}
+                            </b>
+                          </div>
+                        </div>
+                      ))}
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                  <div>
-                    <p className="mb-1 text-[11px] text-[var(--kb-muted)]">
-                      Фото или скан — брокеру проще сверить товар.
-                    </p>
-                    <input
-                      type="file"
-                      onChange={(e) => {
-                        const f = e.target.files?.[0];
-                        if (f) void onUpload(f, idx);
-                      }}
-                    />
-                  </div>
-                  {it.mediaUrl && <span className="text-emerald-600">файл ✓</span>}
-                  {items.length > 1 && (
+              ) : null}
+              <div className="field" style={{ marginTop: 22 }}>
+                <label>Тариф просчёта кода ТН ВЭД</label>
+                <p className="meta" style={{ margin: "0 0 10px" }}>
+                  Сначала считаем только код. Таможню — пошлину и НДС — после кода, отдельным шагом.
+                </p>
+                <div className="tariff-pick">
+                  {packs.map((t) => (
                     <button
+                      key={t.id}
                       type="button"
-                      className="text-red-500"
-                      onClick={() => onItems(items.filter((_, i) => i !== idx))}
+                      className={`${picked.id === t.id ? "on" : ""}${t.featured ? " featured" : ""}`}
+                      onClick={() => pickPack(t.id)}
                     >
-                      удалить
+                      <span className="tariff-tag">{t.tag}</span>
+                      <strong>{t.name}</strong>
+                      <div className="tariff-price">
+                        {fmtRub(t.priceRub)} ₽
+                        <small>{t.id === "one" ? "/ 1 позиция" : `/ до ${t.max} поз.`}</small>
+                      </div>
+                      <p>{t.summary}</p>
+                      <ul>
+                        {t.includes.map((line) => (
+                          <li key={line}>{line}</li>
+                        ))}
+                      </ul>
                     </button>
-                  )}
+                  ))}
+                </div>
+                <div className="tariff-note">
+                  <strong>{picked.name}:</strong> {fmtRub(picked.priceRub)} ₽ за просчёт кодов, без
+                  таможни.
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </>
+          ) : (
+            <>
+              <div className="field">
+                <label>Наименование и описание</label>
+                <textarea
+                  rows={5}
+                  style={{ minHeight: 132, resize: "vertical" }}
+                  placeholder="Ноутбуки Lenovo ThinkPad, 14'', для офиса — или загрузите фото ниже"
+                  value={form.description || form.title}
+                  onChange={(e) => setGoodsText(e.target.value)}
+                />
+              </div>
+              <div className="field">
+                <label>Страна происхождения</label>
+                <select value={countryLabel} onChange={(e) => setCountry(e.target.value)}>
+                  {COUNTRY_OPTIONS.map((c) => (
+                    <option key={`${c.iso}-${c.label}`} value={c.label}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {visibleClarifyQs.length ? (
+                <div
+                  style={{
+                    marginTop: 14,
+                    border: "1.5px solid var(--line)",
+                    borderRadius: 18,
+                    padding: 16,
+                    background: "#fff",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: 12,
+                      alignItems: "baseline",
+                      marginBottom: 10,
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          fontFamily: "var(--display)",
+                          fontWeight: 800,
+                          letterSpacing: "-.02em",
+                        }}
+                      >
+                        Уточняем для точности кода
+                      </div>
+                      <div className="meta" style={{ marginTop: 4 }}>
+                        {clarifyLoading
+                          ? "ИИ формирует вопросы…"
+                          : "Ответьте, если хотите точнее подобрать ТН ВЭД"}
+                      </div>
+                    </div>
+                  </div>
+                  {visibleClarifyQs.map((q) => (
+                    <div key={q.id} className="field">
+                      <label>{q.text}</label>
+                      <ClarifyField
+                        question={q}
+                        value={clarifyAnswers[q.id] || ""}
+                        onChange={(v) => setClarifyAnswers((a) => ({ ...a, [q.id]: v }))}
+                      />
+                    </div>
+                  ))}
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={applyClarifications}
+                      disabled={clarifyLoading}
+                    >
+                      <Icon name="check" /> Применить
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      onClick={skipClarifications}
+                      disabled={clarifyLoading}
+                    >
+                      Пока пропустить
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+              <div className="field">
+                <label>Документы и фото</label>
+                <p className="meta" style={{ margin: "0 0 10px" }}>
+                  Перетащите фото товара или сделайте снимок — ИИ поможет уточнить код.
+                </p>
+                {dropzone("photo", fileRef, camRef)}
+                {photoUrl ? (
+                  <div className="doc-list">
+                    <div className="doc-chip">
+                      <a href={photoUrl} target="_blank" rel="noreferrer" className="doc-thumb">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={photoUrl} alt="" />
+                      </a>
+                      <div className="doc-info">
+                        <b>Фото товара</b>
+                        <span className="meta">прикреплено</span>
+                      </div>
+                      <span className="pill ok">Фото</span>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </>
+          )}
 
-        {highlightRequired && (
-          <p className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-            Не хватает обязательных полей по позиции: страна происхождения (ISO-2), производитель и состав.
-            Заполните подсвеченные поля и нажмите ещё раз.
-          </p>
-        )}
-
-        <button
-          type="button"
-          disabled={busy || !valid || !tariffsReady}
-          onClick={tryCreate}
-          className="w-full rounded-full bg-[#2b72f4] py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-        >
-          {createBusyLabel(createPhase, busy)}
-        </button>
-      </div>
-      {selected && (
-        <div className="mt-4 space-y-2 rounded-[28px] bg-white p-4 text-sm shadow-sm">
-          <div>
-            Создано {selected.number} · <StatusPill status={selected.status} />{" "}
-            <Link href={ordersHref} className="text-[#2b72f4]">
-              К заявкам · оплатить
-            </Link>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={busy || !valid}
+              onClick={tryCreate}
+            >
+              {createBusyLabel(createPhase, busy)}
+            </button>
+            {isPack ? (
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={resetMulti}
+                disabled={!packDocName && !packN && !form.description.trim()}
+              >
+                Очистить
+              </button>
+            ) : null}
           </div>
-          {isAiDrainPending(selected) ? (
-            <p className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-950">
-              Уточняем ТН ВЭД… Предварительный код уже есть; точный обновится через 1–2 мин.
-            </p>
-          ) : selected.aiDraft?.llmEnrich ? (
-            <p className="text-xs text-emerald-700">
-              Код уточнён ({selected.aiDraft.llmEnrich}
-              {selected.hsCode ? ` · ${selected.hsCode}` : ""}).
+          {isPack && packN < MIN_PACK ? (
+            <p className="meta" style={{ marginTop: 8 }}>
+              Прикрепите файл — минимум {MIN_PACK} позиции, в этом пакете до {picked.max}.
             </p>
           ) : null}
+            </>
+          )}
         </div>
+
+        <aside className="wiz-side">
+          {wizardStep === 3 && aiEnriching && !previewHasHs ? (
+            <AiRunCard title={aiRunTitle(true, isPack && packN >= MIN_PACK)} />
+          ) : (
+            <div className="order-hs" style={{ minHeight: 220, gridTemplateColumns: "1fr" }}>
+              <div className="order-hs-copy">
+                <span className="gt-kicker">
+                  {wizardStep >= 3 && previewHasHs && selected
+                    ? classificationHeroKicker(selected, false)
+                    : wizardStep < 3
+                      ? isPack
+                        ? packN
+                          ? `Пакет ${packN} позиций · после оплаты`
+                          : "Код после оплаты"
+                        : "Код после оплаты"
+                      : "Код ТН ВЭД ЕАЭС"}
+                </span>
+                <div className="order-hs-code" style={{ fontSize: "1.35rem", marginTop: 8 }}>
+                  {wizardStep >= 3 && previewHasHs && previewHs ? previewHs : "— — —"}
+                </div>
+                {wizardStep >= 3 && previewConf != null ? (
+                  <>
+                    <div className="order-hs-conf">
+                      <span>Уверенность AI {previewConf}%</span>
+                    </div>
+                    <div className="conf">
+                      <i style={{ width: `${previewConf}%` }} />
+                    </div>
+                  </>
+                ) : null}
+                <p>
+                  {wizardStep >= 3 && previewHasHs && selected
+                    ? classificationWhyBody(selected).slice(0, 160) +
+                      (classificationWhyBody(selected).length > 160 ? "…" : "")
+                    : wizardStep === 2
+                      ? picked.summary
+                      : isPack
+                        ? "Приложите файл — после оплаты AI проставит код каждой строке"
+                        : "Сначала товар и тариф, затем оплата — код откроется после неё."}
+                </p>
+              </div>
+            </div>
+          )}
+          <div className="card" style={{ margin: 0 }}>
+            <h3>По заявке</h3>
+            <div className="pay-row">
+              <span>Происхождение</span>
+              <strong>{countryLabel}</strong>
+            </div>
+            <div className="pay-row">
+              <span>Документы</span>
+              <strong>{docCount}</strong>
+            </div>
+            {isPack ? (
+              <div className="pay-row">
+                <span>Позиций</span>
+                <strong>{packN}</strong>
+              </div>
+            ) : null}
+            <div className="pay-row">
+              <span>Тариф</span>
+              <strong>
+                {picked.name} · {fmtRub(payAmount)} ₽
+              </strong>
+            </div>
+            <p className="meta" style={{ marginTop: 10 }}>
+              Этот просчёт — только код ТН ВЭД. Таможню считаем отдельно.
+            </p>
+            <p className="meta" style={{ marginTop: 10 }}>
+              {picked.summary}
+            </p>
+          </div>
+        </aside>
+      </div>
       )}
-      <TnvedCardDrawer code={cardCode} onClose={() => setCardCode(null)} />
+
+      {packModal ? (
+        <div className="pack-modal-back" onClick={() => setPackModal(false)}>
+          <div
+            className="pack-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="pack-modal-title"
+          >
+            <div className="pack-modal-head">
+              <span className="go-kicker">Мультипозиция</span>
+              <button
+                type="button"
+                className="pack-modal-x"
+                aria-label="Закрыть"
+                onClick={() => setPackModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <h3 id="pack-modal-title">Файл с позициями</h3>
+            <p className="meta" style={{ margin: "0 0 14px" }}>
+              CSV, Excel, PDF или фото инвойса. Читаем строки с документа и считаем стоимость
+              просчёта.
+            </p>
+            {dropzone("pack", packFileRef, packCamRef)}
+            {packN >= MIN_PACK ? (
+              <div className="pack-quote" style={{ marginTop: 14 }}>
+                <strong>В файле {packN} позиций</strong>
+                <span>
+                  Пакет «{picked.name}»: {fmtRub(picked.priceRub)} ₽
+                  <small> · до {picked.max} строк</small>
+                </span>
+              </div>
+            ) : packDocName || packFail ? (
+              <p className="meta pack-read-fail">
+                Не удалось вычитать позиции. Попробуйте CSV/Excel или более чёткое фото таблицы.
+              </p>
+            ) : null}
+            <div className="pack-modal-actions">
+              <button type="button" className="btn btn-ghost" onClick={resetMulti}>
+                Очистить
+              </button>
+              <button type="button" className="btn btn-ghost" onClick={() => setPackModal(false)}>
+                Позже
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={packN < MIN_PACK}
+                onClick={() => setPackModal(false)}
+              >
+                Готово
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

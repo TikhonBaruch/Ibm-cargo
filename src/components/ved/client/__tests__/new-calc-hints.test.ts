@@ -47,7 +47,7 @@ describe("newCalcStageTip", () => {
     ).toMatch(/черновик кода/i);
   });
 
-  it("requires origin / manufacturer / composition before directory search", () => {
+  it("requires origin and composition before directory search", () => {
     expect(
       newCalcStageTip({
         form: baseForm({ title: "A", description: "B" }),
@@ -57,7 +57,25 @@ describe("newCalcStageTip", () => {
         hasCatalog: false,
         needsAttrsHint: true,
       })
-    ).toMatch(/страна происхождения|производитель и состав/i);
+    ).toMatch(/страна происхождения|состав/i);
+  });
+
+  it("does not block create on empty manufacturerName", () => {
+    expect(
+      newCalcStageTip({
+        form: baseForm({ title: "A", description: "B" }),
+        items: [
+          item({
+            name: "Товар",
+            attrs: { originCountry: "CN", composition: "cotton", hsHint: "6109" },
+          }),
+        ],
+        hsCandidateCount: 0,
+        maxPos: 3,
+        hasCatalog: false,
+        needsAttrsHint: true,
+      })
+    ).toBeNull();
   });
 
   it("still requires create attrs even when hsHint is set", () => {
@@ -70,7 +88,7 @@ describe("newCalcStageTip", () => {
         hasCatalog: false,
         needsAttrsHint: true,
       })
-    ).toMatch(/страна происхождения|производитель и состав/i);
+    ).toMatch(/страна происхождения|состав/i);
   });
 
   it("defers to attrs amber when required attrs + hsHint present but soft attrs empty", () => {

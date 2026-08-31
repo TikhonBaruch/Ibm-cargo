@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
 import { useVedToast } from "../feedback/VedToast";
 import type { FormItem } from "./types";
 
@@ -83,6 +84,7 @@ export function ProductCsvImport({
   }) => void;
 }) {
   const { toast } = useVedToast();
+  const showInvoice = commercialInvoiceUiEnabled();
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewBusy, setPreviewBusy] = useState(false);
   const [preview, setPreview] = useState<ImportPreviewResponse | null>(null);
@@ -112,7 +114,7 @@ export function ProductCsvImport({
             filename: file.name,
             tariffCode,
             country: country || undefined,
-            shipmentValue: shipmentValue || undefined,
+            ...(showInvoice && shipmentValue ? { shipmentValue } : {}),
           }),
         });
         data = (await res.json()) as ImportPreviewResponse & { error?: string };
@@ -131,7 +133,7 @@ export function ProductCsvImport({
             filename: file.name,
             tariffCode,
             country: country || undefined,
-            shipmentValue: shipmentValue || undefined,
+            ...(showInvoice && shipmentValue ? { shipmentValue } : {}),
           }),
         });
         data = (await res.json()) as ImportPreviewResponse & { error?: string };
@@ -145,7 +147,7 @@ export function ProductCsvImport({
             csv,
             tariffCode,
             country: country || undefined,
-            shipmentValue: shipmentValue || undefined,
+            ...(showInvoice && shipmentValue ? { shipmentValue } : {}),
           }),
         });
         data = (await res.json()) as ImportPreviewResponse & { error?: string };
@@ -165,25 +167,31 @@ export function ProductCsvImport({
   };
 
   const toItems = (): FormItem[] =>
-    usable.slice(0, maxPos).map((r) => ({
-      name: r.name,
-      qty: r.qty ?? 1,
-      unitPrice: r.unitPrice ?? 0,
-      attrs: r.attrs
-        ? {
-            brand: r.attrs.brand,
-            material: r.attrs.material,
-            composition: r.attrs.composition,
-            manufacturerName: r.attrs.manufacturerName,
-            originCountry: r.attrs.originCountry,
-            hsHint: r.hsCode || r.attrs.hsHint,
-            netWeightKg:
-              r.attrs.netWeightKg != null ? String(r.attrs.netWeightKg) : undefined,
-          }
-        : r.hsCode
-          ? { hsHint: r.hsCode }
-          : undefined,
-    }));
+    usable.slice(0, maxPos).map((r) => {
+      const composition =
+        r.attrs?.composition?.trim() ||
+        r.description?.trim() ||
+        r.name.trim();
+      const originCountry =
+        r.attrs?.originCountry?.trim().toUpperCase().slice(0, 2) ||
+        (country.trim().length === 2 ? country.trim().toUpperCase() : "") ||
+        "CN";
+      return {
+        name: r.name,
+        ...(showInvoice ? { qty: r.qty ?? 1, unitPrice: r.unitPrice ?? 0 } : { qty: 1, unitPrice: 0 }),
+        attrs: {
+          brand: r.attrs?.brand,
+          material: r.attrs?.material,
+          composition,
+          manufacturerName: r.attrs?.manufacturerName,
+          originCountry,
+          hsHint: r.hsCode || r.attrs?.hsHint,
+          ...(showInvoice && r.attrs?.netWeightKg != null
+            ? { netWeightKg: String(r.attrs.netWeightKg) }
+            : {}),
+        },
+      };
+    });
 
   const apply = (create: boolean) => {
     if (!usable.length) {
@@ -212,7 +220,8 @@ export function ProductCsvImport({
           <p className="text-sm font-medium text-slate-800">Таблица CSV / XLSX / PDF</p>
           <p className="text-xs text-slate-500">
             Когда позиций много — загрузите файл вместо ручного ввода. Колонки: наименование,
-            описание, кол-во, цена, бренд… PDF — текстовый слой invoice / packing list. Макс.{" "}
+            описание, бренд
+            {showInvoice ? ", кол-во, цена" : ""}… PDF — текстовый слой. Макс.{" "}
             {maxPos} поз. по тарифу. Черновик кодов — брокер проверит.
           </p>
         </div>

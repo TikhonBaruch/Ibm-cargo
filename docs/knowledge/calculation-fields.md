@@ -19,7 +19,7 @@ Legend: **R** = required · **O** = optional · **E** = edit · **V** = view · 
 | `description` | **R** | UI + API (min 5) |
 | `items[]` с ≥1 `name` | **R** | UI; API может fallback на title/desc |
 | item attrs `originCountry` (ISO-2) | **R** | Страна происхождения; UI + API hard-reject |
-| item attrs `manufacturerName` | **R** | Производитель; UI + API hard-reject |
+| item attrs `manufacturerName` | **O** | Производитель; временно не hard-reject (C7). Restore: R |
 | item attrs `composition` | **R** | Состав / материалы; UI + API hard-reject |
 | `tariffCode` | soft | default STANDARD |
 | `country`, `shipmentValue` | O | default country в форме «Китай»; валюта инвойса USD/CNY/EUR |
@@ -34,6 +34,8 @@ Legend: **R** = required · **O** = optional · **E** = edit · **V** = view · 
 ## 2. Матрица видимости (UI as-is target)
 
 ### Calculation (шапка)
+
+**C8:** `shipmentValue`, item `qty` / `unitPrice`, attrs `netWeightKg` **скрыты в UI** (`commercialInvoiceUiEnabled()` = false). API optional без изменения. Restore флага — снова показать. Цена тарифа и пошлина/НДС не трогаем.
 
 | Поле | CLIENT create | CLIENT detail | BROKER work | ADMIN detail |
 |------|---------------|---------------|-------------|--------------|
@@ -75,7 +77,7 @@ Broker **не** перезаписывает заполненные product attr
 
 | Тариф | Правило |
 |-------|---------|
-| **Все тарифы** | **R:** `originCountry` (ISO-2), `manufacturerName`, `composition` — UI disable CTA + Zod/`createAndDraft` hard-reject ([`plan-required-create-attrs.md`](./plan-required-create-attrs.md)) |
+| **Все тарифы** | **R:** `originCountry` (ISO-2), `composition`. `manufacturerName` временно **O** (C7). Zod/`createAndDraft` hard-reject без страны/состава ([`plan-required-create-attrs.md`](./plan-required-create-attrs.md)) |
 | **EXPRESS** | Прочие attrs **optional** (1 позиция, быстрый путь) |
 | **STANDARD** / **PRO** | Дополнительно рекомендуется ≥1 из: `brand`, `material`, `netWeightKg`, `hsHint`. Soft-warn в UI если пусто. |
 | Полный каталог attrs | `model`, `technicalSpecs`, `grossWeightKg` — schema only; **purpose / extra.color / extra.ageGroup** — на create UI + chips; брокер видит gaps в `BrokerDossierPane` |
@@ -84,7 +86,7 @@ Broker **не** перезаписывает заполненные product attr
 
 Код: `hasRequiredCreateAttrs` в `product-description.ts`; refine в `POST /api/v1/calculations`; dual-path в `containers/api`; UI — NewCalcPane + Dashboard quick.
 
-**UI create (D32 contextual help):** progressive tip + labels на `/cabinet/new` — [`plan-newcalc-hints.md`](./plan-newcalc-hints.md). Heuristic **attr chips** (клик → только пустые поля) — [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md). **Field typeahead** — прецеденты + локальный словарь [`plan-precedent-suggest-service.md`](./plan-precedent-suggest-service.md) · [`plan-field-suggest.md`](./plan-field-suggest.md). Не wizard; UI не зовёт LLM matrix.
+**UI create (D32 contextual help):** progressive tip + labels — [`plan-newcalc-hints.md`](./plan-newcalc-hints.md). Heuristic **attr chips** — [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) (**API live; UI chips orphan на lbm-bro NewCalc**). **Field typeahead** — Dashboard quick + [`plan-field-suggest.md`](./plan-field-suggest.md). **Primary fill-help на `/cabinet/new`:** C12 clarify + **C21 packs** (~12 семей) — [`plan-lbm-bro-newcalc-clarify.md`](./plan-lbm-bro-newcalc-clarify.md) · [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md). Карта слоёв / gaps / extended tests: [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md). Не wizard API; UI не зовёт LLM matrix.
 
 **Реакция клиента:** `POST …/feedback` с `AI_READY`, если есть HS-черновик (не только DONE). 👍 на approve пишет `verified_determinations.quality=CLIENT_HELPFUL` (не новая колонка заявки).
 

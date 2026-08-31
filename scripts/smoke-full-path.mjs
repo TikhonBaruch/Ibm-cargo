@@ -11,6 +11,7 @@
  * Image is attachment-only (not sent to AI/LLM). LLM enrich is optional:
  * logged when aiDraft.llmEnrich is present (compose with LLM_SERVICE_URL).
  */
+import "./lib/install-vercel-bypass.mjs";
 const BASE = process.env.TEST_API_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
 const CLIENT_EMAIL = process.env.CLIENT_EMAIL || "client@example.com";
 const CLIENT_PASSWORD = process.env.CLIENT_PASSWORD || "demo1234";

@@ -37,22 +37,31 @@
 | E4 | KB: Preview env must-have (зеркало Production) |
 | E5 | `resolveSiteUrl()`: кандидаты без хоста `ibm-cargo.vercel.app`; пустой env → `http://localhost:3000` |
 | E6 | `/login`: полные демо-email; `authorize` trim/lowercase + `client@` → `client@example.com`; hint при CredentialsSignin про seed/`DATABASE_URL` |
+| E7 | `GET /health` `force-dynamic` + `databaseUrl: boolean`; `/login` баннер и disable submit, если `false` |
 
 ## 4. Реализация
 
-Код: `src/lib/auth-env.ts`, `site-url.ts`, `db-url.ts`, `auth-login.ts`, `prisma.ts` (lazy), `auth.ts`, `proxy.ts`, `app/login/page.tsx`, `app/sitemap.ts`, `app/robots.ts`.  
-Проверка: unit `auth-env` + `site-url` + `db-url` + `auth-login`; локальный `signIn` demo.
+Код: `src/lib/auth-env.ts`, `site-url.ts`, `db-url.ts`, `web-health.ts`, `auth-login.ts`, `prisma.ts` (lazy), `auth.ts`, `proxy.ts`, `app/health/route.ts`, `app/login/page.tsx`, `app/sitemap.ts`, `app/robots.ts`.  
+Проверка: unit `auth-env` + `site-url` + `db-url` + `auth-login`; `GET /health` `databaseUrl`; локальный `signIn` demo.
 
 ## 5. Env на Vercel (человек, Dashboard)
 
-На **Preview** проекта `ibm-cargo` (Production alias этого имени — чужой сайт, не копировать как origin):
+Это **не баг Prisma-схемы**. `authorize()` читает пользователей из Postgres. Агент не может выставить секреты в Dashboard.
 
-- `DATABASE_URL` — Postgres **`newlsu_lbm`**, **с seed** (`client@example.com` / `demo1234`). Пароль БД **без** `#` (encode не нужен). Если спецсимволы появятся снова — URL-encode (`#` → `%23`). Без seed вход даст CredentialsSignin; можно `/register`.
-- `NEXTAUTH_SECRET` (длинный random; можно то же значение, что `AUTH_SECRET`)
-- `NEXTAUTH_URL` — **не** `https://ibm-cargo.vercel.app`; на Preview лучше не копировать чужой/prod origin — код подставит branch URL
-- `NEXT_PUBLIC_SITE_URL` — origin Preview, не `ibm-cargo.vercel.app`
+На **Preview** проекта [ibm-cargo](https://vercel.com/tikhonbaruchs-projects/ibm-cargo) (Production alias этого имени — чужой сайт, не копировать как origin):
 
-Без `DATABASE_URL` NextAuth уже не покажет Configuration, но вход не найдёт демо-юзеров.
+1. **Settings → Environment Variables**
+2. Найти `DATABASE_URL` (часто стоит только **Production**)
+3. **Edit** → включить **Preview** (и Development, если нужно) → **Save**
+4. Значение — тот же Postgres **`newlsu_lbm` с seed** (`client@example.com` / `demo1234`). Пароль БД **без** `#`. Если спецсимволы — URL-encode (`#` → `%23`).
+5. Также Preview: `NEXTAUTH_SECRET` (не только `AUTH_SECRET`)
+6. **Не** копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app` на Preview — код подставит branch URL
+7. **Deployments → этот Preview → Redeploy** (без «Use existing Build Cache»), иначе runtime не увидит новую переменную
+
+Проверка без логина: `GET /health` → `{ "ok": true, "service": "web", "databaseUrl": true }`.  
+`databaseUrl: false` = переменной нет на этом деплое; `/login` покажет баннер и не будет звать Prisma.
+
+Без seed вход даст CredentialsSignin; можно `/register`.
 
 ## 6. Деплой
 

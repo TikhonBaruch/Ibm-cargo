@@ -1,6 +1,7 @@
 "use client";
 
 import { landedForCalcDisplay } from "@/lib/ved/landed-cost";
+import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
 
 function rub(n: number) {
   return `${n.toLocaleString("ru-RU")} ₽`;
@@ -24,24 +25,32 @@ export function LandedWithoutFreightCard({
 }) {
   const snap = landedForCalcDisplay(calc);
   if (!snap) return null;
+  const showInvoice = commercialInvoiceUiEnabled();
 
-  const rows: Array<{ label: string; value: string; strong?: boolean }> = [
-    {
+  const rows: Array<{ label: string; value: string; strong?: boolean }> = [];
+  if (showInvoice) {
+    rows.push({
       label: `Инвойс ${snap.invoiceAmount.toLocaleString("ru-RU")} ${snap.currency} → ТС (+${snap.bufferPct}%)`,
       value: rub(snap.goodsRub),
-    },
+    });
+  }
+  rows.push(
     { label: "Пошлина", value: rub(snap.dutyRub) },
     { label: "НДС", value: rub(snap.vatRub) },
     { label: "Сбор", value: rub(snap.feeRub) },
-  ];
+  );
   if (snap.extraFeeRub > 0) {
     rows.push({
       label: calc.extraFeeNote ? `Прочие сборы · ${calc.extraFeeNote}` : "Прочие сборы",
       value: rub(snap.extraFeeRub),
     });
   }
-  rows.push({ label: "Итого без доставки", value: rub(snap.landedRub), strong: true });
-  if (snap.perUnitRub != null) {
+  rows.push({
+    label: showInvoice ? "Итого без доставки" : "Итого платежи",
+    value: rub(showInvoice ? snap.landedRub : snap.totalPaymentsRub),
+    strong: true,
+  });
+  if (showInvoice && snap.perUnitRub != null) {
     rows.push({ label: "На единицу", value: rub(snap.perUnitRub) });
   }
 
@@ -66,7 +75,11 @@ export function LandedWithoutFreightCard({
           </div>
         ))}
       </dl>
-      <p className="mt-2 text-[11px] leading-snug text-[#7a7f89]">{snap.note}</p>
+      <p className="mt-2 text-[11px] leading-snug text-[#7a7f89]">
+        {showInvoice
+          ? snap.note
+          : "Пошлина, НДС и сбор — живые цифры заявки. Стоимость партии в этой смете скрыта."}
+      </p>
     </div>
   );
 }

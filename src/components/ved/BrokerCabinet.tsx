@@ -8,7 +8,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { VedShell, StatusPill, VedEmptyState, api } from "./VedShell";
+import { StatusPill, VedEmptyState, api } from "./VedShell";
+import { LbmCabinetsShell } from "./LbmCabinetsShell";
 import { VedDetailDrawer } from "./VedDetailDrawer";
 import { useVedToast } from "./feedback/VedToast";
 import { QueuePane } from "./broker/QueuePane";
@@ -503,7 +504,8 @@ export function BrokerCabinet() {
   const isOnline = profile.acceptingJobs;
 
   return (
-    <VedShell
+    <LbmCabinetsShell
+      variant="broker"
       brand="Кабинет"
       subtitle={`Брокер · ${meName || "…"}`}
       nav={navWithBadge}
@@ -512,7 +514,7 @@ export function BrokerCabinet() {
       avatarUrl="/cabinets/assets/avatar-broker.jpg"
       footer={
         <>
-          SLA: <strong className="text-white">≤ {preferredClaimHours} ч</strong>
+          SLA: <strong>≤ {preferredClaimHours} ч</strong>
           <br />
           {sideFoot.ratingLine}
         </>
@@ -527,23 +529,14 @@ export function BrokerCabinet() {
               if (pane === "chat") loadChatThreads().catch(() => undefined);
               if (selected?.id) loadChat(selected.id).catch(() => undefined);
             }}
-            className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 disabled:opacity-50"
+            className="btn btn-ghost btn-sm"
           >
             Обновить
           </button>
-          <span
-            className={
-              isOnline
-                ? "hidden rounded-full bg-[#dcfce7] px-3 py-1 text-xs font-bold text-[#16a34a] sm:inline"
-                : "hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500 sm:inline"
-            }
-          >
+          <span className={isOnline ? "pill ok hidden sm:inline-flex" : "pill muted hidden sm:inline-flex"}>
             {isOnline ? "Онлайн" : "Не принимает"}
           </span>
-          <Link
-            href={queuePath}
-            className="rounded-full bg-[#2b72f4] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(43,114,244,0.35)]"
-          >
+          <Link href={queuePath} className="btn btn-primary btn-sm">
             Открыть очередь
           </Link>
         </>
@@ -586,74 +579,62 @@ export function BrokerCabinet() {
       ) : (
         <>
       {pane === "dashboard" && (
-        <section className="space-y-5">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <section>
+          <div className="stats">
             {[
               { v: queue.length, k: "В общей очереди" },
               { v: inWork, k: "У вас в работе" },
               { v: slaRisk.length, k: "Просрочен SLA" },
               { v: avgResponseLabel, k: "Среднее время ответа" },
             ].map((s) => (
-              <div
-                key={s.k}
-                className="rounded-[28px] border border-black/[0.04] bg-white px-5 py-4 shadow-sm"
-              >
-                <div className="text-3xl font-extrabold" style={{ fontFamily: "var(--kb-font-display)" }}>
-                  {s.v}
-                </div>
-                <div className="mt-1 text-sm text-[var(--kb-muted)]">{s.k}</div>
+              <div key={s.k} className="stat">
+                <div className="v">{s.v}</div>
+                <div className="k">{s.k}</div>
               </div>
             ))}
           </div>
           {slaRisk[0] && (
-            <div className="rounded-[28px] border border-amber-200 bg-amber-50 px-5 py-4 text-sm">
+            <div className="alert-box warn-box">
               <strong>SLA risk · {slaRisk[0].number}</strong>
-              <p className="mt-1 text-amber-900/80">
-                {slaRisk[0].title} — возьмите в работу или эскалируйте через админа.
-              </p>
+              {slaRisk[0].title} — возьмите в работу или эскалируйте через админа.
             </div>
           )}
           {chatUnread > 0 ? (
-            <div className="rounded-[28px] border border-[#2b72f4]/25 bg-[#e8f0fe] px-5 py-4 text-sm">
-              <p className="font-semibold text-[#0f172a]">Ждут ответа в чате: {chatUnread}</p>
-              <p className="mt-1 text-[var(--kb-muted)]">
-                Клиент написал — откройте диалог без ухода в полный mapping.
-              </p>
-              <button
-                type="button"
-                className="mt-3 rounded-full bg-[#2b72f4] px-4 py-2 text-xs font-semibold text-white"
-                onClick={() => router.push(path("/chat"))}
-              >
-                Открыть чат
-              </button>
+            <div className="alert-box">
+              <strong>Ждут ответа в чате: {chatUnread}</strong>
+              Клиент написал — откройте диалог без ухода в полный mapping.
+              <div style={{ marginTop: 10 }}>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => router.push(path("/chat"))}
+                >
+                  Открыть чат
+                </button>
+              </div>
             </div>
           ) : null}
-          <div className="overflow-hidden rounded-[28px] border border-black/[0.04] bg-white shadow-sm">
-            <div className="border-b border-black/[0.04] px-5 py-4">
-              <h2 className="font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-                Требуют внимания
-              </h2>
-            </div>
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-[var(--kb-muted)]">
+          <div className="card">
+            <h3>Требуют внимания</h3>
+            <div style={{ overflowX: "auto" }}>
+            <table className="data">
+              <thead>
                 <tr>
-                  <th className="px-4 py-3 font-medium">№</th>
-                  <th className="px-4 py-3 font-medium">Клиент</th>
-                  <th className="px-4 py-3 font-medium">Товар</th>
-                  <th className="px-4 py-3 font-medium">AI</th>
-                  <th className="px-4 py-3 font-medium">Действие</th>
+                  <th>№</th>
+                  <th>Клиент</th>
+                  <th>Товар</th>
+                  <th>AI</th>
+                  <th>Действие</th>
                 </tr>
               </thead>
               <tbody>
                 {attention.map((c) => (
-                  <tr key={c.id} className="border-t border-slate-100">
-                    <td className="px-4 py-3 font-medium">{c.number}</td>
-                    <td className="px-4 py-3">{c.clientUser?.name || "—"}</td>
-                    <td className="px-4 py-3">{c.title}</td>
-                    <td className="px-4 py-3">
-                      {c.confidence != null ? `${Math.round(c.confidence * 100)}%` : "—"}
-                    </td>
-                    <td className="px-4 py-3">
+                  <tr key={c.id}>
+                    <td>{c.number}</td>
+                    <td>{c.clientUser?.name || "—"}</td>
+                    <td>{c.title}</td>
+                    <td>{c.confidence != null ? `${Math.round(c.confidence * 100)}%` : "—"}</td>
+                    <td>
                       {c.status === "SLA_RISK" ? (
                         <div className="flex flex-wrap items-center gap-2">
                           <StatusPill status={c.status} />
@@ -661,7 +642,7 @@ export function BrokerCabinet() {
                             type="button"
                             disabled={busy}
                             onClick={() => claim(c.id)}
-                            className="rounded-full bg-[#2b72f4] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                            className="btn btn-primary btn-sm"
                           >
                             Взять
                           </button>
@@ -671,7 +652,7 @@ export function BrokerCabinet() {
                           type="button"
                           disabled={busy}
                           onClick={() => claim(c.id)}
-                          className="rounded-full bg-[#2b72f4] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                          className="btn btn-primary btn-sm"
                         >
                           Взять
                         </button>
@@ -697,6 +678,7 @@ export function BrokerCabinet() {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </section>
       )}
@@ -787,21 +769,19 @@ export function BrokerCabinet() {
               onSelect={(c) => void openJob(c, { stayOnChat: true })}
               queueHref={queuePath}
             />
-            <div className="hidden min-h-[28rem] rounded-[28px] border border-black/[0.04] bg-white p-4 shadow-sm lg:block">
+            <div className="card hidden min-h-[28rem] lg:block" style={{ margin: 0 }}>
               {selected ? (
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <div>
+                  <div className="card-head">
                     <div>
-                      <p className="font-semibold text-[#0f172a]">
+                      <h3>
                         {selected.number} · {selected.title}
-                      </p>
-                      <p className="text-xs text-[var(--kb-muted)]">
-                        Чат с клиентом · mapping — на «В работе»
-                      </p>
+                      </h3>
+                      <p>Чат с клиентом · mapping — на «В работе»</p>
                     </div>
                     <button
                       type="button"
-                      className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-[#2b72f4]"
+                      className="btn btn-ghost btn-sm"
                       onClick={() =>
                         router.push(`${path("/work")}?id=${encodeURIComponent(selected.id)}`)
                       }
@@ -837,7 +817,7 @@ export function BrokerCabinet() {
                 <div className="mb-3">
                   <button
                     type="button"
-                    className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-[#2b72f4]"
+                    className="btn btn-ghost btn-sm"
                     onClick={() =>
                       router.push(`${path("/work")}?id=${encodeURIComponent(selected.id)}`)
                     }
@@ -870,28 +850,46 @@ export function BrokerCabinet() {
       {pane === "payouts" && <PayoutsPane payouts={payouts} />}
 
       {pane === "profile" && (
-        <section className="max-w-xl">
-          <div className="space-y-3 rounded-[28px] border border-black/[0.04] bg-white p-6 shadow-sm">
-            <input
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              placeholder="Специализация"
-              value={profile.specialization}
-              onChange={(e) => setProfile({ ...profile, specialization: e.target.value })}
-            />
-            <input
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              placeholder="Языки"
-              value={profile.languages}
-              onChange={(e) => setProfile({ ...profile, languages: e.target.value })}
-            />
-            <textarea
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              rows={3}
-              placeholder="О себе"
-              value={profile.about}
-              onChange={(e) => setProfile({ ...profile, about: e.target.value })}
-            />
-            <label className="flex items-center gap-2 text-sm">
+        <section>
+          <div className="card" style={{ maxWidth: 560 }}>
+            <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 16 }}>
+              <div className="avatar" style={{ width: 64, height: 64 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/cabinets/assets/avatar-broker.jpg" alt="" />
+              </div>
+              <div>
+                <strong style={{ fontSize: "1.1rem", fontFamily: "var(--display)" }}>
+                  {meName || "Брокер"}
+                </strong>
+                <div className="meta">Сертифицированный таможенный брокер</div>
+              </div>
+            </div>
+            <div className="field">
+              <label>Специализация</label>
+              <input
+                placeholder="Импорт из Китая, электроника, ЕАЭС"
+                value={profile.specialization}
+                onChange={(e) => setProfile({ ...profile, specialization: e.target.value })}
+              />
+            </div>
+            <div className="field">
+              <label>Языки</label>
+              <input
+                placeholder="Русский, English"
+                value={profile.languages}
+                onChange={(e) => setProfile({ ...profile, languages: e.target.value })}
+              />
+            </div>
+            <div className="field">
+              <label>О себе</label>
+              <textarea
+                rows={3}
+                placeholder="Опыт, направления, фокус классификации"
+                value={profile.about}
+                onChange={(e) => setProfile({ ...profile, about: e.target.value })}
+              />
+            </div>
+            <label className="toggle-row">
               <input
                 type="checkbox"
                 checked={profile.acceptingJobs}
@@ -899,12 +897,7 @@ export function BrokerCabinet() {
               />
               Принимаю новые заявки из очереди
             </label>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={saveProfile}
-              className="rounded-full bg-[#2b72f4] px-5 py-2.5 text-sm font-semibold text-white"
-            >
+            <button type="button" disabled={busy} onClick={saveProfile} className="btn btn-primary btn-sm">
               Сохранить
             </button>
           </div>
@@ -912,6 +905,6 @@ export function BrokerCabinet() {
       )}
         </>
       )}
-    </VedShell>
+    </LbmCabinetsShell>
   );
 }

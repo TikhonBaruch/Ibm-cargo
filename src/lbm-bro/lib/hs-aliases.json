@@ -902,13 +902,18 @@
   {
     "code": "9102110000",
     "keys": [
-      "smartwatch",
       "кварц час",
       "электронн час",
-      "наручн час"
+      "наручн час",
+      "wrist watch",
+      "quartz watch"
     ],
     "exclude": [
-      "wall clock"
+      "wall clock",
+      "smartwatch",
+      "smart watch",
+      "смарт",
+      "智能手表"
     ],
     "why": "Кварцевые наручные часы с электронным циферблатом.",
     "risk": "Низкий"

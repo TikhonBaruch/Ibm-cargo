@@ -9,6 +9,7 @@
  * Covers real broker check/correct path (WorkMapping inputs). There is no
  * "send for revision with dropdowns" API — only PATCH items + approve (and chat).
  */
+import "./lib/install-vercel-bypass.mjs";
 const BASE = process.env.TEST_API_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
 const EMAIL = process.env.BROKER_EMAIL || "broker@example.com";
 const PASSWORD = process.env.BROKER_PASSWORD || "demo1234";

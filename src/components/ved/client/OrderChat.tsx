@@ -45,32 +45,34 @@ export function OrderChat({
 
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between">
-        <div className="font-medium text-sm">Чат с брокером</div>
-        {waitingOn === "BROKER" && (
-          <span className="text-xs text-amber-600">ждёт ответа брокера</span>
-        )}
-        {waitingOn === "CLIENT" && (
-          <span className="text-xs text-[#2b72f4]">ждёт вашего ответа</span>
-        )}
+      <div className="card-head" style={{ marginBottom: 10 }}>
+        <div>
+          <h3 style={{ marginBottom: 0 }}>Чат с брокером</h3>
+        </div>
+        {waitingOn === "BROKER" && <span className="pill warn">ждёт брокера</span>}
+        {waitingOn === "CLIENT" && <span className="pill blue">ждёт вас</span>}
       </div>
-      <div className="mb-2 max-h-48 space-y-2 overflow-y-auto rounded-2xl bg-slate-50 p-3 text-sm">
-        {chat.map((m) => (
-          <div key={m.id}>
-            <div className="text-xs text-[#7a7f89]">{m.author?.name || "Система"}</div>
-            {m.body}
-            {m.attachmentUrl && (
-              <a className="ml-1 text-[#2b72f4]" href={m.attachmentUrl}>
-                [файл]
-              </a>
-            )}
-          </div>
-        ))}
-        {chat.length === 0 && <div className="text-[#7a7f89]">Пока нет сообщений</div>}
+      <div className="chat-box">
+        {chat.map((m) => {
+          const mine = m.author?.role === "CLIENT";
+          return (
+            <div key={m.id} className={mine ? "bubble me" : "bubble"}>
+              <div className="meta" style={{ fontSize: 11, marginBottom: 4 }}>
+                {m.author?.name || "Система"}
+              </div>
+              {m.body}
+              {m.attachmentUrl && (
+                <a className="ml-1" href={m.attachmentUrl}>
+                  [файл]
+                </a>
+              )}
+            </div>
+          );
+        })}
+        {chat.length === 0 && <div className="bubble">Пока нет сообщений</div>}
       </div>
-      <div className="flex gap-2">
+      <div className="chat-row">
         <input
-          className="flex-1 rounded-xl border px-3 py-2 text-sm"
           value={chatMsg}
           onChange={(e) => onChatMsg(e.target.value)}
           placeholder="Сообщение брокеру"
@@ -88,7 +90,7 @@ export function OrderChat({
           type="button"
           disabled={uploading || busy}
           onClick={() => fileRef.current?.click()}
-          className="rounded-full border px-3 py-1 text-xs font-semibold"
+          className="btn btn-ghost btn-sm"
         >
           📎
         </button>
@@ -96,7 +98,7 @@ export function OrderChat({
           type="button"
           disabled={busy || !chatMsg.trim()}
           onClick={() => onSend()}
-          className="rounded-full bg-[#2b72f4] px-4 py-2 text-sm font-semibold text-white"
+          className="btn btn-primary btn-sm"
         >
           Отправить
         </button>

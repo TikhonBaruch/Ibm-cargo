@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   filterFieldSuggestions,
   fieldSuggestDisplay,
+  originCountryRuLabel,
+  originCountrySelectOptions,
   resolveOriginCountryCode,
 } from "../field-suggest";
 
@@ -49,5 +51,22 @@ describe("field-suggest", () => {
   it("ranks prefix hits before substring", () => {
     const rows = filterFieldSuggestions("brand", "sa");
     expect(rows[0]?.value.toLowerCase().startsWith("sa") || rows[0]?.value === "Samsung").toBe(true);
+  });
+
+  it("maps stored origin to a RU label for order chrome", () => {
+    expect(originCountryRuLabel("CN")).toBe("Китай");
+    expect(originCountryRuLabel("Китай")).toBe("Китай");
+    expect(originCountryRuLabel("CN · Китай")).toBe("Китай");
+    expect(originCountryRuLabel("ЕС")).toBe("ЕС");
+    expect(originCountryRuLabel(undefined, "JP")).toBe("Япония");
+    expect(originCountryRuLabel("")).toBe("");
+  });
+
+  it("exposes the full origin catalog for the create select", () => {
+    const opts = originCountrySelectOptions();
+    expect(opts.length).toBeGreaterThan(10);
+    expect(opts.some((o) => o.label === "Китай" && o.iso === "CN")).toBe(true);
+    expect(opts.some((o) => o.label === "Япония")).toBe(true);
+    expect(opts.some((o) => o.label === "ЕС" && o.iso === "DE")).toBe(true);
   });
 });

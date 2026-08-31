@@ -28,6 +28,8 @@ import { handleCatalogRoutes, hydrateItemsWithPublishedSkus } from "./catalog-sk
 import { handleFactoryOrderRoutes, handleManufacturerOrderRoutes } from "./sku-orders.js";
 import { handleManufacturerDirectoryRoutes } from "./manufacturer-directory.js";
 import { assembleTnvedCard, hsCodeAncestors } from "./tnved-card.js";
+import { tnvedSearchWhere, tnvedSearchStems, scoreTnvedSearchHit } from "./tnved-helpers.js";
+import { buildCascadeDraft, pickCascadeOrHeuristic } from "./tnved-classify.js";
 import { suggestProductAttrs } from "./attr-suggest.js";
 import { shouldEnqueueAiDrain, runAiDrainPipeline } from "./ai-pipeline.js";
 import { isAllowedMediaUrl } from "./media-url.js";
@@ -73,11 +75,7 @@ function hasRequiredCreateAttrs(attrs) {
   const origin = String(attrs.originCountry || "")
     .trim()
     .toUpperCase();
-  return (
-    origin.length === 2 &&
-    !isEmptyAttrValue(attrs.manufacturerName) &&
-    !isEmptyAttrValue(attrs.composition)
-  );
+  return origin.length === 2 && !isEmptyAttrValue(attrs.composition);
 }
 
 function missingRequiredCreateAttrs(attrs) {
@@ -86,9 +84,13 @@ function missingRequiredCreateAttrs(attrs) {
     .trim()
     .toUpperCase();
   if (origin.length !== 2) miss.push("originCountry");
-  if (isEmptyAttrValue(attrs?.manufacturerName)) miss.push("manufacturerName");
+  // C7 restore: if (isEmptyAttrValue(attrs?.manufacturerName)) miss.push("manufacturerName");
   if (isEmptyAttrValue(attrs?.composition)) miss.push("composition");
   return miss;
+}
+
+function requiredCreateAttrsError(miss) {
+  return `Обязательны страна происхождения (ISO-2) и состав (не хватает: ${miss.join(", ")})`;
 }
 
 /** Structured product attrs on CalculationItem (D24). */
@@ -1780,7 +1782,7 @@ const server = http.createServer(async (req, res) => {
         if (hasRequiredCreateAttrs(it.attrs)) continue;
         const miss = missingRequiredCreateAttrs(it.attrs);
         return json(res, 400, {
-          error: `Обязательны страна происхождения (ISO-2), производитель и состав (не хватает: ${miss.join(", ")})`,
+          error: requiredCreateAttrsError(miss),
         });
       }
       for (const it of itemsForCreate) {
@@ -1850,6 +1852,19 @@ const server = http.createServer(async (req, res) => {
       }
       if (!precedentApplied) {
       try {
+        const cascade = await buildCascadeDraft(prisma, {
+          title: body.title,
+          description: body.description,
+          name: itemsForCreate[0]?.name || body.title,
+          country: body.country,
+          shipmentValue: body.shipmentValue,
+          ocrText: body.ocrText || itemsForCreate[0]?.ocrText || null,
+        });
+        draft = pickCascadeOrHeuristic(cascade, draft);
+      } catch {
+        /* keep fallback */
+      }
+      try {
         const aiRes = await fetch(`${aiUrl}/v1/draft`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1865,7 +1880,7 @@ const server = http.createServer(async (req, res) => {
         });
         if (aiRes.ok) draft = await aiRes.json();
       } catch {
-        /* keep fallback */
+        /* keep cascade/fallback */
       }
       if (llmUrl && !draft.llmEnrich) {
         const createSettings = await getPlatformSettings();
@@ -3099,21 +3114,36 @@ const server = http.createServer(async (req, res) => {
       const user = authorize(req);
       if (!user) return json(res, 401, { error: "Unauthorized" });
       const q = String(url.searchParams.get("q") || "").trim();
-      if (!q) return json(res, 200, { items: [] });
-      const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 20), 1), 50);
+      const headingOnly = url.searchParams.get("heading") === "1";
+      const cap = headingOnly ? 200 : 50;
+      const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 20), 1), cap);
       const leafOnly = url.searchParams.get("leafOnly") === "1";
+      const [total, leaves, variations] = await Promise.all([
+        prisma.tnvedCode.count({ where: { isActive: true } }),
+        prisma.tnvedCode.count({ where: { isActive: true, isLeaf: true } }),
+        prisma.tnvedCode.count({ where: { isActive: true, notes: { not: null } } }),
+      ]);
+      if (!q) return json(res, 200, { items: [], total, leaves, variations });
       const digits = q.replace(/\D/g, "");
-      const or = [
-        { titleRu: { contains: q, mode: "insensitive" } },
-        { notes: { contains: q, mode: "insensitive" } },
-      ];
-      if (digits.length >= 2) or.push({ code: { startsWith: digits } });
-      const items = await prisma.tnvedCode.findMany({
-        where: { isActive: true, OR: or, ...(leafOnly ? { isLeaf: true } : {}) },
-        take: limit,
-        orderBy: [{ level: "desc" }, { code: "asc" }],
+      const codeOnly = digits.length >= 2 && /^[\d\s./-]+$/.test(q);
+      const headingPool = headingOnly ? limit : codeOnly ? Math.min(50, Math.max(limit * 4, 24)) : 500;
+      const found = await prisma.tnvedCode.findMany({
+        where: tnvedSearchWhere(q, { leafOnly, headingOnly }),
+        take: headingPool,
+        orderBy: headingOnly ? { code: "asc" } : [{ level: "desc" }, { code: "asc" }],
       });
-      return json(res, 200, { items });
+      const stems = codeOnly ? [digits] : tnvedSearchStems(q);
+      const items = headingOnly
+        ? found
+        : [...found]
+            .sort((a, b) => {
+              const d =
+                scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits, phrase: q }) -
+                scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits, phrase: q });
+              return d || String(a.code).localeCompare(String(b.code));
+            })
+            .slice(0, limit);
+      return json(res, 200, { items, total, leaves, variations });
     }
 
     const tnvedCodeMatch = url.pathname.match(/^\/v1\/tnved\/([^/]+)$/);
@@ -3129,9 +3159,16 @@ const server = http.createServer(async (req, res) => {
       });
       if (!row) return json(res, 404, { error: "Not found" });
       const ancestorCodes = hsCodeAncestors(row.code).filter((c) => c !== row.code);
-      const found = ancestorCodes.length
-        ? await prisma.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
-        : [];
+      const [found, childRows] = await Promise.all([
+        ancestorCodes.length
+          ? prisma.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
+          : Promise.resolve([]),
+        prisma.tnvedCode.findMany({
+          where: { parentCode: row.code, isActive: true },
+          orderBy: { code: "asc" },
+          take: 16,
+        }),
+      ]);
       const byCode = new Map(found.map((a) => [a.code, a]));
       const ancestors = ancestorCodes
         .map((c) => byCode.get(c))
@@ -3141,8 +3178,16 @@ const server = http.createServer(async (req, res) => {
           codeDisplay: a.codeDisplay,
           titleRu: a.titleRu,
           level: a.level,
+          notes: a.notes ?? null,
         }));
-      return json(res, 200, assembleTnvedCard(row, ancestors));
+      const children = childRows.map((c) => ({
+        code: c.code,
+        codeDisplay: c.codeDisplay,
+        titleRu: c.titleRu,
+        level: c.level,
+        isLeaf: Boolean(c.isLeaf),
+      }));
+      return json(res, 200, assembleTnvedCard(row, ancestors, { children }));
     }
 
     if (req.method === "POST" && url.pathname === "/v1/tnved/import") {

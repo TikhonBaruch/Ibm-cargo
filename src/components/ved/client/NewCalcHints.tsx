@@ -8,21 +8,19 @@ export function FieldLabel({
   label,
   hint,
   children,
-  as = "label",
 }: {
   label: string;
   hint?: string;
   children: ReactNode;
-  /** Combobox / nested buttons: use div so the list is not inside a <label>. */
+  /** Combobox / nested buttons: kept for callers; label never wraps the control. */
   as?: "label" | "div";
 }) {
-  const Tag = as;
   return (
-    <Tag className="block">
-      <span className="mb-1 block text-xs font-semibold text-slate-500">{label}</span>
-      {hint ? <span className="mb-1.5 block text-[11px] leading-snug text-[var(--kb-muted)]">{hint}</span> : null}
+    <div className="field">
+      <label>{label}</label>
+      {hint ? <span className="meta">{hint}</span> : null}
       {children}
-    </Tag>
+    </div>
   );
 }
 
@@ -64,12 +62,11 @@ export function newCalcStageTip({
     const origin = String(a?.originCountry || "").trim();
     return (
       origin.length !== 2 ||
-      !String(a?.manufacturerName || "").trim() ||
       !String(a?.composition || "").trim()
     );
   });
   if (missingRequired) {
-    return "Обязательно по позиции: страна происхождения (CN…), производитель и состав — без этого заявка не уйдёт.";
+    return "Обязательно по позиции: страна происхождения (CN…) и состав — без этого заявка не уйдёт.";
   }
   if (!hasHs) {
     return "Найдите код в справочнике по названию товара. Финал подтвердит брокер.";
@@ -89,12 +86,9 @@ export function newCalcStageTip({
  */
 export function StageTip({ text }: { text: string }) {
   return (
-    <div
-      role="status"
-      className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-[12px] leading-snug text-sky-950 shadow-sm"
-    >
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-700/80">Подсказка</p>
-      <p className="mt-0.5">{text}</p>
+    <div role="status" className="alert-box" style={{ background: "var(--blue-soft)", borderColor: "rgba(43,114,244,.2)", color: "var(--blue-2)" }}>
+      <strong>Подсказка</strong>
+      {text}
     </div>
   );
 }

@@ -89,19 +89,19 @@ describe("requestAiDraft fail-open (create must not fail)", () => {
     vi.unstubAllGlobals();
   });
 
-  it("falls back to heuristic when AI_SERVICE_URL fetch fails", async () => {
+  it("falls back to cascade/heuristic when AI_SERVICE_URL fetch fails", async () => {
     vi.stubEnv("AI_SERVICE_URL", "http://ai:4100");
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("ai down")));
     const d = await requestAiDraft({ description: "Игровой ноутбук 16\"" });
-    expect(d.engine).toBe("heuristic-v1");
+    expect(["cascade-v1", "heuristic-v1"]).toContain(d.engine);
     expect(d.hsCode).toBeTruthy();
   });
 
-  it("falls back to heuristic when AI_SERVICE_URL returns non-OK", async () => {
+  it("falls back to cascade/heuristic when AI_SERVICE_URL returns non-OK", async () => {
     vi.stubEnv("AI_SERVICE_URL", "http://ai:4100");
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("nope", { status: 500 })));
     const d = await requestAiDraft({ description: "Игровой ноутбук 16\"" });
-    expect(d.engine).toBe("heuristic-v1");
-    expect(d.hsCode).toBe("8471 30 000 0");
+    expect(["cascade-v1", "heuristic-v1"]).toContain(d.engine);
+    expect(d.hsCode.replace(/\D/g, "").startsWith("847130")).toBe(true);
   });
 });
