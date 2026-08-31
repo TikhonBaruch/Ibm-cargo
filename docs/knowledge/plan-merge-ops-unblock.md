@@ -82,4 +82,4 @@ C35: только brief; `plan-c35-*.md` / код — следующий диа�
 
 ## Ops note (2026-08-31)
 
-Prod https://ibm-cargo-phi.vercel.app `/login` с `client@example.com` / `demo1234` → **неверный пароль**. `/health` → `databaseUrl: true`, значит URL есть, но **нет seed демо** или БД не `newlsu_lbm`. Починить seed/`DATABASE_URL` до ручного pay-first check.
+**Update 2026-08-31:** prod login **работает** (`POST /api/auth/callback/credentials` → session `client@example.com` / CLIENT; `/cabinet` 200). Ранеешний FAIL был ложным (неполный ввод в автопроверке). Seed/`DATABASE_URL` на Production в порядке.
