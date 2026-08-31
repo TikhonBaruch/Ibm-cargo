@@ -1,7 +1,7 @@
-# Plan: Hint coverage P0–P4
+# Plan: Hint coverage P0–P5
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0–P4 done** (#43/#44 + this PR).  
+**Статус:** **P0–P5 done** (this PR).  
 **Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md).
 
 ## Сделано
@@ -13,6 +13,7 @@
 | **P2** | Packs: `fruit-fresh` · `woven-apparel` · `prepared-food` (+ juice/soup guards) |
 | **P3** | Packs: `art` · `bags` · `watches` · `beverages` · `speakers` · `furniture` · `tires` · `cycles` |
 | **P4** | Packs: `pharma` · `books` · `appliances` · `lamps` · `fasteners` · `paint` · `pet-food` · `agri-inputs` |
+| **P5** | Expand `cosmetics` + packs `personal-care` · `baby` · `tools` · `cookware` · `tableware` · `batteries` · `networking` · `home-textiles` |
 
 ## P4 — open sections after P3 (C8)
 
@@ -39,6 +40,23 @@ Closed: pharma / books / appliances / lighting-ex-led / hardware / paint / pet-f
 **Still POLICY:** pets-live (`кот`, `собака`).
 
 
+
+## P5 — open sections after P4 (C9)
+
+| Pack | HS focus | Notes |
+|------|----------|-------|
+| `cosmetics` (expand) | 3304 / 3305 | помада, шампунь |
+| `personal-care` | 3401 / 3306 | мыло, зубная паста |
+| `baby` | 9619 | подгузник, памперс |
+| `tools` | 8205 / 8467 | молоток, дрель |
+| `cookware` | 7323 | кастрюля, сковорода |
+| `tableware` | 6912 | тарелка, чашка |
+| `batteries` | 8506 / 8507 | ≠ power bank |
+| `networking` | 8517 | роутер |
+| `home-textiles` | 9404 / 6302 | одеяло, подушка |
+
+Pack count **33 → 41**.
+
 ## C9 — Post-cycle re-probe (after P4)
 
 **0 NEW WRONG** on P0–P4 matrix. C8 sections closed (pharma…agri). Live animals still POLICY.
@@ -64,6 +82,25 @@ Closed: pharma / books / appliances / lighting-ex-led / hardware / paint / pet-f
 | toys-extra | лего (общий `toys` есть) |
 
 Next slice **P5**: pick 6–8 highest-traffic sections (cosmetics-detail, tools, cookware, batteries, networking, baby…).
+
+
+## C10 — Post-cycle re-probe (after P5)
+
+**0 NEW WRONG** on P5 matrix. Closed C9: cosmetics-detail, soap/oral, baby, tools, cookware/tableware, batteries, networking, home-textiles.
+
+### Still open (P6 candidates)
+
+| Секция | Примеры |
+|--------|---------|
+| rugs | коврик, ковёр |
+| sports / camping / umbrellas | мяч, палатка, зонт |
+| optics | очки |
+| med-disposables | шприц, бинт |
+| pet-accessories / litter | ошейник, наполнитель |
+| printers / monitors / tv / peripherals | принтер, монитор, телевизор, клавиатура |
+| auto-parts / bearings | фильтр, свеча, подшипник |
+| security-cam | камера видеонаблюдения |
+| toys-extra | лего |
 
 ## Проверка
 
