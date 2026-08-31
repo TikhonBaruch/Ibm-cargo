@@ -1,8 +1,8 @@
 # Бриф: offline-first ТН ВЭД + DeepSeek только на miss (C35)
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **brief / pre-plan** — задача зафиксирована для дальнейшего диалога.  
-**Код не начинать**, пока этот бриф не превращён в детальный `plan-c35-*.md` (фазы, контракты, done-when, dual-path).
+**Статус:** **planned** — детальный план: [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md).  
+**Код:** только на ветке impl после merge плана; не из этого брифа.
 
 Канон: [`feature-cycle.md`](./feature-cycle.md) · [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · [`ai-pipeline.md`](./ai-pipeline.md) · [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-ai-mesh.md`](./plan-ai-mesh.md) · [`plan-global.md`](./plan-global.md) этап 2 · D27 / D35 / D36.
 
@@ -132,18 +132,15 @@ Create: HS overlay часто через `AI_DRAIN` (не двойной DeepSee
 7. Входит ли A3 shadow 2∥3 в первый C35 PR или hold?
 8. Precedent vector на Hobby/sweb: Must / Should / Won't этого цикла?
 
-## 9. Что сделать на сессии планирования (done-when **этого** брифа → план)
+## 9. Планирование (закрыто 2026-08-31)
 
 ```text
-[ ] Ответить на §8 (1–8)
-[ ] Выбрать MoSCoW для A1–A4, B1–B5
-[ ] Написать docs/knowledge/plan-c35-offline-first-hs.md
-      с фазами, контрактами, dual-path, test:ci / smoke списком
-[ ] Обновить plan-next-vector-c28.md: C35 status → planned
-[ ] Только после этого — ветка кода cursor/…-e1f0 и diff в src/
+[x] Ответить на §8 (1–8) — см. plan-c35 §2
+[x] MoSCoW A/B — plan-c35 §3
+[x] docs/knowledge/plan-c35-offline-first-hs.md
+[x] plan-next-vector C35 → planned
+[ ] Impl ветка cursor/c35-offline-first-impl-e1f0 — следующий цикл
 ```
-
-До выполнения списка выше агент **не** пишет classify/gate код «по мотивам» брифа.
 
 ## 10. Связь с вектором и горизонтом
 
