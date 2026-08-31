@@ -122,9 +122,11 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 | — | Voice / proto-bar | не MVP |
 | — | Shipping / factory CTA | D27 hold |
 
-### C35 — Offline-first classify (brief, не код)
+### C35 — Offline-first classify (**planned**)
 
-**Идея:** не звать DeepSeek/LLM на каждый запрос; часть определений — precedent + cascade + corpus в БД; параллельно вести поток A (gate/метрики цепочек) и поток B (наполнение БД-2 / aliases).
+**Идея:** не звать DeepSeek/LLM на каждый запрос; precedent + cascade + corpus до модели; потоки A (gate/метрики) ∥ B (БД-2).
+
+Канон: [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md).
 
 | Шаг | Что | Status |
 |-----|-----|--------|
@@ -146,7 +148,7 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 | C31 fixtures + aliases | высокий | средний | Should |
 | C32 SSO bypass | средний | ops | Could |
 | C33–C34 | высокий | высокий | Won't (сейчас) |
-| C35 offline-first HS | высокий | средний→высокий | **Should** (после C28 ship; сначала plan) |
+| C35 offline-first HS | высокий | средний | **Should** — plan done; impl next |
 
 ## 5. Проверка
 
@@ -163,7 +165,7 @@ TEST_API_URL=<preview> npm run smoke:csv-import
 | plan-global этап | Этот вектор |
 |------------------|-------------|
 | 1 поиск ТН ВЭД | C28–C31 усиливают |
-| 2 базы + ИИ | C31 БД-2; **C35 offline-first** ([brief](./plan-offline-first-hs-brief.md)); C33 vision later |
+| 2 базы + ИИ | C31 БД-2; **C35** [plan](./plan-c35-offline-first-hs.md); C33 vision later |
 | 3 mesh | **не** в C28–C32; C35 не = multi-LLM router |
 | 4–5 фото/флаги | hold |
 
