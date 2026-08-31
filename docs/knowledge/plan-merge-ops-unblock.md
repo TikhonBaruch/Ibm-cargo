@@ -71,8 +71,8 @@ C35: только brief; `plan-c35-*.md` / код — следующий диа�
 
 | Фаза | Статус | Примечание |
 |------|--------|------------|
-| 1 Merge #16 | **blocked human** | Playbook на tip #16 (`686a9a0`); PR body + comment «MERGE NOW»; subscribe PR #16 |
-| 2 Retarget chain | waiting | комментарии на #22–#26; старт после merge #16 |
+| 1 Merge #16 | **done** | MERGED 2026-08-31 `b7418aa` |
+| 2 Retarget chain | **done** | ветки пересобраны cherry-pick на `main`; #22 MERGEABLE ready |
 | 3 Ops | blocked human | Vercel MCP needsAuth — O1–O4 в таблице выше |
 | 4 Verify/KB | partial | playbook + C28a статус в next-vector; C28e после merge |
 
