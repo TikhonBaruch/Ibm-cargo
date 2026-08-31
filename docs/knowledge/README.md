@@ -132,10 +132,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-fill-hints-structure.md  # аудит слоёв подсказок NewCalc (C12/C21 vs orphan chips)
   plan-offline-first-hs-brief.md # C35 brief: offline-first HS + DeepSeek on miss
   plan-c35-offline-first-hs.md   # C35 plan: gate LLM on miss + БД-2 (до кода)
-<<<<<<< HEAD
-=======
   plan-tnved-hint-chains-audit.md # морфология/false friends (огурец≠йогурт); §4 locked → morph after C35a
->>>>>>> origin/main
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
