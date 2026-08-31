@@ -46,6 +46,10 @@ function matches(desc: string, raw: string) {
   const q = normalize(desc);
   const p = normalize(raw).trim();
   if (!p) return false;
+  // «шина» ⊂ «машина» — only whole-token (coverage P3).
+  if (p === "шина" || p === "шины") {
+    return new RegExp(`(?:^|[^a-zа-я0-9])${escapeRe(p)}(?:$|[^a-zа-я0-9])`, "i").test(q);
+  }
   if (p.length <= 3) {
     return new RegExp(`(?:^|[^a-zа-я0-9])${escapeRe(p)}(?:$|[^a-zа-я0-9])`, "i").test(q);
   }
