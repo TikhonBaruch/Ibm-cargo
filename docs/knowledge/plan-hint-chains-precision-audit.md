@@ -1,7 +1,7 @@
 # План: проверка точности цепочек подсказок (все packs, max precision)
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **planned** — только KB; код/фикстуры после approve этого плана.  
+**Статус:** **implementing** — **P0** merged (#37); **P1** matrix fixture + vitest (этот PR).  
 Канон: [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) (H0–H5) · [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) · [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · D15 / D27 / D32.
 
 Связанный страх продукта: запрос **«огурец»** снова тянет **одежду / молоко / чужой pack**; при этом огурец бывает **свежий** или **маринованный/консервы**.
@@ -112,12 +112,12 @@ Ownership: Core (`tnved-hint-trees`, morph, cascade) + Client clarify apply. UI 
 
 | ID | Что | Done when | MoSCoW |
 |----|-----|-----------|--------|
-| **P0** | Этот план + ссылки в README / morph audit | merged docs | **Must** |
-| **P1** | Fixture `hint-pack-precision.json` + vitest: все packs × pos/neg | 100% на golden | **Must** |
+| **P0** | Этот план + ссылки в README / morph audit | merged docs | **done** (#37) |
+| **P1** | Fixture `hint-pack-precision.json` + vitest: все packs × pos/neg | 100% на golden | **done** (этот PR) |
 | **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | **Must** |
 | **P3** | Search + cascade rows для маринованных / корнишонов; false-friend одежда | unit green | **Must** |
 | **P4** | Attr-suggest: produce RULE **или** KB «clarify-only» + test | нет silent generic на «огурец» | **Should** |
-| **P5** | `npm run test:hint-precision` в CI рядом с morphology | script + docs | **Should** |
+| **P5** | `npm run test:hint-precision` в CI рядом с morphology | script + docs | **done** (with P1) |
 | **P6** | Live checklist staging (NewCalc + search) | PASS notes in staging.md | **Should** |
 | **P7** | Trigger hygiene (короткие stems вроде `лук`) + denylist expansion | miss-log driven | **Could** |
 
@@ -126,11 +126,10 @@ Ownership: Core (`tnved-hint-trees`, morph, cascade) + Client clarify apply. UI 
 ## 7. Проверка (команды)
 
 ```bash
-# после P1–P3
+# P1
+npm run test:hint-precision
 npm run test:tnved-morphology
 npx vitest run src/lib/ved/__tests__/tnved-hint-trees.test.ts
-# new:
-# npm run test:hint-precision
 npm run test:classify-cascade
 npm run test:ci
 
@@ -160,7 +159,7 @@ npm run test:ci
 | [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) | ссылка §след. шаг → precision |
 | [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) | gap H3 dairy/produce |
 | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) | produce fork |
-| [`testing-branches.md`](./testing-branches.md) | `test:hint-precision` после P5 |
+| [`testing-branches.md`](./testing-branches.md) | `test:hint-precision` |
 | [`staging.md`](./staging.md) | live P6 |
 | [`current-app.md`](./current-app.md) | зрелость packs после ship |
 
@@ -168,8 +167,8 @@ npm run test:ci
 
 ## 10. Следующий шаг
 
-1. Merge этот PR (план P0).  
-2. Impl P1–P3 на ветке `cursor/hint-chains-precision-impl-e1f0` (после merge плана).  
-3. P4–P6 по результатам miss-логов.  
+1. ~~Merge план P0~~ **done** (#37).  
+2. Merge этот PR (**P1**).  
+3. Impl **P2–P3** (apply fork + cascade/search).  
 
 Agent cannot merge — нужен human.
