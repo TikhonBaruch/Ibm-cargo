@@ -152,12 +152,11 @@ TEST_API_URL=<host> npm run smoke:precedent-csv   # compose/keys as needed
 
 ## 10. Следующий шаг человека / агента
 
-**Очередь merge (стабильность):**
+**Статус очереди:** #32 и #31 **merged** в `main`.
 
-1. [#32](https://github.com/TikhonBaruch/Ibm-cargo/pull/32) — hint-chains audit (docs)  
-2. [#33](https://github.com/TikhonBaruch/Ibm-cargo/pull/33) — C35 plan + C35a gate (base `main`; supersedes #31)  
-3. Impl morph `cursor/tnved-hint-morphology-e1f0` (H1+H2+H3)  
-4. C35c B1 smoke precedent (можно после morph)
+1. Merge [#33](https://github.com/TikhonBaruch/Ibm-cargo/pull/33) — C35a gate + dual-path (этот PR).  
+2. Impl morph `cursor/tnved-hint-morphology-e1f0` (H1+H2+H3) по [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md).  
+3. C35c B1 smoke precedent (можно после morph).
 
 Не смешивать с Preview SSO ops / mobile #21 / ЮKassa.  
 Agent cannot merge — нужен human.
