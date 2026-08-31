@@ -110,7 +110,7 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 |-----|-----|--------|
 | C32a | Docs: Visit Preview + `ALLOW_MOCK_TOPUP` checklist | **done** |
 | C32b | Protection Bypass for Automation + `install-vercel-bypass` в smoke | **docs/helper done**; secret = human ops |
-| C32c | `smoke:standalone` зелёный на Preview после C28 | **blocked SSO** (2026-08-29) до bypass secret |
+| C32c | `smoke:standalone` зелёный на Preview после C28 | **blocked SSO** до bypass secret (human O3) |
 
 ### Hold (после C28–C32)
 
