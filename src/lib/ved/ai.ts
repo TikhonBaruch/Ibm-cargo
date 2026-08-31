@@ -37,7 +37,14 @@ export async function requestAiDraft(input: {
       },
       heuristic
     );
-    if (precedent) return precedent;
+    if (precedent) {
+      // C35c / A2 parity with containers/api: tag offline-hit on early precedent return.
+      const skip = shouldSkipLlmClassify(precedent);
+      if (skip.skip) return applyLlmSkipToDraft(precedent, skip);
+      return skip.skipReason
+        ? ({ ...precedent, skipReason: skip.skipReason } as AiDraftResult)
+        : precedent;
+    }
   }
 
   let draftBase: AiDraftResult = heuristic;

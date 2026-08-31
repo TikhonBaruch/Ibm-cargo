@@ -54,6 +54,7 @@
     "smoke:standalone": "node scripts/smoke-standalone.mjs",
     "probe:preview": "node scripts/probe-preview-access.mjs",
     "ops:track-a": "node scripts/ops-track-a-check.mjs",
+    "ops:precedent-count": "node scripts/ops-precedent-count.mjs",
     "tnved:fetch": "node scripts/tnved-fetch.mjs",
     "tnved:normalize": "ts-node --project scripts/tsconfig.tnved.json --transpile-only scripts/tnved-normalize.ts",
     "tnved:compose": "ts-node --project scripts/tsconfig.tnved.json --transpile-only scripts/tnved-compose-layers.ts",

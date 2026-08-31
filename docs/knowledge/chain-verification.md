@@ -131,7 +131,7 @@ flowchart TD
 | Script | Результат | Комментарий |
 |--------|-----------|-------------|
 | `smoke:chain-llm` | **PASS** | #47837: upload local; `llmEnrich=llm-openai-v1`; corpus classify |
-| `smoke:precedent-csv` | **PASS** | second create `precedent-v1`; CSV `MATCHED_PRECEDENT` HS 8471 60 600 0 |
+| `smoke:precedent-csv` | **PASS** | second create `precedent-v1` + `skipReason=offline-hit:precedent-v1`; CSV `MATCHED_PRECEDENT` |
 | `smoke:csv-import` | **PASS** | preview → create |
 | `smoke:reclassify` | **PASS** | broker feedback → new HS (`llm-openai-v1`) |
 | `smoke:pdf-import` | **PASS** | text-layer PDF → preview rows |

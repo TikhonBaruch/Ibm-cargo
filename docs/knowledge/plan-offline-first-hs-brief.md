@@ -1,8 +1,8 @@
 # Бриф: offline-first ТН ВЭД + DeepSeek только на miss (C35)
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **implementing** — детальный план: [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md); код C35a на `cursor/c35-offline-first-impl-e1f0`.  
-**Код:** gate A1/A2 + dual-path в impl; не из этого брифа.
+**Статус:** **implementing** — детальный план: [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md); **C35a** на `main` (#33); **C35c** ops count + smoke.  
+**Код:** gate A1/A2 + dual-path done; B1 smoke/ops в C35c.
 
 Канон: [`feature-cycle.md`](./feature-cycle.md) · [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · [`ai-pipeline.md`](./ai-pipeline.md) · [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-ai-mesh.md`](./plan-ai-mesh.md) · [`plan-global.md`](./plan-global.md) этап 2 · D27 / D35 / D36.
 

@@ -66,7 +66,8 @@ Compose mount корпуса для llm: `./containers/llm/data/tnved/normalized
 **Не смешивать** с corpus lookup (§2.1): прецедент = опыт брокера; corpus = номенклатура НСИ.
 
 Код: `src/lib/ved/verified-determinations.ts` · dual-path `containers/api/src/verified-determinations.js`.  
-План и smoke: [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) · fill-hints: [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md).
+План и smoke: [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) · fill-hints: [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md).  
+**Ops count (C35c):** `npm run ops:precedent-count` / SQL в plan §Ops — без Admin UI.
 
 ## 3. История запросов
 

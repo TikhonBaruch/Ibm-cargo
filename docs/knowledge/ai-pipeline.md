@@ -107,7 +107,7 @@ Write-back: `approve` → `recordVerifiedFromApprove` (per item, fail-open). Е�
 | `LLM_SKIP_CONF` | **C35a** — skip LLM when offline engine conf ≥ value (default `0.72`); separate from cascade prefer `0.55` |
 
 Gate: `llmEnrichEnabled` в platform settings (D28) — при `false` enrich пропускается.  
-Offline engines for skip: `precedent-v1` \| `precedent-v2` \| `cascade-v1` (heuristic alone **не** skip). Tag `aiDraft.skipReason`: `offline-hit:…` \| `llm-low-conf:…` \| `llm-miss`. Канон: [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md).
+Offline engines for skip: `precedent-v1` \| `precedent-v2` \| `cascade-v1` (heuristic alone **не** skip). Tag `aiDraft.skipReason`: `offline-hit:…` \| `llm-low-conf:…` \| `llm-miss`. Next create: early `tryPrecedentDraft` hit also tags `offline-hit` (parity with `containers/api`). Ops count: `npm run ops:precedent-count` ([`plan-precedent-bulk.md`](./plan-precedent-bulk.md) §Ops). Канон: [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md).
 
 ## OCR (`containers/ocr`)
 
