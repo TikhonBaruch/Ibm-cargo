@@ -1,47 +1,70 @@
-# Plan: Hint coverage P0 — attr apparel + plant dairy + mouse≠PC
+# Plan: Hint coverage P0–P1 — WRONG fixes + trigger gaps
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **implementing done** — ready for human merge.  
+**Статус:** **P0+P1 done** (this PR) · post-cycle re-probe: 0 new WRONG; open sections listed §C6.  
 **Канон:** coverage probes waves 1–6 · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) · D15 / D27.
 
 ## Идея
 
-После матрицы запросов (картины→обувь→мышь) зафиксированы **3 класса WRONG**, не GAP:
+После матрицы запросов зафиксированы **WRONG** (чинить) и **GAP** (triggers).
 
-1. **Attr apparel** — RULE `apparel` вешает **6203 42** (джинсы) на куртка/платье.  
-2. **Plant dairy** — `* молоко` / соевый йогурт → pack `milk` + attr/alias **040x**.  
-3. **Mouse≠PC** — «мышь компьютерная» → pack `computers` + attr ноутбук **8471** (триггер/regex `компьютер`).
+### P0 — WRONG
 
-## Анализ
+1. **Attr apparel** — 6203 42 на куртка/платье → split jeans/jacket/dress.  
+2. **Plant dairy** — растительные молоко/йогурт ≠ milk/040x.  
+3. **Mouse≠PC** — мышь компьютерная ≠ computers/8471.
 
-| Слой | Баг | Корневая причина |
-|------|-----|------------------|
-| attr-suggest | куртка/платье → 6203 42 | один RULE на куртк\|брюк\|плать\|джинс |
-| attr + pack milk | соевое молоко | trigger/regex `молок` без plant-denylist |
-| pack computers + attr laptop | компьютерная мышь | substring `компьютер` ⊂ `компьютерная` |
+### P1 — trigger GAP (высокий трафик)
+
+| Pack | Добавить triggers |
+|------|-------------------|
+| produce-fresh | овощ, чеснок, зелень, укроп, петрушк |
+| footwear | сапог, босонож, тапк, тапоч, сланц, кросовк |
+| knit-top | свитер, свитшот, джемпер, кардиган, водолазк, кофт, олимпийк |
+| power | power bank, power-bank, внешний аккумулятор, зарядн |
+| milk | сметан, ряженк, масло сливоч |
 
 ## Фазы
 
-| ID | Что | Done when |
-|----|-----|-----------|
-| **C0** | Этот план + KB index | merged docs |
-| **C1** | Split apparel attr (jeans / jacket / dress) | unit: куртка/платье ≠ 6203 42 |
-| **C2** | Plant-dairy guard (pack + attr) | соя/овсянка/миндаль/кокос/рис молоко\|йогурт ≠ milk |
-| **C3** | Mouse≠PC guard (pack + attr laptop) | мышь компьютерная ≠ computers/8471 |
-| **C4** | Fixture/unit + `test:ci` | green |
+| ID | Что | Status |
+|----|-----|--------|
+| **C0** | План | done |
+| **C1–C4** | P0 WRONG + unit | done |
+| **C5** | P1 triggers + unit/fixture | done |
+| **C6** | Post-cycle re-probe → new test sections? | done (§C6) |
 
 ## Non-goals
 
-- Новые C21 packs (фрукты, супы, брюки) — P2 backlog.  
-- P7 short-trigger PR (#42) — отдельный merge.  
-- LLM CTA.
+- Packs фрукты/супы/тканая одежда (P2).  
+- P7 short-trigger (#42) merge.  
 
 ## Проверка
 
 ```bash
-npx vitest run src/lib/ved/__tests__/hint-coverage-p0.test.ts
+npx vitest run src/lib/ved/__tests__/hint-coverage-p0.test.ts src/lib/ved/__tests__/hint-coverage-p1.test.ts
 npm run test:hint-precision
 npm run test:ci
 ```
 
+## C6 — Post-cycle re-probe (2026-08-31)
+
+После P0+P1: **0 NEW WRONG** на regression matrix.
+
+### Дополнительные разделы для тестирования (ещё нет C21 pack)
+
+| Секция | Примеры | Приоритет |
+|--------|---------|-----------|
+| **fruit-08** | фрукты, ягоды, яблоко | P2 |
+| **woven-62 / pants-62** | рубашка, брюки | P2 |
+| **prepared-21** | суп | P2 |
+| **art-97** | картина | Could |
+| **bags-42** | сумка | Could |
+| **watches-91** | часы | Could |
+| **bev-22** | пиво | Could |
+| **audio-8518** | колонка bluetooth | Could |
+| **input peripherals** | мышь logitech (не PC) | attr later |
+
+P1 also closed `системный блок` → computers (trigger fix).
+
 Agent cannot merge.
+

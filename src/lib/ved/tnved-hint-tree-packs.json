@@ -3,7 +3,7 @@
   "packs": [
     {
       "id": "milk",
-      "triggers": ["молок", "сливки", "сгущен", "сгущён", "milk", "uht", "кефир", "йогурт", "yogurt", "творог", "сыр ", " cheese", "奶粉", "炼乳", "酸奶"],
+      "triggers": ["молок", "сливки", "сгущен", "сгущён", "milk", "uht", "кефир", "йогурт", "yogurt", "творог", "сыр ", " cheese", "сметан", "ряженк", "масло сливоч", "奶粉", "炼乳", "酸奶"],
       "skipQuestionIds": ["kind"],
       "question": {
         "id": "tnved-form",
@@ -63,7 +63,7 @@
     },
     {
       "id": "produce-fresh",
-      "triggers": ["огурц", "огурец", "помидор", "томат", "картофел", "картошк", "морков", "лук", "капуст", "перец слад", "баклажан", "кабачок", "тыква", "свекл", "корнишон", "маринованн", "cucumber", "tomato", "potato", "carrot", "pickle", "gherkin", "黄瓜", "番茄", "土豆"],
+      "triggers": ["огурц", "огурец", "помидор", "томат", "картофел", "картошк", "морков", "лук", "капуст", "перец слад", "баклажан", "кабачок", "тыква", "свекл", "корнишон", "маринованн", "овощ", "чеснок", "зелень", "укроп", "петрушк", "cucumber", "tomato", "potato", "carrot", "pickle", "gherkin", "黄瓜", "番茄", "土豆"],
       "skipQuestionIds": ["kind"],
       "question": {
         "id": "tnved-form",
@@ -181,7 +181,7 @@
     },
     {
       "id": "knit-top",
-      "triggers": ["футболк", "майк", "поло", "polo", "худи", "толстов", "hoodie", "t-shirt", "tshirt", "sweatshirt", "t恤"],
+      "triggers": ["футболк", "майк", "поло", "polo", "худи", "толстов", "свитер", "свитшот", "джемпер", "кардиган", "водолазк", "кофт", "олимпийк", "hoodie", "t-shirt", "tshirt", "sweatshirt", "t恤"],
       "skipQuestionIds": ["garment"],
       "question": {
         "id": "tnved-form",
@@ -225,7 +225,7 @@
     },
     {
       "id": "footwear",
-      "triggers": ["кроссов", "кеды", "обув", "туфл", "ботин", "sneakers", "shoes"],
+      "triggers": ["кроссов", "кросовк", "кеды", "обув", "туфл", "ботин", "сапог", "босонож", "тапк", "тапоч", "сланц", "sneakers", "shoes"],
       "skipQuestionIds": ["purpose"],
       "question": {
         "id": "tnved-form",
@@ -260,7 +260,7 @@
     },
     {
       "id": "computers",
-      "triggers": ["ноут", "laptop", "notebook", "смартфон", "телефон", "iphone", "планшет", "ipad", "tablet", "компьютер", "системн блок"],
+      "triggers": ["ноут", "laptop", "notebook", "смартфон", "телефон", "iphone", "планшет", "ipad", "tablet", "компьютер", "системн", "системный блок", "desktop"],
       "skipQuestionIds": ["device"],
       "question": {
         "id": "tnved-form",
@@ -296,7 +296,7 @@
     },
     {
       "id": "power",
-      "triggers": ["зарядк", "charger", "powerbank", "повербанк", "пауэрбанк", "кабель usb", "usb cable", "充电宝", "充电器"],
+      "triggers": ["зарядк", "зарядн", "charger", "powerbank", "power bank", "power-bank", "повербанк", "пауэрбанк", "внешний аккумулятор", "кабель usb", "usb cable", "провод usb", "充电宝", "充电器"],
       "skipQuestionIds": ["device"],
       "question": {
         "id": "tnved-form",
