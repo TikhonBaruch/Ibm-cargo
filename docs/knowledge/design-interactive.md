@@ -7,8 +7,9 @@
 
 Направление закрывается **прототипами + live baseline D14**, не mobile-приложением в проде.
 
-- [x] **Веб-сайт — интерактивный дизайн** — HTML-рефы лендинга и кабинетов + живой UI (`VedShell` / panes / `AdminVedCabinet`)
+- [x] **Веб-сайт — интерактивный дизайн** — HTML-рефы лендинга и кабинетов + живой UI (`LbmCabinetsShell` / panes / `AdminVedCabinet`)
 - [x] **Мобильное приложение — интерактивный дизайн** — HTML wireframe клиента (экраны, tabbar, drawer, шаги newcalc/booking)
+- [x] **Клиентский lab lbm-bro** — Next `/client` суперприложение (`src/lbm-bro`); референс. Live = `/cabinet`. Канон: [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md)
 
 **Out of scope** (фаза Growth): React Native, PWA cutover, SMS-auth, отдельные mobile routes в Next. См. [`growth.md`](./growth.md).
 

@@ -25,7 +25,7 @@
 
 | Общепризнанный паттерн | У нас | Не плодить |
 |------------------------|-------|------------|
-| Application shell + sidebar nav | `VedShell` | второй layout / shadcn AppShell |
+| Application shell + sidebar nav | `LbmCabinetsShell` (client product / ops broker+admin) · `VedShell` (manufacturer + shared widgets) | второй layout / shadcn AppShell |
 | Toast / transient feedback | `VedToast` + `useVedToast()` | `alert` / `confirm` / Sonner |
 | Empty state | `VedEmptyState` (заголовок + почему + **одна** CTA) | пустой `<ul>` без copy |
 | Slide-over / detail drawer | `VedDetailDrawer` | вторая модалка под один экран |

@@ -5,6 +5,7 @@
  *   npm run smoke:sla
  *   TEST_API_URL=http://localhost:3000 INTERNAL_API_KEY=dev-secret-change-me npm run smoke:sla
  */
+import "./lib/install-vercel-bypass.mjs";
 const BASE = process.env.TEST_API_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
 const KEY =
   process.env.INTERNAL_API_KEY ||

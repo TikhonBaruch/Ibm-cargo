@@ -36,4 +36,14 @@ describe("factorySkuSnapshotLine (B2)", () => {
       })
     ).toBe("SKU NB-T14-16 · бренд Lenovo · 1.4 кг · origin CN");
   });
+
+  it("omits net weight when includeWeight is false (C8)", () => {
+    expect(
+      factorySkuSnapshotLine({
+        manufacturerSkuId: "s1",
+        includeWeight: false,
+        attrs: { brand: "Lenovo", extra: { sku: "NB-T14-16" }, netWeightKg: 1.4, originCountry: "CN" },
+      })
+    ).toBe("SKU NB-T14-16 · бренд Lenovo · origin CN");
+  });
 });

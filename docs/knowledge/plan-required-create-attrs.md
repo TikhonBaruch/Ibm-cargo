@@ -35,3 +35,7 @@
 `POST /api/v1/calculations`: `ZodError` (в т.ч. missing attrs) → **400** + `issues[0].message`, не 500 со stringify issues. Domain throw `Обязательн…` тоже 400.
 
 **UI soft gate:** CTA не disabled из‑за пустых attrs; по клику — toast + подсветка полей. API по-прежнему hard-reject.
+
+## Hold C7 (2026-08-25)
+
+`manufacturerName` временно **не** входит в `hasRequiredCreateAttrs`. Поле в UI остаётся (без `*`). Restore: вернуть ключ в helper + зеркало `containers/api` + copy «обязательно». Канон визуала: [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) C7.

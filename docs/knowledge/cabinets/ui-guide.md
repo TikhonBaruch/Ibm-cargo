@@ -10,18 +10,17 @@ Ops-контур админа — D28 ([`../admin-ops.md`](../admin-ops.md)).
 
 ## 1. Три кабинета — одна оболочка, разные jobs
 
-Все три роли сидят на **`VedShell`** + **`VedToast`**. Различие — **задача роли**, **плотность nav**, **кто управляет платформой**.
+Все три роли сидят на **`LbmCabinetsShell`** + **`VedToast`**. Клиент — светлый product-shell; брокер и админ — тёмный ops. `VedShell` остаётся у производителя и как источник `VedEmptyState` / `StatusPill` / `api`.
 
 ```text
-                    VedShell (sidebar 260px, accent #2b72f4)
+                    LbmCabinetsShell (токены D14, chrome lbm-bro)
                               │
         ┌─────────────────────┼─────────────────────┐
         │                     │                     │
-   ClientCabinet         BrokerCabinet         AdminVedCabinet
-   orchestrator          orchestrator          orchestrator (~816 LOC)
+   Client product shell  Broker ops shell      Admin ops shell
+   .view-client .cl-*    .app .side            .app .side.admin
         │                     │                     │
-   client/* panes        broker/* panes      admin/* (14 panes)
-   9 extracted           6 extracted         + types.ts
+   ClientCabinet         BrokerCabinet         AdminVedCabinet
 ```
 
 | | **Клиент** | **Брокер** | **Админ** |
@@ -114,6 +113,8 @@ Persist `SiteSetting` → enforce `platform-gates.ts` + dual-path `containers/ap
 
 **Отличие админа от клиента:** клиент **платит и ждёт PDF**; админ **не создаёт просчёт** как основной flow и **не** показывает маркетинговый wizard. UI плотнее, группы nav обязательны.
 
+Предложенный визуал lbm-bro (клиент = светлый superapp; брокер/админ = тёмный ops): [`../plan-lbm-bro-visual.md`](../plan-lbm-bro-visual.md) §1.3–1.6.
+
 ---
 
 ## 5. Собранные решения (UI)
@@ -182,5 +183,6 @@ Skill агента: [`.cursor/skills/ved-ui`](../../../.cursor/skills/ved-ui/SKI
 | Admin ops / toggles | [`../admin-ops.md`](../admin-ops.md) |
 | Admin экраны детально | [`admin/README.md`](./admin/README.md) |
 | Client / broker panes | [`client/`](./client/) · [`broker/`](./broker/) |
+| Новый визуал кабинетов | [`../plan-lbm-bro-visual.md`](../plan-lbm-bro-visual.md) · live `/cabinet` `/broker` `/admin` |
 | Цикл фичи M0–M1 | [`../feature-cycle.md`](../feature-cycle.md) |
 | Pane split tech-debt | [`../plan-tech-debt.md`](../plan-tech-debt.md) §7 |

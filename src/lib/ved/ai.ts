@@ -1,8 +1,10 @@
+import { prisma } from "@/lib/prisma";
 import type { AiDraftResult } from "./domain";
 import { buildHeuristicDraft } from "./ai-draft-engine";
 import { enrichDraftWithLlm } from "./llm-enrich";
 import { tryPrecedentDraft } from "./precedent-enrich";
 import { getPlatformSettings } from "./settings";
+import { buildCascadeDraft, pickCascadeOrHeuristic } from "./tnved-classify";
 
 /**
  * C3: prefer containers/ai via AI_SERVICE_URL; local heuristic + optional LLM enrich.
@@ -16,6 +18,8 @@ export async function requestAiDraft(input: {
   attrs?: import("./product-description").ProductAttrs | null;
   docs?: string[];
   shipmentValue?: string | number;
+  /** Server OCR / vision text merged into classify query (C25). */
+  ocrText?: string | null;
   /** When AI_DRAIN will classify — skip sync DeepSeek (one model call, create stays fast). */
   skipLlmEnrich?: boolean;
 }): Promise<AiDraftResult> {
@@ -35,6 +39,21 @@ export async function requestAiDraft(input: {
     if (precedent) return precedent;
   }
 
+  let draftBase: AiDraftResult = heuristic;
+  try {
+    const cascade = await buildCascadeDraft(prisma, {
+      title: input.title,
+      description: input.description,
+      name: input.name || input.title,
+      country: input.country,
+      ocrText: input.ocrText,
+      shipmentValue: input.shipmentValue,
+    });
+    draftBase = pickCascadeOrHeuristic(cascade, heuristic);
+  } catch {
+    draftBase = heuristic;
+  }
+
   const base = (process.env.AI_SERVICE_URL || process.env.AI_URL || "").replace(/\/$/, "");
   if (base) {
     try {
@@ -52,6 +71,6 @@ export async function requestAiDraft(input: {
     }
   }
 
-  if (settings.llmEnrichEnabled === false || input.skipLlmEnrich) return heuristic;
-  return enrichDraftWithLlm(input, heuristic);
+  if (settings.llmEnrichEnabled === false || input.skipLlmEnrich) return draftBase;
+  return enrichDraftWithLlm(input, draftBase);
 }

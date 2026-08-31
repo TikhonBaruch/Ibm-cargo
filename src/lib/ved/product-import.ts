@@ -207,6 +207,12 @@ export type ClassifyRowDeps = {
     confidence: number;
     engine: string;
   } | null>;
+  /** C26: deterministic cascade before LLM. */
+  classifyCascade?: (input: PrecedentMatchInput) => Promise<{
+    hsCode: string;
+    confidence: number;
+    engine: string;
+  } | null>;
   classifyLlm: (input: PrecedentMatchInput) => Promise<{
     hsCode: string;
     confidence: number;
@@ -246,6 +252,18 @@ export async function classifyImportRows(
         });
         continue;
       }
+      const cascade = await deps.classifyCascade?.(input);
+      if (cascade && cascade.confidence >= low) {
+        out.push({
+          ...row,
+          rowStatus: "CLASSIFIED_NEW",
+          hsCode: cascade.hsCode,
+          confidence: cascade.confidence,
+          engine: cascade.engine,
+          llmEnrich: cascade.engine,
+        });
+        continue;
+      }
       const llm = await deps.classifyLlm(input);
       if (llm) {
         out.push({
@@ -264,4 +282,36 @@ export async function classifyImportRows(
     }
   }
   return out;
+}
+
+/**
+ * Fill create-required attrs (D24): ISO-2 origin + composition.
+ * Used by import preview → create and CSV smoke so rows always pass validation.
+ */
+export function enrichImportCreateAttrs(
+  row: { name: string; description?: string; attrs?: ProductAttrs | null },
+  opts?: { country?: string | null; originIso?: string | null }
+): ProductAttrs {
+  const base = sanitizeProductAttrs(row.attrs || {}) || {};
+  const origin =
+    String(base.originCountry || "")
+      .trim()
+      .toUpperCase()
+      .slice(0, 2) ||
+    String(opts?.originIso || "")
+      .trim()
+      .toUpperCase()
+      .slice(0, 2) ||
+    undefined;
+  const composition =
+    String(base.composition || "").trim() ||
+    String(row.description || row.name || "")
+      .trim()
+      .slice(0, 500) ||
+    undefined;
+  return sanitizeProductAttrs({
+    ...base,
+    ...(origin && origin.length === 2 ? { originCountry: origin } : {}),
+    ...(composition ? { composition } : {}),
+  })!;
 }

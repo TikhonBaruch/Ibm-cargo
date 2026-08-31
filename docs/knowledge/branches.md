@@ -11,6 +11,7 @@
 | Логистика после DONE | `/cabinet/shipping` (**UI off** by default: `NEXT_PUBLIC_SHIPPING_UI=1`) | `POST /shipping` → quotes + tracking (demo-3pl / stub); domain всегда доступен |
 | Чат / баланс / support | order card, `/cabinet/balance`, `/cabinet/support` | chat+uploads; topup; SUPPORT ticket + archive; unread badge |
 | Удобство кабинета | empty states, один CTA на статус | канон [`cabinets/ux-saas.md`](./cabinets/ux-saas.md) · очередь **клиент → брокер → админ** |
+| UI lab (lbm-bro) | `/client/*` — суперприложение, demo-store | референс; live лицо = `/cabinet` · [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) |
 | Профиль | `/cabinet/profile` (`/settings` → redirect) | PATCH company |
 | Завод / сборный заказ | `/cabinet/factory` | запрос qty к PUBLISHED SKU; сегмент `clientSegment` |
 | Deep-link заявки | `/cabinet/orders?id=` | openCalc + support links |

@@ -8,6 +8,7 @@
  *   npm run smoke:mvp
  *   TEST_API_URL=http://localhost:3000 npm run smoke:mvp
  */
+import "./lib/install-vercel-bypass.mjs";
 const BASE = process.env.TEST_API_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
 const BROKER_EMAIL = process.env.BROKER_EMAIL || "broker@example.com";
 const BROKER_PASSWORD = process.env.BROKER_PASSWORD || "demo1234";
@@ -146,25 +147,44 @@ async function main() {
   }
   console.log("1. Registered", reg.user.id, "company", reg.company.id);
 
-  // 2. Login as new client
-  const clientJar = await login(email, password, "/cabinet");
+  // 2–3. Login + topup. If mock topup is disabled on host, fall back to seeded demo client.
+  const SEED_EMAIL = process.env.CLIENT_EMAIL || "client@example.com";
+  const SEED_PASSWORD = process.env.CLIENT_PASSWORD || "demo1234";
+  let clientJar = await login(email, password, "/cabinet");
   console.log("2. Client logged in");
 
-  // 3. Topup stub/mock (balance 0 → pay needs funds)
-  const topup = await jsonFetch(`${BASE}/api/v1/company/topup`, {
-    jar: clientJar,
-    method: "POST",
-    body: { amountRub: TOPUP_AMOUNT, method: "stub" },
-  });
-  if (topup.pending) {
-    throw new Error("MVP smoke expects immediate stub/mock topup, got pending acquiring");
+  let bal = 0;
+  try {
+    const topup = await jsonFetch(`${BASE}/api/v1/company/topup`, {
+      jar: clientJar,
+      method: "POST",
+      body: { amountRub: TOPUP_AMOUNT, method: "stub" },
+    });
+    if (topup.pending) {
+      throw new Error("MVP smoke expects immediate stub/mock topup, got pending acquiring");
+    }
+    const me = await jsonFetch(`${BASE}/api/v1/me`, { jar: clientJar });
+    bal = me?.company?.balanceRub ?? 0;
+    if (bal < TOPUP_AMOUNT) {
+      throw new Error(`Balance after topup too low: ${bal}`);
+    }
+    console.log("3. Topup OK, balance", bal);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (!/Mock topup disabled|mockTopupAllowed|ALLOW_MOCK_TOPUP/i.test(msg)) {
+      throw e;
+    }
+    console.log("3. Mock topup disabled — falling back to seeded", SEED_EMAIL);
+    clientJar = await login(SEED_EMAIL, SEED_PASSWORD, "/cabinet");
+    const me = await jsonFetch(`${BASE}/api/v1/me`, { jar: clientJar });
+    bal = me?.company?.balanceRub ?? 0;
+    if (bal < 1000) {
+      throw new Error(
+        `Seeded client balance too low (${bal}). Enable mockTopupAllowed + ALLOW_MOCK_TOPUP, or top up ${SEED_EMAIL}.`
+      );
+    }
+    console.log("3. Seeded client OK, balance", bal);
   }
-  const me = await jsonFetch(`${BASE}/api/v1/me`, { jar: clientJar });
-  const bal = me?.company?.balanceRub ?? 0;
-  if (bal < TOPUP_AMOUNT) {
-    throw new Error(`Balance after topup too low: ${bal}`);
-  }
-  console.log("3. Topup OK, balance", bal);
 
   // 4. Upload — optional when Vercel has no S3_* (mediaUrl is not required for create).
   // File is more reliable than Blob for multipart on Node fetch.

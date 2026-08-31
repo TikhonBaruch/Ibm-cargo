@@ -6,6 +6,7 @@
  *   npm run smoke:standalone
  *   TEST_API_URL=https://<preview-url> npm run smoke:standalone
  */
+import "./lib/install-vercel-bypass.mjs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

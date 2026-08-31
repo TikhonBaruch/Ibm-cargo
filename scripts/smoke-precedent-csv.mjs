@@ -7,6 +7,7 @@
  *
  *   TEST_API_URL=http://localhost:3000 node scripts/smoke-precedent-csv.mjs
  */
+import "./lib/install-vercel-bypass.mjs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";

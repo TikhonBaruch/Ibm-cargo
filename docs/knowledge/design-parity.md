@@ -54,7 +54,7 @@
 - ~~client settings/profile merge~~ **done** (`/settings` → `/profile`; один nav)
 - ~~client deep-link `/orders?id=`~~ **done** (openCalc + SupportPane)
 - ~~client SUPPORT thread read~~ **done** (полный тред + `?threadId=` + archive tabs)
-- ~~list compact topup-then-pay~~ **done** (DashboardPane OrdersTable)
+- ~~list compact topup-then-pay~~ **done** (DashboardPane orders cards)
 - ~~attrs на карточке работы брокера~~ **done** (read-only колонка в WorkMapping)
 - ~~broker товарное описание + прочие сборы~~ **done** (`plan-broker-desc-fees.md`)
 - ~~broker empty attrs fill~~ **done** (`plan-broker-empty-attrs.md`)
@@ -85,3 +85,16 @@
 - **Перевозка / LLM / ЮKassa** — вне матрицы polish; см. [`plan-mvp-polish.md`](./plan-mvp-polish.md) §Вне скоупа
 
 При закрытии gap — обновить эту таблицу, не дублировать в `design-baseline.md`. Приоритеты фич polish: [`plan-mvp-polish.md`](./plan-mvp-polish.md) §Матрица.
+
+## UI lab lbm-bro (три кабинета)
+
+Live chrome принят (фаза C): [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md). Lab `/client` — референс.
+
+| Роль | Экран | Lab | Domain | Статус |
+|------|-------|-----|--------|--------|
+| Клиент | Superapp home | `/client` ✓ | `/cabinet` ✓ product-shell | **live chrome** + `/api/v1` |
+| Клиент | Заявки / карточка / wizard | `/client/orders` · `/new` ✓ | `/cabinet/orders` · `/new` ✓ | live panes в новом шелле |
+| Клиент | Справочник ТН ВЭД | `/client/tnved` ✓ | combobox NewCalc | lookup-плитка → `/new` |
+| Брокер | Dash / queue / work / chat / SLA / pay / profile | компоненты `broker-*` | `/broker/*` ops-shell | WorkMapping канон QC |
+| Админ | Dash / 14 panes | компоненты `admin-*` | `/admin/*` ops + группы | без fake GMV |
+| — | Proto-bar | `/client` layout | запрещён в prod (D14) | только lab |

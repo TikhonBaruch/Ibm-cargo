@@ -5,6 +5,7 @@
  *   node scripts/smoke-client-path.mjs
  *   TEST_API_URL=https://ibm-cargo.vercel.app node scripts/smoke-client-path.mjs
  */
+import "./lib/install-vercel-bypass.mjs";
 const BASE = process.env.TEST_API_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
 const EMAIL = process.env.CLIENT_EMAIL || "client@example.com";
 const PASSWORD = process.env.CLIENT_PASSWORD || "demo1234";

@@ -21,13 +21,10 @@ export function ManufacturerSuggest({
   disabled?: boolean;
 }) {
   return (
-    <label className="block">
-      <span className="mb-1 block text-xs font-semibold text-slate-500">Производитель</span>
-      <span className="mb-1.5 block text-[11px] leading-snug text-[var(--kb-muted)]">
-        Введите название вручную (каталог подсказок временно отключён).
-      </span>
+    <div className="field">
+      <label>Производитель</label>
+      <span className="meta">Введите название вручную (каталог подсказок временно отключён).</span>
       <input
-        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
         placeholder="Название производителя"
         value={value.manufacturerName}
         disabled={disabled}
@@ -39,6 +36,6 @@ export function ManufacturerSuggest({
           })
         }
       />
-    </label>
+    </div>
   );
 }
