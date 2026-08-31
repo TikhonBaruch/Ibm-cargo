@@ -15,7 +15,7 @@
 
 ## C8 — Post-cycle re-probe (after P3)
 
-**0 NEW WRONG** on prior matrix. Closed C6/C7 open sections (art/bags/watches/bev/audio/furniture/tires/bikes).
+**0 NEW WRONG** on prior matrix after tire fix (`шина` token-boundary ≠ `машина`). Closed C6/C7 open sections (art/bags/watches/bev/audio/furniture/tires/bikes).
 
 ### New open test sections (no C21 pack yet)
 
