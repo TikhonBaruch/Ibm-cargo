@@ -34,12 +34,28 @@ const PLANT_DAIRY_RE =
 const POINTER_DEVICE_RE =
   /(?:^|[^a-zа-я0-9])мышь(?:$|[^a-zа-я0-9])|(?:^|[^a-zа-я0-9])mouse(?:$|[^a-zа-я0-9])/i;
 
+/** Juice/beverage — fruit pack must not win on «яблочный сок». */
+const JUICE_BEVERAGE_RE =
+  /(?:^|[^a-zа-я0-9])сок(?:$|[^a-zа-я0-9])|нектар|(?:^|[^a-zа-я0-9])juice(?:$|[^a-zа-я0-9])|smoothie|морс\b/i;
+
+/** Prepared soup/stew — produce must not win on «овощной суп». */
+const PREPARED_MEAL_RE =
+  /(?:^|[^a-zа-я0-9])суп(?:$|[^a-zа-я0-9])|борщ|бульон|похлебк|(?:^|[^a-zа-я0-9])soup(?:$|[^a-zа-я0-9])/i;
+
 export function isPlantDairyQuery(query: string): boolean {
   return PLANT_DAIRY_RE.test(normalizeTnvedQueryText(query));
 }
 
 export function isPointerDeviceQuery(query: string): boolean {
   return POINTER_DEVICE_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isJuiceOrBeverageQuery(query: string): boolean {
+  return JUICE_BEVERAGE_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isPreparedMealQuery(query: string): boolean {
+  return PREPARED_MEAL_RE.test(normalizeTnvedQueryText(query));
 }
 
 export function normalizeTnvedQueryText(s: string): string {
