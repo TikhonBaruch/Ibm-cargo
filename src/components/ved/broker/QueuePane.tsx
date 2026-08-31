@@ -61,22 +61,18 @@ export function QueuePane({
   );
 
   return (
-    <div className="overflow-hidden rounded-[28px] border border-black/[0.04] bg-white shadow-sm">
-      <div className="border-b border-black/[0.04] px-5 py-4">
-        <h2 className="font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-          {title}
-        </h2>
-      </div>
+    <div className="card">
+      <h3>{title}</h3>
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-[var(--kb-muted)]">
+        <table className="data">
+          <thead>
             <tr>
-              <th className="px-4 py-3 font-medium">№</th>
-              <th className="px-4 py-3 font-medium">Клиент</th>
-              <th className="px-4 py-3 font-medium">Тариф</th>
-              <th className="px-4 py-3 font-medium">AI</th>
-              <th className="px-4 py-3 font-medium">SLA</th>
-              <th className="px-4 py-3 font-medium" />
+              <th>№</th>
+              <th>Клиент</th>
+              <th>Тариф</th>
+              <th>AI</th>
+              <th>SLA</th>
+              <th />
             </tr>
           </thead>
           <tbody>
@@ -93,14 +89,10 @@ export function QueuePane({
                 <tr
                   key={c.id}
                   aria-selected={active}
-                  className={`cursor-pointer border-t border-slate-100 ${
-                    active
-                      ? "bg-[rgba(43,114,244,0.08)] shadow-[inset_3px_0_0_#2b72f4]"
-                      : "hover:bg-slate-50/80"
-                  }`}
+                  className={`clickable${active ? " is-open" : ""}`}
                   onClick={() => onOpen(c)}
                 >
-                  <td className="px-4 py-3">
+                  <td>
                     <span className="font-medium">{c.number}</span>
                     {badge === "preferred" && (
                       <span className="ml-2 text-xs text-[#2b72f4]">для вас</span>
@@ -109,12 +101,12 @@ export function QueuePane({
                       <span className="ml-2 text-xs text-amber-600">reserved</span>
                     )}
                   </td>
-                  <td className="px-4 py-3">{c.clientUser?.name || "—"}</td>
-                  <td className="px-4 py-3 text-[var(--kb-muted)]">{c.tariff?.name || "—"}</td>
-                  <td className="px-4 py-3">
+                  <td>{c.clientUser?.name || "—"}</td>
+                  <td>{c.tariff?.name || "—"}</td>
+                  <td>
                     {c.confidence != null ? `${Math.round(c.confidence * 100)}%` : "—"}
                   </td>
-                  <td className="px-4 py-3">
+                  <td>
                     <div className="flex flex-col gap-1">
                       <StatusPill status={c.status} />
                       <span className="text-xs text-[var(--kb-muted)]">
@@ -122,20 +114,20 @@ export function QueuePane({
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                  <td onClick={(e) => e.stopPropagation()}>
                     {claimable ? (
                       <button
                         type="button"
                         disabled={busy || badge === "reserved"}
                         onClick={() => onClaim(c.id)}
-                        className="rounded-full bg-[#2b72f4] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+                        className="btn btn-primary btn-sm"
                       >
                         Взять
                       </button>
                     ) : (
                       <button
                         type="button"
-                        className="rounded-full border px-3 py-1.5 text-xs font-semibold"
+                        className="btn btn-ghost btn-sm"
                         onClick={() => onOpen(c)}
                       >
                         Открыть

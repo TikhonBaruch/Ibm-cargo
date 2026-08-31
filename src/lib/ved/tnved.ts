@@ -5,7 +5,12 @@
 import { z } from "zod";
 import type { Prisma } from "@prisma/client";
 import { DEFAULT_IMPORT_VAT_PERCENT } from "./customs-fees";
+import {
+  lookupClassificationDecisions,
+  lookupPsnExplanation,
+} from "./tnved-card-layers";
 import { layerGToHint, matchLayerG } from "./tnved-layer-g";
+import { relationsForCode, type TnvedRelation } from "./tnved-relations";
 
 export const TNVED_LEVELS = [2, 4, 6, 8, 10] as const;
 export type TnvedLevel = (typeof TNVED_LEVELS)[number];
@@ -103,32 +108,152 @@ export type TnvedSearchOpts = {
   q: string;
   limit?: number;
   leafOnly?: boolean;
+  /** 4-digit headings in a 2-digit chapter (lab group browse). */
+  headingOnly?: boolean;
 };
 
-type TnvedDb = Pick<Prisma.TransactionClient, "tnvedCode" | "tnvedDutyRate">;
+export type TnvedDb = Pick<Prisma.TransactionClient, "tnvedCode" | "tnvedDutyRate">;
 
-/** Directory search by code prefix and/or titleRu (D-TNVED). */
+export async function countActiveTnvedCodes(db: Pick<Prisma.TransactionClient, "tnvedCode">) {
+  return db.tnvedCode.count({ where: { isActive: true } });
+}
+
+export async function countTnvedDirectoryStats(db: Pick<Prisma.TransactionClient, "tnvedCode">) {
+  const [total, leaves, variations] = await Promise.all([
+    db.tnvedCode.count({ where: { isActive: true } }),
+    db.tnvedCode.count({ where: { isActive: true, isLeaf: true } }),
+    db.tnvedCode.count({ where: { isActive: true, notes: { not: null } } }),
+  ]);
+  return { total, leaves, variations };
+}
+
+/** Stems so «футболка» hits notes token «футболк» (lab alias keys). */
+const TNVED_SEARCH_STOP = new Set(["для", "или", "без", "the", "and", "for", "with", "from"]);
+
+export function tnvedSearchStems(query: string): string[] {
+  const q = String(query || "")
+    .trim()
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  if (!q) return [];
+  const words = q
+    .replace(/[-_/\\,.;:()[\]{}+]+/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !TNVED_SEARCH_STOP.has(w));
+  const tokens = words.length ? words : q.length >= 2 ? [q] : [];
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const t of tokens) {
+    const variants = [t];
+    if (t.length >= 6) variants.push(t.slice(0, -1));
+    if (t.length >= 8) variants.push(t.slice(0, -2));
+    for (const v of variants) {
+      if (v.length < 2 || seen.has(v)) continue;
+      seen.add(v);
+      out.push(v);
+    }
+  }
+  return out;
+}
+
+export function scoreTnvedSearchHit(
+  row: { code: string; titleRu?: string | null; notes?: string | null; isLeaf?: boolean; level?: number },
+  opts: { stems: string[]; digits: string; phrase?: string },
+): number {
+  const notes = String(row.notes || "")
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  const title = String(row.titleRu || "")
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  const lead = notes.split(/\n+/)[0] || "";
+  const noteParts = notes.split(/[,\n;]+/).map((p) => p.trim()).filter(Boolean);
+  const phrase = String(opts.phrase || "")
+    .trim()
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  let score = 0;
+  if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
+  if (phrase.length >= 5 && notes.includes(phrase)) score += 90;
+  // CJK invoice tokens (充电宝, T恤) are short but exact in notes — same boost.
+  else if (
+    phrase.length >= 2 &&
+    phrase.length < 5 &&
+    /[\u4e00-\u9fff]/.test(phrase) &&
+    notes.includes(phrase)
+  ) {
+    score += 90;
+  }
+  for (const s of opts.stems) {
+    if (!s) continue;
+    if (noteParts.some((p) => p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`))) score += 80;
+    else if (notes.includes(s)) score += 25;
+    if (title.includes(s)) {
+      const word = new RegExp(`(?:^|[^а-яa-z0-9])${s}(?:[^а-яa-z0-9]|$)`, "i");
+      score += word.test(title) ? 35 : 8;
+    }
+  }
+  if (opts.digits.length >= 2 && row.code.startsWith(opts.digits)) {
+    score += 100;
+    if (row.code === opts.digits) score += 50;
+  }
+  if (row.isLeaf) score += 15;
+  score += Number(row.level || 0);
+  return score;
+}
+
+/** Directory search by code prefix and/or titleRu / notes (D-TNVED). */
 export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
   const q = String(opts.q || "").trim();
   if (!q) return [];
-  const limit = Math.min(Math.max(opts.limit ?? 20, 1), 50);
+  const cap = opts.headingOnly ? 200 : 50;
+  const limit = Math.min(Math.max(opts.limit ?? 20, 1), cap);
   const digits = q.replace(/\D/g, "");
-  const or: Array<Record<string, unknown>> = [
-    { titleRu: { contains: q, mode: "insensitive" } },
-    { notes: { contains: q, mode: "insensitive" } },
-  ];
+  const codeOnly = digits.length >= 2 && /^[\d\s./-]+$/.test(q);
+
+  if (opts.headingOnly && digits.length >= 2) {
+    return db.tnvedCode.findMany({
+      where: {
+        isActive: true,
+        level: 4,
+        code: { startsWith: digits.slice(0, 2) },
+      },
+      take: limit,
+      orderBy: { code: "asc" },
+    });
+  }
+
+  const stems = codeOnly ? [digits] : tnvedSearchStems(q);
+  const or: Array<Record<string, unknown>> = [];
   if (digits.length >= 2) {
     or.push({ code: { startsWith: digits } });
   }
-  return db.tnvedCode.findMany({
+  for (const stem of stems.length ? stems : [q]) {
+    or.push({ titleRu: { contains: stem, mode: "insensitive" } });
+    or.push({ notes: { contains: stem, mode: "insensitive" } });
+  }
+  const phraseMin = /[\u4e00-\u9fff]/.test(q) ? 2 : 4;
+  if (!codeOnly && q.length >= phraseMin) {
+    or.push({ notes: { contains: q, mode: "insensitive" } });
+    or.push({ titleRu: { contains: q, mode: "insensitive" } });
+  }
+  const pool = codeOnly ? Math.min(50, Math.max(limit * 4, 24)) : 500;
+  const rows = await db.tnvedCode.findMany({
     where: {
       isActive: true,
       OR: or,
       ...(opts.leafOnly ? { isLeaf: true } : {}),
     },
-    take: limit,
+    take: pool,
     orderBy: [{ level: "desc" }, { code: "asc" }],
   });
+  return [...rows]
+    .sort((a, b) => {
+      const d = scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits, phrase: q })
+        - scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits, phrase: q });
+      return d || a.code.localeCompare(b.code);
+    })
+    .slice(0, limit);
 }
 
 export const TNVED_CARD_DISCLAIMER =
@@ -141,6 +266,8 @@ export type TnvedCardAncestor = {
   codeDisplay: string;
   titleRu: string;
   level: number;
+  /** Optional: group PSN may live on level-2 notes after compose. */
+  notes?: string | null;
 };
 
 export type TnvedCardRate = {
@@ -158,6 +285,22 @@ export type TnvedCardSource = {
   asOf: string | null;
 };
 
+export type TnvedCardChild = TnvedCardAncestor & { isLeaf: boolean };
+
+export type TnvedCardExplanation = {
+  heading: string;
+  excerpt: string;
+  url: string | null;
+  origin: "notes" | "overlay";
+};
+
+export type TnvedCardClassificationDecision = {
+  code: string;
+  title: string;
+  url: string | null;
+  asOf: string | null;
+};
+
 export type TnvedCard = {
   code: string;
   codeDisplay: string;
@@ -167,7 +310,13 @@ export type TnvedCard = {
   isLeaf: boolean;
   notes: string | null;
   ancestors: TnvedCardAncestor[];
+  children: TnvedCardChild[];
+  related: TnvedRelation[];
   rate: TnvedCardRate | null;
+  /** Layer D: PSN excerpt (not alias token soup). */
+  explanation: TnvedCardExplanation | null;
+  /** Layer E: EEC classification decisions by 10-digit (fail-open). */
+  classificationDecisions: TnvedCardClassificationDecision[];
   paymentsHint: { vatPct: number; feeRule: string };
   measuresHint: {
     excisePossible: boolean;
@@ -205,6 +354,12 @@ export const TNVED_CARD_SOURCES: TnvedCardSource[] = [
     title: "ЕЭК пояснения к ТН ВЭД (PSN)",
     url: "https://eec.eaeunion.org/comission/department/catr/psn/",
     asOf: "2026-08-08",
+  },
+  {
+    layer: "E",
+    title: "Решения ЕЭК о классификации",
+    url: "https://eec.eaeunion.org/comission/department/catr/classification/",
+    asOf: null,
   },
   {
     layer: "G",
@@ -254,6 +409,8 @@ export function assembleTnvedCard(input: {
     rates?: unknown[];
   };
   ancestors: TnvedCardAncestor[];
+  children?: TnvedCardChild[];
+  related?: TnvedRelation[];
 }): TnvedCard {
   const rates = Array.isArray(input.row.rates) ? input.row.rates : [];
   return {
@@ -265,7 +422,15 @@ export function assembleTnvedCard(input: {
     isLeaf: Boolean(input.row.isLeaf),
     notes: input.row.notes ?? null,
     ancestors: input.ancestors,
+    children: input.children ?? [],
+    related: input.related ?? relationsForCode(input.row.code),
     rate: pickEttRate(rates as Parameters<typeof pickEttRate>[0]),
+    explanation: lookupPsnExplanation({
+      code: input.row.code,
+      notes: input.row.notes,
+      ancestors: input.ancestors,
+    }),
+    classificationDecisions: lookupClassificationDecisions(input.row.code),
     paymentsHint: { vatPct: DEFAULT_IMPORT_VAT_PERCENT, feeRule: TNVED_FEE_RULE },
     measuresHint: layerGToHint(matchLayerG(input.row.code)),
     sources: TNVED_CARD_SOURCES,
@@ -291,9 +456,16 @@ export async function getTnvedCard(db: TnvedDb, codeInput: string): Promise<Tnve
   const row = await getTnvedByCode(db, codeInput);
   if (!row) return null;
   const ancestorCodes = hsCodeAncestors(row.code).filter((c) => c !== row.code);
-  const found = ancestorCodes.length
-    ? await db.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
-    : [];
+  const [found, childRows] = await Promise.all([
+    ancestorCodes.length
+      ? db.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
+      : Promise.resolve([]),
+    db.tnvedCode.findMany({
+      where: { parentCode: row.code, isActive: true },
+      orderBy: { code: "asc" },
+      take: 16,
+    }),
+  ]);
   const byCode = new Map(found.map((a) => [a.code, a]));
   const ancestors: TnvedCardAncestor[] = ancestorCodes
     .map((c) => byCode.get(c))
@@ -303,8 +475,16 @@ export async function getTnvedCard(db: TnvedDb, codeInput: string): Promise<Tnve
       codeDisplay: a.codeDisplay,
       titleRu: a.titleRu,
       level: a.level,
+      notes: a.notes ?? null,
     }));
-  return assembleTnvedCard({ row, ancestors });
+  const children: TnvedCardChild[] = childRows.map((c) => ({
+    code: c.code,
+    codeDisplay: c.codeDisplay,
+    titleRu: c.titleRu,
+    level: c.level,
+    isLeaf: Boolean(c.isLeaf),
+  }));
+  return assembleTnvedCard({ row, ancestors, children });
 }
 
 function toOptionalDate(value: string | Date | null | undefined): Date | null | undefined {
@@ -337,7 +517,7 @@ export async function upsertTnvedBatch(
         titleEn: parsed.titleEn ?? null,
         isLeaf: parsed.isLeaf,
         isActive: parsed.isActive,
-        notes: parsed.notes ?? null,
+        ...(parsed.notes !== undefined ? { notes: parsed.notes ?? null } : {}),
         ...(validFrom !== undefined ? { validFrom } : {}),
         ...(validTo !== undefined ? { validTo } : {}),
       },
@@ -349,7 +529,7 @@ export async function upsertTnvedBatch(
         titleEn: parsed.titleEn ?? null,
         isLeaf: parsed.isLeaf,
         isActive: parsed.isActive,
-        notes: parsed.notes ?? null,
+        ...(parsed.notes !== undefined ? { notes: parsed.notes ?? null } : {}),
         ...(validFrom !== undefined ? { validFrom } : {}),
         ...(validTo !== undefined ? { validTo } : {}),
       },

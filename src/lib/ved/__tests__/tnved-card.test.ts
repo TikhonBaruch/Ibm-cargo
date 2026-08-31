@@ -49,7 +49,11 @@ describe("TN VED card envelope", () => {
     expect(card.disclaimer).toMatch(/брокер/i);
     expect(card.ancestors).toHaveLength(2);
     expect(card.titleRu).toMatch(/портативн/i);
-    expect(card.sources.map((s) => s.layer)).toEqual(["A", "B", "C", "D", "G"]);
+    expect(card.related.map((r) => r.code)).toEqual(expect.arrayContaining(["8471410000", "8517130000"]));
+    expect(card.children).toEqual([]);
+    expect(card.sources.map((s) => s.layer)).toEqual(["A", "B", "C", "D", "E", "G"]);
+    expect(card.explanation?.origin).toBe("overlay");
+    expect(card.classificationDecisions).toEqual([]);
   });
 
   it("flags NK 181 / PP 1291 prefixes without inventing a rate", () => {

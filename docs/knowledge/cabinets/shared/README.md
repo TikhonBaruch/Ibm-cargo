@@ -4,7 +4,8 @@
 
 | Элемент | Роль |
 |---------|------|
-| VedShell | Nav, title/lead, footer, actions, avatar, logout |
+| VedShell | Manufacturer chrome; `api` / `VedEmptyState` / `StatusPill` |
+| LbmCabinetsShell | Live client product-shell + broker/admin ops-shell (lbm-bro visual, D33 фаза C) |
 | StatusPill | Подписи статусов calc |
 | EventsTimeline | D24 `CalculationEvent` (client OrderDetail, broker WorkMapping) |
 | Error banner | Глобальные ошибки API в кабинетах |

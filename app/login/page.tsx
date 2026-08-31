@@ -11,17 +11,31 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [dbMissing, setDbMissing] = useState(false);
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("error");
     if (code === "Configuration" || code === "Callback") {
       setError(messageForAuthError(code));
     }
+    fetch("/health")
+      .then((r) => r.json())
+      .then((j: { databaseUrl?: boolean }) => {
+        if (j?.databaseUrl === false) {
+          setDbMissing(true);
+          setError((prev) => prev || messageForAuthError("Callback"));
+        }
+      })
+      .catch(() => undefined);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (dbMissing) {
+      setError(messageForAuthError("Callback"));
+      return;
+    }
     setLoading(true);
     try {
       const result = await signIn("credentials", {
@@ -45,6 +59,16 @@ export default function LoginPage() {
       else window.location.href = "/admin";
     } catch {
       setLoading(false);
+      try {
+        const health = await fetch("/health").then((r) => r.json());
+        if (health?.databaseUrl === false) {
+          setDbMissing(true);
+          setError(messageForAuthError("Callback"));
+          return;
+        }
+      } catch {
+        /* keep generic */
+      }
       setError("Ошибка соединения");
     }
   };
@@ -79,13 +103,15 @@ export default function LoginPage() {
           />
         </div>
         <div className="modal-actions" style={{ justifyContent: "stretch", marginTop: 8 }}>
-          <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: "100%" }}>
+          <button type="submit" className="btn btn-primary" disabled={loading || dbMissing} style={{ width: "100%" }}>
             {loading ? "Вход…" : "Войти"}
           </button>
         </div>
         <p className="auth-hint">
-          Демо: client@example.com / broker@example.com / manufacturer@example.com / operator@example.com / admin@example.com — пароль{" "}
+          Демо: client@example.com / broker@example.com / admin@example.com — пароль{" "}
           <code>demo1234</code>
+          {/* Hidden from this hint until restore is requested:
+              manufacturer@example.com / operator@example.com */}
         </p>
         <p className="auth-hint">
           Нет аккаунта?{" "}

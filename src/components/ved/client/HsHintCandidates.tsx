@@ -15,9 +15,9 @@ export function HsHintCandidates({
   if (!candidates.length) return null;
   return (
     <div className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2">
-      <p className="text-xs font-medium text-[#0f172a]">Черновик ТН ВЭД по правилам</p>
+      <p className="text-xs font-medium text-[#0f172a]">Черновик ТН ВЭД (справочник + правила)</p>
       <p className="mt-0.5 text-[11px] text-[var(--kb-muted)]">
-        Не нейросеть. Клик — подсказка в первую позицию без кода; финал — у брокера (D15).
+        Не нейросеть. Клик — подсказка hsHint в позицию; финал — у брокера (D15).
       </p>
       <ul className="mt-2 space-y-1.5">
         {candidates.map((c) => {

@@ -177,13 +177,16 @@ export function formatSlaCountdown(deadline?: string | null, now = Date.now()): 
 export function factorySkuSnapshotLine(item: {
   manufacturerSkuId?: string | null;
   attrs?: CalcItem["attrs"];
+  includeWeight?: boolean;
 }): string | null {
   const sku = item.attrs?.extra?.sku;
   if (!item.manufacturerSkuId && !sku) return null;
   const bits = [
     sku ? `SKU ${sku}` : null,
     item.attrs?.brand ? `бренд ${item.attrs.brand}` : null,
-    item.attrs?.netWeightKg != null ? `${item.attrs.netWeightKg} кг` : null,
+    item.includeWeight !== false && item.attrs?.netWeightKg != null
+      ? `${item.attrs.netWeightKg} кг`
+      : null,
     item.attrs?.originCountry ? `origin ${item.attrs.originCountry}` : null,
   ].filter(Boolean);
   return bits.length ? bits.join(" · ") : "Эталон производителя (снимок)";

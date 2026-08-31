@@ -1,4 +1,7 @@
-import { factoryUiEnabled } from "@/lib/ved/cabinet-features";
+import {
+  designerManufacturerChromeEnabled,
+  factoryUiEnabled,
+} from "@/lib/ved/cabinet-features";
 
 export type AdminCalc = {
   id: string;
@@ -249,7 +252,12 @@ export function getAdminNav(
     item("Платформа", "/audit", "Журнал", "clipboard"),
     item("Платформа", "/settings", "Настройки", "settings"),
   ].filter((item) => {
-    if (item.href.endsWith("/manufacturers") && !factoryUiEnabled(env)) return false;
+    if (
+      item.href.endsWith("/manufacturers") &&
+      !(factoryUiEnabled(env) && designerManufacturerChromeEnabled(env))
+    ) {
+      return false;
+    }
     return true;
   });
 }

@@ -2,7 +2,7 @@
 
 Репозиторий: `Ibm-cargo (this repo)` — Next.js App Router + Prisma + NextAuth + Telegram.
 
-Единая KB: [`README.md`](./README.md) · каркас: [`skeleton.md`](./skeleton.md) · ADR: [`decisions.md`](./decisions.md) D1–D34.  
+Единая KB: [`README.md`](./README.md) · каркас: [`skeleton.md`](./skeleton.md) · ADR: [`decisions.md`](./decisions.md) D1–D37.  
 План / smoke: [`roadmap.md`](./roadmap.md) · [`staging.md`](./staging.md).  
 Фокус MVP (D27): ТН ВЭД → брокер-QC → PDF; без logistics/LLM/ЮKassa в текущем CTA — [`product.md`](./product.md).  
 Стратегия persona / сеть (D29): [`target-client.md`](./target-client.md).  
@@ -46,11 +46,12 @@ MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ o
 - Роли `CLIENT` / `BROKER` / `MANUFACTURER` + staff; вход `/login`, **регистрация импортёра** `/register` (`POST /api/v1/auth/register` — Company + User CLIENT в одной tx; брокер и производитель только seed/admin) — **D25** / **D31**
 - Domain API `/api/v1/*` (session) ↔ `containers/api` при `USE_DOMAIN_API=1`: create/items, pay + preferred, claim/approve/escalate mapping, assign, PDF, chat (+threads/unread), shipping after DONE, tariffs, company/topup, payouts, settings, brokers/me, SLA tick
 - Flow: просчёт → AI **heuristic-v1** → оплата с баланса (± preferred / ЮKassa TOPUP via `PaymentIntent`) → QUEUED или DONE → mapping брокера → PDF
-- Surfaces: root `/cabinet` + `/broker` + `/admin` (VED D28) + `/manufacturer`; client `/factory` и manufacturer `/pools` живы в коде, но могут быть скрыты feature-flag по D27/D34; Legacy CMS — obscure SUPER path (D6); extract Next `containers/client:3003`, `broker:3002`, `admin:3001`, `manufacturer:3004`
+- Surfaces: CLIENT home **`/cabinet`** (product-shell, `/api/v1`) + lab `/client` (demo-store, референс); `/broker` + `/admin` (VED D28 ops-shell) + `/manufacturer`; client `/factory` и manufacturer `/pools` живы в коде, но могут быть скрыты feature-flag по D27/D34; Legacy CMS — obscure SUPER path (D6); extract Next `containers/client:3003`, `broker:3002`, `admin:3001`, `manufacturer:3004`
 - **UI baseline:** parity с `cargo-broker-cabinets.html` + live API (D14) — [`design-baseline.md`](./design-baseline.md) · интерактив · [`design-interactive.md`](./design-interactive.md)
+- **Live chrome lbm-bro:** `/cabinet` 5 тайлов + поиск/колокол + superapp; `/cabinet/new` шаг «Что ввозите?» (C10–C12) + C16 порядок полей как lab; заявка = страница `/cabinet/orders/[id]` (C15); список заявок — чипы lab (C16); `/cabinet/tnved` карточка как lab при `GET /api/v1/tnved` (C17) + каталог lab в Postgres (C18); inner panes C4 = `.card` / `table.data` / `.field` / `.chat-box`; `DesignerStub` не рисует бейдж (C9); chrome производителя скрыт (C6) · `/broker` `/admin` ops-shell · lab `/client` референс · [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) · [`plan-lbm-bro-max-match.md`](./plan-lbm-bro-max-match.md) · [`plan-lbm-bro-tnved-dir.md`](./plan-lbm-bro-tnved-dir.md) · [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md)
 - **C1** Compose ready / **Vercel dual** (Prisma-in-Next); **C2–C4** done as designed (opt-in providers). **C5** scaffold + `smoke:gateway` (D22)
 - Ops: [`runbook.md`](./runbook.md) · среды: [`environments.md`](./environments.md) · DB process: [`db-process.md`](./db-process.md) (D23) · MVP smoke: `npm run smoke:mvp`
-- Демо: `client@example.com` / `broker@example.com` / `manufacturer@example.com` / `operator@example.com` / `admin@example.com` (ADMIN → `/admin`) · `demo1234` — **на публичном `/login`**. Obscure SUPER path/email в клиентском коде закодированы; seed-пароль SUPER не менялся; `robots.txt` без карты obscure-путей. План: [`plan-public-surface-hygiene.md`](./plan-public-surface-hygiene.md).
+- Демо на `/login`: `client@example.com` / `broker@example.com` / `admin@example.com` · `demo1234`. Obscure SUPER path/email в клиентском коде закодированы; seed-пароль SUPER не менялся; `robots.txt` без карты obscure-путей. План: [`plan-public-surface-hygiene.md`](./plan-public-surface-hygiene.md).
 
 ## Интегрированные решения (на `main` / prod)
 
@@ -70,8 +71,8 @@ MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ o
 | **OCR P2 (compose)** | `containers/ocr` text PDF (`ocr-pdf-*-v1`) + optional vision; create fail-open; extract-table | unit `ocr-llm.test.ts` · local `:4700` |
 | **Broker reclassify** | `POST …/reclassify` + WorkMapping feedback → LLM (skip precedent); `IN_REVIEW` | `smoke:reclassify` |
 | Shipping UI flag | `shippingUiEnabled` (`src/lib/ved/cabinet-features.ts`): nav/дашборд/pane «Перевозка» **скрыты** по умолчанию; код и `/api/v1/shipping` сохранены; `/cabinet/shipping` → redirect на дашборд | unit `cabinet-features`; go-live: `NEXT_PUBLIC_SHIPPING_UI=1` ([`roadmap.md`](./roadmap.md) §2.2) |
-| Factory UI flag | `factoryUiEnabled`: код default off; **Vercel Pro Production/Preview `NEXT_PUBLIC_FACTORY_UI=1`**. Client must read `process.env.NEXT_PUBLIC_*` literally (не `env[key]`) иначе Next не инлайнит и UI остаётся скрытым. | unit `cabinet-features`; env + [`environments.md`](./environments.md) |
-| Build-safe public API | `/api/promos` = `force-dynamic` (не prerender Prisma без `DATABASE_URL` на Vercel build) | `npm run build` |
+| Factory UI flag | `factoryUiEnabled`: код default off; **Vercel Pro Production/Preview `NEXT_PUBLIC_FACTORY_UI=1`**. Client must read `process.env.NEXT_PUBLIC_*` literally (не `env[key]`) иначе Next не инлайнит и UI остаётся скрытым. **C6:** designer chrome (плитка/admin nav) additionally hidden via `designerManufacturerChromeEnabled`. | unit `cabinet-features`; env + [`environments.md`](./environments.md) |
+| Build-safe public API | `/api/promos` + `/health` = `force-dynamic` (не prerender без runtime `DATABASE_URL`) | `npm run build` · `/health` `databaseUrl` |
 | Status machine + pay gate (D8/D11) | `src/lib/ved/domain.ts` + calculations | unit + `smoke:full` / `mvp` |
 | Item limits (D10) / real items (D15) | domain + UI | unit invariants |
 | DB sequencing (D23) | [`db-process.md`](./db-process.md), create/pay/claim tx | unit |
@@ -118,7 +119,7 @@ MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ o
 | D26+D27 + polish UX | **на `origin/main`**; sweb schema synced; `S3_OBJECT_ACL` on Vercel; prod smoke mvp/full **PASS** | [`runbook.md`](./runbook.md) · [`roadmap.md`](./roadmap.md) §Post-polish · [`staging.md`](./staging.md) |
 | Broker chat threads UI + DevEx (`setup`, `.nvmrc`) | **done** на `main` (merge chat-threads) | [`design-parity.md`](./design-parity.md) |
 | Shipping UI go-live | **hold (D27)** — код готов, flag **off**; не включать `NEXT_PUBLIC_SHIPPING_UI=1` как MVP CTA | [`roadmap.md`](./roadmap.md) §2.2 · `cabinet-features.ts` |
-| Полный каталог ТН ВЭД | **local 2026-08-17:** A+C+D+G + fill пошлины `tws-csv` (12 622 `%`). **Prod sweb: dump не грузить.** Код overlay/CLI — [`plan-tnved-collect.md`](./plan-tnved-collect.md) | [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) · `corpus-status.json` |
+| Полный каталог ТН ВЭД | **C18–C31d** lab ∪ ФНС + cascade fixtures (~37) + pay-first + card layers B/D/E + **dual-path cascade** в `containers/api` (**в #16**, #19 уже внутри). **Mobile:** sticky nav strip + header wrap. Prod: https://ibm-cargo-phi.vercel.app (**до merge #16 — без pay-first**). **Исполнение:** [`plan-merge-ops-unblock.md`](./plan-merge-ops-unblock.md). **Дальше:** C32 chain + ops | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) |
 | LLM-as-CTA / matcher UX | **hold (D27)** — heuristic-v1; `LLM_SERVICE_URL` только opt-in fail-open | [`ai-pipeline.md`](./ai-pipeline.md) · [`growth.md`](./growth.md) |
 | TN VED search/UI attrs/events | **done** (polish §2.5) | [`data-model.md`](./data-model.md) · [`roadmap.md`](./roadmap.md) |
 | Real ЮKassa / notify на prod | Track A ops — mock topup + SMTP_FROM; **нужен RESEND + ЮKassa host** | [`plan-track-a-p0.md`](./plan-track-a-p0.md) · `npm run ops:track-a` |
@@ -130,6 +131,7 @@ MVP D27 **не** требует sibling / nested `./llm`: draft = heuristic (+ o
 | Qwen→DeepSeek `AI_DRAIN` | **Compose** service URLs **или Vercel** keys: create enqueue + `after()`/worker; кабинет poll ≤2 мин до точного `hsCode`. | local · prod · [`plan-ai-mesh.md`](./plan-ai-mesh.md) |
 | Attr suggest chips + NewCalc tips | **на `main` / Hobby** — heuristic chips; progressive FieldLabel/StageTip; quick-calc без placeholder ноутбука | [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) · [`plan-newcalc-hints.md`](./plan-newcalc-hints.md) |
 | Cabinets WIP (manufacturer / factory / landed) | **на `main` / Vercel Pro**; Factory UI **on** (`NEXT_PUBLIC_FACTORY_UI=1`). Schema: `manufacturer_proposal`. | [`plan-consolidate-orders.md`](./plan-consolidate-orders.md) · [`cabinets/manufacturer/`](./cabinets/manufacturer/) |
+| **lbm-bro visual live** | **этот PR:** `/cabinet` `/broker` `/admin` = `LbmCabinetsShell`; CLIENT home → `/cabinet`; lab `/client` референс | [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) |
 
 ### Post-ship verify (2026-08-20)
 

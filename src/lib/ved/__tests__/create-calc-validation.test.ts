@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   hasRequiredCreateAttrs,
   missingRequiredCreateAttrs,
+  requiredCreateAttrsError,
   productAttrsSchema,
 } from "../product-description";
 
@@ -31,7 +32,7 @@ const createSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: body.items?.length ? ["items", i, "attrs"] : ["items"],
-        message: `Обязательны страна происхождения (ISO-2), производитель и состав (не хватает: ${miss.join(", ")})`,
+        message: requiredCreateAttrsError(miss),
       });
     });
   });
@@ -58,8 +59,26 @@ describe("create calculation validation → HTTP mapping", () => {
     if (parsed.success) return;
     const out = statusForCreateError(parsed.error);
     expect(out.status).toBe(400);
-    expect(out.error).toMatch(/originCountry|производитель|состав/i);
+    expect(out.error).toMatch(/originCountry|состав/i);
+    expect(out.error).not.toMatch(/производитель/i);
     expect(out.error.startsWith("[")).toBe(false);
+  });
+
+  it("accepts origin + composition without manufacturerName", () => {
+    const parsed = createSchema.safeParse({
+      title: "Ноутбук",
+      description: "ThinkPad без производителя",
+      items: [
+        {
+          name: "ThinkPad X1",
+          attrs: {
+            originCountry: "CN",
+            composition: "aluminium, plastics",
+          },
+        },
+      ],
+    });
+    expect(parsed.success).toBe(true);
   });
 
   it("accepts complete required attrs", () => {
@@ -83,7 +102,7 @@ describe("create calculation validation → HTTP mapping", () => {
   it("maps domain Обязательн… throw to 400", () => {
     const out = statusForCreateError(
       new Error(
-        "Обязательны страна происхождения (ISO-2), производитель и состав (не хватает: composition)"
+        requiredCreateAttrsError(["composition"])
       )
     );
     expect(out.status).toBe(400);

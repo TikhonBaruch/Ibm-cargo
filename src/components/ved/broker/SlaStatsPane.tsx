@@ -50,100 +50,57 @@ export function SlaStatsPane({ mine, queue }: { mine: Calc[]; queue: Calc[] }) {
       : null;
 
   return (
-    <section className="space-y-5">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-          <div className="text-sm text-[var(--kb-muted)]">Средний SLA</div>
-          <div className="text-3xl font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-            {avgResponseH != null ? `${avgResponseH.toFixed(1)} ч` : "—"}
-          </div>
-          {avgResponseH != null && (
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-              <div
-                className="h-full rounded-full bg-[#2b72f4]"
-                style={{ width: `${Math.min(100, Math.round((avgResponseH / 4) * 100))}%` }}
-                title="Относительно целевых 4 ч"
-              />
-            </div>
-          )}
+    <section>
+      <div className="stats">
+        <div className="stat">
+          <div className="v">{avgResponseH != null ? `${avgResponseH.toFixed(1)} ч` : "—"}</div>
+          <div className="k">Средний SLA</div>
         </div>
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-          <div className="text-sm text-[var(--kb-muted)]">Заявок в срок</div>
-          <div className="text-3xl font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-            {onTimePct != null ? `${onTimePct}%` : "—"}
-          </div>
-          {onTimePct != null && (
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-              <div
-                className="h-full rounded-full bg-emerald-500"
-                style={{ width: `${onTimePct}%` }}
-              />
-            </div>
-          )}
+        <div className="stat">
+          <div className="v">{onTimePct != null ? `${onTimePct}%` : "—"}</div>
+          <div className="k">Заявок в срок</div>
         </div>
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-          <div className="text-sm text-[var(--kb-muted)]">В работе</div>
-          <div className="text-3xl font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-            {inReview.length}
-          </div>
+        <div className="stat">
+          <div className="v">{inReview.length}</div>
+          <div className="k">В работе</div>
         </div>
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-          <div className="text-sm text-[var(--kb-muted)]">Закрыто</div>
-          <div className="text-3xl font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-            {done.length}
-          </div>
+        <div className="stat">
+          <div className="v">{done.length}</div>
+          <div className="k">Закрыто</div>
         </div>
       </div>
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-          <div className="text-sm text-[var(--kb-muted)]">SLA risk</div>
-          <div className="text-3xl font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-            {risk.length}
-          </div>
+      {risk.length > 0 ? (
+        <div className="alert-box warn-box">
+          <strong>SLA risk: {risk.length}</strong>
+          Заявки с риском срока — в очереди или в работе. Не выдуманный 3.1 ч / 96% из макета.
         </div>
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-          <div className="text-sm text-[var(--kb-muted)]">HS AI≠broker</div>
-          <div className="text-3xl font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-            {hsDelta}
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
-        <h3 className="mb-2 font-semibold" style={{ fontFamily: "var(--kb-font-display)" }}>
-          Качество AI vs ваши правки
-        </h3>
-        <p className="mb-4 text-sm text-[var(--kb-muted)]">
+      ) : null}
+      <div className="card">
+        <h3>Качество AI vs ваши правки</h3>
+        <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 12 }}>
           {itemsChecked > 0
             ? `По закрытым заявкам скорректирован код ТН ВЭД в ${correctedPct}% позиций.${
                 avgConf != null
                   ? ` Средняя уверенность AI на закрытых — ${Math.round(avgConf * 100)}%.`
                   : ""
-              }`
+              } HS AI≠broker: ${hsDelta}.`
             : "Нет закрытых заявок с позициями для сравнения AI ↔ брокер."}
         </p>
         {itemsChecked > 0 && (
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between gap-2">
+          <div className="breakdown">
+            <div>
               <span>Принято без правок HS</span>
               <strong>{acceptedPct}%</strong>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-              <div
-                className="h-full rounded-full bg-[#2b72f4]"
-                style={{ width: `${acceptedPct}%` }}
-              />
+            <div className="progress-line">
+              <i style={{ width: `${acceptedPct}%` }} />
             </div>
-            <div className="flex justify-between gap-2 pt-1">
+            <div style={{ marginTop: 10 }}>
               <span>Скорректировано вами</span>
               <strong>{correctedPct}%</strong>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-              <div
-                className="h-full rounded-full bg-amber-500"
-                style={{ width: `${correctedPct}%` }}
-              />
+            <div className="progress-line">
+              <i style={{ width: `${correctedPct}%`, background: "linear-gradient(90deg,#c2410c,#f59e0b)" }} />
             </div>
           </div>
         )}

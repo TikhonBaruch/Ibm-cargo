@@ -9,15 +9,23 @@ import { StatusPill, VedEmptyState } from "../VedShell";
 import type { Calc, Me, ShipRow } from "./types";
 import { calcThumb } from "./types";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
+import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
+import { DesignerStub } from "@/lbm-bro/components/designer-stub";
+import { OrderCover } from "@/lbm-bro/components/order-cover";
+import {
+  clientOrderHsLabel,
+  clientOrderNextStep,
+  formatRub,
+  LIVE_FEED_FILTERS,
+  liveFeedMatch,
+  type LiveFeedFilter,
+} from "../lbm-pane-visual";
+import { shouldRevealClientDraftHs } from "@/lib/ved/ai-classification-copy";
 
-type OrderFilter = "all" | "done" | "broker" | "pay";
+type OrderFilter = LiveFeedFilter;
 
 function matchesFilter(c: Calc, f: OrderFilter): boolean {
-  if (f === "all") return true;
-  if (f === "done") return c.status === "DONE";
-  if (f === "broker") return ["QUEUED", "IN_REVIEW", "SLA_RISK"].includes(c.status);
-  if (f === "pay") return ["AI_READY", "AWAITING_PAYMENT"].includes(c.status) && !c.paidAt;
-  return true;
+  return liveFeedMatch(c, f);
 }
 
 export function DashboardPane({
@@ -60,7 +68,7 @@ export function DashboardPane({
     mediaUrl?: string;
     attrs?: {
       originCountry: string;
-      manufacturerName: string;
+      manufacturerName?: string;
       composition: string;
     };
   }) => void;
@@ -69,12 +77,13 @@ export function DashboardPane({
   createHref?: string;
 }) {
   const [filter, setFilter] = useState<OrderFilter>("all");
+  const [listQ, setListQ] = useState("");
   const [qDesc, setQDesc] = useState("");
   const [qCountry, setQCountry] = useState("Китай");
   const [qOrigin, setQOrigin] = useState("CN");
   const [qManufacturer, setQManufacturer] = useState("");
   const [qComposition, setQComposition] = useState("");
-  const [qValue, setQValue] = useState("18000");
+  const [qValue, setQValue] = useState("");
   const [qCurrency, setQCurrency] = useState<"USD" | "CNY" | "EUR">("USD");
   const [qMedia, setQMedia] = useState<string | undefined>();
   const [showRequiredErrors, setShowRequiredErrors] = useState(false);
@@ -90,7 +99,16 @@ export function DashboardPane({
     null;
 
   const recent = [...calcs].slice(0, 6);
-  const filtered = calcs.filter((c) => matchesFilter(c, filter));
+  const nq = listQ.trim().toLowerCase();
+  const filtered = calcs.filter((c) => {
+    if (!matchesFilter(c, filter)) return false;
+    if (!nq) return true;
+    return [c.number, c.title, c.country, c.hsCode, c.hsCodeFinal, c.tariff?.name]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(nq);
+  });
 
   const runQuick = () => {
     const desc = qDesc.trim();
@@ -98,10 +116,10 @@ export function DashboardPane({
     const manufacturer = qManufacturer.trim();
     const composition = qComposition.trim();
     if (!desc) return;
-    if (origin.length !== 2 || !manufacturer || !composition) {
+    if (origin.length !== 2 || !composition) {
       setShowRequiredErrors(true);
       toast(
-        "Заполните страну происхождения (ISO-2), производителя и состав — без этого заявка не создаётся.",
+        "Заполните страну происхождения (ISO-2) и состав — без этого заявка не создаётся.",
         { variant: "error" },
       );
       return;
@@ -112,12 +130,12 @@ export function DashboardPane({
       title,
       description: desc,
       country: qCountry.trim() || "Китай",
-      shipmentValue: qValue.trim() || "0",
+      shipmentValue: commercialInvoiceUiEnabled() ? qValue.trim() || "0" : "",
       shipmentCurrency: qCurrency,
       mediaUrl: qMedia,
       attrs: {
         originCountry: origin,
-        manufacturerName: manufacturer,
+        manufacturerName: manufacturer || undefined,
         composition,
       },
     });
@@ -127,64 +145,73 @@ export function DashboardPane({
   const quickReady = Boolean(qDesc.trim());
   const highlightRequired = showRequiredErrors;
   const quickStageTip = !qDesc.trim()
-    ? "Опишите товар — затем страну происхождения (ISO-2), производителя и состав."
-    : qOrigin.trim().length !== 2 || !qManufacturer.trim() || !qComposition.trim()
-      ? "Осталось: страна (CN…), производитель и состав — без них заявка не создастся."
+    ? "Опишите товар — затем страну происхождения (ISO-2) и состав."
+    : qOrigin.trim().length !== 2 || !qComposition.trim()
+      ? "Осталось: страна (CN…) и состав — без них заявка не создастся."
       : "Можно запускать AI-расчёт. Детали и фото — в полном форме «Новый просчёт».";
 
 
   if (pane === "orders") {
     return (
-      <section className="space-y-4">
-        <div className="overflow-hidden rounded-[28px] border border-black/[0.04] bg-white shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-black/[0.04] px-5 py-4">
-            <div>
-              <h2 className="text-lg font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
-                Заявки на просчёт
-              </h2>
-              <p className="mt-0.5 text-sm text-[var(--kb-muted)]">
-                История AI-расчётов, оплаты тарифов и проверок брокером
-              </p>
-            </div>
+      <section>
+        <div className="card-head">
+          <div>
+            <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Заявки на просчёт</h3>
+            <p>Карточки вместо таблицы — откройте любую, чтобы увидеть код, платежи и чат</p>
           </div>
-          <div className="flex flex-wrap gap-2 px-5 py-3">
-            {(
-              [
-                ["all", "Все"],
-                ["done", "Готово"],
-                ["broker", "У брокера"],
-                ["pay", "Оплата"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setFilter(id)}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-                  filter === id
-                    ? "bg-[#2b72f4] text-white"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <OrdersTable
-            calcs={filtered}
-            listTotal={calcs.length}
-            filter={filter}
-            onResetFilter={() => setFilter("all")}
-            busy={busy}
-            me={me}
-            selectedId={selectedId}
-            onOpen={onOpen}
-            onPay={onPay}
-            onTopupThenPay={onTopupThenPay}
-            showTariff
-            createHref={createHref}
-          />
         </div>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+          <label style={{ flex: 1, minWidth: 260 }}>
+            <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--muted)", marginBottom: 6 }}>
+              Поиск по №, товару, брокеру, HS и документам
+            </span>
+            <input
+              type="search"
+              value={listQ}
+              onChange={(e) => setListQ(e.target.value)}
+              placeholder="Например: ноутбуки, Invoice, 8471…"
+              style={{
+                width: "100%",
+                padding: "12px 14px",
+                borderRadius: 14,
+                border: "1.5px solid var(--line)",
+                background: "#fff",
+                outline: "none",
+              }}
+            />
+          </label>
+          {listQ ? (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setListQ("")}>
+              Сбросить
+            </button>
+          ) : null}
+        </div>
+        <div className="filter-chips">
+          {LIVE_FEED_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              className={filter === f.id ? "on" : ""}
+              onClick={() => setFilter(f.id)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <OrdersTable
+          calcs={filtered}
+          listTotal={calcs.length}
+          filter={filter}
+          onResetFilter={() => setFilter("all")}
+          busy={busy}
+          me={me}
+          selectedId={selectedId}
+          onOpen={onOpen}
+          onPay={onPay}
+          onTopupThenPay={onTopupThenPay}
+          showTariff
+          createHref={createHref}
+        />
       </section>
     );
   }
@@ -192,7 +219,7 @@ export function DashboardPane({
   return (
     <section className="space-y-5">
       {calcs.length === 0 ? (
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+        <div className="card">
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
             С чего начать
           </p>
@@ -219,7 +246,7 @@ export function DashboardPane({
       ) : null}
 
       {unreadCount > 0 ? (
-        <div className="rounded-[28px] border border-[#2b72f4]/25 bg-[#e8f0fe] px-5 py-4 text-sm">
+        <div className="alert-box">
           <p className="font-semibold text-[#0f172a]">Ждут вашего ответа: {unreadCount}</p>
           <p className="mt-1 text-[var(--kb-muted)]">
             Брокер или поддержка написали — откройте заявку или «Поддержку» в меню.
@@ -227,34 +254,31 @@ export function DashboardPane({
         </div>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="stats">
         {[
           { v: active, k: "Активные заявки" },
           { v: atBroker, k: "На проверке у брокера" },
           ...(showShipping ? [{ v: inTransit, k: "Перевозки в пути" }] : []),
-          { v: factoryActiveCount, k: "Запросы производителю", href: factoryHref },
+          ...(factoryHref
+            ? [{ v: factoryActiveCount, k: "Запросы производителю", href: factoryHref }]
+            : []),
           { v: unreadCount, k: "Непрочитанных" },
         ].map((s) => (
-          <div
-            key={s.k}
-            className="rounded-[28px] border border-black/[0.04] bg-white px-5 py-4 shadow-sm"
-          >
-            <div className="text-3xl font-extrabold tracking-tight" style={{ fontFamily: "var(--kb-font-display)" }}>
-              {s.v}
-            </div>
+          <div key={s.k} className="stat">
+            <div className="v">{s.v}</div>
             {"href" in s && s.href ? (
-              <Link href={s.href} className="mt-1 block text-sm text-[#2b72f4]">
+              <Link href={s.href} className="k">
                 {s.k}
               </Link>
             ) : (
-              <div className="mt-1 text-sm text-[var(--kb-muted)]">{s.k}</div>
+              <div className="k">{s.k}</div>
             )}
           </div>
         ))}
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="overflow-hidden rounded-[28px] border border-black/[0.04] bg-white shadow-sm">
+        <div className="card" style={{ overflow: "hidden", padding: 0 }}>
           <div className="border-b border-black/[0.04] px-5 py-4">
             <h2 className="text-lg font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
               Последние просчёты
@@ -273,12 +297,12 @@ export function DashboardPane({
           />
         </div>
 
-        <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+        <div className="card">
           <h2 className="text-lg font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
             Быстрый просчёт
           </h2>
           <p className="mt-1 mb-3 text-[13px] text-[var(--kb-muted)]">
-            Опишите товар и обязательные поля (страна / производитель / состав) — AI подготовит
+            Опишите товар и обязательные поля (страна / состав) — AI подготовит
             черновик кода ТН ВЭД.
           </p>
           {quickStageTip ? <div className="mb-3"><StageTip text={quickStageTip} /></div> : null}
@@ -307,9 +331,9 @@ export function DashboardPane({
               />
             </div>
             <label className="block text-xs font-semibold text-slate-500 sm:col-span-2">
-              Производитель *
+              Производитель
               <input
-                className={`mt-1 w-full rounded-xl border px-3 py-2 text-sm font-normal text-[var(--kb-ink)] ${highlightRequired && !qManufacturer.trim() ? "border-amber-400 bg-amber-50/50" : "border-slate-200"}`}
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal text-[var(--kb-ink)]"
                 placeholder="Lenovo PC HK Limited"
                 value={qManufacturer}
                 onChange={(e) => setQManufacturer(e.target.value)}
@@ -337,6 +361,7 @@ export function DashboardPane({
                 onChange={setQCountry}
               />
             </div>
+            {commercialInvoiceUiEnabled() ? (
             <label className="block text-xs font-semibold text-slate-500">
               Стоимость партии (инвойс)
               <div className="mt-1 flex gap-2">
@@ -358,6 +383,14 @@ export function DashboardPane({
                 </select>
               </div>
             </label>
+            ) : (
+              <DesignerStub
+                compact
+                title="Инвойс партии"
+                intent="В макете quick-calc тоже просит стоимость груза."
+                gap="Временно скрыто в UI (C8)."
+              />
+            )}
           </div>
           <div className="mb-4 flex flex-wrap gap-2">
             {qMedia ? (
@@ -391,7 +424,7 @@ export function DashboardPane({
           </div>
           {highlightRequired && (
             <p className="mb-2 text-xs text-amber-800">
-              Укажите страну происхождения (ISO-2), производителя и состав — затем нажмите ещё раз.
+              Укажите страну происхождения (ISO-2) и состав — затем нажмите ещё раз.
             </p>
           )}
           <button
@@ -406,7 +439,7 @@ export function DashboardPane({
       </div>
 
       {showShipping && (
-      <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+      <div className="card">
         {activeShip ? (
           <>
             <h2 className="mb-4 text-lg font-bold" style={{ fontFamily: "var(--kb-font-display)" }}>
@@ -476,10 +509,16 @@ function filterEmptyCopy(filter: OrderFilter): { title: string; hint: string } {
       hint: "В этом фильтре нет заявок. Откройте все заявки или создайте просчёт ТН ВЭД.",
     };
   }
-  if (filter === "broker") {
+  if (filter === "work") {
     return {
-      title: "Нет заявок у брокера",
+      title: "Нет заявок в работе",
       hint: "Сейчас нет просчётов на проверке. Откройте все заявки.",
+    };
+  }
+  if (filter === "hs") {
+    return {
+      title: "Нет заявок с кодом ТН ВЭД",
+      hint: "В этом фильтре нет просчётов с кодом. Откройте все заявки.",
     };
   }
   if (filter === "pay") {
@@ -525,8 +564,12 @@ function OrdersTable({
 }) {
   const total = listTotal ?? calcs.length;
   const filterEmpty = calcs.length === 0 && total > 0 && filter !== "all";
-  const copy = filterEmptyCopy(filterEmpty ? filter : "all");
+  const searchEmpty = calcs.length === 0 && total > 0 && filter === "all";
+  const copy = filterEmptyCopy(filterEmpty || searchEmpty ? (filterEmpty ? filter : "all") : "all");
   const empty = calcs.length === 0 ? (
+    searchEmpty ? (
+      <p style={{ color: "var(--muted)" }}>Нет заявок в этом фильтре. Создайте первый просчёт.</p>
+    ) : (
     <VedEmptyState
       title={copy.title}
       hint={copy.hint}
@@ -534,16 +577,17 @@ function OrdersTable({
       actionHref={filterEmpty ? undefined : createHref}
       onAction={filterEmpty ? onResetFilter : undefined}
     />
+    )
   ) : null;
 
-  const rowActions = (c: Calc, payable: boolean, canPay: boolean, price: number) => (
-    <div className="inline-flex flex-wrap items-center justify-end gap-2">
+  const rowActions = (c: Calc, payable: boolean, canPay: boolean) => (
+    <div className="cl-order-actions" onClick={(e) => e.stopPropagation()}>
       {payable && (
         <>
           <button
             type="button"
             disabled={busy || !canPay}
-            className="rounded-full bg-[#2b72f4] px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
+            className="btn btn-primary btn-sm"
             onClick={() => onPay(c)}
           >
             Оплатить
@@ -552,7 +596,7 @@ function OrdersTable({
             <button
               type="button"
               disabled={busy}
-              className="rounded-full border px-3 py-1 text-xs font-semibold"
+              className="btn btn-ghost btn-sm"
               onClick={() => onTopupThenPay(c)}
             >
               Пополнить и оплатить
@@ -562,7 +606,7 @@ function OrdersTable({
       )}
       {!compact && c.status === "DONE" && (
         <a
-          className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800"
+          className="btn btn-ghost btn-sm"
           href={`/api/v1/calculations/${c.id}/pdf`}
           target="_blank"
           rel="noreferrer"
@@ -573,140 +617,78 @@ function OrdersTable({
     </div>
   );
 
-  return (
-    <>
-      {/* Mobile cards */}
-      <ul className="divide-y divide-slate-100 md:hidden">
-        {calcs.map((c, i) => {
-          const price = c.tariff?.priceRub ?? 0;
-          const bal = me?.company?.balanceRub ?? 0;
-          const canPay = bal >= price;
-          const payable = ["AI_READY", "AWAITING_PAYMENT"].includes(c.status) && !c.paidAt;
-          const active = selectedId === c.id;
-          const sum =
-            c.totalPaymentsRub != null
-              ? `${c.totalPaymentsRub.toLocaleString("ru-RU")} ₽`
-              : payable && price
-                ? `${price.toLocaleString("ru-RU")} ₽`
-                : "—";
-          return (
-            <li key={c.id}>
-              <button
-                type="button"
-                aria-selected={active}
-                onClick={() => onOpen(c)}
-                className={`flex w-full gap-3 px-4 py-3 text-left ${
-                  active ? "bg-[rgba(43,114,244,0.08)] shadow-[inset_3px_0_0_#2b72f4]" : ""
-                }`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={calcThumb(c, i)}
-                  alt=""
-                  className="h-11 w-11 shrink-0 rounded-lg object-cover"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="truncate font-semibold text-[#0f172a]">{c.number}</span>
-                    <StatusPill status={c.status} />
-                  </div>
-                  <div className="mt-0.5 truncate text-sm text-[var(--kb-muted)]">{c.title}</div>
-                  <div className="mt-1 text-xs text-[var(--kb-muted)]">
-                    {sum}
-                    {showTariff && c.tariff?.name ? ` · ${c.tariff.name}` : ""}
-                  </div>
-                </div>
-              </button>
-              {(payable || (!compact && c.status === "DONE")) && (
-                <div className="flex justify-end px-4 pb-3" onClick={(e) => e.stopPropagation()}>
-                  {rowActions(c, payable, canPay, price)}
-                </div>
-              )}
-            </li>
-          );
-        })}
-        {empty && <li>{empty}</li>}
-      </ul>
+  if (empty) return empty;
 
-      {/* Desktop table */}
-      <div className="hidden overflow-x-auto md:block">
-      <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-[var(--kb-muted)]">
-          <tr>
-            <th className="px-4 py-3 font-medium">№</th>
-            <th className="px-4 py-3 font-medium">{compact ? "Товар / маршрут" : "Товар"}</th>
-            {showTariff && <th className="px-4 py-3 font-medium">Тариф</th>}
-            <th className="px-4 py-3 font-medium">Сумма</th>
-            {showTariff && <th className="px-4 py-3 font-medium">Брокер</th>}
-            <th className="px-4 py-3 font-medium">Статус</th>
-            <th className="px-4 py-3 font-medium" />
-          </tr>
-        </thead>
-        <tbody>
-          {calcs.map((c, i) => {
-            const price = c.tariff?.priceRub ?? 0;
-            const bal = me?.company?.balanceRub ?? 0;
-            const canPay = bal >= price;
-            const payable = ["AI_READY", "AWAITING_PAYMENT"].includes(c.status) && !c.paidAt;
-            const active = selectedId === c.id;
-            return (
-            <tr
-              key={c.id}
-              aria-selected={active}
-              className={`cursor-pointer border-t border-slate-100 ${
-                active
-                  ? "bg-[rgba(43,114,244,0.08)] shadow-[inset_3px_0_0_#2b72f4]"
-                  : "hover:bg-slate-50/80"
-              }`}
-              onClick={() => onOpen(c)}
-            >
-              <td className="px-4 py-3 font-medium whitespace-nowrap">{c.number}</td>
-              <td className="px-4 py-3">
-                <span className="inline-flex items-center gap-2.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={calcThumb(c, i)}
-                    alt=""
-                    className="h-9 w-9 shrink-0 rounded-lg object-cover"
-                  />
-                  <span>
-                    {c.title}
-                    {c.preferredBrokerUserId && !showTariff && (
-                      <span className="ml-2 text-xs text-[#2b72f4]">ваш брокер</span>
-                    )}
-                  </span>
+  return (
+    <div className="cl-order-grid">
+      {calcs.map((c, i) => {
+        const price = c.tariff?.priceRub ?? 0;
+        const bal = me?.company?.balanceRub ?? 0;
+        const canPay = bal >= price;
+        const payable = ["AI_READY", "AWAITING_PAYMENT"].includes(c.status) && !c.paidAt;
+        const active = selectedId === c.id;
+        const sum =
+          c.totalPaymentsRub != null
+            ? formatRub(c.totalPaymentsRub)
+            : payable && price
+              ? formatRub(price)
+              : "—";
+        const hs = shouldRevealClientDraftHs(c)
+          ? clientOrderHsLabel({ hsCode: c.hsCode, hsCodeFinal: c.hsCodeFinal })
+          : "—";
+        return (
+          <div
+            key={c.id}
+            className={`cl-order${active ? " is-open" : ""}`}
+            role="button"
+            tabIndex={0}
+            aria-selected={active}
+            onClick={() => onOpen(c)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onOpen(c);
+              }
+            }}
+          >
+            <div className="ph">
+              <OrderCover src={calcThumb(c, i)} />
+            </div>
+            <div>
+              <h4>{c.title}</h4>
+              <div className="meta">
+                {c.number}
+                {c.country ? ` · ${c.country}` : ""}
+                {showTariff && c.tariff?.name ? ` · ${c.tariff.name}` : ""}
+                {c.preferredBrokerUser?.name ? ` · брокер ${c.preferredBrokerUser.name}` : ""}
+              </div>
+              <div className="meta">
+                HS: {hs} · документы: {c.items?.length || 0}
+              </div>
+              <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <span className="meta" style={{ marginTop: 0 }}>
+                  <b>{clientOrderNextStep({ status: c.status, paidAt: c.paidAt })}</b>
                 </span>
-              </td>
-              {showTariff && (
-                <td className="px-4 py-3 text-[var(--kb-muted)]">{c.tariff?.name || "—"}</td>
-              )}
-              <td className="px-4 py-3 whitespace-nowrap">
-                {c.totalPaymentsRub != null
-                  ? `${c.totalPaymentsRub.toLocaleString("ru-RU")} ₽`
-                  : payable && price
-                    ? `${price.toLocaleString("ru-RU")} ₽`
-                    : "—"}
-              </td>
-              {showTariff && (
-                <td className="px-4 py-3">{c.preferredBrokerUser?.name || "—"}</td>
-              )}
-              <td className="px-4 py-3">
-                <StatusPill status={c.status} />
-              </td>
-              <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                {rowActions(c, payable, canPay, price)}
-              </td>
-            </tr>
-            );
-          })}
-          {empty && (
-            <tr>
-              <td colSpan={showTariff ? 7 : compact ? 4 : 5}>{empty}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      </div>
-    </>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpen(c);
+                  }}
+                >
+                  Подробнее
+                </button>
+              </div>
+              {rowActions(c, payable, canPay)}
+            </div>
+            <div className="right">
+              <StatusPill status={c.status} />
+              <div className="sum">{sum}</div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }

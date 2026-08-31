@@ -39,13 +39,13 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 **Не** ставить на Vercel: `USE_DOMAIN_API=1`, docker DNS (`http://ai:4100`, `http://api:4000`).  
 **Qwen / DeepSeek on Vercel:** `LLM_PROVIDER=deepseek` + `DEEPSEEK_API_KEY` (+ optional `QWEN_API_KEY` / `QWEN_VISION_MODEL`) на Production+Preview. Next вызывает провайдеров напрямую (`provider-mesh`, кандидаты из `TnvedCode`); не нужен публичный `LLM_SERVICE_URL`. Create `maxDuration=60`. Fail-open + брокер-QC.
 
-**Preview:** скопировать тот же набор ключей (включая `S3_*` и auth). `DATABASE_URL` — Postgres **`newlsu_lbm` с seed**; без seed `/login` даст «неверный пароль» (можно `/register`). NextAuth v4: задать **`NEXTAUTH_SECRET`** (не только `AUTH_SECRET`). На Preview не копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app` (чужой хост); код подставляет `VERCEL_BRANCH_URL`. Канон: [`plan-preview-auth.md`](./plan-preview-auth.md).
+**Preview:** скопировать тот же набор ключей (включая `S3_*` и auth). `DATABASE_URL` часто висит только на Production — включить **Preview** и Redeploy, иначе Prisma: `Environment variable not found: DATABASE_URL`. Значение — Postgres **`newlsu_lbm` с seed**; без seed `/login` даст «неверный пароль» (можно `/register`). NextAuth v4: задать **`NEXTAUTH_SECRET`** (не только `AUTH_SECRET`). На Preview не копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app` (чужой хост); код подставляет `VERCEL_BRANCH_URL`. Проверка: `GET /health` → `databaseUrl: true`. Канон: [`plan-preview-auth.md`](./plan-preview-auth.md).
 
 **Vercel Pro (2026-08-20):** `NEXT_PUBLIC_FACTORY_UI=1` на Production/Preview; cron `jobs-tick` каждые 15 мин (+ daily `sla-tick`). Build не делает `migrate deploy` — схема на sweb отдельно; не `WEB_SURFACE=slim`; не второй Postgres; Compose на Vercel не крутится. Отдельный проект `manufacturer` — ignore build + без git; UI `/manufacturer` из root. Канон: [`feature-cycle.md`](./feature-cycle.md) шаг 8.
 
 **Hobby (история D33):** на free cron был только daily — на Pro `*/15` OK.
 
-**ТН ВЭД:** не коммитить `scripts/data/tnved/raw/` и `normalized/` (gitignore). Не `tnved:load -- --full` на sweb — Preview и Production делят одну БД. Ставки TWS только local Compose postgres. Канон: [`plan-tnved-collect.md`](./plan-tnved-collect.md).
+**ТН ВЭД:** не коммитить `scripts/data/tnved/raw/` и `normalized/` (gitignore). Не `tnved:load -- --full` на sweb — Preview и Production делят одну БД. **C18 исключение:** `tnved:load -- --lab` пишет классификатор из git (`public/lbm-bro/data/tnved.json` + алиасы) в ту же `newlsu_lbm`, **без** delete rates и без TWS dump. Ставки TWS только local Compose postgres. Канон: [`plan-tnved-collect.md`](./plan-tnved-collect.md) · [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md).
 
 После смены схемы: `npx prisma db push` (или migrate) **на prod DB отдельно** — Vercel build делает только `prisma generate` через `postinstall`.
 

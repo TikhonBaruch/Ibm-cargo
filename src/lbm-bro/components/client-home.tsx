@@ -240,7 +240,7 @@ export function ClientHome() {
         <Link href="/cabinet" style={{ color: "var(--blue)", fontWeight: 700 }}>
           /cabinet
         </Link>
-        . План: docs/plan-lbm-bro-skin.md
+        . План: docs/knowledge/plan-lbm-bro-visual.md
       </p>
     </div>
   );

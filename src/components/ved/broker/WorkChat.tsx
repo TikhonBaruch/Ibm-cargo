@@ -53,36 +53,35 @@ export function WorkChat({
   if (!selected || selected.status === "QUEUED") return null;
 
   return (
-    <div className="border-t border-slate-100 pt-3">
-      <div className="mb-2 flex items-center justify-between">
-        <div className="font-medium">Чат</div>
-        {waitingOn === "CLIENT" && (
-          <span className="text-xs text-amber-600">ждёт ответа клиента</span>
-        )}
-        {waitingOn === "BROKER" && (
-          <span className="text-xs text-[#2b72f4]">ждёт вашего ответа</span>
-        )}
+    <div>
+      <div className="card-head" style={{ marginBottom: 10 }}>
+        <div>
+          <h3 style={{ marginBottom: 0 }}>Чат</h3>
+        </div>
+        {waitingOn === "CLIENT" && <span className="pill warn">ждёт клиента</span>}
+        {waitingOn === "BROKER" && <span className="pill blue">ждёт вас</span>}
       </div>
-      <div
-        className={`mb-2 space-y-1 overflow-y-auto rounded-2xl bg-slate-50 p-2 text-sm ${
-          tall ? "max-h-[min(28rem,55vh)] min-h-[12rem]" : "max-h-40"
-        }`}
-      >
-        {chat.map((m) => (
-          <div key={m.id}>
-            <span className="text-xs text-[#7a7f89]">{m.author?.name || "Система"}: </span>
-            {m.body}
-            {m.attachmentUrl && (
-              <a className="ml-1 text-[#2b72f4]" href={m.attachmentUrl}>
-                [файл]
-              </a>
-            )}
-          </div>
-        ))}
+      <div className={`chat-box${tall ? " tall" : ""}`}>
+        {chat.map((m) => {
+          const mine = m.author?.role === "BROKER";
+          return (
+            <div key={m.id} className={mine ? "bubble me" : "bubble"}>
+              <div className="meta" style={{ fontSize: 11, marginBottom: 4 }}>
+                {m.author?.name || "Система"}
+              </div>
+              {m.body}
+              {m.attachmentUrl && (
+                <a className="ml-1" href={m.attachmentUrl}>
+                  [файл]
+                </a>
+              )}
+            </div>
+          );
+        })}
+        {chat.length === 0 && <div className="bubble">Пока нет сообщений</div>}
       </div>
-      <div className="flex gap-2">
+      <div className="chat-row">
         <input
-          className="flex-1 rounded-xl border px-2 py-1.5 text-sm"
           value={chatMsg}
           onChange={(e) => onChatMsg(e.target.value)}
           placeholder="Сообщение клиенту"
@@ -100,7 +99,7 @@ export function WorkChat({
           type="button"
           disabled={uploading || busy}
           onClick={() => fileRef.current?.click()}
-          className="rounded-full border px-3 py-1 text-xs font-semibold"
+          className="btn btn-ghost btn-sm"
         >
           📎
         </button>
@@ -108,9 +107,9 @@ export function WorkChat({
           type="button"
           disabled={busy || !chatMsg.trim()}
           onClick={() => onSend()}
-          className="rounded-full bg-[#2b72f4] px-3 py-1 text-xs font-semibold text-white"
+          className="btn btn-primary btn-sm"
         >
-          →
+          Отправить
         </button>
       </div>
     </div>

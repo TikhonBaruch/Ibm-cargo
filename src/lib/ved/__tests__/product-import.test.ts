@@ -9,10 +9,21 @@ import {
   classifyImportRows,
   isXlsxFilename,
   isPdfFilename,
+  enrichImportCreateAttrs,
 } from "../product-import";
 import { sheetTableFromText, attrsFromOcrText } from "../pdf-table";
 
 describe("product-import", () => {
+  it("enrichImportCreateAttrs fills origin ISO-2 and composition", () => {
+    const enriched = enrichImportCreateAttrs(
+      { name: "MacBook Pro", description: "Apple laptop", attrs: { brand: "Apple" } },
+      { originIso: "CN" }
+    );
+    expect(enriched.originCountry).toBe("CN");
+    expect(enriched.composition).toMatch(/Apple laptop/);
+    expect(enriched.brand).toBe("Apple");
+  });
+
   it("parseProductCsv handles semicolon delimiter", () => {
     const { headers, rows } = parseProductCsv(
       "Наименование;Количество;Цена\nMacBook;1;2000\niPhone;2;800"
@@ -97,6 +108,21 @@ describe("product-import", () => {
     const classifyLlm = vi.fn();
     const result = await classifyImportRows(rows, { findPrecedent, classifyLlm });
     expect(result[0].rowStatus).toBe("MATCHED_PRECEDENT");
+    expect(classifyLlm).not.toHaveBeenCalled();
+  });
+
+  it("classifyImportRows uses cascade before LLM", async () => {
+    const rows = mapCsvToRows(["name"], [["充电宝"]]);
+    const findPrecedent = vi.fn().mockResolvedValue(null);
+    const classifyCascade = vi.fn().mockResolvedValue({
+      hsCode: "8507 60 000 0",
+      confidence: 0.88,
+      engine: "cascade-v1",
+    });
+    const classifyLlm = vi.fn();
+    const result = await classifyImportRows(rows, { findPrecedent, classifyCascade, classifyLlm });
+    expect(result[0].rowStatus).toBe("CLASSIFIED_NEW");
+    expect(result[0].engine).toBe("cascade-v1");
     expect(classifyLlm).not.toHaveBeenCalled();
   });
 

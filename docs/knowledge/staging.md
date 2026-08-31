@@ -18,8 +18,8 @@
 ## Vercel Preview
 
 1. Push ветки → Vercel создаёт preview URL (`https://ibm-cargo-*-*.vercel.app`).
-2. Env: **зеркало** ключей этого приложения — как минимум `DATABASE_URL` на **seeded** Postgres `newlsu_lbm` (`client@example.com` / `demo1234`; пароль БД без `#`, encode не нужен), `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (origin preview, **не** `ibm-cargo.vercel.app`), `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, полный набор `S3_*`. Без seed вход даст «неверный пароль»; можно `/register`.
-3. Smoke:
+2. Env: **зеркало** ключей — как минимум `DATABASE_URL` на **Preview** (часто переменная висит только на Production) → seeded Postgres `newlsu_lbm` (`client@example.com` / `demo1234`; пароль БД без `#`). Клики: [`plan-preview-auth.md`](./plan-preview-auth.md) §5. Проверка: `GET /health` → `databaseUrl: true`. Также `NEXTAUTH_SECRET`, не копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app`, `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, `S3_*`. Без seed вход даст «неверный пароль»; можно `/register`.
+3. Smoke: при выключенном mock topup `smoke:mvp` падает на seeded `client@example.com` (баланс ≥ 1000 ₽). Полный signup→topup: `ALLOW_MOCK_TOPUP=1` + `mockTopupAllowed` в admin.
 
 ```bash
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:mvp

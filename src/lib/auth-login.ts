@@ -23,8 +23,8 @@ export function messageForAuthError(code: string | null | undefined): string {
   if (code === "Configuration") {
     return "Серверу не хватает NEXTAUTH_SECRET (или AUTH_SECRET) в Vercel → Environment Variables. Задайте для Preview и Production.";
   }
-  if (code === "Callback") {
-    return "Нет DATABASE_URL на этом деплое (Prisma: Environment variable not found). Vercel → проект этого репозитория (Preview) → Settings → Environment Variables: Postgres newlsu_lbm (пароль без #, encode не нужен), затем Redeploy. Хост ibm-cargo.vercel.app — чужой проект.";
+  if (code === "Callback" || /DATABASE_URL/i.test(code || "")) {
+    return "Нет DATABASE_URL на этом деплое (Prisma: Environment variable not found). Vercel → проект ibm-cargo (этот репозиторий) → Settings → Environment Variables: скопировать DATABASE_URL с Production на Preview (Postgres newlsu_lbm, пароль без #), затем Redeploy. Хост ibm-cargo.vercel.app — чужой проект.";
   }
   return [
     "Неверный email или пароль.",
