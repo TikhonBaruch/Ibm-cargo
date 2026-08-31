@@ -26,7 +26,7 @@
 | Gap | Серьёзность | Почему |
 |-----|-------------|--------|
 | Preview SSO блокирует curl/agents | ops | Deployment Protection; Visit Preview only |
-| Prod ещё без pay-first / cascade | merge | ibm-cargo-phi = старый UI до merge |
+| Prod ещё без pay-first / cascade | **merge #16** | ibm-cargo-phi = старый UI до merge; исполнение: [`plan-merge-ops-unblock.md`](./plan-merge-ops-unblock.md) |
 | Слой B ЕТТ на sweb = `null` | product | карточка без пошлины; local TWS ≠ НСИ |
 | Слой D/E (PSN / решения ЕЭК) слабо на карточке | product | notes soup, нет join решений |
 | Cascade hints убраны с NewCalc (pay-first) | UX | после оплаты нет top-N «почему» на шаге 3 |
@@ -56,11 +56,11 @@ C34  Track A payments (ЮKassa) — вне D27 polish
 
 | Шаг | Действие | Done when | Status |
 |-----|----------|-----------|--------|
-| C28a | Merge PR #19 → `main` / Preview | pay-first на Preview URL | **human/ops** (ветка готова) |
-| C28b | Ручной: `/cabinet/new` → Далее → Оплата → код только после pay | HS = `—` до pay | ready in branch |
-| C28c | `TEST_API_URL=<preview> npm run smoke:mvp` (+ seed fallback ok) | PASS | prod smoke PASS (seed) |
-| C28d | `npm run test:classify-cascade` на CI | PASS | in branch |
-| C28e | KB: `current-app` — C18–C27 **на main** | запись | after merge |
+| C28a | Merge PR **#16** → `main` (внутри уже #19 C19–C31) | pay-first на ibm-cargo-phi | **blocked human** — playbook [`plan-merge-ops-unblock.md`](./plan-merge-ops-unblock.md) |
+| C28b | Ручной: `/cabinet/new` → Далее → Оплата → код только после pay | HS = `—` до pay | ready in #16 |
+| C28c | `TEST_API_URL=<preview> npm run smoke:mvp` (+ seed fallback ok) | PASS | after O1–O3 |
+| C28d | `npm run test:classify-cascade` на CI | PASS | in #16 |
+| C28e | KB: `current-app` — C18–C31 **на main** | запись | after merge #16 |
 
 **Ownership:** Client + Core. Без новых domain writers.
 
