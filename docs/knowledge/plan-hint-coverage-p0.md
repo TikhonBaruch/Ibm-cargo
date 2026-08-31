@@ -1,7 +1,7 @@
 # Plan: Hint coverage P0–P4
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0–P3 done** (#43/#44) · **P4 in progress** (this PR).  
+**Статус:** **P0–P4 done** (#43/#44 + this PR).  
 **Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md).
 
 ## Сделано
@@ -37,6 +37,33 @@
 
 Closed: pharma / books / appliances / lighting-ex-led / hardware / paint / pet-food / agri.  
 **Still POLICY:** pets-live (`кот`, `собака`).
+
+
+## C9 — Post-cycle re-probe (after P4)
+
+**0 NEW WRONG** on P0–P4 matrix. C8 sections closed (pharma…agri). Live animals still POLICY.
+
+`куртка`/`платье` remain pack-null (P0 attr-path, not C21 pack) — OK.
+
+### New open test sections (no C21 pack yet / weak)
+
+| Секция | Примеры |
+|--------|---------|
+| cosmetics-detail | помада, шампунь (pack `cosmetics` exists but narrow) |
+| soap / oral | мыло, зубная паста |
+| baby | подгузник, памперс |
+| tools | дрель, молоток |
+| cookware / tableware | кастрюля, сковорода, тарелка |
+| textiles-home / rugs | одеяло, подушка, ковёр |
+| batteries | батарея, аккумулятор |
+| networking / printers / monitors / tv | роутер, принтер, монитор, телевизор |
+| auto-parts / bearings | фильтр масляный, свеча, подшипник |
+| sports / camping / umbrellas / optics | мяч, палатка, зонт, очки |
+| med-disposables | шприц, бинт |
+| pet-accessories / litter | ошейник, поводок, наполнитель |
+| toys-extra | лего (общий `toys` есть) |
+
+Next slice **P5**: pick 6–8 highest-traffic sections (cosmetics-detail, tools, cookware, batteries, networking, baby…).
 
 ## Проверка
 

@@ -1525,7 +1525,9 @@
         "vacuum cleaner",
         "hair dryer",
         "washer",
-        "fridge"
+        "fridge",
+        "микроволнов",
+        "свч"
       ],
       "skipQuestionIds": [
         "kind"
@@ -1580,6 +1582,18 @@
               "фен",
               "iron",
               "hair dryer"
+            ]
+          },
+          {
+            "id": "microwave",
+            "label": "Микроволновка",
+            "value": "микроволновая печь",
+            "hsHeading": "8516",
+            "why": "8516 — микроволновые печи часто здесь (уточняйте).",
+            "triggers": [
+              "микроволнов",
+              "microwave",
+              "свч"
             ]
           }
         ]

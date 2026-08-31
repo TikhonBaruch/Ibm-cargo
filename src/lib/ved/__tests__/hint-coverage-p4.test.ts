@@ -16,6 +16,7 @@ describe("coverage P4 — open sections after P3", () => {
     ["холодильник", "appliances"],
     ["стиральная машина", "appliances"],
     ["утюг", "appliances"],
+    ["микроволновка", "appliances"],
     ["светильник", "lamps"],
     ["люстра", "lamps"],
     ["лампа настольная", "lamps"],
