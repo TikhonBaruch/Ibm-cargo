@@ -224,4 +224,54 @@ describe("runAiDrainPipeline", () => {
     expect(out.hsCode).toBe("0804 50 000 9");
     expect(fetchMock.mock.calls.some((c) => String(c[0]).endsWith("/v1/classify"))).toBe(true);
   });
+
+  it("skips classify when aiDraft offline hit is confident (C35a)", async () => {
+    vi.stubEnv("OCR_SERVICE_URL", "");
+    vi.stubEnv("LLM_SERVICE_URL", "http://llm:4500");
+    vi.stubEnv("DEEPSEEK_API_KEY", "sk-test");
+    const fetchMock = vi.fn(async (url: string) => {
+      if (String(url).endsWith("/v1/classify")) {
+        return new Response(JSON.stringify({ hsCode: "9999 99 999 9" }), { status: 200 });
+      }
+      return new Response("{}", { status: 404 });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const db = {
+      calculation: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: "c1",
+          title: "огурцы",
+          description: "",
+          country: "CN",
+          confidence: 0.9,
+          hsCode: "0707 00 900 1",
+          aiDraft: {
+            hsCode: "0707 00 900 1",
+            confidence: 0.9,
+            engine: "cascade-v1",
+            llmEnrichPending: true,
+          },
+          items: [{ id: "i1", name: "огурцы", mediaUrl: null, sortOrder: 0, attrs: {} }],
+        }),
+        update: vi.fn().mockResolvedValue({}),
+      },
+      calculationItem: { update: vi.fn().mockResolvedValue({}) },
+      serviceCall: {
+        create: vi.fn(async () => ({ id: "sc" })),
+        update: vi.fn().mockResolvedValue({}),
+      },
+    };
+
+    const out = await runAiDrainPipeline(db as never, { calculationId: "c1" });
+    expect(out.ok).toBe(true);
+    expect(out.skipped).toBe(true);
+    expect(out.engine).toBe("cascade-v1");
+    expect(out.hsCode).toBe("0707 00 900 1");
+    expect(fetchMock.mock.calls.some((c) => String(c[0]).endsWith("/v1/classify"))).toBe(false);
+    const updateArg = db.calculation.update.mock.calls.find(
+      (c) => c[0]?.data?.aiDraft?.skipReason
+    );
+    expect(updateArg?.[0]?.data?.aiDraft?.skipReason).toBe("offline-hit:cascade-v1");
+  });
 });

@@ -55,8 +55,9 @@ describe("directoryReadFromCard", () => {
     expect(read.notes.join(" ")).toContain("НДС 22%");
     expect(read.notes.join(" ")).not.toContain("НДС 20%");
     expect(read.notes.join(" ")).toContain("ПП 1637");
-    expect(read.riskLabel).toBe("Уточнит брокер");
-    expect(read.riskKind).toBe("ok");
+    // Layer G: 8471 prefix may flag ecoFeePossible — still honest, never «Низкий».
+    expect(read.riskLabel).toMatch(/уточнит брокер/i);
+    expect(["ok", "warn"]).toContain(read.riskKind);
     expect(read.riskLabel).not.toContain("Низкий");
     expect(read.why).toMatch(/портативн/i);
   });

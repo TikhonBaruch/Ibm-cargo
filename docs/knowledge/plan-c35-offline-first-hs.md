@@ -1,11 +1,11 @@
 # План: C35 offline-first HS + DeepSeek только на miss
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **planned** (детальный план до кода).  
+**Статус:** **implementing** — фаза **C35a** (gate + unit + dual-path) на `cursor/c35-offline-first-impl-e1f0`.  
 Бриф: [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md).  
 Канон: [`ai-pipeline.md`](./ai-pipeline.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) · [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · D27 / D35 / D36.
 
-**Код:** только после merge этого плана в `main` / tip; ветка реализации `cursor/c35-offline-first-impl-e1f0` (отдельный цикл).
+**Код:** ветка `cursor/c35-offline-first-impl-e1f0` (план #31 — merge human; impl поверх tip плана).
 
 ---
 
@@ -68,8 +68,8 @@ create / import row
 ## 4. Фазы реализации (после merge плана)
 
 ```text
-C35a  A1+A2 gate + skipReason + unit (Next)
-C35b  Dual-path containers/api зеркало A1
+C35a  A1+A2 gate + skipReason + unit (Next) + dual-path api  ← **in progress**
+C35b  Dual-path containers/api зеркало A1  ← **folded into C35a** (parity in same PR)
 C35c  B1 smoke precedent + KB ops count recipe
 C35d  B3 fingerprint normalize (если miss в fixture)
 C35e  Метрики на must-cover corpus ≥ цели §5; A4 checklist
@@ -150,6 +150,7 @@ TEST_API_URL=<host> npm run smoke:precedent-csv   # compose/keys as needed
 
 ## 10. Следующий шаг человека / агента
 
-1. Review + merge этого плана (PR docs).  
-2. Отдельная ветка **impl** `cursor/c35-offline-first-impl-e1f0` от `main`: C35a → …  
-3. Не смешивать с Preview SSO ops / mobile #21 / ЮKassa.
+1. Human: merge plan PR #31 → `main` (agent cannot merge).  
+2. Impl PR `cursor/c35-offline-first-impl-e1f0`: C35a done when CI green; retarget base to `main` after #31.  
+3. Не смешивать с Preview SSO ops / mobile #21 / ЮKassa.  
+4. Next code: **C35c** B1 smoke precedent (не стартовать без green C35a).

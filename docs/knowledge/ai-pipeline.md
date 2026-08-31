@@ -3,14 +3,14 @@
 ```text
 ClientRequest
     → precedent lookup (БД-2, gate llmEnrichEnabled)   # hit → precedent-v1, skip LLM
-    → containers/ai        # draft: heuristic-v1
-    → containers/llm       # optional: corpus lookup + LLM pick
+    → cascade-v1 / containers/ai heuristic-v1
+    → [C35 gate] LLM only if offline miss or conf < LLM_SKIP_CONF (default 0.72)
     → BrokerQueue
     → BrokerConfirm        # approve → write-back БД-2
     → ClientResult + PDF
 ```
 
-Целевой конвейер (срез 1 **последовательный** Qwen-VL → reset → DeepSeek на `AI_DRAIN`, брокер остаётся): [`plan-ai-mesh.md`](./plan-ai-mesh.md). As-is цепочка выше **не ломается**: heuristic `AI_READY` сразу; overlay HS с job.
+Целевой конвейер (срез 1 **последовательный** Qwen-VL → reset → DeepSeek на `AI_DRAIN`, брокер остаётся): [`plan-ai-mesh.md`](./plan-ai-mesh.md). As-is цепочка выше **не ломается**: heuristic `AI_READY` сразу; overlay HS с job. **C35a:** если sync draft уже `precedent*` / `cascade-v1` с conf ≥ `LLM_SKIP_CONF`, drain **не** зовёт classify (`skipReason: offline-hit:…`). Reclassify брокера — всегда LLM (без skip).
 
 ## Heuristic API (`containers/ai`)
 
@@ -64,7 +64,7 @@ Write-back: `approve` → `recordVerifiedFromApprove` (per item, fail-open). Е�
 
 ### CSV / XLSX product import (preview)
 
-`POST /api/v1/imports/products/preview` — parse CSV или XLSX (`xlsxBase64` / multipart) → per-row precedent → LLM classify.  
+`POST /api/v1/imports/products/preview` — parse CSV или XLSX (`xlsxBase64` / multipart) → per-row precedent → cascade → LLM (C35: cascade skip LLM only if conf ≥ `LLM_SKIP_CONF`).  
 Лимит D10 по тарифу. UI: `ProductCsvImport` в NewCalc → apply / create.  
 Код: `src/lib/ved/product-import.ts`.
 
@@ -104,8 +104,10 @@ Write-back: `approve` → `recordVerifiedFromApprove` (per item, fail-open). Е�
 | `OCR_SERVICE_URL` | create/import fallback к `ocr:4700` |
 | `OCR_VISION_MODEL` | vision-capable model (отдельно от `LLM_CLASSIFY_MODEL`) |
 | `OCR_TIMEOUT_MS` | default `20000` |
+| `LLM_SKIP_CONF` | **C35a** — skip LLM when offline engine conf ≥ value (default `0.72`); separate from cascade prefer `0.55` |
 
-Gate: `llmEnrichEnabled` в platform settings (D28) — при `false` enrich пропускается.
+Gate: `llmEnrichEnabled` в platform settings (D28) — при `false` enrich пропускается.  
+Offline engines for skip: `precedent-v1` \| `precedent-v2` \| `cascade-v1` (heuristic alone **не** skip). Tag `aiDraft.skipReason`: `offline-hit:…` \| `llm-low-conf:…` \| `llm-miss`. Канон: [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md).
 
 ## OCR (`containers/ocr`)
 

@@ -32,6 +32,7 @@ import { tnvedSearchWhere, tnvedSearchStems, scoreTnvedSearchHit } from "./tnved
 import { buildCascadeDraft, pickCascadeOrHeuristic } from "./tnved-classify.js";
 import { suggestProductAttrs } from "./attr-suggest.js";
 import { shouldEnqueueAiDrain, runAiDrainPipeline } from "./ai-pipeline.js";
+import { applyLlmSkipToDraft, shouldSkipLlmClassify } from "./llm-skip-gate.js";
 import { isAllowedMediaUrl } from "./media-url.js";
 import { attachSigtermHandlers } from "./graceful-shutdown.js";
 
@@ -1882,9 +1883,15 @@ const server = http.createServer(async (req, res) => {
       } catch {
         /* keep cascade/fallback */
       }
-      if (llmUrl && !draft.llmEnrich) {
-        const createSettings = await getPlatformSettings();
-        if (createSettings.llmEnrichEnabled) {
+      }
+      // C35a: skip sync classify when cascade/precedent already confident.
+      const offlineSkip = shouldSkipLlmClassify(draft);
+      if (offlineSkip.skip) {
+        draft = applyLlmSkipToDraft(draft, offlineSkip);
+      } else if (llmUrl && !draft.llmEnrich) {
+        const createSettingsGate = await getPlatformSettings();
+        if (createSettingsGate.llmEnrichEnabled) {
+        if (offlineSkip.skipReason) draft.skipReason = offlineSkip.skipReason;
         try {
           const [cRes, dRes] = await Promise.all([
             fetch(`${llmUrl}/v1/classify`, {
@@ -1923,7 +1930,6 @@ const server = http.createServer(async (req, res) => {
           /* fail-open */
         }
         }
-      }
       }
       const settings = await getPlatformSettings();
       const customs = invoiceCustomsValue(body.shipmentValue, body.shipmentCurrency, settings);

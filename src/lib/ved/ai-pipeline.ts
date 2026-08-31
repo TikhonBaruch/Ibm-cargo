@@ -44,6 +44,7 @@ import {
 } from "./orchestration";
 import { fillEmptyProductAttrs, sanitizeProductAttrs, type ProductAttrs } from "./product-description";
 import { isAllowedMediaUrl } from "./media-url";
+import { shouldSkipLlmClassify } from "./llm-skip-gate";
 import { normalizeHsCode } from "./tnved";
 import {
   buildChainRunSnapshot,
@@ -663,6 +664,66 @@ export async function runAiDrainPipeline(
     await clearLlmEnrichPending(db, calc.id);
     if (describeFailed) return { ok: false, visionDescription, error: describeFailed };
     return { ok: true, visionDescription, skipped: true, engine: "ocr-only" };
+  }
+
+  // C35a: settle without provider when sync offline draft already confident.
+  {
+    const freshGate = await db.calculation.findUnique({
+      where: { id: calc.id },
+      select: { aiDraft: true, confidence: true, hsCode: true },
+    });
+    const draftGate = (freshGate?.aiDraft as Record<string, unknown> | null) || {};
+    const conf =
+      typeof draftGate.confidence === "number" && Number.isFinite(draftGate.confidence)
+        ? draftGate.confidence
+        : typeof freshGate?.confidence === "number"
+          ? freshGate.confidence
+          : typeof calc.confidence === "number"
+            ? calc.confidence
+            : 0;
+    const skip = shouldSkipLlmClassify({
+      engine: typeof draftGate.engine === "string" ? draftGate.engine : undefined,
+      llmEnrich: typeof draftGate.llmEnrich === "string" ? draftGate.llmEnrich : undefined,
+      confidence: conf,
+    });
+    if (skip.skip) {
+      logAiDrain({
+        phase: "classify-skip-offline",
+        calculationId: calc.id,
+        attempt,
+        ok: true,
+        engine: skip.offlineEngine,
+        extra: { skipReason: skip.skipReason, threshold: skip.threshold, chainId },
+      });
+      const { llmEnrichPending: _drop, ...rest } = draftGate;
+      await db.calculation.update({
+        where: { id: calc.id },
+        data: {
+          aiDraft: {
+            ...rest,
+            llmEnrich: (typeof rest.llmEnrich === "string" && rest.llmEnrich) || skip.offlineEngine,
+            skipReason: skip.skipReason,
+            llmEnrichPending: false,
+            chainId,
+            ...(visionDescription
+              ? { visionDescription: visionDescription.slice(0, 2000) }
+              : {}),
+          } as object,
+        },
+      });
+      const hs =
+        (typeof draftGate.hsCode === "string" && draftGate.hsCode) ||
+        freshGate?.hsCode ||
+        calc.hsCode ||
+        null;
+      return {
+        ok: true,
+        visionDescription,
+        skipped: true,
+        hsCode: hs,
+        engine: skip.offlineEngine,
+      };
+    }
   }
 
   logAiDrain({

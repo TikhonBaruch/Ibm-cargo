@@ -118,11 +118,11 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 |----|------|---------|
 | C33 | Vision OCR E2E | OCR key + UI upload path |
 | C34 | ЮKassa live | Track A keys; выкл mock |
-| **C35** | **Offline-first HS + DeepSeek только на miss** | **planned** — [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · brief [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) |
+| **C35** | **Offline-first HS + DeepSeek только на miss** | **implementing** — [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · brief [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) · C35a gate |
 | — | Voice / proto-bar | не MVP |
 | — | Shipping / factory CTA | D27 hold |
 
-### C35 — Offline-first classify (**planned**)
+### C35 — Offline-first classify (**implementing**)
 
 **Идея:** не звать DeepSeek/LLM на каждый запрос; precedent + cascade + corpus до модели; потоки A (gate/метрики) ∥ B (БД-2).
 
@@ -132,7 +132,7 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 |-----|-----|--------|
 | C35-brief | Точная постановка задачи, метрики-кандидаты, вопросы §8 | **done** |
 | C35-plan | Ответы §8 → `plan-c35-offline-first-hs.md` | **done** 2026-08-31 |
-| C35-impl | Код: gate A1/A2 + B1… по плану | **next** — ветка `cursor/c35-offline-first-impl-e1f0` |
+| C35-impl | Код: gate A1/A2 + dual-path (C35a); B1… | **in progress** — `cursor/c35-offline-first-impl-e1f0` |
 
 **Не смешивать** с C33 vision E2E и C34 ЮKassa.
 
@@ -148,7 +148,7 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 | C31 fixtures + aliases | высокий | средний | Should |
 | C32 SSO bypass | средний | ops | Could |
 | C33–C34 | высокий | высокий | Won't (сейчас) |
-| C35 offline-first HS | высокий | средний | **Should** — plan done; impl next |
+| C35 offline-first HS | высокий | средний | **Should** — C35a implementing |
 
 ## 5. Проверка
 
