@@ -5,6 +5,12 @@
   { "q": "smartphone iPhone 15", "expectHsPrefix": "851713", "minConf": 0.84 },
   { "q": "ноутбук MacBook Pro", "expectHsPrefix": "847130", "minConf": 0.84 },
   { "q": "кроссовки sport", "expectHsPrefix": "640411", "minConf": 0.84 },
+  { "q": "кеды", "expectHsPrefix": "640411", "minConf": 0.84 },
+  { "q": "кеды текстиль", "expectHsPrefix": "640411", "minConf": 0.84 },
+  { "q": "кепка", "expectHsPrefix": "65050030", "minConf": 0.84 },
+  { "q": "бейсболка", "expectHsPrefix": "65050030", "minConf": 0.84 },
+  { "q": "шапка", "expectHsPrefix": "65050090", "minConf": 0.84 },
+  { "q": "молоко", "expectHsPrefix": "0401", "minConf": 0.84 },
   { "q": "ipad tablet планшет", "expectHsPrefix": "847130", "minConf": 0, "mustNotMatch": "847130" },
   { "q": "8471 30 000 0", "expectHsPrefix": "847130", "minConf": 0.9 },
 

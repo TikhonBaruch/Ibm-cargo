@@ -72,21 +72,24 @@ function mergeAliasLists(): ClassifyAlias[] {
       });
     }
   }
-  for (const row of invoiceAliases as Array<{ code: string; keys: string[]; why?: string }>) {
+  for (const row of invoiceAliases as Array<{ code: string; keys: string[]; why?: string; exclude?: string[] }>) {
     const code = digits(row.code);
     if (!code) continue;
     const existing = byCode.get(code);
     if (existing) {
       const keys = [...new Set([...existing.keys, ...row.keys])];
+      const exclude = [...new Set([...(existing.exclude || []), ...(row.exclude || [])])];
       byCode.set(code, {
         ...existing,
         keys,
-        why: existing.why || row.why || existing.why,
+        exclude: exclude.length ? exclude : existing.exclude,
+        why: row.why && row.why.length >= existing.why.length ? row.why : existing.why || row.why || existing.why,
       });
     } else {
       byCode.set(code, {
         code,
         keys: [...row.keys],
+        exclude: row.exclude ? [...row.exclude] : undefined,
         why: row.why || "Сопоставление по строке инвойса.",
         risk: "Уточните описание товара",
       });

@@ -46,6 +46,7 @@ describe("TN VED card envelope", () => {
     expect(card.rate).toBeNull();
     expect(card.paymentsHint).toEqual({ vatPct: 22, feeRule: "ПП 1637" });
     expect(card.measuresHint.excisePossible).toBe(false);
+    expect(card.measuresHint.ecoFeePossible).toBe(true); // 8471 → РОП электроника
     expect(card.disclaimer).toMatch(/брокер/i);
     expect(card.ancestors).toHaveLength(2);
     expect(card.titleRu).toMatch(/портативн/i);
@@ -71,7 +72,40 @@ describe("TN VED card envelope", () => {
     });
     expect(card.measuresHint.excisePossible).toBe(true);
     expect(card.measuresHint.utilSborPossible).toBe(true);
+    expect(card.measuresHint.ecoFeePossible).toBe(false);
     expect(card.rate).toBeNull();
+  });
+
+  it("flags sugar-drink and SSD eco triggers without inventing rates", () => {
+    const drink = assembleTnvedCard({
+      row: {
+        code: "2202100000",
+        codeDisplay: "2202 10 000 0",
+        titleRu: "воды с добавками сахара",
+        isLeaf: true,
+        level: 10,
+        notes: null,
+        rates: [],
+      },
+      ancestors: [],
+    });
+    expect(drink.measuresHint.excisePossible).toBe(true);
+    expect(drink.measuresHint.ecoFeePossible).toBe(false);
+
+    const ssd = assembleTnvedCard({
+      row: {
+        code: "8523511000",
+        codeDisplay: "8523 51 100 0",
+        titleRu: "твердотельные накопители",
+        isLeaf: true,
+        level: 10,
+        notes: null,
+        rates: [],
+      },
+      ancestors: [],
+    });
+    expect(ssd.measuresHint.ecoFeePossible).toBe(true);
+    expect(ssd.measuresHint.utilSborPossible).toBe(false);
   });
 
   it("prefers an ETT-sourced duty over vat-only seed", () => {

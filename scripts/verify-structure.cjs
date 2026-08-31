@@ -55,7 +55,13 @@ const knowledgeRequired = [
   "docs/knowledge/plan-lbm-bro-tnved-catalog.md",
   "docs/knowledge/plan-classify-cascade-c23.md",
   "docs/knowledge/plan-next-vector-c28.md",
+<<<<<<< HEAD
   "docs/knowledge/plan-mobile-client-lbm.md",
+=======
+  "docs/knowledge/plan-c32-preview-devex.md",
+  "docs/knowledge/plan-fill-hints-structure.md",
+  "docs/knowledge/plan-tnved-layer-g-extra.md",
+>>>>>>> origin/main
   "docs/knowledge/environments.md",
   "docs/knowledge/staging.md",
   "docs/knowledge/roadmap.md",
