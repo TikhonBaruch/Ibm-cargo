@@ -33,7 +33,7 @@
 | O1 | Preview `DATABASE_URL` | **human** — agent requested secret + Vercel MCP auth |
 | O2 | Preview `ALLOW_MOCK_TOPUP` + `NEXTAUTH_SECRET` | **human** |
 | O3 | Preview bypass secret | **human** (C32c) |
-| O4 | `tnved:load -- --search-extras` | **likely already applied** — prod search HIT «кепка»→6505, «ноутбук»→8471 (2026-08-31). Re-run only if misses return |
+| O4 | `tnved:load -- --search-extras` | **done** 2026-08-31 — merged 53 extras; 31706 codes / 14948 leaves / 15025 variations on `newlsu_lbm` (prod search HIT кепка/ноутбук confirmed) |
 | O5 | Track A ЮKassa/RESEND | **Won't** now |
 
 ---
