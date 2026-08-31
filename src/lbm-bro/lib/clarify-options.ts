@@ -1,4 +1,4 @@
-export type ClarifyOption = { id: string; label: string; value: string };
+export type ClarifyOption = { id: string; label: string; value: string; hsHeading?: string };
 
 export const CUSTOM_OPTION_ID = "custom";
 

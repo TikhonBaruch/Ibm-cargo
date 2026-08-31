@@ -8,6 +8,7 @@
  *   npm run smoke:payments
  *   TEST_API_URL=http://localhost:3000 npm run smoke:payments
  */
+import "./lib/install-vercel-bypass.mjs";
 const BASE = process.env.TEST_API_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
 const EMAIL = process.env.CLIENT_EMAIL || "client@example.com";
 const PASSWORD = process.env.CLIENT_PASSWORD || "demo1234";

@@ -7,16 +7,21 @@
 import { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Plus } from "lucide-react";
-import { factoryUiEnabled, shippingUiEnabled } from "@/lib/ved/cabinet-features";
+import {
+  commercialInvoiceUiEnabled,
+  designerManufacturerChromeEnabled,
+  factoryUiEnabled,
+  shippingUiEnabled,
+} from "@/lib/ved/cabinet-features";
 import { formatShipmentInvoice, parseShipmentInvoice } from "@/lib/ved/landed-cost";
 import { isAiDrainPending, waitForAiEnrich } from "@/lib/ved/ai-drain-client";
 import { compressImageForUpload } from "@/lib/ved/compress-image-client";
-import { VedShell, VedEmptyState, api } from "./VedShell";
+import { VedEmptyState, api } from "./VedShell";
+import { LbmCabinetsShell } from "./LbmCabinetsShell";
 import { useVedToast } from "./feedback/VedToast";
 import { DashboardPane } from "./client/DashboardPane";
+import { ClientSuperappHome } from "./client/ClientSuperappHome";
 import { OrderDetail } from "./client/OrderDetail";
-import { OrderDetailDrawer } from "./client/OrderDetailDrawer";
 import { OrderChat } from "./client/OrderChat";
 import { NewCalcPane } from "./client/NewCalcPane";
 import { BrokersPane } from "./client/BrokersPane";
@@ -24,10 +29,16 @@ import { ShippingPane } from "./client/ShippingPane";
 import { BalancePane } from "./client/BalancePane";
 import { CompanySettingsPane } from "./client/CompanySettingsPane";
 import { SupportPane, type SupportThread } from "./client/SupportPane";
-import { FactoryPane } from "./client/FactoryPane";
+import { FactoryPane, FactoryHoldPane } from "./client/FactoryPane";
+import { FaqPane } from "./client/FaqPane";
+import { GuidePane } from "./client/GuidePane";
+import { TnvedDirectoryPane } from "./client/TnvedDirectoryPane";
+import { ClearancePane } from "./client/ClearancePane";
 import type { SupportTicketAction } from "@/lib/ved/support-ticket";
 import {
   clientPane,
+  clientOrderHref,
+  orderIdFromPath,
   getClientNav,
   type Broker,
   type Calc,
@@ -46,17 +57,24 @@ import {
   formItemFromCatalogSku,
 } from "./client/types";
 import { factoryNavBadge } from "@/lib/ved/sku-order";
+import { directoryPrefillFromQuery } from "@/lib/ved/tnved-directory-read";
+import { liveBellNotes, resolveClientSearch } from "./lbm-pane-visual";
 
 const PAGE_META: Record<string, { title: string; lead: string }> = {
-  dashboard: { title: "Дашборд", lead: "Сводка по просчётам, брокерам и платежам" },
-  orders: { title: "Заявки / просчёты", lead: "История AI-расчётов и проверок брокером" },
+  dashboard: { title: "Главная", lead: "Импорт под контролем · AI + брокер" },
+  orders: { title: "Заявки", lead: "Просчёты, статусы и действия по карточкам" },
+  order: { title: "Заявка", lead: "Карточка просчёта" },
   factory: { title: "Производитель", lead: "Сборный заказ и каталог · добавить производителя" },
   new: { title: "Новый просчёт", lead: "Опишите партию — AI подготовит черновик ТН ВЭД" },
-  brokers: { title: "Брокеры", lead: "Выберите предпочтительного брокера для очереди" },
-  shipping: { title: "Перевозка", lead: "Оформление после статуса DONE · котировки и трекинг" },
-  balance: { title: "Баланс", lead: "Оплата тарифов с баланса компании" },
-  profile: { title: "Профиль", lead: "Реквизиты и контакты компании" },
-  support: { title: "Поддержка", lead: "FAQ и обращения · по заявкам — чат с брокером" },
+  brokers: { title: "Брокеры", lead: "Назначьте эксперта или напишите в чат" },
+  shipping: { title: "Перевозка", lead: "Маршрут, способ и ориентир по цене" },
+  balance: { title: "Баланс", lead: "Пополнение и история списаний" },
+  profile: { title: "Компания", lead: "Профиль и уведомления" },
+  support: { title: "Чаты", lead: "Поддержка отдельно, брокер — по каждой заявке" },
+  tnved: { title: "Справочник ТН ВЭД", lead: "НДС 22% / сбор ПП 1637" },
+  faq: { title: "FAQ", lead: "Частые вопросы по просчёту и брокеру" },
+  guide: { title: "Как пользоваться", lead: "Четыре шага до PDF" },
+  clearance: { title: "Таможенное оформление", lead: "Декларация, платежи и выпуск груза" },
 };
 
 export function ClientCabinet() {
@@ -74,14 +92,10 @@ function ClientCabinetInner() {
   const { toast } = useVedToast();
   const shippingOn = shippingUiEnabled();
   const factoryOn = factoryUiEnabled();
+  const factoryChromeOn = factoryOn && designerManufacturerChromeEnabled();
   const paneRaw = clientPane(pathname);
-  // Shipping pane stays in code/routes; when UI flag off, treat as dashboard (no empty flash).
-  const pane =
-    !shippingOn && paneRaw === "shipping"
-      ? "dashboard"
-      : !factoryOn && paneRaw === "factory"
-        ? "dashboard"
-        : paneRaw;
+  const pane = paneRaw;
+  const pathOrderId = orderIdFromPath(pathname);
   const navBase = process.env.NEXT_PUBLIC_CLIENT_BASE ?? "/cabinet";
   const nav = getClientNav(navBase);
   const path = (suffix: string) => {
@@ -110,7 +124,7 @@ function ClientCabinetInner() {
     title: "",
     description: "",
     country: "Китай",
-    shipmentValue: "18000",
+    shipmentValue: "",
     shipmentCurrency: "USD",
     tariffCode: "STANDARD",
     preferredBrokerUserId: "",
@@ -147,6 +161,7 @@ function ClientCabinetInner() {
   const [catalogSkus, setCatalogSkus] = useState<CatalogSku[]>([]);
   const [factoryRequests, setFactoryRequests] = useState<FactoryOrderRequest[] | null>(null);
   const factoryPrefillRef = useRef(false);
+  const directoryPrefillRef = useRef("");
 
   const reload = async () => {
     const tasks: Array<{ key: string; run: () => Promise<unknown> }> = [
@@ -274,10 +289,13 @@ function ClientCabinetInner() {
     return { url: data.url };
   };
 
-  const createCalc = async (override?: {
-    items?: FormItem[];
-    form?: Partial<CalcForm>;
-  }) => {
+  const createCalc = async (
+    override?: {
+      items?: FormItem[];
+      form?: Partial<CalcForm>;
+    },
+    opts?: { payAfter?: boolean; stayOnNew?: boolean }
+  ) => {
     setBusy(true);
     setCreatePhase("creating");
     setError("");
@@ -299,13 +317,16 @@ function ClientCabinetInner() {
             attrs.originCountry = it.attrs.originCountry.trim().toUpperCase();
           }
           if (it.attrs?.hsHint?.trim()) attrs.hsHint = it.attrs.hsHint.trim();
-          const w = Number(it.attrs?.netWeightKg);
-          if (Number.isFinite(w) && w >= 0 && it.attrs?.netWeightKg !== "") attrs.netWeightKg = w;
+          if (commercialInvoiceUiEnabled()) {
+            const w = Number(it.attrs?.netWeightKg);
+            if (Number.isFinite(w) && w >= 0 && it.attrs?.netWeightKg !== "") attrs.netWeightKg = w;
+          }
           return {
             name: it.name.trim(),
             description: f.description || it.name.trim(),
-            qty: it.qty,
-            unitPrice: it.unitPrice,
+            ...(commercialInvoiceUiEnabled()
+              ? { qty: it.qty, unitPrice: it.unitPrice }
+              : {}),
             mediaUrl: it.mediaUrl,
             manufacturerSkuId: it.manufacturerSkuId || undefined,
             ...(Object.keys(attrs).length ? { attrs } : {}),
@@ -315,16 +336,22 @@ function ClientCabinetInner() {
       if (override?.items) setItems(override.items);
       if (override?.form) setForm((prev) => ({ ...prev, ...override.form }));
       const invoice = parseShipmentInvoice(f.shipmentValue, f.shipmentCurrency);
+      const showInvoice = commercialInvoiceUiEnabled();
       let calc = await api<Calc>("/api/v1/calculations", {
         method: "POST",
         body: JSON.stringify({
           title: f.title,
           description: f.description,
           country: f.country,
-          shipmentValue: formatShipmentInvoice(invoice.amount, invoice.currency),
-          shipmentCurrency: invoice.currency,
+          ...(showInvoice
+            ? {
+                shipmentValue: formatShipmentInvoice(invoice.amount, invoice.currency),
+                shipmentCurrency: invoice.currency,
+              }
+            : {}),
           tariffCode: f.tariffCode,
-          preferredBrokerUserId: f.preferredBrokerUserId || undefined,
+          preferredBrokerUserId:
+            f.preferredBrokerUserId || preferredBrokerUserId || undefined,
           items: payloadItems,
         }),
       });
@@ -335,8 +362,34 @@ function ClientCabinetInner() {
         calc = await waitForAiEnrich(calc, (id) => api<Calc>(`/api/v1/calculations/${id}`));
         setSelected(calc);
       }
-      setPreferredBrokerUserId(calc.preferredBrokerUserId || f.preferredBrokerUserId || "");
-      if (isAiDrainPending(calc)) {
+      setPreferredBrokerUserId(calc.preferredBrokerUserId || f.preferredBrokerUserId || preferredBrokerUserId || "");
+
+      if (opts?.payAfter) {
+        setCreatePhase("paying");
+        const price = calc.tariff?.priceRub ?? 0;
+        calc = await api<Calc>(`/api/v1/calculations/${calc.id}/pay`, {
+          method: "POST",
+          body: JSON.stringify({
+            preferredBrokerUserId: preferredBrokerUserId || f.preferredBrokerUserId || null,
+          }),
+        });
+        setSelected(calc);
+        setCalcs((list) => list.map((c) => (c.id === calc.id ? { ...c, ...calc } : c)));
+        if (price > 0) {
+          setMe((m) =>
+            m?.company
+              ? {
+                  ...m,
+                  company: {
+                    ...m.company,
+                    balanceRub: Math.max(0, (m.company.balanceRub ?? 0) - price),
+                  },
+                }
+              : m
+          );
+        }
+        toast("Тариф оплачен · код открыт", { variant: "ok" });
+      } else if (isAiDrainPending(calc)) {
         toast(
           `${calc.number}: предварительный код готов, уточнение продолжается в фоне`,
           { variant: "ok" }
@@ -344,6 +397,7 @@ function ClientCabinetInner() {
       } else {
         toast(`Готово ${calc.number}`, { variant: "ok" });
       }
+
       const requestId = search.get("request");
       if (requestId && calc.id) {
         await api(`/api/v1/factory/requests/${requestId}/link-calc`, {
@@ -352,11 +406,16 @@ function ClientCabinetInner() {
         }).catch(() => undefined);
       }
       await reload();
+      if (opts?.stayOnNew) {
+        return calc;
+      }
       deepOpenedRef.current = calc.id;
       await openCalc(calc);
+      return calc;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Ошибка");
       toast(e instanceof Error ? e.message : "Ошибка создания", { variant: "error" });
+      throw e;
     } finally {
       setBusy(false);
       setCreatePhase("idle");
@@ -372,7 +431,7 @@ function ClientCabinetInner() {
     mediaUrl?: string;
     attrs?: {
       originCountry: string;
-      manufacturerName: string;
+      manufacturerName?: string;
       composition: string;
     };
   }) => {
@@ -382,22 +441,23 @@ function ClientCabinetInner() {
     try {
       const invoice = parseShipmentInvoice(payload.shipmentValue, payload.shipmentCurrency);
       const stored = formatShipmentInvoice(invoice.amount, invoice.currency);
+      const showInvoice = commercialInvoiceUiEnabled();
       let calc = await api<Calc>("/api/v1/calculations", {
         method: "POST",
         body: JSON.stringify({
           title: payload.title,
           description: payload.description,
           country: payload.country,
-          shipmentValue: stored,
-          shipmentCurrency: invoice.currency,
+          ...(showInvoice
+            ? { shipmentValue: stored, shipmentCurrency: invoice.currency }
+            : {}),
           tariffCode: form.tariffCode || "STANDARD",
           preferredBrokerUserId: form.preferredBrokerUserId || preferredBrokerUserId || undefined,
           items: [
             {
               name: payload.title,
               description: payload.description,
-              qty: 1,
-              unitPrice: invoice.amount,
+              ...(showInvoice ? { qty: 1, unitPrice: invoice.amount } : {}),
               mediaUrl: payload.mediaUrl,
               ...(payload.attrs ? { attrs: payload.attrs } : {}),
             },
@@ -503,7 +563,7 @@ function ClientCabinetInner() {
       setPreferredBrokerUserId(full.preferredBrokerUserId || form.preferredBrokerUserId || "");
       if (opts?.syncUrl !== false) {
         deepOpenedRef.current = full.id;
-        router.replace(`${path("/orders")}?id=${encodeURIComponent(full.id)}`, { scroll: false });
+        router.replace(clientOrderHref(path("/orders"), full.id), { scroll: false });
       }
       if (["IN_REVIEW", "DONE", "QUEUED", "SLA_RISK"].includes(full.status)) {
         try {
@@ -527,25 +587,24 @@ function ClientCabinetInner() {
     setChat([]);
     setWaitingOn(null);
     deepOpenedRef.current = null;
-    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("id")) {
-      router.replace(path(pane === "dashboard" ? "" : "/orders"), { scroll: false });
-    }
+    router.replace(path("/orders"), { scroll: false });
   };
 
-  /** Deep-link: /cabinet/orders?id=<calcId> opens detail + chat. */
+  /** Deep-link: /cabinet/orders/[id] (and legacy ?id=) opens the full-page card. */
   useEffect(() => {
-    if (!calcs.length) return;
-    if (pane !== "orders" && pane !== "dashboard") return;
     if (typeof window === "undefined") return;
-    const deepCalcId = new URLSearchParams(window.location.search).get("id");
-    if (!deepCalcId) return;
-    if (selected?.id === deepCalcId || deepOpenedRef.current === deepCalcId) return;
-    const found = calcs.find((c) => c.id === deepCalcId);
-    if (!found) return;
-    deepOpenedRef.current = deepCalcId;
-    void openCalc(found, { syncUrl: false });
+    const qid = new URLSearchParams(window.location.search).get("id");
+    if (qid && (pane === "orders" || pane === "dashboard")) {
+      router.replace(clientOrderHref(path("/orders"), qid), { scroll: false });
+      return;
+    }
+    if (pane !== "order" || !pathOrderId) return;
+    if (selected?.id === pathOrderId) return;
+    if (deepOpenedRef.current === pathOrderId) return;
+    deepOpenedRef.current = pathOrderId;
+    void openCalc({ id: pathOrderId } as Calc, { syncUrl: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calcs, pane]);
+  }, [pane, pathOrderId]);
 
   const pay = async (id: string) => {
     setBusy(true);
@@ -808,6 +867,37 @@ function ClientCabinetInner() {
   }, [pane, factoryOn]);
 
   useEffect(() => {
+    if (pane !== "new") return;
+    if (search.get("sku")) return;
+    const hs = search.get("hs") || "";
+    const desc = search.get("desc") || "";
+    const key = `${hs}|${desc}`;
+    if (!hs && !desc) return;
+    if (directoryPrefillRef.current === key) return;
+    const prefill = directoryPrefillFromQuery(hs, desc);
+    if (!prefill) return;
+    directoryPrefillRef.current = key;
+    setForm((f) => ({
+      ...f,
+      title: prefill.title || f.title,
+      description: prefill.description,
+    }));
+    if (prefill.hsHint) {
+      setItems((prev) => {
+        const first = prev[0] || { name: "", qty: 1, unitPrice: 0 };
+        return [
+          {
+            ...first,
+            name: first.name.trim() || prefill.name || first.name,
+            attrs: { ...first.attrs, hsHint: prefill.hsHint },
+          },
+          ...prev.slice(1),
+        ];
+      });
+    }
+  }, [pane, search]);
+
+  useEffect(() => {
     if (!factoryOn || pane !== "new" || factoryPrefillRef.current || !catalogSkus.length) return;
     const skuId = search.get("sku");
     if (!skuId) return;
@@ -858,41 +948,39 @@ function ClientCabinetInner() {
   const meta = PAGE_META[pane] || PAGE_META.dashboard;
   const factoryBadge = factoryOn ? factoryNavBadge(factoryRequests || []) : 0;
   const navWithBadge = nav.map((item) => {
-    if (item.label === "Поддержка" || item.label.startsWith("Заявки")) {
+    if (item.label === "Чат" || item.label === "Поддержка") {
       return { ...item, badge: unreadCount || null };
-    }
-    if (factoryOn && item.label === "Производитель") {
-      return { ...item, badge: factoryBadge || null };
     }
     return item;
   });
+  const hideHeaderTitle = pane === "dashboard" || pane === "new" || pane === "order";
+  const bellNotes = liveBellNotes(calcs, path("/orders"), unreadCount);
 
   return (
-    <VedShell
+    <LbmCabinetsShell
+      variant="client"
       brand="Кабинет"
       subtitle={`Клиент · ${me?.company?.name || "…"}`}
       nav={navWithBadge}
       title={meta.title}
       lead={meta.lead}
       avatarUrl="/cabinets/assets/avatar-user.jpg"
-      footer={
-        <>
-          Баланс:{" "}
-          <strong className="text-white">
-            {(me?.company?.balanceRub ?? 0).toLocaleString("ru-RU")} ₽
-          </strong>
-          <br />
-          Тариф по умолчанию: {form.tariffCode === "PRO" ? "Профи" : form.tariffCode === "EXPRESS" ? "Экспресс" : "Стандарт"}
-        </>
-      }
-      actions={
-        <Link
-          href={path("/new")}
-          className="inline-flex items-center gap-1.5 rounded-full bg-[#2b72f4] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(43,114,244,0.35)]"
-        >
-          <Plus className="h-4 w-4" strokeWidth={2.2} />
-          Новый просчёт
-        </Link>
+      userLabel={me?.name}
+      userMeta={me?.company?.name}
+      hideHeaderTitle={hideHeaderTitle}
+      hideSearch={pane === "order"}
+      balanceRub={me?.company?.balanceRub ?? 0}
+      balanceHref={path("/balance")}
+      newCalcHref={path("/new")}
+      notes={bellNotes}
+      bellUnread={unreadCount > 0 || bellNotes.some((n) => n.tone === "warn")}
+      onSearch={(q) =>
+        resolveClientSearch({
+          q,
+          calcs,
+          brokerNames: brokers.map((b) => b.user.name || ""),
+          path,
+        })
       }
     >
       {error && me && (
@@ -924,6 +1012,16 @@ function ClientCabinetInner() {
         <>
       {(pane === "dashboard" || pane === "orders") && (
         <>
+          {pane === "dashboard" ? (
+            <ClientSuperappHome
+              path={path}
+              calcs={calcs}
+              unreadCount={unreadCount}
+              showShipping={shippingOn}
+              showFactory={factoryChromeOn}
+              factoryHref={factoryChromeOn ? path("/factory") : undefined}
+            />
+          ) : (
           <DashboardPane
             pane={pane}
             me={me}
@@ -932,8 +1030,8 @@ function ClientCabinetInner() {
             showShipping={shippingOn}
             busy={busy}
             unreadCount={unreadCount}
-            factoryActiveCount={factoryOn ? factoryBadge : 0}
-            factoryHref={factoryOn ? path("/factory") : undefined}
+            factoryActiveCount={factoryChromeOn ? factoryBadge : 0}
+            factoryHref={factoryChromeOn ? path("/factory") : undefined}
             selectedId={selected?.id}
             createHref={navBase.replace(/\/$/, "") ? `${navBase.replace(/\/$/, "")}/new` : "/new"}
             onOpen={openCalc}
@@ -967,37 +1065,42 @@ function ClientCabinetInner() {
               void topupThenPay(c.id, c.tariff?.priceRub ?? 0);
             }}
           />
-          {selected && (pane === "orders" || pane === "dashboard") && (
-            <OrderDetailDrawer
-              open
-              title={`${selected.number} · ${selected.title}`}
-              onClose={closeCalc}
-            >
-              <OrderDetail
-                selected={selected}
-                brokers={brokers}
-                me={me}
-                preferredBrokerUserId={preferredBrokerUserId}
-                busy={busy}
-                embedded
-                onPreferred={setPreferredBrokerUserId}
-                onPay={() => pay(selected.id)}
-                onTopupThenPay={() => topupThenPay(selected.id, selected.tariff?.priceRub ?? 0)}
-                onFeedback={(reaction, comment) => submitFeedback(selected.id, reaction, comment)}
-              >
-                <OrderChat
-                  selected={selected}
-                  chat={chat}
-                  waitingOn={waitingOn}
-                  chatMsg={chatMsg}
-                  busy={busy}
-                  onChatMsg={setChatMsg}
-                  onSend={sendChat}
-                />
-              </OrderDetail>
-            </OrderDetailDrawer>
           )}
         </>
+      )}
+      {pane === "order" && (
+        selected ? (
+          <OrderDetail
+            selected={selected}
+            brokers={brokers}
+            me={me}
+            preferredBrokerUserId={preferredBrokerUserId}
+            busy={busy}
+            ordersHref={path("/orders")}
+            tnvedHref={path("/tnved")}
+            onPreferred={setPreferredBrokerUserId}
+            onPay={() => pay(selected.id)}
+            onTopupThenPay={() => topupThenPay(selected.id, selected.tariff?.priceRub ?? 0)}
+            onFeedback={(reaction, comment) => submitFeedback(selected.id, reaction, comment)}
+          >
+            <OrderChat
+              selected={selected}
+              chat={chat}
+              waitingOn={waitingOn}
+              chatMsg={chatMsg}
+              busy={busy}
+              onChatMsg={setChatMsg}
+              onSend={sendChat}
+            />
+          </OrderDetail>
+        ) : (
+          <VedEmptyState
+            title="Заявка не найдена"
+            hint="Нет доступа или неверный адрес."
+            actionLabel="К заявкам"
+            onAction={closeCalc}
+          />
+        )
       )}
 
       {pane === "new" && (
@@ -1010,10 +1113,14 @@ function ClientCabinetInner() {
           busy={busy}
           createPhase={createPhase}
           selected={selected}
+          me={me}
+          preferredBrokerUserId={preferredBrokerUserId}
+          hasPaidCalcBefore={calcs.some((c) => c.paidAt)}
           ordersHref={path("/orders")}
+          onPreferred={setPreferredBrokerUserId}
           onForm={(patch) => setForm((f) => ({ ...f, ...patch }))}
           onItems={setItems}
-          onCreate={createCalc}
+          onCreate={(override, opts) => createCalc(override, opts)}
           onUpload={async (file, index) => {
             try {
               setCreatePhase("uploading");
@@ -1036,19 +1143,22 @@ function ClientCabinetInner() {
         />
       )}
 
-      {factoryOn && pane === "factory" && (
-        <FactoryPane
-          catalogSkus={catalogSkus}
-          segment={profile.clientSegment || "SINGLE"}
-          requests={factoryRequests}
-          newCalcHref={({ skuId, qty, requestId }) => {
-            const q = new URLSearchParams({ sku: skuId, qty: String(qty) });
-            if (requestId) q.set("request", requestId);
-            return `${path("/new")}?${q.toString()}`;
-          }}
-          onChanged={() => reload()}
-        />
-      )}
+      {pane === "factory" &&
+        (factoryOn ? (
+          <FactoryPane
+            catalogSkus={catalogSkus}
+            segment={profile.clientSegment || "SINGLE"}
+            requests={factoryRequests}
+            newCalcHref={({ skuId, qty, requestId }) => {
+              const q = new URLSearchParams({ sku: skuId, qty: String(qty) });
+              if (requestId) q.set("request", requestId);
+              return `${path("/new")}?${q.toString()}`;
+            }}
+            onChanged={() => reload()}
+          />
+        ) : (
+          <FactoryHoldPane homeHref={cabinetHome} />
+        ))}
 
       {pane === "brokers" && (
         <BrokersPane
@@ -1058,7 +1168,7 @@ function ClientCabinetInner() {
         />
       )}
 
-      {shippingOn && pane === "shipping" && (
+      {pane === "shipping" && (
         <ShippingPane
           calcs={calcs}
           shipping={shipping}
@@ -1066,12 +1176,64 @@ function ClientCabinetInner() {
           shipForm={shipForm}
           selectedQuoteId={selectedQuoteId}
           busy={busy}
+          live={shippingOn}
           onShipForm={(patch) => setShipForm((f) => ({ ...f, ...patch }))}
           onQuote={(id, mode) => {
             setSelectedQuoteId(id);
             setShipForm((f) => ({ ...f, mode }));
           }}
           onCreate={createShip}
+        />
+      )}
+
+      {pane === "tnved" && (
+        <TnvedDirectoryPane
+          initialQuery={search.get("q") || ""}
+          homeHref={cabinetHome}
+          newCalcHref={path("/new")}
+          onApplyCode={({ code, titleRu }) => {
+            const prefill = directoryPrefillFromQuery(code, titleRu);
+            if (!prefill) return;
+            directoryPrefillRef.current = `${code}|${titleRu}`;
+            setForm((f) => ({
+              ...f,
+              title: prefill.title || f.title,
+              description: prefill.description,
+            }));
+            if (prefill.hsHint) {
+              setItems((prev) => {
+                const first = prev[0] || { name: "", qty: 1, unitPrice: 0 };
+                return [
+                  {
+                    ...first,
+                    name: first.name.trim() || prefill.name || first.name,
+                    attrs: { ...first.attrs, hsHint: prefill.hsHint },
+                  },
+                  ...prev.slice(1),
+                ];
+              });
+            }
+          }}
+        />
+      )}
+
+      {pane === "faq" && <FaqPane homeHref={cabinetHome} />}
+
+      {pane === "guide" && (
+        <GuidePane
+          homeHref={cabinetHome}
+          newCalcHref={path("/new")}
+          tnvedHref={path("/tnved")}
+          ordersHref={path("/orders")}
+          supportHref={path("/support")}
+        />
+      )}
+
+      {pane === "clearance" && (
+        <ClearancePane
+          calcs={calcs}
+          newCalcHref={path("/new")}
+          ordersHref={path("/orders")}
         />
       )}
 
@@ -1107,7 +1269,7 @@ function ClientCabinetInner() {
           calcsWithChat={calcs.filter((c) =>
             ["IN_REVIEW", "DONE", "SLA_RISK", "QUEUED"].includes(c.status)
           )}
-          orderHrefFor={(id) => `${path("/orders")}?id=${encodeURIComponent(id)}`}
+          orderHrefFor={(id) => `${path("/orders")}/${id}`}
           box={supportBox}
           onBox={(next) => {
             setSupportBox(next);
@@ -1136,10 +1298,11 @@ function ClientCabinetInner() {
             router.replace(path("/support"), { scroll: false });
           }}
           onStatus={(action) => void submitSupportStatus(action)}
+          faqHref={path("/faq")}
         />
       )}
         </>
       )}
-    </VedShell>
+    </LbmCabinetsShell>
   );
 }

@@ -23,7 +23,7 @@
 | Целевой клиент / ценность / стратегия (D29) | [`target-client.md`](./target-client.md) |
 | Статус кода прямо сейчас | [`current-app.md`](./current-app.md) |
 | Что делать дальше (фазы / post-polish) | [`roadmap.md`](./roadmap.md) · **горизонт 1–5:** [`plan-global.md`](./plan-global.md) · [`plan-mvp-polish.md`](./plan-mvp-polish.md) · **P0 Track A:** [`plan-track-a-p0.md`](./plan-track-a-p0.md) · **техдолг:** [`plan-tech-debt.md`](./plan-tech-debt.md) · **цикл фичи:** [`feature-cycle.md`](./feature-cycle.md) |
-| Решение «почему так» | [`decisions.md`](./decisions.md) (D1–D34) |
+| Решение «почему так» | [`decisions.md`](./decisions.md) (D1–D37) |
 | Структура данных (товары / ТН ВЭД / история) | [`data-model.md`](./data-model.md) (D24) |
 | Инкотермс / комментарии ICC (Growth, не MVP CTA) | [`incoterms.md`](./incoterms.md) |
 | Таможенные платежи (НДС/сбор; акциз/утиль/НТМ = триггер) | [`customs-payments.md`](./customs-payments.md) · смета без доставки: [`plan-landed-without-freight.md`](./plan-landed-without-freight.md) · карточка ТН ВЭД из opendata: [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) |
@@ -54,7 +54,7 @@ AGENTS.md                    # краткие правила агента
 docs/knowledge/              # единая KB (этот каталог)
   README.md                  # индекс (этот файл)
   skeleton.md                # каркас папок, запреты, checklist
-  decisions.md               # ADR-lite D1–D34
+  decisions.md               # ADR-lite D1–D37
   product.md                 # vision + фокус MVP частник (D27)
   target-client.md           # persona / ценность / стратегия (D29)
   branches.md                # ownership трёх ветвей
@@ -102,6 +102,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-client-tnved-search.md # Client: combobox ТН ВЭД по справочнику (этап 1)
   plan-tnved-demo-corpus.md  # Демо-корпус TnvedCode: точные полные ряды (~50 листьев), не Track B
   plan-tnved-opendata-card.md # Открытые слои ТН ВЭД → одна карточка (ETL, не scrape)
+  plan-tnved-layer-g-extra.md # Акциз / утиль / экосбор РОП → префиксы TnvedCode (триггеры)
   plan-tnved-collect.md      # Собрать все легальные слои (TWS fill, PDF ЕТТ, решения)
   plan-cabinet-feature-flags.md # Этап 1: скрыть завод/SKU (паттерн shipping)
   plan-public-surface-hygiene.md # Демо на /login оставить; SUPER-константы кодировать; robots не трогать
@@ -115,6 +116,25 @@ docs/knowledge/              # единая KB (этот каталог)
   design-interactive.md      # интерактивный дизайн веб/мобилка
   design-parity.md           # реф ↔ live, UI backlog
   design-patterns.md         # D32: сначала общепризнанные UI-паттерны
+  plan-lbm-bro-visual.md     # визуал lbm-bro: live chrome + lab /client
+  plan-lbm-bro-honest-skin.md # C8–C9: скрыть инвойс/qty/вес; блок «Замысел дизайнера» off
+  plan-lbm-bro-newcalc-mock.md # C10: точная копия шага «Что ввозите?»
+  plan-lbm-bro-max-match.md  # C16: максимальный visual match live↔lab без ломки domain
+  plan-lbm-bro-tnved-dir.md  # C17: /cabinet/tnved chrome lab, данные GET /api/v1/tnved
+  plan-lbm-bro-tnved-catalog.md # C18: lab tnved.json → Postgres + поиск как в lab
+  plan-tnved-invoice-enrich.md  # C19: инвойсные имена + ФТС/ЕЭК 2026 notes, не scrape
+  plan-tnved-relations.md       # C20: связи not/variant/part/kit + дети parentCode
+  plan-tnved-hint-trees.md      # C21: семейные развилки на /cabinet/new (молоко питьевое/сухое/сгущённое)
+  plan-live-ai-result-ux.md     # C22: live ai-run + «Почему этот код» на карточке заявки
+  plan-classify-cascade-c23.md  # C23–C27: domain cascade + OCR glue + audit
+  plan-next-vector-c28.md       # после C27: ship pay-first, post-pay UX, слои B/D, quality
+  plan-merge-ops-unblock.md     # исполнение: merge #16 + draft chain + Preview/prod ops
+  plan-c32-preview-devex.md     # C32: Visit Preview + ALLOW_MOCK_TOPUP + SSO bypass smoke
+  plan-fill-hints-structure.md  # аудит слоёв подсказок NewCalc (C12/C21 vs orphan chips)
+  plan-offline-first-hs-brief.md # C35 brief: offline-first HS + DeepSeek on miss (до плана)
+  plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
+  plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
+  plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
   containerization.md        # C1–C5, Compose vs Vercel, инвентарь as-is/будущее
   cabinets/                  # UI-инвентарь client/broker/admin + correctness + ux-saas + ui-guide
   …
@@ -133,7 +153,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | DB-процесс | [`db-process.md`](./db-process.md) | Очередность записей, tx, инвентарь (D23/D24/D26) |
 | Ops | [`runbook.md`](./runbook.md), [`deploy.md`](./deploy.md), [`environments.md`](./environments.md), [`staging.md`](./staging.md), [`roadmap.md`](./roadmap.md), [`feature-cycle.md`](./feature-cycle.md), [`plan-global.md`](./plan-global.md), [`plan-mvp-polish.md`](./plan-mvp-polish.md), [`plan-precedent-bulk.md`](./plan-precedent-bulk.md), [`plan-ocr-vision.md`](./plan-ocr-vision.md), [`plan-ai-mesh.md`](./plan-ai-mesh.md), [`plan-track-a-p0.md`](./plan-track-a-p0.md), [`plan-tech-debt.md`](./plan-tech-debt.md), [`plan-cabinets-d32.md`](./plan-cabinets-d32.md), [`admin-ops.md`](./admin-ops.md), [`dual-path-parity.md`](./dual-path-parity.md) | Env, smoke, dual-path F19, notify F17, цикл фичи, горизонт 1–5, MVP polish, precedent/CSV/PDF, OCR vision hold, конвейер расшифровки, Track A P0, tech-debt, кабинеты D32, ADMIN D28 |
 | Инфра | [`containerization.md`](./containerization.md) (as-is + P1–P3), [`../containers.md`](../containers.md), [`../../containers/README.md`](../../containers/README.md), [`monorepo.md`](./monorepo.md), [`deploy.md`](./deploy.md), [`web-slim.md`](./web-slim.md), [`database.md`](./database.md), [`environments.md`](./environments.md) | Compose 14+ocr scaffold, приоритеты extract, Vercel, C5 |
-| UX | [`design.md`](./design.md), [`design-baseline.md`](./design-baseline.md), [`design-interactive.md`](./design-interactive.md), [`design-parity.md`](./design-parity.md), [`design-patterns.md`](./design-patterns.md), [`cabinets/ux-saas.md`](./cabinets/ux-saas.md), [`cabinets/ui-guide.md`](./cabinets/ui-guide.md), [`../design/refs/`](../design/refs/), skills `ved-ui` / `ved-notify` | Baseline D14, **D32 паттерны**, toast, parity, удобство, **сравнение ролей** |
+| UX | [`design.md`](./design.md), [`design-baseline.md`](./design-baseline.md), [`design-interactive.md`](./design-interactive.md), [`design-parity.md`](./design-parity.md), [`design-patterns.md`](./design-patterns.md), [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md), [`cabinets/ux-saas.md`](./cabinets/ux-saas.md), [`cabinets/ui-guide.md`](./cabinets/ui-guide.md), [`../design/refs/`](../design/refs/), skills `ved-ui` / `ved-notify` | Baseline D14, **D32 паттерны**, live chrome lbm-bro, lab `/client`, toast, parity, удобство, **сравнение ролей** |
 | Тесты | [`testing.md`](./testing.md), [`testing-branches.md`](./testing-branches.md) | unit / smoke / e2e + gaps |
 | As-is / AI | [`current-app.md`](./current-app.md), [`ai-pipeline.md`](./ai-pipeline.md) | Что реально работает + интегрированные решения |
 | Кабинеты по контейнерам | [`cabinets/`](./cabinets/) | Инвентарь UI + взаимодействия + correctness (client/broker/admin/shared) |
@@ -148,6 +168,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | Интерактивный дизайн (веб/мобилка) | [`design-interactive.md`](./design-interactive.md) → [`../design/refs/`](../design/refs/) |
 | Сверка экрана с моком | [`design-parity.md`](./design-parity.md) → `cargo-broker-cabinets.html` |
 | Новый UI-экран / компонент | **D32** [`design-patterns.md`](./design-patterns.md) → существующий паттерн, не с нуля |
+| Новый визуал кабинетов (lbm-bro) | [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) → live `/cabinet` `/broker` `/admin`; lab `/client` референс |
 | Mapping / claim брокера | core-dialogues S3 → contracts D-MAP/D-QUEUE → [`cabinets/broker/`](./cabinets/broker/) → design-parity |
 | Новый статус / pay-правило | decisions D8/D11 → [`db-process.md`](./db-process.md) (D23) → unit invariants → testing-branches |
 | Товары / ТН ВЭД / история событий | [`data-model.md`](./data-model.md) (D24) → contracts D-PRODUCT/D-TNVED/D-HISTORY → dual writers Next+api |
@@ -161,13 +182,22 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | Broker QC loop (feedback → broker) | [`plan-broker-qc-loop.md`](./plan-broker-qc-loop.md) · [`cabinets/broker/`](./cabinets/broker/) |
 | Брокер: уточнить описание / доп. сборы | [`plan-broker-desc-fees.md`](./plan-broker-desc-fees.md) |
 | Брокер: пустые attrs only | [`plan-broker-empty-attrs.md`](./plan-broker-empty-attrs.md) |
-| Client: подсказки NewCalc | [`plan-newcalc-hints.md`](./plan-newcalc-hints.md) |
+| Client: подсказки NewCalc | [`plan-newcalc-hints.md`](./plan-newcalc-hints.md) · **структура слоёв:** [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) |
 | Client: LLM/heuristic chips + 👍 черновик | [`plan-llm-fill-hints.md`](./plan-llm-fill-hints.md) |
 | Client: typeahead полей (словарь) | [`plan-field-suggest.md`](./plan-field-suggest.md) |
 | Client: поиск ТН ВЭД (combobox справочника) | [`plan-client-tnved-search.md`](./plan-client-tnved-search.md) · этап 1 [`plan-global.md`](./plan-global.md) |
 | Корпус ТН ВЭД для демо (не Track B) | [`plan-tnved-demo-corpus.md`](./plan-tnved-demo-corpus.md) · `/admin/tnved` |
 | ТН ВЭД: открытые слои → одна карточка | [`plan-tnved-opendata-card.md`](./plan-tnved-opendata-card.md) · ФНС TNVED.7z + ЕТТ/НСИ, не scrape |
 | ТН ВЭД: собрать все легальные слои | [`plan-tnved-collect.md`](./plan-tnved-collect.md) · TWS fill local, не Alta |
+| ТН ВЭД: каталог lab → Postgres (C18) | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) · `tnved:load -- --lab` |
+| ТН ВЭД: инвойс + дополнения 2026 (C19) | [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md) · `tnved:load -- --search-extras` |
+| ТН ВЭД: связи кодов (C20) | [`plan-tnved-relations.md`](./plan-tnved-relations.md) · related overlay + children parentCode |
+| ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
+| Live UX результата AI (C22) | [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) · ai-run · disclaimer · conf |
+| Classify cascade C23–C27 | [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · cascade-v1 · classify-preview · import |
+| Следующий вектор C28+ | [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · ship · post-pay UX · слои B/D · quality · [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md) · **C35 brief** |
+| Разблокировка merge + ops | [`plan-merge-ops-unblock.md`](./plan-merge-ops-unblock.md) · #16 MERGED · stack PR → Preview secrets |
+| C35 offline-first HS (brief → plan) | [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) · precedent+cascade до DeepSeek · потоки A∥B |
 | Флаги скрытия лишнего (завод / SKU) | [`plan-cabinet-feature-flags.md`](./plan-cabinet-feature-flags.md) · паттерн `shippingUiEnabled` |
 | Производители: propose / approve | [`plan-manufacturer-proposals.md`](./plan-manufacturer-proposals.md) |
 | UX Sprint 1–2 (петли кабинетов) | [`plan-cabinets-ux-sprints.md`](./plan-cabinets-ux-sprints.md) |

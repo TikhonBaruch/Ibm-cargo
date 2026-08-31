@@ -41,7 +41,7 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 
 - Root = monolith Next; `postinstall` → `prisma generate` only
 - Env: `DATABASE_URL`, `NEXTAUTH_*`, `NEXT_PUBLIC_SITE_URL`; mock topup via `ALLOW_MOCK_TOPUP`
-- **Хост `https://ibm-cargo.vercel.app`** — чужой Vercel-проект (статический IBM Cargo), не этот репозиторий. Этот git → Preview проекта `ibm-cargo`. **D37:** https://taurus-liart.vercel.app — backup ядра, **не** smoke/deploy target. Без `DATABASE_URL` на Preview Prisma: `Environment variable not found: DATABASE_URL` ([`plan-preview-auth.md`](./plan-preview-auth.md)).
+- **Прод этого репо:** https://ibm-cargo-phi.vercel.app (project `ibm-cargo`). **Хост `https://ibm-cargo.vercel.app`** — чужой статический IBM Cargo. Preview того же проекта — SSO. **D37:** https://taurus-liart.vercel.app — backup ядра, **не** smoke/deploy target. Без `DATABASE_URL` на Preview Prisma: `Environment variable not found: DATABASE_URL` ([`plan-preview-auth.md`](./plan-preview-auth.md) §5). `/health` → `databaseUrl`.
 - Dashboard: **Root Directory = `.`**, **Framework = Services**. Ошибка *No Next.js version detected* = смотрят не в корневой `package.json` (`"next": "16.1.6"` уже там) · [`plan-vercel-services.md`](./plan-vercel-services.md) §8. Строка *no "functions" or "static" directory* = Preset **Other**/чужой проект, не Services · §9.
 - Uploads: `S3_BUCKET`, `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` — без них `POST /api/v1/uploads` → **503** (FS read-only). **Заданы на Production и Preview** (as-of 2026-08-05). Для `<img src={mediaUrl}>` в кабинетах бакет должен отдавать объект публично **или** `S3_OBJECT_ACL=public-read` (если ACL включены).
 - Signup: `/register` + `POST /api/v1/auth/register` (D25) — публичный путь в middleware
@@ -64,7 +64,7 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 | `PAYMENTS_SERVICE_URL` / `NOTIFY_SERVICE_URL` / `LOGISTICS_SERVICE_URL` | C4 opt-in |
 | `S3_*` | durable VED uploads on Vercel (`BUCKET`/`ENDPOINT`/`REGION`/`ACCESS_KEY`/`SECRET_KEY`); optional `S3_OBJECT_ACL=public-read` for cabinet `<img>` |
 | `NEXT_PUBLIC_SHIPPING_UI` / `SHIPPING_UI` | `1`/`true` = показать клиентский UI «Перевозка» (default **off**) |
-| `NEXT_PUBLIC_FACTORY_UI` / `FACTORY_UI` | `1`/`true` = показать клиентский UI «Завод», manufacturer `/pools`, manufacturer/SKU helpers и admin nav «Производители» (default off в коде; **на Vercel Pro Production/Preview = `1`**) |
+| `NEXT_PUBLIC_FACTORY_UI` / `FACTORY_UI` | `1`/`true` = код завода / SKU / manufacturer `/pools` (default off в коде; **на Vercel Pro Production/Preview = `1`**). **C6:** designer chrome (плитка главной, admin nav «Производители») дополнительно скрыт `designerManufacturerChromeEnabled` |
 | `WEB_SURFACE` | `full` \| `slim` (C5 scaffold, D22) |
 | `ALLOW_MOCK_TOPUP` | mock credit баланса (D13) |
 | `LLM_TIMEOUT_MS` / `AI_TIMEOUT_MS` | classify/enrich / draft HTTP; default **30s / 35s** (раньше 3–4s — DeepSeek не успевал → heuristic) |

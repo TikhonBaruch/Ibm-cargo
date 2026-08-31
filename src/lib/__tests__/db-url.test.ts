@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isMissingDatabaseUrlError, readDatabaseUrl } from "../db-url";
+import { webHealthPayload } from "../web-health";
 import { asEnv } from "../test-env";
 
 describe("readDatabaseUrl", () => {
@@ -25,5 +26,19 @@ describe("isMissingDatabaseUrlError", () => {
 
   it("ignores unrelated errors", () => {
     expect(isMissingDatabaseUrlError(new Error("P2025"))).toBe(false);
+  });
+});
+
+describe("webHealthPayload", () => {
+  it("stays ok when DATABASE_URL is missing (liveness)", () => {
+    expect(webHealthPayload(asEnv({}))).toEqual({
+      ok: true,
+      service: "web",
+      databaseUrl: false,
+    });
+  });
+
+  it("reports databaseUrl when the env is set at runtime", () => {
+    expect(webHealthPayload(asEnv({ DATABASE_URL: " postgresql://x " })).databaseUrl).toBe(true);
   });
 });

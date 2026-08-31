@@ -30,8 +30,8 @@ const MANUFACTURER_ROLES = new Set(["MANUFACTURER", "ADMIN", "SUPER_ADMIN"]);
 const ADMIN_SURFACE_ROLES = new Set(["ADMIN", "SUPER_ADMIN", "EDITOR", "SPECIALIST"]);
 
 export function homePathForRole(role: string): string {
-  // ibm-cargo UI lab: client lands on lbm-bro shell; /cabinet remains functional fallback.
-  if (role === "CLIENT") return "/client";
+  // Live cabinets use LbmCabinetsShell. Lab `/client` stays as visual reference.
+  if (role === "CLIENT") return "/cabinet";
   if (role === "BROKER") return "/broker";
   if (role === "MANUFACTURER") return "/manufacturer";
   if (role === "SPECIALIST") return "/admin/chat";
@@ -60,7 +60,7 @@ export function resolvePathAccess(role: string | undefined, pathname: string): A
 
   if (pathname.startsWith("/broker")) {
     if (BROKER_ROLES.has(role)) return { type: "allow" };
-    if (role === "CLIENT") return { type: "redirect", to: "/client" };
+    if (role === "CLIENT") return { type: "redirect", to: homePathForRole("CLIENT") };
     if (role === "MANUFACTURER") return { type: "redirect", to: "/manufacturer" };
     return { type: "redirect", to: "/login" };
   }
@@ -74,14 +74,14 @@ export function resolvePathAccess(role: string | undefined, pathname: string): A
   if (isSuperAdminSurfacePath(pathname) && !isSuperAdminLoginPath(pathname)) {
     if (role === "SUPER_ADMIN") return { type: "allow" };
     if (role === "ADMIN" || role === "EDITOR") return { type: "redirect", to: "/admin" };
-    if (role === "CLIENT") return { type: "redirect", to: "/client" };
+    if (role === "CLIENT") return { type: "redirect", to: homePathForRole("CLIENT") };
     if (role === "BROKER") return { type: "redirect", to: "/broker" };
     if (role === "MANUFACTURER") return { type: "redirect", to: "/manufacturer" };
     return { type: "redirect", to: `${SUPER_ADMIN_BASE}/login` };
   }
 
   if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
-    if (role === "CLIENT") return { type: "redirect", to: "/client" };
+    if (role === "CLIENT") return { type: "redirect", to: homePathForRole("CLIENT") };
     if (role === "BROKER") return { type: "redirect", to: "/broker" };
     if (role === "MANUFACTURER") return { type: "redirect", to: "/manufacturer" };
     if (ADMIN_SURFACE_ROLES.has(role)) return { type: "allow" };

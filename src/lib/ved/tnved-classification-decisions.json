@@ -1,0 +1,6 @@
+{
+  "asOf": null,
+  "sourceUrl": "https://eec.eaeunion.org/comission/department/catr/classification/",
+  "note": "C30d fail-open overlay. Populate from official EEC classification index (10-digit → title/url). Empty until ETL; join never invents decisions.",
+  "items": []
+}

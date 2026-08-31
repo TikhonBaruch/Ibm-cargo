@@ -28,6 +28,8 @@ describe("messageForAuthError", () => {
     expect(messageForAuthError("Configuration")).toMatch(/NEXTAUTH_SECRET/);
     expect(messageForAuthError("Callback")).toMatch(/DATABASE_URL/);
     expect(messageForAuthError("Callback")).toMatch(/без #/);
+    expect(messageForAuthError("Callback")).toMatch(/Preview/);
+    expect(messageForAuthError("DATABASE_URL is not set")).toMatch(/DATABASE_URL/);
   });
 
   it("keeps generic CredentialsSignin with operator hint", () => {

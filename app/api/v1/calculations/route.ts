@@ -15,6 +15,7 @@ import {
   hasRequiredCreateAttrs,
   missingRequiredCreateAttrs,
   productAttrsSchema,
+  requiredCreateAttrsError,
 } from "@/lib/ved/product-description";
 import type { CalculationStatus, TariffCode } from "@prisma/client";
 
@@ -56,7 +57,7 @@ const createSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: body.items?.length ? ["items", i, "attrs"] : ["items"],
-        message: `Обязательны страна происхождения (ISO-2), производитель и состав (не хватает: ${miss.join(", ")})`,
+        message: requiredCreateAttrsError(miss),
       });
     });
   });

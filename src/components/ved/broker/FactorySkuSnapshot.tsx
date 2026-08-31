@@ -1,5 +1,6 @@
 "use client";
 
+import { commercialInvoiceUiEnabled } from "@/lib/ved/cabinet-features";
 import { factorySkuSnapshotLine } from "./types";
 
 /** D32: read-only callout. Broker does not edit the factory catalog (D15/D31). */
@@ -10,7 +11,11 @@ export function FactorySkuSnapshot({
   manufacturerSkuId?: string | null;
   attrs?: Parameters<typeof factorySkuSnapshotLine>[0]["attrs"];
 }) {
-  const line = factorySkuSnapshotLine({ manufacturerSkuId, attrs });
+  const line = factorySkuSnapshotLine({
+    manufacturerSkuId,
+    attrs,
+    includeWeight: commercialInvoiceUiEnabled(),
+  });
   if (!line) return null;
   return (
     <div className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-[#7a7f89]">

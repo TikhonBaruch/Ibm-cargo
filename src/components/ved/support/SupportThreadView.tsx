@@ -45,45 +45,57 @@ export function SupportThreadView({
         ) : null}
         <SupportTicketChip status={ticketStatus} audience={audience} />
       </div>
-      <ul className="mb-4 max-h-[min(50vh,420px)] space-y-2 overflow-y-auto">
+      <div className="chat-box tall" style={{ maxHeight: "min(50vh, 420px)" }}>
         {messages.map((m) =>
           m.isSystem ? (
-            <li key={m.id} className="px-1 text-center text-xs italic text-[var(--kb-muted)]">
+            <div key={m.id} className="bubble" style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
               {m.body}
-              <span className="ml-2 not-italic">
+              <div className="meta">
                 {m.createdAt ? new Date(m.createdAt).toLocaleString("ru-RU") : ""}
-              </span>
-            </li>
+              </div>
+            </div>
           ) : (
-            <li key={m.id} className="rounded-2xl bg-slate-50 px-3 py-2 text-sm">
-              <div className="text-xs text-[var(--kb-muted)]">
+            <div
+              key={m.id}
+              className={
+                audience === "admin"
+                  ? m.author?.role === "ADMIN" || m.author?.role === "EDITOR"
+                    ? "bubble me"
+                    : "bubble"
+                  : m.author?.role === "CLIENT"
+                    ? "bubble me"
+                    : "bubble"
+              }
+            >
+              <div className="meta">
                 {m.author?.name || m.author?.role || "Участник"}
                 {m.author?.role ? ` · ${m.author.role}` : ""}
                 {" · "}
                 {m.createdAt ? new Date(m.createdAt).toLocaleString("ru-RU") : ""}
               </div>
-              <p className="mt-1 whitespace-pre-wrap">{m.body}</p>
-            </li>
+              <p className="whitespace-pre-wrap">{m.body}</p>
+            </div>
           )
         )}
-        {messages.length === 0 && (
-          <li className="text-sm text-[var(--kb-muted)]">Пока нет сообщений</li>
-        )}
-      </ul>
+        {messages.length === 0 && <div className="bubble">Пока нет сообщений</div>}
+      </div>
       {canReply && (
         <>
-          <textarea
-            className="mb-3 min-h-[88px] w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-            value={reply}
-            onChange={(e) => onReplyChange(e.target.value)}
-            placeholder={audience === "admin" ? "Ответ клиенту" : "Ваш ответ"}
-            maxLength={4000}
-          />
+          <div className="field" style={{ marginTop: 12 }}>
+            <label>{audience === "admin" ? "Ответ клиенту" : "Ваш ответ"}</label>
+            <textarea
+              rows={3}
+              value={reply}
+              onChange={(e) => onReplyChange(e.target.value)}
+              placeholder={audience === "admin" ? "Ответ клиенту" : "Ваш ответ"}
+              maxLength={4000}
+            />
+          </div>
           <button
             type="button"
             disabled={busy || !reply.trim()}
             onClick={onSend}
-            className="rounded-full bg-[#2b72f4] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="btn btn-primary btn-sm"
           >
             Отправить
           </button>

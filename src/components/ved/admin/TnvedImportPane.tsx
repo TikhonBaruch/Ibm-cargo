@@ -147,14 +147,14 @@ export function TnvedImportPane({
 
   return (
     <section className="max-w-3xl space-y-5">
-      <div className="rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+      <div className="card">
         <h2 className="text-base font-semibold">Справочник в системе</h2>
         <p className="mt-1 text-sm text-[var(--kb-muted)]">
           Поиск по коду или названию — чтобы не дублировать уже загруженные позиции.
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="search-row" style={{ marginTop: 12 }}>
           <input
-            className="min-w-[220px] flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm"
+            type="search"
             placeholder="8471 или ноутбуки"
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -165,7 +165,7 @@ export function TnvedImportPane({
           <button
             type="button"
             disabled={searchBusy || q.trim().length < 2}
-            className="rounded-full border border-[#2b72f4]/40 px-4 py-2 text-sm font-semibold text-[#2b72f4] disabled:opacity-50"
+            className="btn btn-primary btn-sm"
             onClick={() => void runSearch()}
           >
             Найти
@@ -173,7 +173,7 @@ export function TnvedImportPane({
           <button
             type="button"
             disabled={busy}
-            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold disabled:opacity-50"
+            className="btn btn-ghost btn-sm"
             onClick={() => onImport((demoPack as { items: TnvedImportItem[] }).items)}
           >
             Загрузить демо-набор
@@ -238,7 +238,7 @@ export function TnvedImportPane({
       </div>
 
       {mode === "single" && (
-        <div className="space-y-3 rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+        <div className="space-y-3 card">
           <p className="text-sm text-[var(--kb-muted)]">
             Укажите код (2–10 цифр) и название на русском. Ставка пошлины и НДС — опционально для
             подсказки брокеру.
@@ -303,7 +303,7 @@ export function TnvedImportPane({
       )}
 
       {mode === "csv" && (
-        <div className="space-y-3 rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+        <div className="space-y-3 card">
           <p className="text-sm text-[var(--kb-muted)]">
             Колонки:{" "}
             <code className="rounded bg-slate-100 px-1 text-xs">code,titleRu[,dutyPct][,vatPct]</code>
@@ -407,7 +407,7 @@ export function TnvedImportPane({
       )}
 
       {mode === "json" && (
-        <div className="space-y-3 rounded-[28px] border border-black/[0.04] bg-white p-5 shadow-sm">
+        <div className="space-y-3 card">
           <p className="text-sm text-[var(--kb-muted)]">
             Для выгрузок из пайплайна LLM. Формат{" "}
             <code className="rounded bg-slate-100 px-1 text-xs">{"{ items: [...] }"}</code>, до 500

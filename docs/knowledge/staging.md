@@ -17,21 +17,29 @@
 
 ## Vercel Preview
 
+**C32 DevEx:** полный чеклист Visit Preview + mock topup + SSO bypass — [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md).
+
 1. Push ветки → Vercel создаёт preview URL (`https://ibm-cargo-*-*.vercel.app`).
-2. Env: **зеркало** ключей этого приложения — как минимум `DATABASE_URL` на **seeded** Postgres `newlsu_lbm` (`pg4.sweb.ru:5433`, пароль без `#` — канон [`database.md`](./database.md); `client@example.com` / `demo1234`), `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (origin preview, **не** `ibm-cargo.vercel.app`), `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, полный набор `S3_*`. Без seed вход даст «неверный пароль»; можно `/register`.
-3. Smoke:
+2. Env: **зеркало** ключей — как минимум `DATABASE_URL` на **Preview** (часто переменная висит только на Production) → seeded Postgres `newlsu_lbm` на `pg4.sweb.ru:5433` (`client@example.com` / `demo1234`; пароль БД без `#` — канон [`database.md`](./database.md)). Клики: [`plan-preview-auth.md`](./plan-preview-auth.md) §5. Проверка: `GET /health` → `databaseUrl: true`. Также `NEXTAUTH_SECRET`, не копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app`, `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, `S3_*`. Без seed вход даст «неверный пароль»; можно `/register`.
+3. Доступ: **Visit Preview** (SSO) **или** `VERCEL_AUTOMATION_BYPASS_SECRET` + header `x-vercel-protection-bypass` (C32b). Без этого curl/агент → `vercel.com/sso-api`.
+4. Smoke: при выключенном mock topup `smoke:mvp` падает на seeded `client@example.com` (баланс ≥ 1000 ₽). Полный signup→topup: `ALLOW_MOCK_TOPUP=1` + `mockTopupAllowed` в admin.
 
 ```bash
+# доступность без записи в БД (SSO → exit 1; bypass/open → OK)
+TEST_API_URL=https://your-preview.vercel.app npm run probe:preview
+
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:mvp
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:payments
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:full
 # spine bundle (mvp → payments → client → broker → full):
 TEST_API_URL=https://your-preview.vercel.app npm run smoke:standalone
+# с bypass (секрет только в env / CI, не в git):
+VERCEL_AUTOMATION_BYPASS_SECRET=… TEST_API_URL=https://your-preview.vercel.app npm run smoke:standalone
 ```
 
-4. `NEXTAUTH_URL` на preview должен совпадать с origin preview-деплоя (не копировать prod URL вслепую).
-5. Если build: *No Next.js version detected* — Settings Root Directory = `.`, Framework = **Services**; `"next"` уже в корневом `package.json`. Не открывать `https://ibm-cargo.vercel.app`. Канон: [`plan-vercel-services.md`](./plan-vercel-services.md) §8.
-6. Если build: *Build output contains no "functions" or "static" directory* — тот же Dashboard: Framework **Services**, Root `.`, проект **ibm-cargo** (не alias `ibm-cargo.vercel.app`). Prisma/allow-scripts warn в том же логе не фатальны. Канон: [`plan-vercel-services.md`](./plan-vercel-services.md) §9.
+5. `NEXTAUTH_URL` на preview должен совпадать с origin preview-деплоя (не копировать prod URL вслепую).
+6. Если build: *No Next.js version detected* — Settings Root Directory = `.`, Framework = **Services**; `"next"` уже в корневом `package.json`. Не открывать `https://ibm-cargo.vercel.app`. Канон: [`plan-vercel-services.md`](./plan-vercel-services.md) §8.
+7. Если build: *Build output contains no "functions" or "static" directory* — тот же Dashboard: Framework **Services**, Root `.`, проект **ibm-cargo** (не alias `ibm-cargo.vercel.app`). Prisma/allow-scripts warn в том же логе не фатальны. Канон: [`plan-vercel-services.md`](./plan-vercel-services.md) §9.
 
 ## Prod smoke (после merge в `main`)
 
@@ -59,6 +67,8 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 
 | Дата | Smoke | Результат | Заметки |
 |------|-------|-----------|---------|
+| 2026-08-29 | **C32** Preview `probe:preview` (без bypass) | **SSO_BLOCK** | `ibm-cargo-o0eyq3bya-…` → 302 sso-api; C32c ждёт C32b secret · [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md) |
+| 2026-08-29 | prod `/health` ibm-cargo-phi | **OK** | `databaseUrl: true` (reachability; не C32c) |
 | 2026-08-25 | **go-live merge** M2+M0+D36 → `main` | **done** | [`plan-go-live-mvp.md`](./plan-go-live-mvp.md) |
 | 2026-08-25 | post-merge prod smoke | **PASS** | mvp #47937 · full #47938 · client · broker · payments |
 | 2026-08-25 | `smoke:standalone` (prod spine bundle) | **PASS** | mvp → payments → client #47932 → broker #47807 → full #47940 |

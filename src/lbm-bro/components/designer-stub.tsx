@@ -16,9 +16,17 @@ export type DesignerStubProps = {
 };
 
 /**
- * Marks UI that exists in the lbm-bro design but is not wired to LBM domain.
- * Visible to reviewers: do not hide missing product behind silent no-ops.
+ * Hold-module note from the design brief.
+ * Call sites keep title / intent / gap in source (the “comment”).
+ * Visual badge is off — restore by returning DESIGNER_STUB_ASIDE.
  */
+export function DesignerStub(_props: DesignerStubProps) {
+  return null;
+}
+
+/*
+Restore visual (DesignerStub):
+
 export function DesignerStub({
   title,
   intent,
@@ -43,3 +51,4 @@ export function DesignerStub({
     </aside>
   );
 }
+*/

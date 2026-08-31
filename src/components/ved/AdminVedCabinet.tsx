@@ -7,7 +7,8 @@
  */
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { VedShell, VedEmptyState, api } from "./VedShell";
+import { VedEmptyState, api } from "./VedShell";
+import { LbmCabinetsShell } from "./LbmCabinetsShell";
 import { useVedToast } from "./feedback/VedToast";
 import {
   SupportInboxPane,
@@ -34,6 +35,7 @@ import {
   type PlatformSettings,
 } from "./admin/types";
 import type { TnvedImportItem } from "@/lib/ved/tnved";
+import { designerManufacturerChromeEnabled } from "@/lib/ved/cabinet-features";
 import { DashboardPane } from "./admin/DashboardPane";
 import { BookingsPane } from "./admin/BookingsPane";
 import { AdminCalcDetailDrawer } from "./admin/AdminCalcDetailDrawer";
@@ -802,25 +804,23 @@ export function AdminVedCabinet() {
   });
 
   return (
-    <VedShell
+    <LbmCabinetsShell
+      variant="admin"
       brand="LBM Брокер"
       subtitle="Админ · платформа"
       nav={navWithBadge}
       title={meta.title}
       lead={meta.lead}
-      markVariant="admin"
       avatarUrl="/cabinets/assets/avatar-user.jpg"
       footer={
         <>
-          SLA платформы: <strong className="text-white">≤ {settings.defaultSlaHours} ч</strong>
+          SLA платформы: <strong>≤ {settings.defaultSlaHours} ч</strong>
           <br />
-          Онлайн брокеров (approved): <strong className="text-white">{approvedBrokers.length}</strong>
+          Онлайн брокеров (approved): <strong>{approvedBrokers.length}</strong>
         </>
       }
       actions={
-        <span className="rounded-full bg-[#e8f0fe] px-3 py-1 text-xs font-bold text-[#1a5fd4]">
-          Прод · 152-ФЗ
-        </span>
+        <span className="pill blue">Прод · 152-ФЗ</span>
       }
     >
       {error && booted && (
@@ -907,6 +907,7 @@ export function AdminVedCabinet() {
           selectedCompanyId={selectedCompanyId}
           onOpenCompany={(id) => void openCompany(id)}
           usersHref={p("/users")}
+          showManufacturers={designerManufacturerChromeEnabled()}
         />
       )}
 
@@ -1080,6 +1081,6 @@ export function AdminVedCabinet() {
       {pathname === p("/audit") && <AuditPane rows={audit} />}
         </>
       )}
-    </VedShell>
+    </LbmCabinetsShell>
   );
 }

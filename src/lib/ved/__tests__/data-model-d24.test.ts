@@ -23,6 +23,7 @@ import {
   parentHsCode,
   buildTnvedImportItem,
   parseTnvedCsv,
+  tnvedSearchStems,
 } from "../tnved";
 
 describe("D24 product description", () => {
@@ -105,9 +106,14 @@ describe("D24 TN VED helpers", () => {
             { notes: { contains: "8471", mode: "insensitive" } },
           ]),
         }),
-        take: 10,
+        take: 40,
       })
     );
+  });
+
+  it("tnvedSearchStems stems household queries", () => {
+    expect(tnvedSearchStems("футболка")).toContain("футболк");
+    expect(tnvedSearchStems("кепка")).toEqual(expect.arrayContaining(["кепка", "кепк"]));
   });
 
   it("getTnvedByCode normalizes display form", async () => {

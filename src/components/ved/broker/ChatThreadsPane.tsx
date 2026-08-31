@@ -29,27 +29,32 @@ export function ChatThreadsPane({
 }) {
   if (threads.length === 0) {
     return (
-      <VedEmptyState
-        title="Нет активных диалогов"
-        hint="Чат появляется после claim — когда заявка перейдёт в «В работе»."
-        actionLabel="Открыть очередь"
-        actionHref={queueHref}
-      />
+      <div className="card">
+        <VedEmptyState
+          title="Нет активных диалогов"
+          hint="Чат появляется после claim — когда заявка перейдёт в «В работе»."
+          actionLabel="Открыть очередь"
+          actionHref={queueHref}
+        />
+      </div>
     );
   }
 
   return (
-    <ul className="space-y-2">
-      {threads.map((t) => {
-        const calc = t.calculation;
-        if (!calc) return null;
-        const last = t.messages?.[0];
-        const active = selectedId === calc.id;
-        const waitingBroker = t.waitingOn === "BROKER";
-        return (
-          <li key={t.id}>
+    <div className="card">
+      <h3>Чаты по заявкам</h3>
+      <div className="activity-list">
+        {threads.map((t) => {
+          const calc = t.calculation;
+          if (!calc) return null;
+          const last = t.messages?.[0];
+          const active = selectedId === calc.id;
+          const waitingBroker = t.waitingOn === "BROKER";
+          return (
             <button
+              key={t.id}
               type="button"
+              className={`activity-item${active ? " on" : ""}`}
               onClick={() =>
                 onSelect({
                   id: calc.id,
@@ -59,32 +64,22 @@ export function ChatThreadsPane({
                   clientUser: calc.clientUser ?? undefined,
                 })
               }
-              className={`w-full rounded-[22px] border px-4 py-3 text-left transition ${
-                active
-                  ? "border-[#2b72f4] bg-[#e8f0ff] shadow-sm"
-                  : "border-black/[0.04] bg-white hover:border-[#2b72f4]/30"
-              }`}
             >
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-bold text-[var(--kb-ink)]">
-                    {calc.number} · {calc.title}
-                  </div>
-                  <div className="truncate text-xs text-[var(--kb-muted)]">
-                    {calc.clientUser?.name || "Клиент"}
-                    {last?.body ? ` · ${last.body}` : ""}
-                  </div>
-                </div>
-                {waitingBroker && (
-                  <span className="shrink-0 rounded-full bg-[#2b72f4] px-2 py-0.5 text-[10px] font-bold text-white">
-                    ответ
-                  </span>
-                )}
+              <div className={`dot${waitingBroker ? " warn" : ""}`} />
+              <div>
+                <strong>
+                  {calc.number} · {calc.title}
+                </strong>
+                <span>
+                  {calc.clientUser?.name || "Клиент"}
+                  {last?.body ? ` · ${last.body}` : ""}
+                </span>
               </div>
+              {waitingBroker && <span className="pill blue">ответ</span>}
             </button>
-          </li>
-        );
-      })}
-    </ul>
+          );
+        })}
+      </div>
+    </div>
   );
 }

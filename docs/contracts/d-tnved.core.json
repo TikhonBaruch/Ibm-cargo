@@ -3,7 +3,7 @@
   "$id": "https://lbm.local/contracts/d-tnved.core.json",
   "title": "D-TNVED core reference directory",
   "description": "TN VED (HS) nomenclature tree + duty hints (D24). GET :code returns the opendata card envelope (layers A–G). Lookup/import; broker still edits item HS text until directory is authoritative.",
-  "x-contractVersion": 2,
+  "x-contractVersion": 4,
   "x-owner": "containers/api",
   "x-transport": [
     "GET /v1/tnved/search",
@@ -48,6 +48,21 @@
         "items": {
           "type": "array",
           "items": { "$ref": "#/definitions/tnvedCode" }
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of active TnvedCode rows (C18 directory header)"
+        },
+        "leaves": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Active 10-digit leaves"
+        },
+        "variations": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Active rows with search notes (aliases / index tokens)"
         }
       }
     },
@@ -71,7 +86,23 @@
         "isLeaf": { "type": "boolean" },
         "notes": { "type": ["string", "null"] },
         "ancestors": { "type": "array" },
+        "children": {
+          "type": "array",
+          "description": "Direct tree children via parentCode (max 16)"
+        },
+        "related": {
+          "type": "array",
+          "description": "C20 overlay: not / variant / part / kit. Not a Prisma junction."
+        },
         "rate": { "type": ["object", "null"] },
+        "explanation": {
+          "type": ["object", "null"],
+          "description": "C30c layer D: PSN excerpt (notes or must-cover overlay), not alias tokens"
+        },
+        "classificationDecisions": {
+          "type": "array",
+          "description": "C30d layer E: EEC classification decisions by 10-digit (fail-open empty)"
+        },
         "paymentsHint": {
           "type": "object",
           "required": ["vatPct", "feeRule"],
@@ -116,6 +147,14 @@
           "level": 2
         }
       ],
+      "children": [],
+      "related": [
+        {
+          "code": "8471410000",
+          "kind": "not",
+          "why": "Портативные машины ≤10 кг (ноутбук/планшет) 8471 30 vs настольный системный блок 8471 41."
+        }
+      ],
       "rate": null,
       "paymentsHint": { "vatPct": 22, "feeRule": "ПП 1637" },
       "sources": [
@@ -139,7 +178,10 @@
           "isLeaf": true,
           "isActive": true
         }
-      ]
+      ],
+      "total": 13123,
+      "leaves": 10081,
+      "variations": 430
     }
   },
   "x-invariants": [

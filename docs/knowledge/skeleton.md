@@ -1,7 +1,7 @@
 # Каркас проекта (skeleton)
 
 Единая карта структуры и запретов для агентов и CI.  
-Индекс KB: [`README.md`](./README.md). Инварианты: [`decisions.md`](./decisions.md) (D1–D33). Ownership: [`branches.md`](./branches.md).  
+Индекс KB: [`README.md`](./README.md). Инварианты: [`decisions.md`](./decisions.md) (D1–D37). Ownership: [`branches.md`](./branches.md).  
 Данные товаров / ТН ВЭД / история: [`data-model.md`](./data-model.md) (D24).  
 Инкотермс / комментарии ICC (Growth hold): [`incoterms.md`](./incoterms.md).  
 Таможенные платежи (НДС 22% / сбор ПП 1637): [`customs-payments.md`](./customs-payments.md).  
@@ -13,7 +13,8 @@ Signup CLIENT: **D25** · orch durable: **D26** · фокус частник: **
 
 ```text
 app/                      # Next routes (Vercel web) + /api/v1 session API
-app/cabinet/**            # Client surface routes → ClientCabinet
+app/cabinet/**            # Client surface routes → ClientCabinet (domain)
+app/client/**             # UI lab lbm-bro (visual; DemoProvider, не /api/v1)
 app/broker/**             # Broker surface routes → BrokerCabinet
 app/admin/**              # Admin VED (D28: integrations/users/audit/settings) → AdminVedCabinet
 app/api/v1/**             # Domain HTTP (session); optional proxy → containers/api
@@ -21,9 +22,10 @@ src/lib/ved/              # Domain: calculations, domain, ledger, access, settin
                           # product-description, tnved, calculation-events (D24),
                           # orchestration / orch-health (D26), platform-gates,
                           # integrations / super-admin / infra-access (D28)
-src/components/ved/       # Cabinets + VedShell
+src/components/ved/       # Cabinets + LbmCabinetsShell (live) + VedShell (manufacturer/widgets)
 src/components/ved/client/# Client panes (ветвь 1)
 src/components/ved/broker/# Broker panes (ветвь 2)
+src/lbm-bro/              # UI lab visual (не domain; план: plan-lbm-bro-visual.md)
 docs/knowledge/cabinets/  # Инвентарь UI по контейнерам client/broker/admin + correctness
 prisma/                   # Schema + seed (Tnved* / CalculationEvent / orch tables D26)
 containers/api            # Domain extract (USE_DOMAIN_API=1) → C1 — D24/D26 writers parity
@@ -45,6 +47,7 @@ AGENTS.md                 # Правила для агентов
 | Зона | UI | Domain |
 |------|-----|--------|
 | Клиент | `ved/client/*`, `/cabinet`, `containers/client` | create/pay/shipping/topup/chat (+ optional `items[].attrs`) |
+| Клиент UI lab | `src/lbm-bro/*`, `/client` (не extract) | референс + DesignerStub; live = `/cabinet` ([`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md)) |
 | Брокер | `ved/broker/*`, `/broker`, `containers/broker` | claim/approve/items/payouts/SLA (+ acceptingJobs gate) |
 | Ядро | `proxy.ts` (Node UI), `access.ts`, `require-path-access`, `ved/proxy` BFF, ledger, tariffs, settings, `platform-gates` | статусы D8, pay-before-queue D11, D24 events/TN VED, D26 orch |
 | Admin | `AdminVedCabinet`, `/admin/*` VED (D28) | SUPPORT, orch (+retry), tnved import, integrations (+notify), toggles, users create/reset, client ADJUSTMENT, calc deep-link+PDF, finance CSV, broker acceptingJobs |
@@ -76,7 +79,7 @@ AGENTS.md                 # Правила для агентов
 
 - [ ] Есть письменный план в `docs/knowledge/` **до** кода (D33)?
 - [ ] Какая ветвь (1/2/3)? Папка ownership совпадает?
-- [ ] Нужен ли новый ADR или хватает D1–D33 / containerization C*?
+- [ ] Нужен ли новый ADR или хватает D1–D37 / containerization C*?
 - [ ] UI от baseline D14 / `ved-ui-cabinets-baseline` (не откатывать к MVP-шеллу / `CabinetsApp`)?
 - [ ] Кабинет UX: empty state / drawer / toast по [`cabinets/ux-saas.md`](./cabinets/ux-saas.md); очередь клиент→брокер→админ?
 - [ ] Unit на инвариант в `src/lib/ved/__tests__/`?

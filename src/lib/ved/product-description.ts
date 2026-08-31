@@ -110,31 +110,35 @@ export function isEmptyAttrValue(value: unknown): boolean {
   return false;
 }
 
-/** Required for client create: origin ISO-2 + manufacturer + composition. */
+/** Required for client create: origin ISO-2 + composition.
+ * manufacturerName temporarily optional (C7 visual). Restore: also require manufacturerName. */
 export function hasRequiredCreateAttrs(attrs?: ProductAttrs | null): boolean {
   if (!attrs) return false;
   const origin = String(attrs.originCountry || "")
     .trim()
     .toUpperCase();
-  return (
-    origin.length === 2 &&
-    !isEmptyAttrValue(attrs.manufacturerName) &&
-    !isEmptyAttrValue(attrs.composition)
-  );
+  return origin.length === 2 && !isEmptyAttrValue(attrs.composition);
 }
+
+export type RequiredCreateAttrKey = "originCountry" | "composition";
 
 /** Missing required keys for UI / API error text (empty = ok). */
 export function missingRequiredCreateAttrs(
   attrs?: ProductAttrs | null
-): Array<"originCountry" | "manufacturerName" | "composition"> {
-  const miss: Array<"originCountry" | "manufacturerName" | "composition"> = [];
+): RequiredCreateAttrKey[] {
+  const miss: RequiredCreateAttrKey[] = [];
   const origin = String(attrs?.originCountry || "")
     .trim()
     .toUpperCase();
   if (origin.length !== 2) miss.push("originCountry");
-  if (isEmptyAttrValue(attrs?.manufacturerName)) miss.push("manufacturerName");
+  // Restore: if (isEmptyAttrValue(attrs?.manufacturerName)) miss.push("manufacturerName");
   if (isEmptyAttrValue(attrs?.composition)) miss.push("composition");
   return miss;
+}
+
+/** Human error for create hard-reject. Restore manufacturer in the sentence when C7 lifts. */
+export function requiredCreateAttrsError(miss: string[]): string {
+  return `Обязательны страна происхождения (ISO-2) и состав (не хватает: ${miss.join(", ")})`;
 }
 
 /**

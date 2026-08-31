@@ -53,19 +53,24 @@ export function BookingsPane({
   );
 
   return (
-    <section>
-      <div className="mb-3 flex flex-wrap gap-2">
+    <div className="card">
+      <div className="card-head">
+        <div>
+          <h3>Все заявки на просчёт</h3>
+          <p>Фильтр по статусу и брокеру · live D8</p>
+        </div>
+        <button type="button" onClick={onReload} className="btn btn-ghost btn-sm">
+          Обновить
+        </button>
+      </div>
+      <div className="search-row">
         <input
-          className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
-          placeholder="Поиск"
+          type="search"
+          placeholder="Поиск по №, клиенту, товару…"
           value={q}
           onChange={(e) => onQ(e.target.value)}
         />
-        <select
-          className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
-          value={status}
-          onChange={(e) => onStatus(e.target.value)}
-        >
+        <select value={status} onChange={(e) => onStatus(e.target.value)}>
           <option value="all">Все статусы</option>
           {["QUEUED", "IN_REVIEW", "DONE", "SLA_RISK", "AI_READY", "AWAITING_PAYMENT"].map((s) => (
             <option key={s} value={s}>
@@ -73,11 +78,7 @@ export function BookingsPane({
             </option>
           ))}
         </select>
-        <select
-          className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
-          value={assignBrokerId}
-          onChange={(e) => onAssignBrokerId(e.target.value)}
-        >
+        <select value={assignBrokerId} onChange={(e) => onAssignBrokerId(e.target.value)}>
           <option value="">Брокер для назначения</option>
           {assignOptions.map((b) => (
             <option key={b.id} value={b.user.id}>
@@ -86,64 +87,47 @@ export function BookingsPane({
             </option>
           ))}
         </select>
-        <button
-          type="button"
-          onClick={onReload}
-          className="rounded-full bg-[#2b72f4] px-4 py-2 text-sm font-semibold text-white"
-        >
-          Обновить
-        </button>
       </div>
-      <div className="overflow-hidden rounded-[28px] border border-black/[0.04] bg-white shadow-sm">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-[var(--kb-muted)]">
-            <tr>
-              <th className="px-3 py-2 font-medium">№</th>
-              <th className="px-3 py-2 font-medium">Клиент</th>
-              <th className="px-3 py-2 font-medium">Товар</th>
-              <th className="px-3 py-2 font-medium">AI</th>
-              <th className="px-3 py-2 font-medium">Брокер</th>
-              <th className="px-3 py-2 font-medium">Статус</th>
-              <th className="px-3 py-2 font-medium" />
-            </tr>
-          </thead>
-          <tbody>
-            {calcs.map((c) => {
-              const active = selectedCalcId === c.id;
-              return (
-                <tr
-                  key={c.id}
-                  aria-selected={active}
-                  className={`cursor-pointer border-t border-slate-100 ${
-                    active
-                      ? "bg-[rgba(43,114,244,0.08)] shadow-[inset_3px_0_0_#2b72f4]"
-                      : "hover:bg-slate-50/80"
-                  }`}
-                  onClick={() => onOpenCalc(c.id)}
-                >
-                  <td className="px-3 py-2 font-medium">{c.number}</td>
-                  <td className="px-3 py-2">{c.company?.name || c.clientUser?.name}</td>
-                  <td className="px-3 py-2">{c.title}</td>
-                  <td className="px-3 py-2">
-                    {c.confidence != null ? `${Math.round(c.confidence * 100)}%` : "—"}
-                  </td>
-                  <td className="px-3 py-2">{c.brokerUser?.name || "—"}</td>
-                  <td className="px-3 py-2">
-                    <StatusPill status={c.status} />
-                  </td>
-                  <td className="space-x-1 px-3 py-2" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      type="button"
-                      className="text-slate-700 underline-offset-2 hover:underline"
-                      onClick={() => onOpenCalc(c.id)}
-                    >
+      <table className="data">
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>Клиент</th>
+            <th>Товар</th>
+            <th>AI</th>
+            <th>Брокер</th>
+            <th>Статус</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {calcs.map((c) => {
+            const active = selectedCalcId === c.id;
+            return (
+              <tr
+                key={c.id}
+                aria-selected={active}
+                className={`clickable${active ? " is-open" : ""}`}
+                onClick={() => onOpenCalc(c.id)}
+              >
+                <td>{c.number}</td>
+                <td>{c.company?.name || c.clientUser?.name}</td>
+                <td>{c.title}</td>
+                <td>{c.confidence != null ? `${Math.round(c.confidence * 100)}%` : "—"}</td>
+                <td>{c.brokerUser?.name || "—"}</td>
+                <td>
+                  <StatusPill status={c.status} />
+                </td>
+                <td onClick={(e) => e.stopPropagation()}>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => onOpenCalc(c.id)}>
                       Открыть
                     </button>
                     {assignBrokerId && ["QUEUED", "SLA_RISK", "IN_REVIEW"].includes(c.status) && (
                       <button
                         type="button"
                         disabled={busy}
-                        className="text-[#2b72f4]"
+                        className="btn btn-primary btn-sm"
                         onClick={() => onAssign(c.id, assignBrokerId)}
                       >
                         Назначить
@@ -153,24 +137,24 @@ export function BookingsPane({
                       <button
                         type="button"
                         disabled={busy}
-                        className="text-red-600"
+                        className="btn btn-danger btn-sm"
                         onClick={() => onEscalate(c.id)}
                       >
                         Эскалировать
                       </button>
                     )}
-                  </td>
-                </tr>
-              );
-            })}
-            {calcs.length === 0 && (
-              <tr>
-                <td colSpan={7}>{empty}</td>
+                  </div>
+                </td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </section>
+            );
+          })}
+          {calcs.length === 0 && (
+            <tr>
+              <td colSpan={7}>{empty}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }
