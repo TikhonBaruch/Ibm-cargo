@@ -23,6 +23,25 @@ export const TNVED_FALSE_FRIEND_PAIRS: ReadonlyArray<{ query: string; block: str
   { query: "огур", block: "кефир" },
 ];
 
+/**
+ * Coverage P0: plant-based «молоко/йогурт» must not map to dairy 04 / milk pack.
+ * Canon: docs/knowledge/plan-hint-coverage-p0.md
+ */
+const PLANT_DAIRY_RE =
+  /соев\w*|овсян\w*|миндальн\w*|кокосов\w*|рисов\w*|растительн\w*|plant[- ]?based|soy\s*(?:milk|yogurt|yoghurt)|oat\s*(?:milk|yogurt)|almond\s*(?:milk|yogurt)|coconut\s*(?:milk|yogurt)|rice\s*milk/i;
+
+/** Input device «мышь», not PC — blocks computers pack / laptop attr. */
+const POINTER_DEVICE_RE =
+  /(?:^|[^a-zа-я0-9])мышь(?:$|[^a-zа-я0-9])|(?:^|[^a-zа-я0-9])mouse(?:$|[^a-zа-я0-9])/i;
+
+export function isPlantDairyQuery(query: string): boolean {
+  return PLANT_DAIRY_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isPointerDeviceQuery(query: string): boolean {
+  return POINTER_DEVICE_RE.test(normalizeTnvedQueryText(query));
+}
+
 export function normalizeTnvedQueryText(s: string): string {
   return String(s || "")
     .trim()
