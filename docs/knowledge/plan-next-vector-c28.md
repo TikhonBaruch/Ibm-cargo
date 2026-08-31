@@ -58,10 +58,10 @@ C35  offline-first HS + DeepSeek on miss (brief → plan → code)
 | Шаг | Действие | Done when | Status |
 |-----|----------|-----------|--------|
 | C28a | Merge PR **#16** → `main` (внутри уже #19 C19–C31) | pay-first на ibm-cargo-phi | **done** 2026-08-31 (`b7418aa`) |
-| C28b | Ручной: `/cabinet/new` → Далее → Оплата → код только после pay | HS = `—` до pay | ready in #16 |
-| C28c | `TEST_API_URL=<preview> npm run smoke:mvp` (+ seed fallback ok) | PASS | after O1–O3 |
-| C28d | `npm run test:classify-cascade` на CI | PASS | in #16 |
-| C28e | KB: `current-app` — C18–C31 **на main** | запись | after merge #16 |
+| C28b | Ручной / smoke: create→pay→approve | HS path after pay | **done** — `smoke:mvp` PASS on prod 2026-08-31 |
+| C28c | `TEST_API_URL=<prod\|preview> npm run smoke:mvp` | PASS | **done on prod**; Preview after O1–O3 |
+| C28d | `npm run test:classify-cascade` | PASS | **done** 94 tests 2026-08-31 |
+| C28e | KB: `current-app` — C18–C31 **на main** | запись | **done** (this closeout) |
 
 **Ownership:** Client + Core. Без новых domain writers.
 
