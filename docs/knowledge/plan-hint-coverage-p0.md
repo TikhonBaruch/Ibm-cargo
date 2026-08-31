@@ -1,7 +1,7 @@
-# Plan: Hint coverage P0–P3
+# Plan: Hint coverage P0–P4
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0–P3 done** (PR #43) · post-cycle §C8.  
+**Статус:** **P0–P3 done** (#43/#44) · **P4 in progress** (this PR).  
 **Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md).
 
 ## Сделано
@@ -12,23 +12,31 @@
 | **P1** | Triggers: овощи · сапоги · свитер · power bank · сметана · системный блок |
 | **P2** | Packs: `fruit-fresh` · `woven-apparel` · `prepared-food` (+ juice/soup guards) |
 | **P3** | Packs: `art` · `bags` · `watches` · `beverages` · `speakers` · `furniture` · `tires` · `cycles` |
+| **P4** | Packs: `pharma` · `books` · `appliances` · `lamps` · `fasteners` · `paint` · `pet-food` · `agri-inputs` |
 
-## C8 — Post-cycle re-probe (after P3)
+## P4 — open sections after P3 (C8)
 
-**0 NEW WRONG** on prior matrix after tire fix (`шина` token-boundary ≠ `машина`). Closed C6/C7 open sections (art/bags/watches/bev/audio/furniture/tires/bikes).
+| Pack | HS focus | Triggers (RU stems) |
+|------|----------|---------------------|
+| `pharma` | 3004 / 2106 | лекарств, витамин, таблетк, БАД |
+| `books` | 4901 / 4820 | книга, тетрад, учебник, журнал |
+| `appliances` | 8508 / 8450 / 8418 / 8516 | пылесос, стиральн, холодильник, фен, утюг |
+| `lamps` | 9405 | лампа, светильник, люстра, торшер (LED → `led`) |
+| `fasteners` | 7317 / 7318 | гвозд, шуруп, болт, гайк |
+| `paint` | 3208 / 4814 | краска, обои |
+| `pet-food` | 2309 | корм для … (live `кот`/`собака` = POLICY/null) |
+| `agri-inputs` | 1209 / 31 / 3808 | семена, удобрен, гербицид |
 
-### New open test sections (no C21 pack yet)
+### Acceptance
 
-| Секция | Примеры |
-|--------|---------|
-| pharma-30 | лекарство, витамины |
-| books-49 | книга, тетрадь |
-| home-appliances | утюг, фен, пылесос, холодильник, стиральная машина |
-| lighting-ex-led | лампа настольная (led pack covers LED only) |
-| hardware-73 | гвозди, шурупы |
-| paint-32 | краска, обои |
-| pets-live | кот, собака (не toys) |
-| agri-inputs | семена, удобрение |
+- Pack count **25 → 33**; fixture ≥3 positive / ≥5 mustNot per pack.
+- Unit `hint-coverage-p4.test.ts`; regressions: notebook→computers, картина→art, LED→led; кот/собака null.
+- `npm run test:ci` green; post-cycle re-probe for newer open sections.
+
+## C8 — Post-cycle re-probe (after P3) — closed by P4
+
+Closed: pharma / books / appliances / lighting-ex-led / hardware / paint / pet-food / agri.  
+**Still POLICY:** pets-live (`кот`, `собака`).
 
 ## Проверка
 
