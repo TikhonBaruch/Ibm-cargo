@@ -118,7 +118,7 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 |----|------|---------|
 | C33 | Vision OCR E2E | OCR key + UI upload path |
 | C34 | ЮKassa live | Track A keys; выкл mock |
-| **C35** | **Offline-first HS + DeepSeek только на miss** (цепочки ∥ структура БД-2) | Бриф готов → детальный план до кода: [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) |
+| **C35** | **Offline-first HS + DeepSeek только на miss** | **planned** — [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · brief [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) |
 | — | Voice / proto-bar | не MVP |
 | — | Shipping / factory CTA | D27 hold |
 
@@ -128,9 +128,9 @@ Fixture: electronics, apparel, auto parts, dairy, cosmetics. Aliases: `tnved-inv
 
 | Шаг | Что | Status |
 |-----|-----|--------|
-| C35-brief | Точная постановка задачи, метрики-кандидаты, вопросы §8 | **done** — [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md) |
-| C35-plan | Ответы на вопросы брифа → `plan-c35-offline-first-hs.md` (фазы A∥B) | **next dialogue** |
-| C35-impl | Код только после C35-plan | blocked |
+| C35-brief | Точная постановка задачи, метрики-кандидаты, вопросы §8 | **done** |
+| C35-plan | Ответы §8 → `plan-c35-offline-first-hs.md` | **done** 2026-08-31 |
+| C35-impl | Код: gate A1/A2 + B1… по плану | **next** — ветка `cursor/c35-offline-first-impl-e1f0` |
 
 **Не смешивать** с C33 vision E2E и C34 ЮKassa.
 
