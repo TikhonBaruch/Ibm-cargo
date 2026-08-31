@@ -90,4 +90,34 @@ describe("verified-determinations", () => {
     };
     await expect(listSimilarPrecedents(db as never, { name: "аб" })).resolves.toEqual([]);
   });
+
+  it("C35d: equivalent Latin/RU descriptions share fingerprint", () => {
+    const a = buildFingerprint({
+      name: "iPhone-15!",
+      description: "Смартфон  Apple",
+      attrs: { brand: "Apple", purpose: "телефон" },
+    });
+    const b = buildFingerprint({
+      name: "iphone 15",
+      description: "смартфон apple",
+      attrs: { purpose: "телефон", brand: "Apple" },
+    });
+    expect(a).toBe(b);
+    expect(a.length).toBeGreaterThan(0);
+  });
+
+  it("C35d: CN-only name yields non-empty stable fingerprint", () => {
+    const a = buildFingerprint({ name: "充电宝" });
+    const b = buildFingerprint({ name: "充电宝" });
+    expect(a).toBeTruthy();
+    expect(a).toBe(b);
+    expect(a).toContain("充电宝");
+  });
+
+  it("C35d: mixed CN+EN keeps both token families", () => {
+    const fp = buildFingerprint({ name: "phone case 手机壳" });
+    expect(fp).toContain("phone");
+    expect(fp).toContain("case");
+    expect(fp).toContain("手机壳");
+  });
 });

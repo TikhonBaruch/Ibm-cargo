@@ -33,6 +33,9 @@ describe("critical HS reliability — classify aliases", () => {
     ["кеды", "6404110000"],
     ["кроссовки", "6404110000"],
     ["кеды текстиль", "6404110000"],
+    ["огурец", "0707"],
+    ["огурцы", "0707"],
+    ["помидор", "0702"],
   ] as const)("%s → %s", (q, code) => {
     const hit = matchClassifyAlias(q);
     expect(hit?.alias.code, q).toBe(code);

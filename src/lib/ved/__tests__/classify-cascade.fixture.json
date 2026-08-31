@@ -42,5 +42,8 @@
   { "q": "тормозные колодки", "expectHsPrefix": "870830", "minConf": 0.84 },
   { "q": "纯牛奶", "expectHsPrefix": "0401", "minConf": 0.84 },
   { "q": "奶粉 milk powder", "expectHsPrefix": "040210", "minConf": 0.84 },
-  { "q": "yogurt 酸奶", "expectHsPrefix": "0403", "minConf": 0.84 }
+  { "q": "yogurt 酸奶", "expectHsPrefix": "0403", "minConf": 0.84 },
+  { "q": "огурец", "expectHsPrefix": "0707", "minConf": 0.84 },
+  { "q": "огурцы свежие", "expectHsPrefix": "0707", "minConf": 0.84 },
+  { "q": "помидор", "expectHsPrefix": "0702", "minConf": 0.84 }
 ]

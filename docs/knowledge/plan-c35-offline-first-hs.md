@@ -1,11 +1,11 @@
 # План: C35 offline-first HS + DeepSeek только на miss
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **implementing** — **C35a** на `main` (#33); **C35c** B1 (этот PR): ops count + smoke `skipReason`.  
+**Статус:** **implementing** — C35a/c на `main` (#33/#35); **C35d+e** + morph H4/H5 в этом PR.  
 Бриф: [`plan-offline-first-hs-brief.md`](./plan-offline-first-hs-brief.md).  
 Канон: [`ai-pipeline.md`](./ai-pipeline.md) · [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) · [`plan-ai-chains-1-2-3.md`](./plan-ai-chains-1-2-3.md) · D27 / D35 / D36.
 
-**Код:** C35a [#33](https://github.com/TikhonBaruch/Ibm-cargo/pull/33). C35c branch `cursor/c35c-precedent-smoke-e1f0`. Morph hints [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) **merged** в `main`.
+**Код:** C35a [#33](https://github.com/TikhonBaruch/Ibm-cargo/pull/33) · C35c [#35](https://github.com/TikhonBaruch/Ibm-cargo/pull/35) · morph H1–H3 [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34). Ветка `cursor/c35de-h4h5-e1f0`.
 
 ---
 
@@ -59,7 +59,7 @@ create / import row
 |----|------|--------|-----------|
 | **B1** | Рост БД-2 + smoke precedent | **Must** | после N approve: `ops:precedent-count` total↑; повторный create → `precedent-v1` + `skipReason=offline-hit:precedent-v1` (`smoke:precedent-csv`) |
 | **B2** | Alias / critical queries | **Should** | уже сильно закрыто C31/#24/O4; держать fixture зелёным; новые aliases только по miss-логам |
-| **B3** | Нормализация fingerprint (attrs / CN-RU) | **Should** | unit: эквивалентные описания → один fingerprint / lexical hit |
+| **B3** | Нормализация fingerprint (attrs / CN-RU) | **Should** | dual-path attrs parity; CN tokens в `tokenize`; unit: эквивалентные описания → один fp; CN-only non-empty |
 | **B4** | Bulk seed approved CSV | **Could** | только если B1 мало данных; D15 no synthetic |
 | **B5** | Vector на sweb | **Won't** | KB явно: lexical-only на Hobby/sweb |
 
@@ -68,16 +68,16 @@ create / import row
 ## 4. Фазы реализации (после merge плана)
 
 ```text
-C35a  A1+A2 gate + skipReason + unit (Next) + dual-path api  ← **done on main (#33)**
+C35a  A1+A2 gate + skipReason + unit (Next) + dual-path api  ← **done (#33)**
 C35b  Dual-path containers/api зеркало A1  ← **folded into C35a**
-C35c  B1 smoke precedent + KB ops count recipe  ← **this PR**
-C35d  B3 fingerprint normalize (если miss в fixture)
-C35e  Метрики на must-cover corpus ≥ цели §5; A4 checklist
+C35c  B1 smoke precedent + KB ops count recipe  ← **done (#35)**
+C35d  B3 fingerprint normalize (CN tokens + dual-path attrs)  ← **this PR**
+C35e  Метрики must-cover ≥ 60% offline-hit + A4 checklist  ← **this PR**
 —— hold ——
 A3 shadow · B4 bulk · B5 vector · admin UI
 ```
 
-**Параллельный трек (не C35):** morph hints H1–H3 ([`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) §4) — [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) **merged**.
+**Параллельный трек:** morph H1–H3 [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34) **merged**; H4/H5 (produce invoice aliases + `test:tnved-morphology`) — **this PR**.
 
 Ownership: A → Core/orch; B → Core; UI panes **не** трогать в Must.
 
@@ -115,12 +115,13 @@ Model ≠ container (D35). UI не зовёт matrix (D27).
 ## 7. Проверка
 
 ```bash
-npm run test:unit          # gate + fingerprint
-npm run test:classify-cascade
+npm run test:unit          # gate + fingerprint (+ C35d CN)
+npm run test:classify-cascade  # includes C35e ≥60% offline-hit assert
+npm run test:tnved-morphology  # H5 A–E + critical HS
 npm run test:ci
-TEST_API_URL=<host> npm run smoke:mvp
-TEST_API_URL=<host> npm run smoke:precedent-csv   # precedent-v1 + skipReason + CSV
-DATABASE_URL=<app-db> npm run ops:precedent-count # C35c B1 count↑
+TEST_API_URL=<host> npm run smoke:mvp          # A4: без DEEPSEEK_API_KEY → AI_READY
+TEST_API_URL=<host> npm run smoke:precedent-csv
+DATABASE_URL=<app-db> npm run ops:precedent-count
 # dual-path: USE_DOMAIN_API=0 vs 1 create smoke узкий
 ```
 
@@ -143,22 +144,23 @@ DATABASE_URL=<app-db> npm run ops:precedent-count # C35c B1 count↑
 | Файл | Действие при impl |
 |------|-------------------|
 | Этот план | статусы фаз C35a–e |
-| Бриф | status → **planned → implementing** |
-| [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) | C35 → planned |
-| [`ai-pipeline.md`](./ai-pipeline.md) | gate LLM skip + skipReason |
-| [`dual-path-parity.md`](./dual-path-parity.md) | строка create/import gate |
-| [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) | §Ops count recipe |
-| [`runbook.md`](./runbook.md) | ops:precedent-count |
+| Бриф | implementing → closeout после merge |
+| [`ai-pipeline.md`](./ai-pipeline.md) | gate + A4 keys |
+| [`environments.md`](./environments.md) | A4 no-DeepSeek checklist |
+| [`dual-path-parity.md`](./dual-path-parity.md) | fingerprint attrs parity |
+| [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) | §Ops + C35d note |
+| [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) | H4/H5 done |
 | [`current-app.md`](./current-app.md) | после ship |
 
 ---
 
 ## 10. Следующий шаг человека / агента
 
-**Статус очереди:** #31/#32/#33/#34 **merged**. C35c = этот PR.
+**Статус очереди:** #31–#35 **merged**. Этот PR = C35d + C35e + H4/H5.
 
-1. Merge этот PR (C35c).  
-2. Далее C35d/C35e по miss; H4/H5 optional после стабильности.
+1. Merge этот PR.  
+2. Hold: A3 shadow · B4 bulk · B5 vector · admin UI.  
+3. Ops (optional): `npm run tnved:load -- --search-extras` после H4 aliases.
 
-Не смешивать с Preview SSO ops / mobile #21 / ЮKassa.  
+Не смешивать с Preview SSO / mobile #21 / ЮKassa.  
 Agent cannot merge — нужен human.

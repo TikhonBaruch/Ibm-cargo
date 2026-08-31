@@ -108,10 +108,10 @@ MoSCoW первого morph-PR: **H1+H2+H3 Must**; H4/H5 Should (можно foll
 | **H1** | Stems: `огурец`→`огурц` (+ household endings); блок A | search HIT singular | **done** (impl PR) |
 | **H2** | Notes: boundary/token score; denylist из B | unit false-friend | **done** (impl PR) |
 | **H3** | C21 pack `produce-fresh` + clarify; блок D | pack on «огурец» | **done** (impl PR) |
-| **H4** | Alias/search-extras notes для produce | `tnved:load -- --search-extras` | Should |
-| **H5** | Audit script / CI прогон A–E | `npm run test:…` | Should (unit A–E in morph PR) |
+| **H4** | Alias/search-extras notes для produce | invoice aliases 0707/0702/0701 + unit; ops `tnved:load -- --search-extras` | **done** (follow-up PR) |
+| **H5** | Audit script / CI прогон A–E | `npm run test:tnved-morphology` | **done** (follow-up PR) |
 
-Impl ветка: `cursor/tnved-hint-morphology-e1f0` (от `main` после C35a).
+Impl: H1–H3 [#34](https://github.com/TikhonBaruch/Ibm-cargo/pull/34); H4/H5 `cursor/c35de-h4h5-e1f0`.
 
 ---
 
@@ -129,12 +129,11 @@ Impl ветка: `cursor/tnved-hint-morphology-e1f0` (от `main` после C35
 ## 7. Проверка
 
 ```bash
-# после H1–H3
-npx vitest run src/lib/ved/__tests__/tnved-search-morphology.test.ts  # new, A–E
-npx vitest run src/components/ved/client/__tests__/critical-hs-queries.test.ts
+npm run test:tnved-morphology   # A–E + critical HS (H5)
 npx vitest run src/lib/ved/__tests__/tnved-hint-trees.test.ts
 npm run test:ci
-# live (optional): search «огурец» → 070700… ; «йогурт» → 0403 ; pack огурец → produce-fresh
+# live (optional): search «огурец» → 0707… ; «йогурт» → 0403 ; pack огурец → produce-fresh
+# H4 ops: DATABASE_URL=… npm run tnved:load -- --search-extras
 ```
 
 ---
@@ -143,5 +142,6 @@ npm run test:ci
 
 1. ~~Merge #32~~ **done**.  
 2. ~~C35a #31+#33~~ **done**.  
-3. Merge morph PR `cursor/tnved-hint-morphology-e1f0` (H1+H2+H3).  
-4. H4/H5 — follow-up при необходимости · C35c B1 smoke.
+3. ~~Morph H1–H3 #34~~ **done**.  
+4. ~~H4/H5~~ **done** в follow-up с C35d/e.  
+5. Ops: при необходимости `tnved:load -- --search-extras` на app DB.

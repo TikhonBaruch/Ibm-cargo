@@ -68,6 +68,11 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 | `WEB_SURFACE` | `full` \| `slim` (C5 scaffold, D22) |
 | `ALLOW_MOCK_TOPUP` | mock credit баланса (D13) |
 | `LLM_TIMEOUT_MS` / `AI_TIMEOUT_MS` | classify/enrich / draft HTTP; default **30s / 35s** (раньше 3–4s — DeepSeek не успевал → heuristic) |
+| `LLM_SKIP_CONF` | C35a — skip LLM when offline conf ≥ value (default `0.72`) |
+
+### A4 — keys fail-open (C35e)
+
+Без `DEEPSEEK_API_KEY` / без `LLM_SERVICE_URL` create **не** падает: heuristic / cascade / precedent → `AI_READY`. Проверка: `TEST_API_URL=… npm run smoke:mvp` (ожидает статус с AI draft, не 500). DeepSeek — opt-in overlay (`AI_DRAIN` / mesh), не блокер MVP. Канон: [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) §6 · [`ai-pipeline.md`](./ai-pipeline.md).
 
 ### Local mesh (Qwen → DeepSeek)
 
