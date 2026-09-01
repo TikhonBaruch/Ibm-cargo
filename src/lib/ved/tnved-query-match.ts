@@ -97,6 +97,26 @@ const PC_PARTS_RE =
 const PHOTO_GEAR_RE =
   /фотоаппарат|фотокамер|объектив|штатив|вспышк|gopro|camera\s*lens|tripod|\bdslr\b/i;
 
+/** Vape / e-cig — not tobacco cigarettes pack. */
+const VAPE_DEVICE_RE =
+  /вейп|(?:электронн\w*\s+)?сигарет\w*|vape|\bpod\b|испарител/i;
+
+/** Gaming console / controller — not soft toys pack. */
+const GAMING_CONSOLE_RE =
+  /xbox|геймпад|джойстик|игровая\s+приставк|playstation|nintendo|gamepad|joystick|game\s*console|steam\s*deck/i;
+
+/** Farm animal feed — not pet-food (cats/dogs). */
+const AGRI_FEED_RE =
+  /комбикорм|(?:^|[^a-zа-я0-9])сено(?:$|[^a-zа-я0-9])|силос|корм\s+скот|корм\s+для\s+скот|animal\s*feed|(?:^|[^a-zа-я0-9])hay(?:$|[^a-zа-я0-9])|silage/i;
+
+/** Wheelchair / rehab mobility — not baby stroller. */
+const WHEELCHAIR_RE =
+  /инвалидн[а-яa-z]*\s+коляск|wheelchair|костыл/i;
+
+/** Raw fabric/yarn — not finished apparel packs. */
+const TEXTILES_RAW_RE =
+  /ткань|пряжа|нитки|полотно\s+ткацк|fabric|(?:^|[^a-zа-я0-9])yarn(?:$|[^a-zа-я0-9])|(?:^|[^a-zа-я0-9])thread(?:$|[^a-zа-я0-9])/i;
+
 export function isPlantDairyQuery(query: string): boolean {
   return PLANT_DAIRY_RE.test(normalizeTnvedQueryText(query));
 }
@@ -152,6 +172,29 @@ export function isPcPartsQuery(query: string): boolean {
 
 export function isPhotoGearQuery(query: string): boolean {
   return PHOTO_GEAR_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isVapeDeviceQuery(query: string): boolean {
+  const q = normalizeTnvedQueryText(query);
+  // Plain cigarettes/cigars are tobacco, not vape — exclude when no e-cig marker.
+  if (/(?:электронн|вейп|vape|\bpod\b|испарител)/i.test(q)) return true;
+  return false;
+}
+
+export function isGamingConsoleQuery(query: string): boolean {
+  return GAMING_CONSOLE_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isAgriFeedQuery(query: string): boolean {
+  return AGRI_FEED_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isWheelchairQuery(query: string): boolean {
+  return WHEELCHAIR_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isTextilesRawQuery(query: string): boolean {
+  return TEXTILES_RAW_RE.test(normalizeTnvedQueryText(query));
 }
 
 export function normalizeTnvedQueryText(s: string): string {
