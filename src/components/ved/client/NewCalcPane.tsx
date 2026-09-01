@@ -27,9 +27,11 @@ import {
   packIdForLiveCode,
   previewPackFile,
   resolvePackChrome,
+  isPackImageFile,
   type PackId,
   type PackMode,
 } from "./new-calc-pack";
+import { compressImageForUpload } from "@/lib/ved/compress-image-client";
 
 const COUNTRY_OPTIONS = originCountrySelectOptions();
 
@@ -101,6 +103,7 @@ export function NewCalcPane({
   const [packReading, setPackReading] = useState(false);
   const [packFail, setPackFail] = useState(false);
   const [packDocName, setPackDocName] = useState("");
+  const [packPreviewUrl, setPackPreviewUrl] = useState("");
   const [clarifyQs, setClarifyQs] = useState<ClarificationQuestion[]>([]);
   const [clarifyAnswers, setClarifyAnswers] = useState<Record<string, string>>({});
   const [clarifyLoading, setClarifyLoading] = useState(false);
@@ -125,6 +128,12 @@ export function NewCalcPane({
   const goodsText = form.description || form.title;
   const clarifyEnabled = !isPack;
   const visibleClarifyQs = clarifyEnabled ? clarifyQs : [];
+
+  useEffect(() => {
+    return () => {
+      if (packPreviewUrl.startsWith("blob:")) URL.revokeObjectURL(packPreviewUrl);
+    };
+  }, [packPreviewUrl]);
 
   useEffect(() => {
     if (!packModal) return;
@@ -266,18 +275,34 @@ export function NewCalcPane({
     setPackReading(true);
     setPackFail(false);
     setPackDocName(file.name);
+    if (packPreviewUrl.startsWith("blob:")) URL.revokeObjectURL(packPreviewUrl);
+    const localUrl = isPackImageFile(file.name, file.type) ? URL.createObjectURL(file) : "";
+    setPackPreviewUrl(localUrl);
     try {
-      const { items: parsed } = await previewPackFile(file, {
+      const prepared = isPackImageFile(file.name, file.type)
+        ? await compressImageForUpload(file)
+        : file;
+      const preview = await previewPackFile(prepared, {
         tariffCode: picked.liveCode,
         country: countryLabel,
       });
-      if (parsed.length < MIN_PACK) {
-        setPackFail(true);
-        onItems([{ name: "", qty: 1, unitPrice: 0 }]);
+      if (preview.items.length >= MIN_PACK) {
+        applyPackItems(preview.items, file.name);
+        setPackFail(false);
         return;
       }
-      applyPackItems(parsed, file.name);
-      setPackFail(false);
+      const note = preview.notes?.trim();
+      if (note && !form.description.trim()) {
+        onForm({ description: note });
+      } else if (preview.items[0]?.name && !form.description.trim()) {
+        onForm({ description: preview.items.map((it) => it.name).join(", ") });
+      }
+      setPackFail(true);
+      if (preview.items.length === 1) {
+        onItems(preview.items);
+      } else {
+        onItems([{ name: "", qty: 1, unitPrice: 0 }]);
+      }
     } catch {
       setPackFail(true);
       onItems([{ name: "", qty: 1, unitPrice: 0 }]);
@@ -289,6 +314,8 @@ export function NewCalcPane({
   const resetMulti = () => {
     setPackFail(false);
     setPackDocName("");
+    if (packPreviewUrl.startsWith("blob:")) URL.revokeObjectURL(packPreviewUrl);
+    setPackPreviewUrl("");
     onItems([{ name: "", qty: 1, unitPrice: 0 }]);
     onForm({ title: "", description: "" });
     setPackModal(false);
@@ -495,8 +522,9 @@ export function NewCalcPane({
             ) : isPack ? (
               packDocName || packFail ? (
                 <span className="meta pack-read-fail">
-                  Не удалось вычитать позиции. Нужен CSV/Excel или более чёткое фото таблицы
-                  инвойса.
+                  {packPreviewUrl
+                    ? "Фото прикреплено. Таблицу позиций не разобрали — нужен CSV/Excel или более чёткое фото инвойса."
+                    : "Не удалось вычитать позиции. Нужен CSV/Excel или более чёткое фото таблицы инвойса."}
                 </span>
               ) : (
                 <span className="meta">
@@ -533,6 +561,12 @@ export function NewCalcPane({
                 {packDocName ? (
                   <div className="doc-list">
                     <div className="doc-chip">
+                      {packPreviewUrl ? (
+                        <a href={packPreviewUrl} target="_blank" rel="noreferrer" className="doc-thumb">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={packPreviewUrl} alt="" />
+                        </a>
+                      ) : null}
                       <div className="doc-info">
                         <b>{packDocName}</b>
                         <span className="meta">{packN >= MIN_PACK ? `${packN} позиций` : "прикреплён"}</span>
@@ -847,7 +881,9 @@ export function NewCalcPane({
               </div>
             ) : packDocName || packFail ? (
               <p className="meta pack-read-fail">
-                Не удалось вычитать позиции. Попробуйте CSV/Excel или более чёткое фото таблицы.
+                {packPreviewUrl
+                  ? "Фото прикреплено. Таблицу не разобрали — попробуйте CSV/Excel или более чёткое фото инвойса."
+                  : "Не удалось вычитать позиции. Попробуйте CSV/Excel или более чёткое фото таблицы."}
               </p>
             ) : null}
             <div className="pack-modal-actions">

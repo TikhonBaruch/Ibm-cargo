@@ -6,7 +6,7 @@
 
 Клик **«Мультипозиция»** на live `/cabinet/new` собирает тот же экран, что lab `/client/new`: чип on, «Прикрепить файл», комментарий к партии, страна, dropzone invoice/CSV, карточки Старт/Стандарт/Профи, сайдбар с «Позиций» и ценой пакета. Модалка «Файл с позициями» при входе в режим.
 
-**Domain D10 не менять.** Карточки макета (1 / 20 / 100 · 990 / 3990 / 6990) — hold. Live: EXPRESS 1 · STANDARD 3 · PRO 10 и `priceRub` из `/api/v1/tariffs`. Create по-прежнему `POST /api/v1/calculations`. Файл → `POST /api/v1/imports/products/preview` (CSV/XLSX/PDF). JPG без текстового слоя — fail-copy макета, без фейкового OCR.
+**Domain D10 не менять.** Карточки макета (1 / 20 / 100 · 990 / 3990 / 6990) — hold. Live: EXPRESS 1 · STANDARD 3 · PRO 10 и `priceRub` из `/api/v1/tariffs`. Create по-прежнему `POST /api/v1/calculations`. Файл → `POST /api/v1/imports/products/preview` (CSV/XLSX/PDF **и JPG/PNG/WEBP**). Фото инвойса: vision extract-table через provider-mesh (Qwen/DeepSeek), не stub OCR. Фото товара (не таблица): файл остаётся прикреплённым (thumb + S3), текст → комментарий. Канон vision: [`plan-ocr-vision.md`](./plan-ocr-vision.md) OCR-A.
 
 ## 2. Клик (лок)
 
@@ -17,6 +17,8 @@
 | Старт | назад в одну позицию | EXPRESS (create 1 поз.) |
 | Стандарт / Профи | остаёмся в multi | STANDARD / PRO |
 | Файл ≥ 2 строк | quote + таблица имён, cap D10 | items[] |
+| JPG/PNG инвойс | preview `imageBase64` → vision rows | те же items[] |
+| JPG товара / 0–1 строка | thumb + «прикреплён», описание в комментарий | mediaUrl на item[0]; Далее всё ещё ≥ 2 имён |
 | Далее | disabled пока < 2 имён | create cap `maxPositionsForTariff` |
 | Одна позиция | C10 chrome | как C10 (default STANDARD) |
 

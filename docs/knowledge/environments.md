@@ -43,7 +43,7 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 - Env: `DATABASE_URL`, `NEXTAUTH_*`, `NEXT_PUBLIC_SITE_URL`; mock topup via `ALLOW_MOCK_TOPUP`
 - **Прод этого репо:** https://ibm-cargo-phi.vercel.app (project `ibm-cargo`). **Хост `https://ibm-cargo.vercel.app`** — чужой статический IBM Cargo. Preview того же проекта — SSO. **D37:** https://taurus-liart.vercel.app — backup ядра, **не** smoke/deploy target. Без `DATABASE_URL` на Preview Prisma: `Environment variable not found: DATABASE_URL` ([`plan-preview-auth.md`](./plan-preview-auth.md) §5). `/health` → `databaseUrl`.
 - Dashboard: **Root Directory = `.`**, **Framework = Services**. Ошибка *No Next.js version detected* = смотрят не в корневой `package.json` (`"next": "16.1.6"` уже там) · [`plan-vercel-services.md`](./plan-vercel-services.md) §8. Строка *no "functions" or "static" directory* = Preset **Other**/чужой проект, не Services · §9.
-- Uploads: `S3_BUCKET`, `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` — без них `POST /api/v1/uploads` → **503** (FS read-only). **Заданы на Production и Preview** (as-of 2026-08-05). Для `<img src={mediaUrl}>` в кабинетах бакет должен отдавать объект публично **или** `S3_OBJECT_ACL=public-read` (если ACL включены).
+- Uploads: `S3_BUCKET`, `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` — без них `POST /api/v1/uploads` → **503** (FS read-only). **Заданы на Production и Preview** (as-of 2026-09-01), плюс `S3_OBJECT_ACL=public-read`. Бакет `lbm` (Reg.ru): policy `PublicReadVed` на `ved/*` + ACL на объект — иначе `<img src={mediaUrl}>` даёт `AccessDenied`.
 - Signup: `/register` + `POST /api/v1/auth/register` (D25) — публичный путь в middleware
 - **Не** ставить docker DNS / `USE_DOMAIN_API=1` на Vercel
 - Миграции схемы — отдельно на prod DB (`db push` / migrate)
@@ -63,6 +63,7 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 | `TNVED_CODES_PATH` / `TNVED_DATA_DIR` | corpus в compose: default host dir `./containers/llm/data/tnved/normalized` → `/data/tnved` (**не** `./llm`) |
 | `PAYMENTS_SERVICE_URL` / `NOTIFY_SERVICE_URL` / `LOGISTICS_SERVICE_URL` | C4 opt-in |
 | `S3_*` | durable VED uploads on Vercel (`BUCKET`/`ENDPOINT`/`REGION`/`ACCESS_KEY`/`SECRET_KEY`); optional `S3_OBJECT_ACL=public-read` for cabinet `<img>` |
+| `DEEPSEEK_*` / `QWEN_*` | live `/cabinet/new` **мультипозиция**: фото инвойса → preview vision (OCR-A). Без ключей JPG прикрепляется, строки не читаются |
 | `NEXT_PUBLIC_SHIPPING_UI` / `SHIPPING_UI` | `1`/`true` = показать клиентский UI «Перевозка» (default **off**) |
 | `NEXT_PUBLIC_FACTORY_UI` / `FACTORY_UI` | `1`/`true` = код завода / SKU / manufacturer `/pools` (default off в коде; **на Vercel Pro Production/Preview = `1`**). **C6:** designer chrome (плитка главной, admin nav «Производители») дополнительно скрыт `designerManufacturerChromeEnabled` |
 | `WEB_SURFACE` | `full` \| `slim` (C5 scaffold, D22) |
@@ -82,7 +83,7 @@ Compose web defaults `USE_DOMAIN_API=1`. Gateway smoke: `npm run smoke:gateway`.
 
 ### Vercel mesh (без docker URL)
 
-На Production/Preview задать `LLM_PROVIDER=deepseek`, `DEEPSEEK_API_KEY` (+ optional `QWEN_API_KEY` / `QWEN_VISION_MODEL`).  
+На Production/Preview задать **`AI_CHAIN_ID=3`**, `LLM_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, `DEEPSEEK_VISION_MODEL` (optional). Qwen — только при явном `AI_CHAIN_ID=2`.  
 Next вызывает провайдеров напрямую (`src/lib/ved/provider-mesh.ts`): кандидаты из `TnvedCode` → DeepSeek; картинка → Qwen-VL.  
 Не ставить `LLM_SERVICE_URL=http://llm:…` на Vercel. Create / ai-drain / jobs-tick: `maxDuration=300`.
 

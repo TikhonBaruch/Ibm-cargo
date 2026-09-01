@@ -5,6 +5,8 @@ import {
   namedItemCount,
   packIdForLiveCode,
   resolvePackChrome,
+  isPackImageFile,
+  isPackSheetFile,
 } from "../new-calc-pack";
 import type { TariffOption } from "../types";
 
@@ -37,5 +39,14 @@ describe("new-calc pack chrome (C11)", () => {
         { name: "B", qty: 1, unitPrice: 0 },
       ]),
     ).toBe(2);
+  });
+
+  it("treats invoice photos as pack files, not only csv/xlsx/pdf", () => {
+    expect(isPackSheetFile("inv.csv")).toBe(true);
+    expect(isPackSheetFile("photo.jpg")).toBe(false);
+    expect(isPackImageFile("photo.jpg")).toBe(true);
+    expect(isPackImageFile("scan.PNG")).toBe(true);
+    expect(isPackImageFile("x.bin", "image/jpeg")).toBe(true);
+    expect(isPackImageFile("notes.csv")).toBe(false);
   });
 });

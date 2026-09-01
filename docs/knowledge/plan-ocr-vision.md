@@ -12,7 +12,7 @@
 |------|--------|--------|
 | Контейнер `ocr` (:4700) | **partial** | `containers/ocr` (LBM-owned, D36) |
 | Create path | **wired** | `createAndDraftCalculation` → `extractWithOcr` при `OCR_SERVICE_URL` + `item.mediaUrl` (fail-open) |
-| Import preview | **wired** | CSV / XLSX / **text-layer PDF** в `ProductCsvImport` |
+| Import preview | **wired** | CSV / XLSX / **text-layer PDF** в `ProductCsvImport`; **live `/cabinet/new` multi** — JPG/PNG/WEBP → `imageBase64` + provider-mesh vision (OCR-A, 2026-09-01) |
 | Text PDF | **done** | `parseProductPdf` (unpdf) + `ocr-pdf-table-v1` fallback |
 | Vision (фото/скан) | **backend only** | `imageBase64` в OCR API; **нет** UI / domain wire |
 | Multi-LLM router | **hold** | Kimi / DeepSeek — нет ключей |
@@ -93,7 +93,7 @@ curl -s localhost:4700/v1/extract-table \
 
 | ID | Сценарий | Путь | Ценность |
 |----|----------|------|----------|
-| **OCR-A** | Фото invoice → таблица позиций | Import preview + `extract-table` + vision | Сканы packing list |
+| **OCR-A** | Фото invoice → таблица позиций | **live** `/cabinet/new` multi + `imports/products/preview` `imageBase64` + provider-mesh (Qwen/DeepSeek). Compose `OCR_SERVICE_URL` остаётся fallback для PDF. | Сканы packing list |
 | **OCR-B** | Фото товара → attrs позиции | Create + `extract` + vision | Одна SKU на фото |
 
 Рекомендация: **сначала OCR-A** (переиспользует `ProductCsvImport` и classify pipeline), затем OCR-B.
@@ -102,13 +102,13 @@ curl -s localhost:4700/v1/extract-table \
 
 ## Рекомендуемые шаги (следующие спринты)
 
-### Спринт 1 — wire vision import (после ключа)
+### Спринт 1 — wire vision import (live cabinet, 2026-09-01)
 
-1. Preview API: `imageBase64` + `mimeType` в JSON/multipart.
-2. UI: `ProductCsvImport` — `.jpg`, `.png`, `.webp`.
-3. Fallback: local parse skip → `POST ocr:4700/v1/extract-table` с `imageBase64`.
-4. Smoke: `smoke:ocr-vision` — skip если нет `OPENAI_API_KEY`; иначе fixture JPEG.
-5. KB + `testing-branches.md` + `ops:track-a` gate (опционально «vision configured»).
+1. Preview API: `imageBase64` + `mimeType` в JSON/multipart. **done** (`src/lib/ved/import-vision.ts` + `/api/v1/imports/products/preview`).
+2. UI live `/cabinet/new` multi: JPG/PNG/WEBP → preview, thumb даже если строк < 2. **done** (не только `ProductCsvImport`).
+3. Vercel: provider-mesh (Qwen/DeepSeek keys), не `OCR_SERVICE_URL`. Compose OCR остаётся fallback для PDF.
+4. Smoke: `smoke:ocr-vision` — skip если нет vision-ключа; иначе fixture JPEG. **hold**
+5. KB: этот план + [`plan-lbm-bro-newcalc-multipack.md`](./plan-lbm-bro-newcalc-multipack.md).
 
 ### Спринт 2 — create path для фото товара
 

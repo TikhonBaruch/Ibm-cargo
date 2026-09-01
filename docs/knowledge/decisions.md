@@ -237,7 +237,7 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 **Решение:**
 
 1. **Text PDF import** — **done** (`parseProductPdf`, `smoke:pdf-import`); не блокируется ключом.
-2. **Vision OCR (`imageBase64`)** — engine `ocr-vision-v1` в `containers/ocr`; **hold E2E** до стабильного `OPENAI_API_KEY` + `OCR_VISION_MODEL` (image-capable, ≠ `LLM_CLASSIFY_MODEL`) на сервисе `ocr`. Без ключа — fail-open / stub; Vercel без `OCR_SERVICE_URL` — skip (норма).
+2. **Vision OCR (`imageBase64`)** — engine `ocr-vision-v1` в `containers/ocr`; Compose E2E по-прежнему opt-in (`OCR_SERVICE_URL`). **Live `/cabinet/new` multi (OCR-A, 2026-09-01):** in-process provider-mesh (Qwen/DeepSeek) на `POST /api/v1/imports/products/preview`, без docker OCR.
 3. **Приоритет wire после ключа:** **OCR-A** (фото invoice → import preview + `extract-table`) → **OCR-B** (фото товара → create attrs). Не продвигать vision в лендинг/CTA до зелёного `smoke:ocr-vision` на staging.
 4. **Precedent-v2 (pgvector):** схема + domain готовы; **hold live** до `pgvector/pgvector` на compose Postgres + embed key (`PRECEDENT_EMBED_MODEL`). До этого — lexical `precedent-v1` (fail-open).
 5. **Multi-LLM router** (Kimi / DeepSeek) — отдельный hold; не смешивать с OCR vision gate.

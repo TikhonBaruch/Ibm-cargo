@@ -1,6 +1,6 @@
 /**
  * POST /api/v1/imports/products/preview — CSV/XLSX/PDF parse + per-row precedent/LLM classify.
- * Accepts JSON `{ csv }` / `{ xlsxBase64 }` / `{ pdfBase64 }` or multipart `file`.
+ * Accepts JSON `{ csv }` / `{ xlsxBase64 }` / `{ pdfBase64 }` / `{ imageBase64 }` or multipart `file`.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -17,14 +17,24 @@ import {
   isPdfFilename,
   type SheetTable,
 } from "@/lib/ved/product-import";
+import {
+  extractTableFromVisionImage,
+  isImageFilename,
+  sheetTableFromVisionItems,
+  type VisionTableExtract,
+} from "@/lib/ved/import-vision";
 import { findBestPrecedent } from "@/lib/ved/verified-determinations";
 import { maxPositionsForTariff } from "@/lib/ved/domain";
 import type { TariffCode } from "@prisma/client";
+
+export const maxDuration = 120;
 
 const jsonSchema = z.object({
   csv: z.string().min(1).max(500_000).optional(),
   xlsxBase64: z.string().min(1).max(2_000_000).optional(),
   pdfBase64: z.string().min(1).max(4_000_000).optional(),
+  imageBase64: z.string().min(1).max(4_000_000).optional(),
+  mimeType: z.string().max(80).optional(),
   filename: z.string().max(200).optional(),
   tariffCode: z.enum(["EXPRESS", "STANDARD", "PRO"]).optional(),
   country: z.string().optional(),
@@ -85,11 +95,26 @@ async function tableFromPdf(
   return table;
 }
 
+async function tableFromVisionImage(
+  imageBase64: string,
+  mimeType?: string,
+  filename?: string
+): Promise<{ table: SheetTable; vision: VisionTableExtract | null }> {
+  const vision = await extractTableFromVisionImage({
+    imageBase64,
+    mimeType,
+    hint: filename,
+  });
+  if (!vision) return { table: { headers: [], rows: [] }, vision: null };
+  return { table: sheetTableFromVisionItems(vision.items), vision };
+}
+
 async function tableFromRequest(req: NextRequest): Promise<{
   table: SheetTable;
   tariffCode?: string;
   country?: string;
   shipmentValue?: string;
+  vision?: VisionTableExtract | null;
 }> {
   const ct = req.headers.get("content-type") || "";
   if (ct.includes("multipart/form-data")) {
@@ -97,16 +122,23 @@ async function tableFromRequest(req: NextRequest): Promise<{
     const file = form.get("file");
     if (!(file instanceof File)) throw new Error("file required");
     const buf = Buffer.from(await file.arrayBuffer());
+    const mime = file.type || "";
     let table: SheetTable;
+    let vision: VisionTableExtract | null | undefined;
     if (isPdfFilename(file.name)) {
       table = await tableFromPdf(buf, file.name);
     } else if (isXlsxFilename(file.name)) {
       table = parseProductXlsx(buf);
+    } else if (isImageFilename(file.name, mime)) {
+      const fromImg = await tableFromVisionImage(buf.toString("base64"), mime || "image/jpeg", file.name);
+      table = fromImg.table;
+      vision = fromImg.vision;
     } else {
       table = parseProductCsv(buf.toString("utf8"));
     }
     return {
       table,
+      vision,
       tariffCode: String(form.get("tariffCode") || "") || undefined,
       country: String(form.get("country") || "") || undefined,
       shipmentValue: String(form.get("shipmentValue") || "") || undefined,
@@ -114,6 +146,20 @@ async function tableFromRequest(req: NextRequest): Promise<{
   }
 
   const body = jsonSchema.parse(await req.json());
+  if (body.imageBase64) {
+    const fromImg = await tableFromVisionImage(
+      body.imageBase64,
+      body.mimeType || "image/jpeg",
+      body.filename
+    );
+    return {
+      table: fromImg.table,
+      vision: fromImg.vision,
+      tariffCode: body.tariffCode,
+      country: body.country,
+      shipmentValue: body.shipmentValue,
+    };
+  }
   if (body.pdfBase64) {
     const buf = Buffer.from(body.pdfBase64, "base64");
     return {
@@ -140,7 +186,7 @@ async function tableFromRequest(req: NextRequest): Promise<{
       shipmentValue: body.shipmentValue,
     };
   }
-  throw new Error("csv, xlsxBase64, pdfBase64, or multipart file required");
+  throw new Error("csv, xlsxBase64, pdfBase64, imageBase64, or multipart file required");
 }
 
 export async function POST(req: NextRequest) {
@@ -148,12 +194,12 @@ export async function POST(req: NextRequest) {
   if (error) return error;
 
   try {
-    const { table, tariffCode: tc, country, shipmentValue } = await tableFromRequest(req);
+    const { table, tariffCode: tc, country, shipmentValue, vision } = await tableFromRequest(req);
     const tariffCode = tc || "STANDARD";
     const maxRows = maxPositionsForTariff(tariffCode as TariffCode);
 
     const parsed = mapCsvToRows(table.headers, table.rows);
-    if (!parsed.length) {
+    if (!parsed.length && !vision) {
       return NextResponse.json(
         { error: "No product rows found; need a header row with name/наименование" },
         { status: 400 }
@@ -214,6 +260,9 @@ export async function POST(req: NextRequest) {
       tariffCode,
       maxRows,
       rowCount: classified.length,
+      kind: vision?.kind,
+      notes: vision?.description,
+      engine: vision?.engine,
       summary: {
         matchedPrecedent: classified.filter((r) => r.rowStatus === "MATCHED_PRECEDENT").length,
         classifiedNew: classified.filter((r) => r.rowStatus === "CLASSIFIED_NEW").length,

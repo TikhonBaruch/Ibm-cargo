@@ -106,21 +106,37 @@ type PreviewResponse = {
   rowCount: number;
   rows: PreviewRow[];
   error?: string;
+  kind?: "table" | "product" | "empty";
+  notes?: string;
 };
 
-function isSheetFile(name: string): boolean {
+export function isPackSheetFile(name: string): boolean {
   return /\.(csv|xlsx|xls|pdf)$/i.test(name);
+}
+
+export function isPackImageFile(name: string, mime = ""): boolean {
+  if (/^image\/(jpeg|jpg|png|webp|gif)$/i.test(mime)) return true;
+  return /\.(jpe?g|png|webp|gif)$/i.test(name);
 }
 
 export async function previewPackFile(
   file: File,
   opts: { tariffCode: string; country?: string },
-): Promise<{ items: FormItem[]; rowCount: number }> {
-  if (!isSheetFile(file.name)) {
+): Promise<{ items: FormItem[]; rowCount: number; kind?: PreviewResponse["kind"]; notes?: string }> {
+  const image = isPackImageFile(file.name, file.type);
+  if (!isPackSheetFile(file.name) && !image) {
     throw new Error("NEED_TABLE");
   }
   let body: Record<string, unknown>;
-  if (/\.pdf$/i.test(file.name)) {
+  if (image) {
+    body = {
+      imageBase64: await fileToBase64(file),
+      mimeType: file.type || "image/jpeg",
+      filename: file.name,
+      tariffCode: opts.tariffCode,
+      country: opts.country,
+    };
+  } else if (/\.pdf$/i.test(file.name)) {
     body = { pdfBase64: await fileToBase64(file), filename: file.name, tariffCode: opts.tariffCode, country: opts.country };
   } else if (/\.xlsx$/i.test(file.name) || /\.xls$/i.test(file.name)) {
     body = { xlsxBase64: await fileToBase64(file), filename: file.name, tariffCode: opts.tariffCode, country: opts.country };
@@ -133,7 +149,7 @@ export async function previewPackFile(
     body: JSON.stringify(body),
   });
   const data = (await res.json()) as PreviewResponse;
-  if (!res.ok) throw new Error(data.error || `Preview ${res.status}`);
+  if (!res.ok && !data.kind) throw new Error(data.error || `Preview ${res.status}`);
   const usable = (data.rows || []).filter((r) => r.rowStatus !== "PARSE_ERROR" && r.name.trim());
   const items: FormItem[] = usable.map((r) => ({
     name: r.name,
@@ -145,7 +161,12 @@ export async function previewPackFile(
       hsHint: r.hsCode || r.attrs?.hsHint,
     },
   }));
-  return { items, rowCount: data.rowCount || items.length };
+  return {
+    items,
+    rowCount: data.rowCount || items.length,
+    kind: data.kind,
+    notes: data.notes,
+  };
 }
 
 async function fileToBase64(file: File): Promise<string> {
