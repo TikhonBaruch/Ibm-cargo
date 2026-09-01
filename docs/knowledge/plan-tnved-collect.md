@@ -163,3 +163,9 @@ npm run tnved:load -- --search-extras
 
 Канон: [`plan-tnved-relations.md`](./plan-tnved-relations.md).
 
+## C21 (деревья подсказок)
+
+Семейные packs на `/cabinet/new` (молоко: питьевое / сухое / сгущённое → 0401 / 040210 / 040299). Не 14 948 деревьев. Пастеризация не код.
+
+Канон: [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md).
+

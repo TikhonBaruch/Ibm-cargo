@@ -24,6 +24,7 @@ import {
   STALE_INDEX_REMAP,
 } from "../src/lib/ved/tnved-lab-catalog";
 import { relationFocusCodes, relationsAsSearchExtras } from "../src/lib/ved/tnved-relations";
+import { hintTreeFocusCodes, hintTreesAsSearchExtras } from "../src/lib/ved/tnved-hint-trees";
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -84,14 +85,17 @@ function loadProjectSearchPack() {
   }>;
   const packed = notesByCodeFromLabSearch({ aliases, index, synonyms, heuristic });
   const relationExtras = relationsAsSearchExtras();
-  for (const [code, extra] of relationExtras) {
-    const tokens = packed.tokens.get(code) || [];
-    tokens.push(...extra.tokens);
-    packed.tokens.set(code, tokens);
-    if (extra.why.length) {
-      const why = packed.why.get(code) || [];
-      why.push(...extra.why);
-      packed.why.set(code, why);
+  const hintExtras = hintTreesAsSearchExtras();
+  for (const extraMap of [relationExtras, hintExtras]) {
+    for (const [code, extra] of extraMap) {
+      const tokens = packed.tokens.get(code) || [];
+      tokens.push(...extra.tokens);
+      packed.tokens.set(code, tokens);
+      if (extra.why.length) {
+        const why = packed.why.get(code) || [];
+        why.push(...extra.why);
+        packed.why.set(code, why);
+      }
     }
   }
   return { packed, aliases, synonyms, heuristic };
@@ -114,6 +118,7 @@ async function mergeSearchExtras() {
   for (const r of heuristic) if (r.hsCode) focus.add(String(r.hsCode).replace(/\D/g, ""));
   for (const targets of Object.values(STALE_INDEX_REMAP)) for (const t of targets) focus.add(t);
   for (const c of relationFocusCodes()) focus.add(c);
+  for (const c of hintTreeFocusCodes()) focus.add(c);
   let updated = 0;
   let skipped = 0;
   for (const code of focus) {

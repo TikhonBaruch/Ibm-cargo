@@ -5,6 +5,10 @@
 import { z } from "zod";
 import type { Prisma } from "@prisma/client";
 import { DEFAULT_IMPORT_VAT_PERCENT } from "./customs-fees";
+import {
+  lookupClassificationDecisions,
+  lookupPsnExplanation,
+} from "./tnved-card-layers";
 import { layerGToHint, matchLayerG } from "./tnved-layer-g";
 import { relationsForCode, type TnvedRelation } from "./tnved-relations";
 
@@ -108,7 +112,7 @@ export type TnvedSearchOpts = {
   headingOnly?: boolean;
 };
 
-type TnvedDb = Pick<Prisma.TransactionClient, "tnvedCode" | "tnvedDutyRate">;
+export type TnvedDb = Pick<Prisma.TransactionClient, "tnvedCode" | "tnvedDutyRate">;
 
 export async function countActiveTnvedCodes(db: Pick<Prisma.TransactionClient, "tnvedCode">) {
   return db.tnvedCode.count({ where: { isActive: true } });
@@ -171,6 +175,15 @@ export function scoreTnvedSearchHit(
   let score = 0;
   if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
   if (phrase.length >= 5 && notes.includes(phrase)) score += 90;
+  // CJK invoice tokens (充电宝, T恤) are short but exact in notes — same boost.
+  else if (
+    phrase.length >= 2 &&
+    phrase.length < 5 &&
+    /[\u4e00-\u9fff]/.test(phrase) &&
+    notes.includes(phrase)
+  ) {
+    score += 90;
+  }
   for (const s of opts.stems) {
     if (!s) continue;
     if (noteParts.some((p) => p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`))) score += 80;
@@ -219,7 +232,8 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
     or.push({ titleRu: { contains: stem, mode: "insensitive" } });
     or.push({ notes: { contains: stem, mode: "insensitive" } });
   }
-  if (!codeOnly && q.length >= 4) {
+  const phraseMin = /[\u4e00-\u9fff]/.test(q) ? 2 : 4;
+  if (!codeOnly && q.length >= phraseMin) {
     or.push({ notes: { contains: q, mode: "insensitive" } });
     or.push({ titleRu: { contains: q, mode: "insensitive" } });
   }
@@ -252,6 +266,8 @@ export type TnvedCardAncestor = {
   codeDisplay: string;
   titleRu: string;
   level: number;
+  /** Optional: group PSN may live on level-2 notes after compose. */
+  notes?: string | null;
 };
 
 export type TnvedCardRate = {
@@ -271,6 +287,20 @@ export type TnvedCardSource = {
 
 export type TnvedCardChild = TnvedCardAncestor & { isLeaf: boolean };
 
+export type TnvedCardExplanation = {
+  heading: string;
+  excerpt: string;
+  url: string | null;
+  origin: "notes" | "overlay";
+};
+
+export type TnvedCardClassificationDecision = {
+  code: string;
+  title: string;
+  url: string | null;
+  asOf: string | null;
+};
+
 export type TnvedCard = {
   code: string;
   codeDisplay: string;
@@ -283,6 +313,10 @@ export type TnvedCard = {
   children: TnvedCardChild[];
   related: TnvedRelation[];
   rate: TnvedCardRate | null;
+  /** Layer D: PSN excerpt (not alias token soup). */
+  explanation: TnvedCardExplanation | null;
+  /** Layer E: EEC classification decisions by 10-digit (fail-open). */
+  classificationDecisions: TnvedCardClassificationDecision[];
   paymentsHint: { vatPct: number; feeRule: string };
   measuresHint: {
     excisePossible: boolean;
@@ -320,6 +354,12 @@ export const TNVED_CARD_SOURCES: TnvedCardSource[] = [
     title: "ЕЭК пояснения к ТН ВЭД (PSN)",
     url: "https://eec.eaeunion.org/comission/department/catr/psn/",
     asOf: "2026-08-08",
+  },
+  {
+    layer: "E",
+    title: "Решения ЕЭК о классификации",
+    url: "https://eec.eaeunion.org/comission/department/catr/classification/",
+    asOf: null,
   },
   {
     layer: "G",
@@ -385,6 +425,12 @@ export function assembleTnvedCard(input: {
     children: input.children ?? [],
     related: input.related ?? relationsForCode(input.row.code),
     rate: pickEttRate(rates as Parameters<typeof pickEttRate>[0]),
+    explanation: lookupPsnExplanation({
+      code: input.row.code,
+      notes: input.row.notes,
+      ancestors: input.ancestors,
+    }),
+    classificationDecisions: lookupClassificationDecisions(input.row.code),
     paymentsHint: { vatPct: DEFAULT_IMPORT_VAT_PERCENT, feeRule: TNVED_FEE_RULE },
     measuresHint: layerGToHint(matchLayerG(input.row.code)),
     sources: TNVED_CARD_SOURCES,
@@ -429,6 +475,7 @@ export async function getTnvedCard(db: TnvedDb, codeInput: string): Promise<Tnve
       codeDisplay: a.codeDisplay,
       titleRu: a.titleRu,
       level: a.level,
+      notes: a.notes ?? null,
     }));
   const children: TnvedCardChild[] = childRows.map((c) => ({
     code: c.code,

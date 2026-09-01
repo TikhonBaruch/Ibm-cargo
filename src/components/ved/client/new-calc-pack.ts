@@ -40,6 +40,15 @@ export function namedItemCount(items: FormItem[]): number {
   return items.filter((it) => it.name.trim()).length;
 }
 
+export function fmtRub(n: number): string {
+  return n.toLocaleString("ru-RU");
+}
+
+/** Live D27: no freemium — always TariffPlan.priceRub (C29c). */
+export function liveWizardStepLabels(): readonly ["Товар", "Оплата", "Код"] {
+  return ["Товар", "Оплата", "Код"] as const;
+}
+
 export function resolvePackChrome(
   id: PackId,
   tariffs: TariffOption[],
@@ -54,8 +63,8 @@ export function resolvePackChrome(
       liveCode,
       name: "Старт",
       tag: "1 позиция",
-      summary: "Первый просчёт бесплатно. Дальше 990 ₽ за один код.",
-      includes: ["1 код ТН ВЭД ЕАЭС", "Первый раз — 0 ₽, затем 990 ₽"],
+      summary: `1 код ТН ВЭД ЕАЭС · ${fmtRub(priceRub)} ₽. Пошлина и НДС — отдельно.`,
+      includes: ["1 код ТН ВЭД ЕАЭС", `Списание с баланса · ${fmtRub(priceRub)} ₽`],
       priceRub,
       max,
     };
@@ -67,7 +76,7 @@ export function resolvePackChrome(
       name: "Стандарт",
       tag: `Мульти до ${max}`,
       featured: true,
-      summary: `До ${max} позиций из файла. Один пакет — коды всем строкам.`,
+      summary: `До ${max} позиций из файла. Один пакет — коды всем строкам · ${fmtRub(priceRub)} ₽.`,
       includes: ["Чтение CSV, Excel, PDF и фото", "Код ТН ВЭД каждой позиции"],
       priceRub,
       max,
@@ -78,7 +87,7 @@ export function resolvePackChrome(
     liveCode,
     name: "Профи",
     tag: `Мульти до ${max}`,
-    summary: `До ${max} позиций. Для большого инвойса.`,
+    summary: `До ${max} позиций. Для большого инвойса · ${fmtRub(priceRub)} ₽.`,
     includes: ["Чтение CSV, Excel, PDF и фото", "Код ТН ВЭД каждой позиции"],
     priceRub,
     max,
@@ -87,10 +96,6 @@ export function resolvePackChrome(
 
 export function allPackChrome(tariffs: TariffOption[]): PackChrome[] {
   return (["one", "m20", "m100"] as const).map((id) => resolvePackChrome(id, tariffs));
-}
-
-export function fmtRub(n: number): string {
-  return n.toLocaleString("ru-RU");
 }
 
 type PreviewRow = {
@@ -137,9 +142,19 @@ export async function previewPackFile(
       country: opts.country,
     };
   } else if (/\.pdf$/i.test(file.name)) {
-    body = { pdfBase64: await fileToBase64(file), filename: file.name, tariffCode: opts.tariffCode, country: opts.country };
+    body = {
+      pdfBase64: await fileToBase64(file),
+      filename: file.name,
+      tariffCode: opts.tariffCode,
+      country: opts.country,
+    };
   } else if (/\.xlsx$/i.test(file.name) || /\.xls$/i.test(file.name)) {
-    body = { xlsxBase64: await fileToBase64(file), filename: file.name, tariffCode: opts.tariffCode, country: opts.country };
+    body = {
+      xlsxBase64: await fileToBase64(file),
+      filename: file.name,
+      tariffCode: opts.tariffCode,
+      country: opts.country,
+    };
   } else {
     body = { csv: await file.text(), tariffCode: opts.tariffCode, country: opts.country };
   }

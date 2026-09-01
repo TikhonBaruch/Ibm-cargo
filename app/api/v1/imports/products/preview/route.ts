@@ -13,6 +13,7 @@ import {
   parseProductPdf,
   mapCsvToRows,
   classifyImportRows,
+  enrichImportCreateAttrs,
   isXlsxFilename,
   isPdfFilename,
   type SheetTable,
@@ -24,7 +25,9 @@ import {
   type VisionTableExtract,
 } from "@/lib/ved/import-vision";
 import { findBestPrecedent } from "@/lib/ved/verified-determinations";
+import { buildCascadeDraft } from "@/lib/ved/tnved-classify";
 import { maxPositionsForTariff } from "@/lib/ved/domain";
+import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import type { TariffCode } from "@prisma/client";
 
 export const maxDuration = 120;
@@ -225,6 +228,19 @@ export async function POST(req: NextRequest) {
         if (!m) return null;
         return { hsCode: m.hsCode, confidence: m.confidence, engine: m.engine };
       },
+      classifyCascade: async (input) => {
+        const d = await buildCascadeDraft(prisma, {
+          name: input.name,
+          description: input.description || input.name,
+          title: input.name,
+        });
+        if (!d?.hsCode) return null;
+        return {
+          hsCode: d.hsCode,
+          confidence: d.confidence,
+          engine: d.engine || "cascade-v1",
+        };
+      },
       classifyLlm: async (input) => {
         if (!llmOn) return null;
         try {
@@ -256,20 +272,30 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const originIso =
+      resolveOriginCountryCode(String(country || "")) ||
+      (String(country || "").trim().length === 2
+        ? String(country).trim().toUpperCase()
+        : null);
+    const rows = classified.map((r) => ({
+      ...r,
+      attrs: enrichImportCreateAttrs(r, { country, originIso }),
+    }));
+
     return NextResponse.json({
       tariffCode,
       maxRows,
-      rowCount: classified.length,
+      rowCount: rows.length,
       kind: vision?.kind,
       notes: vision?.description,
       engine: vision?.engine,
       summary: {
-        matchedPrecedent: classified.filter((r) => r.rowStatus === "MATCHED_PRECEDENT").length,
-        classifiedNew: classified.filter((r) => r.rowStatus === "CLASSIFIED_NEW").length,
-        lowConfidence: classified.filter((r) => r.rowStatus === "LOW_CONFIDENCE").length,
-        parseError: classified.filter((r) => r.rowStatus === "PARSE_ERROR").length,
+        matchedPrecedent: rows.filter((r) => r.rowStatus === "MATCHED_PRECEDENT").length,
+        classifiedNew: rows.filter((r) => r.rowStatus === "CLASSIFIED_NEW").length,
+        lowConfidence: rows.filter((r) => r.rowStatus === "LOW_CONFIDENCE").length,
+        parseError: rows.filter((r) => r.rowStatus === "PARSE_ERROR").length,
       },
-      rows: classified,
+      rows,
     });
   } catch (e) {
     return NextResponse.json(

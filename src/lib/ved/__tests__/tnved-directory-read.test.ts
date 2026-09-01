@@ -20,8 +20,14 @@ describe("directory duty label", () => {
   });
 
   it("does not invent a rate", () => {
-    expect(formatDirectoryDuty(null)).toBe("нет в источнике");
-    expect(formatDirectoryDuty({ dutyPct: null, dutyRubPerUnit: null })).toBe("нет в источнике");
+    expect(formatDirectoryDuty(null)).toBe("нет в НСИ");
+    expect(formatDirectoryDuty({ dutyPct: null, dutyRubPerUnit: null })).toBe("нет в НСИ");
+  });
+
+  it("C30a: labels tws fill honestly", () => {
+    expect(
+      formatDirectoryDuty({ dutyKind: "AD_VALOREM", dutyPct: 5, source: "tws-csv" }),
+    ).toBe("5% · fill (не НСИ)");
   });
 });
 
@@ -96,7 +102,27 @@ describe("directoryReadFromCard", () => {
     expect(read.riskLabel).toMatch(/акциз/);
     expect(read.riskLabel).toMatch(/утильсбор/);
     expect(read.riskLabel).toMatch(/уточнит брокер/i);
-    expect(read.dutyLabel).toBe("нет в источнике");
+    expect(read.dutyLabel).toBe("нет в НСИ");
+    expect(read.notes.join(" ")).toMatch(/нет в НСИ/i);
+  });
+
+  it("C30c: surfaces PSN explanation without using token soup as why", () => {
+    const card = assembleTnvedCard({
+      row: {
+        code: "8471300000",
+        codeDisplay: "8471 30 000 0",
+        titleRu: "машины вычислительные портативные",
+        isLeaf: true,
+        level: 10,
+        notes: "ноутбук, laptop, notebook, macbook",
+        rates: [],
+      },
+      ancestors: [],
+    });
+    expect(card.explanation?.heading).toMatch(/84/);
+    const read = directoryReadFromCard(card);
+    expect(read.explanation?.excerpt).toMatch(/8471|вычислительн/i);
+    expect(read.classificationDecisions).toEqual([]);
   });
 });
 

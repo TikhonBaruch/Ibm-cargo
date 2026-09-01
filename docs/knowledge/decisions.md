@@ -214,7 +214,7 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 
 Код: `src/lib/ved/{platform-gates,integrations,admin-company,orchestration,super-admin,infra-access,settings,domain,chat}.ts`, `src/lib/audit.ts`, `AdminVedCabinet`. Инвентарь UI: [`cabinets/admin/`](./cabinets/admin/) · ops map: [`admin-ops.md`](./admin-ops.md).
 
-**Статус (2026-08-10):** реализовано на ветке `cursor/admin-ops-harden` (unit `orchestration` retry · `admin-paths` + tnved · `test:ci` green). Merge → `origin/main` / prod — ещё нужен.
+**Статус (2026-08-28):** live на `main` / prod (ADMIN ops + platform gates + dual-path). Ветка `cursor/admin-ops-harden` — историческая.
 
 ## D29. Стратегические persona и сеть (производитель / buyer-groups)
 
@@ -244,6 +244,22 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 6. **Мониторинг спринта:** `npm run test:ci` + smokes по [`testing-branches.md`](./testing-branches.md) §Growth local; планы — [`plan-ocr-vision.md`](./plan-ocr-vision.md), [`plan-precedent-bulk.md`](./plan-precedent-bulk.md).
 
 **Статус (2026-08-12):** hold зафиксирован; канон спринтов — [`plan-ocr-vision.md`](./plan-ocr-vision.md) · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md).
+
+## D31. Кабинет производителя v1 (SKU + спрос)
+
+**Контекст:** D29 фиксирует persona завода как стратегию вне CTA D27. Нужен узкий partner-surface: эталонные SKU и спрос без ПДн, без публичного signup и без очереди брокера.
+
+**Решение:**
+
+1. **Роль** `MANUFACTURER` + `Company.kind=MANUFACTURER`; доступ только по инвайту ADMIN (не `/register`).
+2. **Каталог** `manufacturer_skus` + опциональный `calculation_items.manufacturerSkuId`; клиент видит только PUBLISHED через `GET /api/v1/catalog/skus`.
+3. **Спрос** `/manufacturer/demand` — агрегаты по SKU без email пользователей (B2B без CRM).
+4. **UI** `/manufacturer` + `containers/manufacturer` (:3004); panes: dashboard / catalog / demand / preview / profile.
+5. **Не в этом ADR:** публичная витрина, оплата MOQ заводу, отгрузка партии, buyer-groups, замена CTA D27. Сборный заказ — **D34**.
+
+Канон: [`cabinets/manufacturer/`](./cabinets/manufacturer/) · [`target-client.md`](./target-client.md) · dual-path `manufacturer-sku.ts` / `manufacturer-skus.js`.
+
+**Статус (2026-08-14):** v1 live; расширение сборки — D34.
 
 ## D32. UI: сначала общепризнанные решения
 

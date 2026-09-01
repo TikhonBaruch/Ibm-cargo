@@ -151,6 +151,31 @@ describe("C18 lab TN VED catalog", () => {
     expect(dryer).toBeGreaterThan(shampoo);
   });
 
+  it("scoreTnvedSearchHit boosts short CJK invoice tokens in notes", async () => {
+    const { scoreTnvedSearchHit } = await import("../tnved");
+    const power = scoreTnvedSearchHit(
+      {
+        code: "8507600000",
+        titleRu: "Аккумуляторы литий-ионные",
+        notes: "Портативные литий-ионные аккумуляторы / powerbank / 充电宝.",
+        isLeaf: true,
+        level: 10,
+      },
+      { stems: ["充电宝"], digits: "", phrase: "充电宝" },
+    );
+    const cable = scoreTnvedSearchHit(
+      {
+        code: "8544429009",
+        titleRu: "Прочие",
+        notes: null,
+        isLeaf: true,
+        level: 10,
+      },
+      { stems: ["充电宝"], digits: "", phrase: "充电宝" },
+    );
+    expect(power).toBeGreaterThan(cable);
+  });
+
   it("invoice and FTS 2026 packs only use 2-10 digit codes and known tokens", async () => {
     const invoice = (await import("../tnved-invoice-aliases.json")).default as Array<{
       code: string;

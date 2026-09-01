@@ -73,7 +73,7 @@ export type Calc = {
 };
 
 /** Create button / busy copy for NewCalc. */
-export type CreatePhase = "idle" | "uploading" | "creating" | "enriching";
+export type CreatePhase = "idle" | "uploading" | "creating" | "enriching" | "paying";
 
 export type Broker = {
   id: string;

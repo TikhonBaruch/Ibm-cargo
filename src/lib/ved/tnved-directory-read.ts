@@ -1,15 +1,22 @@
 /**
- * Live `/cabinet/tnved` right-pane view-model (C17).
+ * Live `/cabinet/tnved` right-pane view-model (C17 + C30).
  * Chrome matches lab `/client/tnved`; rates stay LBM (VAT 22% / ПП 1637).
  * Not a classifier: no tnved.json, no free-peek, no invented low-risk label.
  */
 import { formatHsCode, normalizeHsCode } from "./tnved";
+import {
+  dutySourceNote,
+  formatCardDutyLabel,
+  type TnvedClassificationDecision,
+  type TnvedExplanation,
+} from "./tnved-card-layers";
 
 export type DirectoryDutyRate = {
   dutyKind?: string | null;
   dutyPct?: number | null;
   dutyRubPerUnit?: number | null;
   unit?: string | null;
+  source?: string | null;
 } | null;
 
 export type DirectoryCardLike = {
@@ -18,6 +25,8 @@ export type DirectoryCardLike = {
   titleRu?: string | null;
   notes?: string | null;
   rate?: DirectoryDutyRate;
+  explanation?: TnvedExplanation | null;
+  classificationDecisions?: TnvedClassificationDecision[];
   paymentsHint?: { vatPct?: number | null; feeRule?: string | null };
   disclaimer?: string | null;
   ancestors?: Array<{ code?: string; codeDisplay?: string | null; titleRu?: string | null }>;
@@ -45,6 +54,8 @@ export type DirectoryRead = {
   notes: string[];
   riskLabel: string;
   riskKind: "ok" | "warn";
+  explanation: TnvedExplanation | null;
+  classificationDecisions: TnvedClassificationDecision[];
 };
 
 export type DirectoryPrefill = {
@@ -54,18 +65,9 @@ export type DirectoryPrefill = {
   description: string;
 };
 
+/** @deprecated use formatCardDutyLabel — kept for call-site imports. */
 export function formatDirectoryDuty(rate: DirectoryDutyRate): string {
-  if (!rate || (rate.dutyPct == null && rate.dutyRubPerUnit == null)) {
-    return "нет в источнике";
-  }
-  if (rate.dutyKind === "SPECIFIC" && rate.dutyRubPerUnit != null) {
-    return `${rate.dutyRubPerUnit} ₽${rate.unit ? ` / ${rate.unit}` : ""}`;
-  }
-  if (rate.dutyPct != null) return `${rate.dutyPct}%`;
-  if (rate.dutyRubPerUnit != null) {
-    return `${rate.dutyRubPerUnit} ₽${rate.unit ? ` / ${rate.unit}` : ""}`;
-  }
-  return "нет в источнике";
+  return formatCardDutyLabel(rate);
 }
 
 export function directoryHumanLead(notes: string | null | undefined): string {
@@ -74,6 +76,7 @@ export function directoryHumanLead(notes: string | null | undefined): string {
     .split(/\n+/)[0]
     ?.trim() || "";
   if (!lead) return "";
+  if (/^ЕЭК\s*PSN:/i.test(lead)) return "";
   const parts = lead.split(",").map((p) => p.trim()).filter(Boolean);
   const looksLikeTokens =
     parts.length >= 3 && parts.every((p) => p.length <= 40) && !/[.!?]/.test(lead);
@@ -96,25 +99,24 @@ export function directoryReadFromCard(
   const title = (card.titleRu || fallback?.titleRu || "").trim();
   const vatPct = card.paymentsHint?.vatPct != null ? Number(card.paymentsHint.vatPct) : 22;
   const feeRule = card.paymentsHint?.feeRule?.trim() || "ПП 1637";
-  const dutyLabel = formatDirectoryDuty(card.rate ?? null);
+  const dutyLabel = formatCardDutyLabel(card.rate ?? null);
+  const explanation = card.explanation ?? null;
+  const classificationDecisions = Array.isArray(card.classificationDecisions)
+    ? card.classificationDecisions
+    : [];
   const ancestorWhy = (card.ancestors || [])
     .map((a) => (a.titleRu || "").trim())
     .filter(Boolean)
     .at(-1);
   const why =
     directoryHumanLead(card.notes) ||
+    explanation?.excerpt.slice(0, 220) ||
     title ||
     ancestorWhy ||
     "Рекомендация справочника, не решение таможенного органа.";
 
   const notes: string[] = [];
-  if (card.rate?.dutyPct != null) {
-    notes.push(`Ориентир пошлины ${card.rate.dutyPct}%`);
-  } else if (dutyLabel !== "нет в источнике") {
-    notes.push(`Ориентир пошлины ${dutyLabel}`);
-  } else {
-    notes.push("Пошлина ЕТТ — нет в источнике");
-  }
+  notes.push(dutySourceNote(card.rate ?? null));
   notes.push(`НДС ${vatPct}% считают в заявке`);
   notes.push(`Таможенный сбор — ${feeRule}`);
   notes.push("Это позиция классификатора ТН ВЭД ЕАЭС, не решение ФТС");
@@ -138,6 +140,8 @@ export function directoryReadFromCard(
     notes,
     riskLabel,
     riskKind: flags.length ? "warn" : "ok",
+    explanation,
+    classificationDecisions,
   };
 }
 

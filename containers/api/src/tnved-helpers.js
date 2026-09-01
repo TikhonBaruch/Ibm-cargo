@@ -7,6 +7,19 @@ export function normalizeHsCode(input) {
   return digits;
 }
 
+export function formatHsCode(code) {
+  const digits = normalizeHsCode(code);
+  if (!digits) return null;
+  if (digits.length === 10) {
+    return `${digits.slice(0, 4)} ${digits.slice(4, 6)} ${digits.slice(6, 9)} ${digits.slice(9)}`;
+  }
+  const parts = [];
+  for (let i = 0; i < digits.length; i += 2) {
+    parts.push(digits.slice(i, i + 2));
+  }
+  return parts.join(" ");
+}
+
 export function tnvedSearchStems(query) {
   const q = String(query || "")
     .trim()

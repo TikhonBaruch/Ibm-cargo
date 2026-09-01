@@ -42,6 +42,76 @@ const relationsOverlay = (() => {
   return { edges: [] };
 })();
 
+function loadJsonOverlay(names, fallback) {
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  for (const name of names) {
+    for (const p of [path.join(here, name), path.join(here, "../../../src/lib/ved", name)]) {
+      try {
+        return JSON.parse(readFileSync(p, "utf8"));
+      } catch {
+        /* try next */
+      }
+    }
+  }
+  return fallback;
+}
+
+const psnPack = loadJsonOverlay(["tnved-psn-excerpts.json"], { groups: {} });
+const decisionsPack = loadJsonOverlay(["tnved-classification-decisions.json"], { items: [] });
+const PSN_NOTES_RE = /^ЕЭК\s*PSN:\s*(.+?)\.\s+([\s\S]+)$/i;
+
+function parsePsnFromNotes(notes) {
+  const lead = String(notes || "")
+    .trim()
+    .split(/\n+/)[0]
+    ?.trim();
+  if (!lead) return null;
+  const m = lead.match(PSN_NOTES_RE);
+  if (!m) return null;
+  const heading = m[1].trim();
+  const excerpt = m[2].replace(/\s+/g, " ").trim().slice(0, 1200);
+  if (!heading || !excerpt) return null;
+  return { heading, excerpt, url: psnPack.sourceUrl || null, origin: "notes" };
+}
+
+function lookupPsnExplanation(code, notes, ancestors) {
+  const fromOwn = parsePsnFromNotes(notes);
+  if (fromOwn) return fromOwn;
+  for (const a of ancestors || []) {
+    const hit = parsePsnFromNotes(a.notes);
+    if (hit) return hit;
+  }
+  const group = String(code || "").replace(/\D/g, "").slice(0, 2);
+  const row = psnPack.groups?.[group];
+  if (!row?.excerpt?.trim()) return null;
+  return {
+    heading: String(row.heading || `Группа ${group}`).trim(),
+    excerpt: String(row.excerpt).replace(/\s+/g, " ").trim().slice(0, 1200),
+    url: row.url ?? psnPack.sourceUrl ?? null,
+    origin: "overlay",
+  };
+}
+
+function lookupClassificationDecisions(codeRaw, limit = 5) {
+  const code = String(codeRaw || "").replace(/\D/g, "");
+  if (code.length !== 10) return [];
+  const out = [];
+  for (const raw of decisionsPack.items || []) {
+    const c = String(raw.code || "").replace(/\D/g, "");
+    if (c !== code) continue;
+    const title = String(raw.title || "").trim();
+    if (!title) continue;
+    out.push({
+      code: c,
+      title,
+      url: raw.url ?? decisionsPack.sourceUrl ?? null,
+      asOf: raw.asOf ?? decisionsPack.asOf ?? null,
+    });
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
 function normalizeHsDigits(input) {
   const digits = String(input || "").replace(/\D/g, "");
   if (![2, 4, 6, 8, 10].includes(digits.length)) return null;
@@ -128,6 +198,12 @@ export const TNVED_CARD_SOURCES = [
     asOf: "2026-08-08",
   },
   {
+    layer: "E",
+    title: "Решения ЕЭК о классификации",
+    url: "https://eec.eaeunion.org/comission/department/catr/classification/",
+    asOf: null,
+  },
+  {
     layer: "G",
     title: "Акциз / утиль / НТМ — триггеры НПА (не ставка)",
     url: null,
@@ -169,6 +245,7 @@ export function pickEttRate(rates) {
 export function assembleTnvedCard(row, ancestors, extra) {
   const rates = Array.isArray(row.rates) ? row.rates : [];
   const more = extra || {};
+  const anc = ancestors || [];
   return {
     code: row.code,
     codeDisplay: row.codeDisplay,
@@ -177,10 +254,12 @@ export function assembleTnvedCard(row, ancestors, extra) {
     level: row.level,
     isLeaf: Boolean(row.isLeaf),
     notes: row.notes ?? null,
-    ancestors: ancestors || [],
+    ancestors: anc,
     children: more.children || [],
     related: more.related || relationsForCode(row.code),
     rate: pickEttRate(rates),
+    explanation: lookupPsnExplanation(row.code, row.notes, anc),
+    classificationDecisions: lookupClassificationDecisions(row.code),
     paymentsHint: { vatPct: DEFAULT_IMPORT_VAT_PERCENT, feeRule: TNVED_FEE_RULE },
     measuresHint: layerGToHint(matchLayerG(row.code)),
     sources: TNVED_CARD_SOURCES,

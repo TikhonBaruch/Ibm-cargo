@@ -20,6 +20,7 @@ import {
   liveFeedMatch,
   type LiveFeedFilter,
 } from "../lbm-pane-visual";
+import { shouldRevealClientDraftHs } from "@/lib/ved/ai-classification-copy";
 
 type OrderFilter = LiveFeedFilter;
 
@@ -632,7 +633,9 @@ function OrdersTable({
             : payable && price
               ? formatRub(price)
               : "—";
-        const hs = clientOrderHsLabel({ hsCode: c.hsCode, hsCodeFinal: c.hsCodeFinal });
+        const hs = shouldRevealClientDraftHs(c)
+          ? clientOrderHsLabel({ hsCode: c.hsCode, hsCodeFinal: c.hsCodeFinal })
+          : "—";
         return (
           <div
             key={c.id}
