@@ -1,7 +1,7 @@
 # Plan: Hint coverage P0–P6
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0–P6 done** (this PR).  
+**Статус:** **P0–P3 on main** (#43/#44) · **P4–P6** (this PR → main). **53 packs.**  
 **Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md).
 
 ## Сделано
@@ -40,8 +40,6 @@
 Closed: pharma / books / appliances / lighting-ex-led / hardware / paint / pet-food / agri.  
 **Still POLICY:** pets-live (`кот`, `собака`).
 
-
-
 ## P5 — open sections after P4 (C9)
 
 | Pack | HS focus | Notes |
@@ -64,50 +62,9 @@ Pack count **33 → 41**.
 
 `куртка`/`платье` remain pack-null (P0 attr-path, not C21 pack) — OK.
 
-### New open test sections (no C21 pack yet / weak)
-
-| Секция | Примеры |
-|--------|---------|
-| cosmetics-detail | помада, шампунь (pack `cosmetics` exists but narrow) |
-| soap / oral | мыло, зубная паста |
-| baby | подгузник, памперс |
-| tools | дрель, молоток |
-| cookware / tableware | кастрюля, сковорода, тарелка |
-| textiles-home / rugs | одеяло, подушка, ковёр |
-| batteries | батарея, аккумулятор |
-| networking / printers / monitors / tv | роутер, принтер, монитор, телевизор |
-| auto-parts / bearings | фильтр масляный, свеча, подшипник |
-| sports / camping / umbrellas / optics | мяч, палатка, зонт, очки |
-| med-disposables | шприц, бинт |
-| pet-accessories / litter | ошейник, поводок, наполнитель |
-| toys-extra | лего (общий `toys` есть) |
-
-Next slice **P5**: pick 6–8 highest-traffic sections (cosmetics-detail, tools, cookware, batteries, networking, baby…).
-
-
-
 ## P6 — open sections after P5 (C10)
 
 Pack count **41 → 53**. Bare `камера` / `фильтр` / `свеча` stay null (need qualifier). Live animals POLICY.
-
-## C10 — Post-cycle re-probe (after P5)
-
-**0 NEW WRONG** on P5 matrix. Closed C9: cosmetics-detail, soap/oral, baby, tools, cookware/tableware, batteries, networking, home-textiles.
-
-### Still open (P6 candidates)
-
-| Секция | Примеры |
-|--------|---------|
-| rugs | коврик, ковёр |
-| sports / camping / umbrellas | мяч, палатка, зонт |
-| optics | очки |
-| med-disposables | шприц, бинт |
-| pet-accessories / litter | ошейник, наполнитель |
-| printers / monitors / tv / peripherals | принтер, монитор, телевизор, клавиатура |
-| auto-parts / bearings | фильтр, свеча, подшипник |
-| security-cam | камера видеонаблюдения |
-| toys-extra | лего |
-
 
 ## C11 — Post-cycle re-probe (after P6)
 
