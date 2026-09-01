@@ -146,7 +146,7 @@ Offline pre-flight: `npx vitest run src/lib/ved/__tests__/hint-coverage-p12.test
 | H1 | Unit `hint-coverage-p7…p12` + `test:hint-precision` | 0 NEW STEAL · pack matrix green | **PASS** unit (stack #50–#56) |
 | H2 | Unit cascade Cov-P11/P12 golden | рис→10 · рыба→03 · SSD→84 · playstation→95 | **PASS** unit |
 | H3 | Gap probe `--fail-on steal,misroute` | 0 STEAL / 0 MISROUTE on dictionary | **PASS** offline |
-| H3b | Gap probe `--full` observe | household pack-hit ~81% · any-help ~87% (plan-s7) | **PASS** offline 2026-09-01 |
+| H3b | Gap probe `--full` observe | household pack-hit ~81% · any-help ~87% · diverge 0 · POLICY-HIT 0 (after P13) | **PASS** offline 2026-09-01 |
 | H4 | POLICY bare stays null | провод/камера/фильтр/свеча/перец/кот | **PASS** unit |
 | H5 | Live search prod (post-merge) | `q=рис`→10xx · `q=рыба`→03xx · `q=SSD`→84xx · `q=playstation`→95xx | **чеклист** post-merge |
 | H6 | Live attr-suggest prod | рис/колбаса/чайник → clarify-only + `clarifyPack`; носки→6115; куртка→6201 | **чеклист** post-merge (auth cookie) |

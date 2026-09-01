@@ -1,7 +1,8 @@
 # План прогона: `probe:hint-gap` (golden + full observe)
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** план (KB only) · зависит от Cov-P12 tooling (#56).  
+**Статус:** план · **Cov-P13 done** (this PR) · next **Cov-P14** food MISS.  
+**Зависит от:** Cov-P12 tooling (#56).  
 **Канон:** [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) · [`staging.md`](./staging.md) §Cov · [`testing-branches.md`](./testing-branches.md).
 
 ---
@@ -168,15 +169,15 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 
 Источник: observe 2026-09-01, plan-s7 MISS=50 · DIVERGE=2 · POLICY-HIT=1.
 
-### 6.1 Must — Cov-P13 (precision / guards / plant)
+### 6.1 Must — Cov-P13 (precision / guards / plant) — **done** (this PR)
 
 | ID | Query | Was | Fix |
 |----|-------|-----|-----|
-| G1 | `ореховое молоко` | milk POLICY-HIT | extend `isPlantDairyQuery` (+орехов…) |
-| G2 | `коврик йога` | rugs vs sports | guard «йога» → sports / exclude rugs |
-| G3 | `шкаф` | furniture vs bedroom-furniture | accept sibling **или** bedroom scoreKeys; document wantPack |
+| G1 | `ореховое молоко` | milk POLICY-HIT (+ pantry steal) | `орехов\w*` in plant-dairy; skip milk+pantry; 0401 exclude |
+| G2 | `коврик йога` | rugs vs sports | `isYogaMatQuery` skip rugs + sports triggers |
+| G3 | `шкаф` | furniture vs bedroom-furniture | trigger `шкаф` → `bedroom-furniture` |
 
-**Done when:** POLICY-HIT=0 · DIVERGE≤1 (или documented accept) · golden still 0 STEAL.
+**Done when:** POLICY-HIT=0 · DIVERGE=0 · golden 53/53 OK (0 STEAL).
 
 ### 6.2 Must — Cov-P14 (food MISS triggers)
 
@@ -219,7 +220,7 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 
 | ID | Scope | Pack Δ | Probe | Done when |
 |----|-------|--------|-------|-----------|
-| **Cov-P13** | plant + diverge guards | 0 | +3 golden | POLICY-HIT=0; G2/G3 closed |
+| **Cov-P13** | plant + diverge guards | 0 | +3 golden | **done** — POLICY-HIT=0; DIVERGE=0 |
 | **Cov-P14** | food triggers / bakery-ready | 0–1 | +8 | food miss ≤3 |
 | **Cov-P15** | apparel RULES + home stems | 0 | +10 | apparel/home miss ≤5 |
 | **Cov-P16** | elec/auto/sport/long triggers | 0–2 | +15 | plan-s7 pack-hit ≥88% |
@@ -287,7 +288,7 @@ npm run test:ci
 | # | Дата | Branch/PR | plan-s7 pack% | any% | miss | diverge | POLICY-HIT | Notes |
 |---|------|-----------|---------------|------|------|---------|------------|-------|
 | 1 | 2026-09-01 | #56 Cov-P12 | 80.9 | 86.7 | 50 | 2 | 1 | first `--full`; tooling landed |
-| 2 | — | Cov-P13+ | — | — | — | — | — | after residual fixes |
+| 2 | 2026-09-01 | Cov-P13 (this PR) | 80.9 | 86.7 | 50 | **0** | **0** | plant/yoga/шкаф guards; miss list unchanged |
 
 ---
 
