@@ -1,7 +1,7 @@
 # План прогона: `probe:hint-gap` (golden + full observe)
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** план · **Cov-P13–P16 done** · next **Cov-P17** cascade polish / **P18** live.  
+**Статус:** план · **Cov-P13–P17 done** · next **Cov-P18** live H5–H7.  
 **Зависит от:** Cov-P12 tooling (#56).  
 **Канон:** [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) · [`staging.md`](./staging.md) §Cov · [`testing-branches.md`](./testing-branches.md).
 
@@ -216,9 +216,11 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 
 **Done when:** plan-s7 pack-hit ≥88% → **90.9%**; miss **7** (home DEFER 2 + industrial DEFER 5); POLICY-HIT 0.
 
-### 6.5 Cascade-only (S+, optional Cov-P17)
+### 6.5 Cascade-only (S+, Cov-P17) — **done** (this PR)
 
-Уже CASCADE (не MISS): морс · варежки · HDD · hdmi кабель · воздушный/масло фильтр — alias polish, не pack work.
+Уже CASCADE (не MISS): морс · варежки · HDD · hdmi кабель · воздушный/масло фильтр — alias + fixture golden.
+
+**Done when:** 6 CASCADE rows in dictionary + classify-cascade fixture; golden 95/95 OK.
 
 ---
 
@@ -230,7 +232,7 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 | **Cov-P14** | food triggers / prepared-food fork | 0 | +9 golden | **done** — food miss 0; pack-hit 83.2% |
 | **Cov-P15** | apparel RULES + home stems | 0 | +12 golden | **done** — apparel miss 0; home miss 2 (DEFER); any 92.3% |
 | **Cov-P16** | elec/auto/sport/long triggers | 0–2 | +15 | **done** — plan-s7 pack-hit **90.9%**; miss 7 DEFER |
-| **Cov-P17** | cascade aliases for CASCADE rows | — | fixture | CASCADE polish |
+| **Cov-P17** | cascade aliases for CASCADE rows | — | +6 golden | **done** — 6 S+ rows fixture; golden 95/95 |
 | **Cov-P18** | live H5–H7 re-check + miss-log close | — | staging | human PASS |
 
 **Не делать в этих фазах:** scrape Альта · `tnved:load --full` на sweb · трогать taurus-liart (D37) · раздувать golden до всего корпуса (observe ≠ golden).
@@ -297,7 +299,8 @@ npm run test:ci
 | 2 | 2026-09-01 | #58 Cov-P13 | 80.9 | 86.7 | 50 | **0** | **0** | plant/yoga/шкаф guards |
 | 3 | 2026-09-01 | #59 Cov-P14 | 83.2 | 89.1 | 41 | 0 | 0 | food miss 0 |
 | 4 | 2026-09-01 | #60 Cov-P15 | **85.1** | **92.3** | **29** | 0 | 0 | apparel 100% any; home miss 2 DEFER |
-| 5 | 2026-09-01 | Cov-P16 (this PR) | **90.9** | **98.1** | **7** | 0 | 0 | elec/auto/sport/long; POLICY +3 bare |
+| 5 | 2026-09-01 | #61 Cov-P16 | **90.9** | **98.1** | **7** | 0 | 0 | elec/auto/sport/long |
+| 6 | 2026-09-01 | Cov-P17 (this PR) | **90.9** | **98.1** | **7** | 0 | 0 | 6 CASCADE S+ golden; alias hdmi/HDD/морс/варежки |
 
 ---
 

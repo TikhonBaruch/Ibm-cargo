@@ -1,8 +1,8 @@
 # План: расширенный охват подсказок (Cov-P7+) — проход, словарь, выявление ошибок
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** **Cov-P0…P16** done (#50–#60+) · **78 packs.**  
-**Следующий прогон / residual:** [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (G0–G6 · **Cov-P17** cascade / **P18** live).  
+**Статус:** **Cov-P0…P17** done (#50–#61+) · **78 packs.**  
+**Следующий прогон / residual:** [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (G0–G6 · **Cov-P18** live H5–H7).  
 **Канон:** [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6, 53 packs) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) (precision P0–P7) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) (слои H1–H5).
 
 ---
@@ -216,7 +216,8 @@ R8  V8 live (post-merge): NewCalc chips + POST attr-suggest на prod/preview
 | **Cov-P13** | plant-dairy + yoga/шкаф diverge guards | 78 | +3 golden | **done** (#58) |
 | **Cov-P14** | food MISS triggers (bakery/chicken/drinks/ready) | 78 | +9 golden | **done** (#59) |
 | **Cov-P15** | apparel ATTR + home/textiles stems | 78 | +12 golden | **done** (#60) |
-| **Cov-P16** | elec/auto/sport/long triggers + POLICY bare | 78 | +15 golden | **done** (this PR) |
+| **Cov-P16** | elec/auto/sport/long triggers + POLICY bare | 78 | +15 golden | **done** (#61) |
+| **Cov-P17** | cascade S+ for 6 CASCADE rows | 78 | +6 golden | **done** (this PR) |
 
 **MoSCoW:** Cov-P0 + P7 + P8 = **Must**; P9 = **Should**; P10–P12 = **Should** после merge P7–P8; P13+ = residual from [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md).
 
@@ -366,8 +367,9 @@ npm run probe:hint-gap -- --full --source plan-s7 --format summary
 10. ~~**Cov-P14:** food MISS triggers.~~  
 11. ~~**Cov-P15:** apparel/home leftovers.~~  
 12. ~~**Cov-P16:** elec/auto/sport/long ([`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) §6.4).~~  
-13. **Cov-P17:** cascade aliases · **P18** live H5–H7.  
-14. **Human merge** stack → main → staging.md §Cov H5–H7 live.
+13. ~~**Cov-P17:** cascade aliases.~~  
+14. **Cov-P18:** live H5–H7.  
+15. **Human merge** stack → main → staging.md §Cov H5–H7 live.
 
 Agent cannot merge.
 
@@ -531,7 +533,7 @@ Apparel MISS закрыт ATTR (носки…плащ) — any-help 100% на ap
 | Unit | `hint-coverage-p15.test.ts` · golden 74/74 |
 | Probe #4 | pack-hit **85.1%** · any **92.3%** · miss 29 |
 
-### Cov-P16 notes (this PR)
+### Cov-P16 notes
 
 | Fix | Detail |
 |-----|--------|
@@ -539,8 +541,16 @@ Apparel MISS закрыт ATTR (носки…плащ) — any-help 100% на ap
 | Auto | свечи (pl.) · диск тормозной · колесо→tires · зеркала боковые |
 | Sport/long | лыжи/коньки/ролики/ракетка · фломастер/бусы/кулон/гармонь |
 | POLICY | переходник · кабель · шланг marked in corpus POLICY set |
-| DEFER | industrial/home hangers |
-| Unit | `hint-coverage-p16.test.ts` · golden 89/89 |
 | Probe #5 | pack-hit **90.9%** · any **98.1%** · miss 7 |
+
+### Cov-P17 notes (this PR)
+
+| Fix | Detail |
+|-----|--------|
+| CASCADE S+ | морс · варежки · HDD · hdmi кабель · воздушный/масло фильтр |
+| Aliases | hdmi keys · =морс/=варежки · =hdd |
+| Fixture | +6 classify-cascade · golden dictionary 95 rows |
+| Unit | `hint-coverage-p17.test.ts` |
+| Probe #6 | observe unchanged (90.9%/98.1%/miss 7); golden **95/95** |
 
 Live H5–H7: human post-merge on prod/preview — agent cannot SSO.
