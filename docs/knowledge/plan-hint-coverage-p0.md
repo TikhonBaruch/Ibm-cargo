@@ -1,7 +1,7 @@
-# Plan: Hint coverage P0–P5
+# Plan: Hint coverage P0–P6
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0–P5 done** (this PR).  
+**Статус:** **P0–P6 done** (this PR).  
 **Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md).
 
 ## Сделано
@@ -14,6 +14,7 @@
 | **P3** | Packs: `art` · `bags` · `watches` · `beverages` · `speakers` · `furniture` · `tires` · `cycles` |
 | **P4** | Packs: `pharma` · `books` · `appliances` · `lamps` · `fasteners` · `paint` · `pet-food` · `agri-inputs` |
 | **P5** | Expand `cosmetics` + packs `personal-care` · `baby` · `tools` · `cookware` · `tableware` · `batteries` · `networking` · `home-textiles` |
+| **P6** | `rugs` · `sports` · `camping` · `umbrellas` · `optics` · `med-disposables` · `pet-accessories` · `displays` · `printers` · `peripherals` · `auto-parts` · `security-cam` + toys lego |
 
 ## P4 — open sections after P3 (C8)
 
@@ -84,6 +85,11 @@ Pack count **33 → 41**.
 Next slice **P5**: pick 6–8 highest-traffic sections (cosmetics-detail, tools, cookware, batteries, networking, baby…).
 
 
+
+## P6 — open sections after P5 (C10)
+
+Pack count **41 → 53**. Bare `камера` / `фильтр` / `свеча` stay null (need qualifier). Live animals POLICY.
+
 ## C10 — Post-cycle re-probe (after P5)
 
 **0 NEW WRONG** on P5 matrix. Closed C9: cosmetics-detail, soap/oral, baby, tools, cookware/tableware, batteries, networking, home-textiles.
@@ -101,6 +107,11 @@ Next slice **P5**: pick 6–8 highest-traffic sections (cosmetics-detail, tools,
 | auto-parts / bearings | фильтр, свеча, подшипник |
 | security-cam | камера видеонаблюдения |
 | toys-extra | лего |
+
+
+## C11 — Post-cycle re-probe (after P6)
+
+C10 sections closed. Remaining long-tail: generic `провод`, photo cameras, candles/filters without qualifier, etc. — defer unless probes show traffic.
 
 ## Проверка
 

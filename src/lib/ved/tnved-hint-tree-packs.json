@@ -803,7 +803,11 @@
         "консоль",
         "playstation",
         "nintendo",
-        "steam deck"
+        "steam deck",
+        "лего",
+        "lego",
+        "пазл",
+        "puzzle"
       ],
       "skipQuestionIds": [
         "kind"
@@ -2182,6 +2186,507 @@
               "простын",
               "пододеяльник",
               "bedding"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rugs",
+      "triggers": [
+        "ковёр",
+        "ковер",
+        "коврик",
+        "carpet",
+        "rug",
+        "палас"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Ковёр / коврик?",
+        "hint": "Ковры — 5702/5703.",
+        "options": [
+          {
+            "id": "carpet",
+            "label": "Ковёр / коврик",
+            "value": "ковёр",
+            "hsHeading": "5703",
+            "why": "5703 — ковры и прочие текстильные напольные покрытия.",
+            "triggers": [
+              "ковёр",
+              "ковер",
+              "коврик",
+              "carpet",
+              "rug"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "sports",
+      "triggers": [
+        "мяч",
+        "гантел",
+        "гантель",
+        "тренажёр",
+        "тренажер",
+        "спорт инвентар",
+        "dumbbell",
+        "football",
+        "soccer ball"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Спорт инвентарь?",
+        "hint": "Мячи 9506; гантели часто 9506.",
+        "options": [
+          {
+            "id": "ball",
+            "label": "Мяч",
+            "value": "мяч",
+            "hsHeading": "9506",
+            "why": "9506 — изделия и оборудование для спорта.",
+            "triggers": [
+              "мяч",
+              "football",
+              "soccer"
+            ]
+          },
+          {
+            "id": "weights",
+            "label": "Гантели / тренажёр",
+            "value": "гантели",
+            "hsHeading": "9506",
+            "why": "9506 — спортинвентарь.",
+            "triggers": [
+              "гантел",
+              "гантель",
+              "тренажёр",
+              "тренажер",
+              "dumbbell"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "camping",
+      "triggers": [
+        "палатк",
+        "спальный мешок",
+        "спальник",
+        "tent",
+        "sleeping bag",
+        "турист палат"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Туризм / кемпинг?",
+        "hint": "Палатки 6306; спальники 9404.",
+        "options": [
+          {
+            "id": "tent",
+            "label": "Палатка",
+            "value": "палатка",
+            "hsHeading": "6306",
+            "why": "6306 — палатки.",
+            "triggers": [
+              "палатк",
+              "tent"
+            ]
+          },
+          {
+            "id": "sleeping-bag",
+            "label": "Спальный мешок",
+            "value": "спальный мешок",
+            "hsHeading": "9404",
+            "why": "9404 — спальные мешки.",
+            "triggers": [
+              "спальный мешок",
+              "спальник",
+              "sleeping bag"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "umbrellas",
+      "triggers": [
+        "зонт",
+        "зонтик",
+        "umbrella",
+        "parasol"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Зонт?",
+        "hint": "Зонты — 6601.",
+        "options": [
+          {
+            "id": "umbrella",
+            "label": "Зонт",
+            "value": "зонт",
+            "hsHeading": "6601",
+            "why": "6601 — зонты и солнцезащитные зонты.",
+            "triggers": [
+              "зонт",
+              "зонтик",
+              "umbrella",
+              "parasol"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "optics",
+      "triggers": [
+        "очки",
+        "очков",
+        "солнцезащитн очк",
+        "линза очков",
+        "spectacles",
+        "sunglasses",
+        "eyeglasses"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Очки?",
+        "hint": "Очки — 9004.",
+        "options": [
+          {
+            "id": "glasses",
+            "label": "Очки / солнцезащитные",
+            "value": "очки",
+            "hsHeading": "9004",
+            "why": "9004 — очки и подобные.",
+            "triggers": [
+              "очки",
+              "очков",
+              "sunglasses",
+              "spectacles",
+              "eyeglasses"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "med-disposables",
+      "triggers": [
+        "шприц",
+        "бинт",
+        "пластыр",
+        "медицинск маск",
+        "syringe",
+        "bandage",
+        "gauze"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Медрасходники?",
+        "hint": "Шприцы 9018; бинты/марля 3005.",
+        "options": [
+          {
+            "id": "syringe",
+            "label": "Шприц",
+            "value": "шприц",
+            "hsHeading": "9018",
+            "why": "9018 — шприцы и инструменты.",
+            "triggers": [
+              "шприц",
+              "syringe"
+            ]
+          },
+          {
+            "id": "bandage",
+            "label": "Бинт / пластырь",
+            "value": "бинт",
+            "hsHeading": "3005",
+            "why": "3005 — вата, марля, бинты.",
+            "triggers": [
+              "бинт",
+              "пластыр",
+              "bandage",
+              "gauze"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "pet-accessories",
+      "triggers": [
+        "ошейник",
+        "поводок",
+        "наполнитель для лотка",
+        "лоток для кош",
+        "collar",
+        "leash",
+        "cat litter"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Аксессуары для животных?",
+        "hint": "Ошейники/поводки 4201; наполнители часто 2508/3824. Не живые животные.",
+        "options": [
+          {
+            "id": "collar",
+            "label": "Ошейник / поводок",
+            "value": "ошейник или поводок",
+            "hsHeading": "4201",
+            "why": "4201 — изделия для животных (ошейники и т.п.).",
+            "triggers": [
+              "ошейник",
+              "поводок",
+              "collar",
+              "leash"
+            ]
+          },
+          {
+            "id": "litter",
+            "label": "Наполнитель для лотка",
+            "value": "наполнитель для лотка",
+            "hsHeading": "2508",
+            "why": "2508 — глины (наполнители); уточняйте состав.",
+            "triggers": [
+              "наполнитель",
+              "cat litter",
+              "лоток"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "displays",
+      "triggers": [
+        "телевизор",
+        "монитор",
+        "дисплей",
+        "television",
+        "tv ",
+        " monitor",
+        "monitor ",
+        "lcd монитор"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Телевизор или монитор?",
+        "hint": "ТВ/мониторы — 8528.",
+        "options": [
+          {
+            "id": "tv",
+            "label": "Телевизор",
+            "value": "телевизор",
+            "hsHeading": "8528",
+            "why": "8528 — мониторы и проекционные аппараты; ТВ.",
+            "triggers": [
+              "телевизор",
+              "television",
+              "tv"
+            ]
+          },
+          {
+            "id": "monitor",
+            "label": "Монитор",
+            "value": "монитор",
+            "hsHeading": "8528",
+            "why": "8528 — мониторы.",
+            "triggers": [
+              "монитор",
+              "дисплей",
+              "monitor"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "printers",
+      "triggers": [
+        "принтер",
+        "сканер",
+        "мфу",
+        "printer",
+        "scanner",
+        "многофункциональн устройств"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Принтер / сканер?",
+        "hint": "Принтеры/сканеры — 8443.",
+        "options": [
+          {
+            "id": "printer",
+            "label": "Принтер / МФУ",
+            "value": "принтер",
+            "hsHeading": "8443",
+            "why": "8443 — печатные машины.",
+            "triggers": [
+              "принтер",
+              "мфу",
+              "printer"
+            ]
+          },
+          {
+            "id": "scanner",
+            "label": "Сканер",
+            "value": "сканер",
+            "hsHeading": "8471",
+            "why": "Сканеры часто 8471 — уточняйте.",
+            "triggers": [
+              "сканер",
+              "scanner"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "peripherals",
+      "triggers": [
+        "клавиатур",
+        "keyboard",
+        "webcam",
+        "веб-камер",
+        "вебкамер"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Периферия ПК?",
+        "hint": "Клавиатуры — 8471. Мышь — отдельно (pointer guard).",
+        "options": [
+          {
+            "id": "keyboard",
+            "label": "Клавиатура",
+            "value": "клавиатура",
+            "hsHeading": "8471",
+            "why": "8471 — клавиатуры для компьютеров.",
+            "triggers": [
+              "клавиатур",
+              "keyboard"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "auto-parts",
+      "triggers": [
+        "фильтр маслян",
+        "масляный фильтр",
+        "свеча зажиган",
+        "подшипник",
+        "bearing",
+        "oil filter",
+        "spark plug",
+        "автозапчаст"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Автозапчасть?",
+        "hint": "Фильтры 8421; свечи 8511; подшипники 8482.",
+        "options": [
+          {
+            "id": "filter",
+            "label": "Масляный фильтр",
+            "value": "масляный фильтр",
+            "hsHeading": "8421",
+            "why": "8421 — фильтрующие аппараты.",
+            "triggers": [
+              "фильтр",
+              "oil filter"
+            ]
+          },
+          {
+            "id": "spark",
+            "label": "Свеча зажигания",
+            "value": "свеча зажигания",
+            "hsHeading": "8511",
+            "why": "8511 — свечи зажигания.",
+            "triggers": [
+              "свеча зажиган",
+              "spark plug"
+            ]
+          },
+          {
+            "id": "bearing",
+            "label": "Подшипник",
+            "value": "подшипник",
+            "hsHeading": "8482",
+            "why": "8482 — подшипники.",
+            "triggers": [
+              "подшипник",
+              "bearing"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "security-cam",
+      "triggers": [
+        "камера видеонаблюд",
+        "видеонаблюден",
+        "cctv",
+        "ip камер",
+        "security camera"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Камера наблюдения?",
+        "hint": "Видеокамеры — 8525.",
+        "options": [
+          {
+            "id": "cctv",
+            "label": "Камера видеонаблюдения",
+            "value": "камера видеонаблюдения",
+            "hsHeading": "8525",
+            "why": "8525 — телевизионные камеры.",
+            "triggers": [
+              "камера",
+              "видеонаблюд",
+              "cctv",
+              "security camera"
             ]
           }
         ]
