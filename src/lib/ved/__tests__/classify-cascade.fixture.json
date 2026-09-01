@@ -88,5 +88,10 @@
 
   { "q": "рисовое молоко", "expectHsPrefix": "1006", "minConf": 0, "mustNotMatch": "1006" },
   { "q": "масло подсолнечное", "expectHsPrefix": "2710", "minConf": 0, "mustNotMatch": "2710" },
-  { "q": "электронная сигарета", "expectHsPrefix": "2402", "minConf": 0, "mustNotMatch": "2402" }
+  { "q": "электронная сигарета", "expectHsPrefix": "2402", "minConf": 0, "mustNotMatch": "2402" },
+  { "q": "лимонад", "expectHsPrefix": "2202", "minConf": 0.84 },
+  { "q": "кофемашина", "expectHsPrefix": "8516", "minConf": 0.84 },
+  { "q": "автокресло", "expectHsPrefix": "9401", "minConf": 0.84 },
+  { "q": "инвалидная коляска", "expectHsPrefix": "8713", "minConf": 0.84 },
+  { "q": "инвалидная коляска", "expectHsPrefix": "8715", "minConf": 0, "mustNotMatch": "8715" }
 ]

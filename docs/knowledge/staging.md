@@ -135,6 +135,40 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 # GET /api/v1/tnved/search?q=огурец → 07xx / 20xx first
 ```
 
+### Cov — hint coverage expansion (P7–P12) · 2026-09-01
+
+Канон: [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md). **78 packs** после merge стека #50–#56.  
+Offline pre-flight: `npx vitest run src/lib/ved/__tests__/hint-coverage-p12.test.ts` · `npm run probe:hint-gap -- --live`.
+
+| # | Проверка | Ожидание | Результат |
+|---|----------|----------|-----------|
+| H1 | Unit `hint-coverage-p7…p12` + `test:hint-precision` | 0 NEW STEAL · pack matrix green | **PASS** unit (stack #50–#56) |
+| H2 | Unit cascade Cov-P11/P12 golden | рис→10 · рыба→03 · SSD→84 · playstation→95 | **PASS** unit |
+| H3 | Gap probe `--fail-on steal,misroute` | 0 STEAL / 0 MISROUTE on dictionary | **PASS** offline |
+| H4 | POLICY bare stays null | провод/камера/фильтр/свеча/перец/кот | **PASS** unit |
+| H5 | Live search prod (post-merge) | `q=рис`→10xx · `q=рыба`→03xx · `q=SSD`→84xx · `q=playstation`→95xx | **чеклист** post-merge |
+| H6 | Live attr-suggest prod | рис/колбаса/чайник → clarify-only + `clarifyPack`; носки→6115; куртка→6201 | **чеклист** post-merge (auth cookie) |
+| H7 | Manual NewCalc `/cabinet/new` | chips: рис→grains · колбаса→meat · SSD→pc-parts · playstation→gaming · лимонад≠fruit | **чеклист** (SSO Visit Preview / prod demo) |
+
+**Live subset (dictionary `live: true`):** огурец · молоко · кеды · ноутбук · кепка · рис · колбаса · рыба · водка · чайник · SSD · фотоаппарат · моторное масло · ручка · гитара · сигареты · playstation · носки.
+
+```bash
+# offline
+npm run test:hint-coverage
+npm run probe:hint-gap -- --live --format table
+npm run probe:hint-gap -- --fail-on steal,misroute
+
+# post-merge live (session cookie / SSO Visit Preview)
+# POST /api/v1/calculations/attr-suggest { "description":"рис" }
+#   → clarifyPack=grains-pasta
+# GET /api/v1/tnved/search?q=рыба → 03xx first
+# /cabinet/new → type «playstation» → gaming chips, not toys
+```
+
+**Miss-log triage (closed):** лимонад≠fruit · кофемашина≠tea-coffee · автокресло≠furniture · порошок→cleaning · сок≠fruit · e-cig≠tobacco · playstation≠toys · инвалидная коляска≠baby-gear / ≠8715 cascade.  
+**Residual POLICY (not bugs):** bare провод/камера/фильтр/свеча/перец · кот/собака · plant «рисовое молоко» ≠ milk.
+
+Повторять H5–H7 после human merge стека coverage → main → prod.
 ### Track A ops keys (prod) — статус 2026-08-07
 
 | Шаг | Env / host | Статус |

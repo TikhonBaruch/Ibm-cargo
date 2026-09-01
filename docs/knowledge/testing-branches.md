@@ -96,6 +96,8 @@ flowchart TB
 | `npm run ops:precedent-count` | C35c B1: COUNT verified_determinations |
 | `npm run test:tnved-morphology` | H5 A–E + critical HS |
 | `npm run test:hint-precision` | P1 matrix + **P7** short-trigger hygiene (`hint-short-triggers.test.ts`) |
+| `npm run test:hint-coverage` | Cov-P0…P12 pack/attr/cascade dictionary |
+| `npm run probe:hint-gap` | Offline gap probe (`scripts/hint-gap-probe.ts`) |
 | `npm run test:classify-cascade` | must-cover + C35e offline-hit ≥60% |
 | `npm run smoke:csv-import` | CSV preview → create |
 | `npm run smoke:pdf-import` | PDF text-layer table preview |
