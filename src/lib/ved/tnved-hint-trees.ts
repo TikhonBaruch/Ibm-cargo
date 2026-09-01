@@ -121,6 +121,11 @@ export function matchHintPack(desc: string): OverlayPack | null {
     if (wheelchair && pack.id === "baby-gear") continue;
     // Cov-P13: yoga mat ≠ rugs; wardrobe шкаф → bedroom-furniture (not seating furniture).
     if (yogaMat && pack.id === "rugs") continue;
+    // Cov-P15: dishwasher ≠ tableware «посуда»; LED bulb ≠ furniture lamps.
+    if (/посудомо/i.test(text) && pack.id === "tableware") continue;
+    if (/(?:^|[^a-zа-я0-9])led(?:$|[^a-zа-я0-9])|светодиод|лампочк/i.test(text) && pack.id === "lamps") {
+      continue;
+    }
     const score = scoreKeys(text, pack.triggers || []);
     if (score > bestScore) {
       best = pack;

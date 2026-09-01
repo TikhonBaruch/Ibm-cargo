@@ -36,6 +36,7 @@ export const SHORT_TRIGGER_FALSE_FRIENDS: ReadonlyArray<{ stem: string; block: s
   { stem: "крем", block: "brulee" },
   { stem: "pod", block: "ipod" },
   { stem: "pod", block: "airpod" },
+  { stem: "стол", block: "столов" },
 ];
 
 /** Bare «перец» is spice/veg ambiguous (0904 vs 0709) — require sweet/bell qualifiers. */
