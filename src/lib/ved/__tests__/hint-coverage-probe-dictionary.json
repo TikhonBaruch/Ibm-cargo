@@ -2,7 +2,7 @@
   "asOf": "2026-09-01",
   "canon": "docs/knowledge/plan-hint-coverage-expansion.md §Cov-P12",
   "packCount": 78,
-  "note": "Golden regression dictionary; Cov-P16 +15 elec/auto/sport/long",
+  "note": "Golden regression dictionary; Cov-P17 +6 CASCADE S+ rows",
   "rows": [
     {
       "id": "cov0.lemonade",
@@ -1190,6 +1190,54 @@
         "searchPrefix": null
       },
       "mustNotPack": []
+    },
+    {
+      "id": "cascade.mors",
+      "query": "морс",
+      "phase": "Cov-P17",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": "2202" },
+      "mustNotPack": ["snacks", "fruit-fresh"],
+      "notes": "S+ cascade; juice guard blocks pack"
+    },
+    {
+      "id": "cascade.mittens",
+      "query": "варежки",
+      "phase": "Cov-P17",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": "6116" },
+      "mustNotPack": ["knit-top"],
+      "notes": "S+ cascade; ATTR path for gloves family"
+    },
+    {
+      "id": "cascade.hdd",
+      "query": "HDD",
+      "phase": "Cov-P17",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": "8471" },
+      "mustNotPack": ["computers", "pc-parts"],
+      "notes": "S+ cascade; bare HDD acronym"
+    },
+    {
+      "id": "cascade.hdmi",
+      "query": "hdmi кабель",
+      "phase": "Cov-P17",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": "8544" },
+      "mustNotPack": ["power"],
+      "notes": "S+ cascade; not bare POLICY кабель"
+    },
+    {
+      "id": "cascade.airfilter",
+      "query": "воздушный фильтр",
+      "phase": "Cov-P17",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": "8421" },
+      "mustNotPack": ["auto-parts"],
+      "notes": "S+ cascade; alias 842131"
+    },
+    {
+      "id": "cascade.oilfilter",
+      "query": "маслофильтр",
+      "phase": "Cov-P17",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": "8421" },
+      "mustNotPack": ["auto-parts"],
+      "notes": "S+ cascade; alias 842123"
     }
   ]
 }

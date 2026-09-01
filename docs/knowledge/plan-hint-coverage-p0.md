@@ -72,7 +72,7 @@ C10 sections closed. Gap probe ~280 queries → ~262 null pack; **Cov-P0** (#50)
 
 Remaining long-tail POLICY: generic `провод`, photo cameras, candles/filters without qualifier, etc. — defer unless probes show traffic.
 
-**Следующий цикл:** **Cov-P17** cascade polish · **P18** live H5–H7 ([`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md)) · human merge stack → staging §Cov.
+**Следующий цикл:** **Cov-P18** live H5–H7 ([`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md)) · human merge stack → staging §Cov.
 
 ## Проверка
 

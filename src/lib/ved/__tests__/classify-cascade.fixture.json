@@ -86,6 +86,13 @@
   { "q": "бампер", "expectHsPrefix": "8708", "minConf": 0.84 },
   { "q": "ткань", "expectHsPrefix": "5208", "minConf": 0.84 },
 
+  { "q": "морс", "expectHsPrefix": "2202", "minConf": 0.84 },
+  { "q": "варежки", "expectHsPrefix": "6116", "minConf": 0.84 },
+  { "q": "HDD", "expectHsPrefix": "8471", "minConf": 0.84 },
+  { "q": "hdmi кабель", "expectHsPrefix": "8544", "minConf": 0.84 },
+  { "q": "воздушный фильтр", "expectHsPrefix": "8421", "minConf": 0.84 },
+  { "q": "маслофильтр", "expectHsPrefix": "8421", "minConf": 0.84 },
+
   { "q": "рисовое молоко", "expectHsPrefix": "1006", "minConf": 0, "mustNotMatch": "1006" },
   { "q": "масло подсолнечное", "expectHsPrefix": "2710", "minConf": 0, "mustNotMatch": "2710" },
   { "q": "электронная сигарета", "expectHsPrefix": "2402", "minConf": 0, "mustNotMatch": "2402" },
