@@ -5,6 +5,7 @@
 import { z } from "zod";
 import { fillEmptyProductAttrs, type ProductAttrs } from "./product-description";
 import { isPlantDairyQuery, isPointerDeviceQuery } from "./tnved-query-match";
+import { hintTreeQuestions, matchHintPack } from "./tnved-hint-trees";
 
 export const attrSuggestInputSchema = z.object({
   title: z.string().trim().max(300).optional(),
@@ -32,7 +33,7 @@ type CatalogRule = {
 const RULES: CatalogRule[] = [
   {
     id: "socks",
-    test: /носк|гольф|чулк|подслед|socks?|hosiery/i,
+    test: /носк|гольф|чулк|колгот|подслед|socks?|hosiery/i,
     attrs: {
       material: "трикотаж",
       composition: "хлопок (уточните %)",
@@ -141,7 +142,7 @@ const RULES: CatalogRule[] = [
   },
   {
     id: "jacket",
-    test: /куртк|пальто|пиджак|пуховик/i,
+    test: /куртк|пальто|пиджак|пуховик|жилет/i,
     attrs: {
       material: "текстиль / уточните наполнитель",
       composition: "уточните волокна и %",
@@ -201,10 +202,97 @@ const RULES: CatalogRule[] = [
     },
     notes: ["Укажите бренд и модель, если есть."],
   },
+  {
+    id: "gloves",
+    test: /перчатк|gloves/i,
+    attrs: {
+      material: "трикотаж / кожа (уточните)",
+      composition: "уточните волокна и %",
+      purpose: "перчатки",
+      extra: { garmentType: "перчатки" },
+      hsHint: "6116 10 000 0",
+    },
+    notes: ["Перчатки трикотажные — 6116; кожаные — соседние позиции."],
+  },
+  {
+    id: "scarf",
+    test: /шарф|scarf/i,
+    attrs: {
+      material: "текстиль",
+      composition: "уточните волокна и %",
+      purpose: "шарф / платок",
+      extra: { garmentType: "шарф" },
+      hsHint: "6117 10 000 0",
+    },
+    notes: ["Шарфы и платки — гл. 6117."],
+  },
+  {
+    id: "suit",
+    test: /костюм|suit/i,
+    attrs: {
+      material: "текстиль",
+      composition: "уточните волокна и %",
+      purpose: "костюм",
+      extra: { garmentType: "костюм" },
+      hsHint: "6203 11 000 0",
+    },
+    notes: ["Мужские/женские костюмы — 6203/6204 по полу и ткани."],
+  },
+  {
+    id: "underwear",
+    test: /бельё|белье|трусы|лифчик|бюстгалтер|underwear/i,
+    attrs: {
+      material: "трикотаж / текстиль",
+      composition: "уточните волокна и %",
+      purpose: "нижнее бельё",
+      extra: { garmentType: "бельё" },
+      hsHint: "6108 21 000 0",
+    },
+    notes: ["Нижнее бельё — гл. 6108/6109 (трикотаж) или 6208 (ткань)."],
+  },
 ];
 
 function blob(input: AttrSuggestInput): string {
   return `${input.name || ""} ${input.title || ""} ${input.description || ""}`.trim();
+}
+
+/** Bare ambiguous tokens — stay generic (no C21 pack bridge). */
+const BARE_AMBIGUOUS_RE =
+  /^(?:провод|камера|фильтр|свеча|перец)$/i;
+
+function clarifyOnlyFromHintPack(text: string): AttrSuggestResult | null {
+  if (BARE_AMBIGUOUS_RE.test(text.trim())) return null;
+  const pack = matchHintPack(text);
+  if (!pack) return null;
+  const questions = hintTreeQuestions(text);
+  const heading = questions[0]?.options?.[0]?.hsHeading;
+  return {
+    engine: "heuristic-v1",
+    attrs: {
+      purpose: "уточните тип товара — см. подсказки семейства",
+      extra: { clarifyPack: pack.id },
+      ...(heading ? { hsHint: heading } : {}),
+    },
+    notes: [
+      `clarify-only: на /cabinet/new выберите вариант pack «${pack.id}».`,
+      "Не silent generic при наличии C21 hint-tree.",
+    ],
+  };
+}
+
+function applyRule(rule: CatalogRule, input: AttrSuggestInput): AttrSuggestResult {
+  const existing = (input.existing || {}) as ProductAttrs;
+  const merged = fillEmptyProductAttrs(existing, rule.attrs) || {};
+  const next: ProductAttrs = {};
+  for (const key of ["material", "composition", "purpose", "hsHint"] as const) {
+    if (!existing[key] && merged[key]) next[key] = merged[key];
+  }
+  const extra: Record<string, string> = {};
+  for (const [k, v] of Object.entries(merged.extra || {})) {
+    if (!existing.extra?.[k] && v) extra[k] = v;
+  }
+  if (Object.keys(extra).length) next.extra = extra;
+  return { engine: "heuristic-v1", attrs: next, notes: rule.notes };
 }
 
 export function heuristicAttrSuggest(input: AttrSuggestInput): AttrSuggestResult {
@@ -220,25 +308,14 @@ export function heuristicAttrSuggest(input: AttrSuggestInput): AttrSuggestResult
     if (pointer && r.id === "laptop") return false;
     return true;
   });
-  if (!rule) {
-    return {
-      engine: "heuristic-v1",
-      attrs: { purpose: "уточните назначение товара" },
-      notes: ["Добавьте состав, материал или тип — так точнее черновик ТН ВЭД."],
-    };
-  }
-  const existing = (input.existing || {}) as ProductAttrs;
-  const merged = fillEmptyProductAttrs(existing, rule.attrs) || {};
-  const next: ProductAttrs = {};
-  for (const key of ["material", "composition", "purpose", "hsHint"] as const) {
-    if (!existing[key] && merged[key]) next[key] = merged[key];
-  }
-  const extra: Record<string, string> = {};
-  for (const [k, v] of Object.entries(merged.extra || {})) {
-    if (!existing.extra?.[k] && v) extra[k] = v;
-  }
-  if (Object.keys(extra).length) next.extra = extra;
-  return { engine: "heuristic-v1", attrs: next, notes: rule.notes };
+  if (rule) return applyRule(rule, input);
+  const fromPack = clarifyOnlyFromHintPack(text);
+  if (fromPack) return fromPack;
+  return {
+    engine: "heuristic-v1",
+    attrs: { purpose: "уточните назначение товара" },
+    notes: ["Добавьте состав, материал или тип — так точнее черновик ТН ВЭД."],
+  };
 }
 
 export function suggestProductAttrs(input: AttrSuggestInput): AttrSuggestResult {

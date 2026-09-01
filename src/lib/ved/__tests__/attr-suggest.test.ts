@@ -39,6 +39,12 @@ describe("attr-suggest", () => {
     expect(out.attrs.hsHint).toMatch(/6115/);
   });
 
+  it("P10: колготки share hosiery attrs with носки", () => {
+    const out = heuristicAttrSuggest({ name: "колготки" });
+    expect(out.attrs.hsHint).toMatch(/6115/);
+    expect(out.attrs.purpose).toMatch(/носочн|чулочн/i);
+  });
+
   it("does not map кеды текстиль to apparel 62xx", () => {
     const out = heuristicAttrSuggest({ name: "кеды текстиль" });
     expect(out.attrs.hsHint).toMatch(/6404/);
