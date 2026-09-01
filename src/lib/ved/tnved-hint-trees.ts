@@ -13,6 +13,10 @@ import {
   isCoffeeMachineQuery,
   isCarSeatQuery,
   isLaundryDetergentQuery,
+  isDairyFatQuery,
+  isCookingOilQuery,
+  isFishSeafoodQuery,
+  isVegetableConservesQuery,
 } from "./tnved-query-match";
 
 export type HintTreeOption = {
@@ -62,6 +66,10 @@ export function matchHintPack(desc: string): OverlayPack | null {
   const coffeeMachine = isCoffeeMachineQuery(text);
   const carSeat = isCarSeatQuery(text);
   const laundryDetergent = isLaundryDetergentQuery(text);
+  const dairyFat = isDairyFatQuery(text);
+  const cookingOil = isCookingOilQuery(text);
+  const fishSeafood = isFishSeafoodQuery(text);
+  const vegConserves = isVegetableConservesQuery(text);
   let best: OverlayPack | null = null;
   let bestScore = 0;
   for (const pack of overlay.packs || []) {
@@ -71,10 +79,16 @@ export function matchHintPack(desc: string): OverlayPack | null {
     // Coverage P2: сок ≠ fruit; суп ≠ produce (овощной суп → prepared-food).
     if (juice && pack.id === "fruit-fresh") continue;
     if (preparedMeal && pack.id === "produce-fresh") continue;
+    if (preparedMeal && pack.id === "meat") continue;
     // Cov-P0 baseline: known WRONG steals.
     if (coffeeMachine && pack.id === "tea-coffee") continue;
     if (carSeat && pack.id === "furniture") continue;
     if (laundryDetergent && pack.id === "appliances") continue;
+    // Cov-P7 food disambiguation.
+    if (cookingOil && pack.id === "milk") continue;
+    if (dairyFat && pack.id === "pantry-sweet") continue;
+    if (fishSeafood && pack.id === "produce-fresh") continue;
+    if (vegConserves && pack.id === "fish-seafood") continue;
     const score = scoreKeys(text, pack.triggers || []);
     if (score > bestScore) {
       best = pack;
