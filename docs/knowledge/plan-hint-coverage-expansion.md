@@ -1,7 +1,7 @@
 # План: расширенный охват подсказок (Cov-P7+) — проход, словарь, выявление ошибок
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** **Cov-P0** done · **Cov-P7** done · **Cov-P8** (this PR) · Cov-P9+ pending.  
+**Статус:** **Cov-P0** done (#50) · **Cov-P7** done (#51) · **Cov-P8** (this PR) · Cov-P9+ pending. **68 packs.**
 **Канон:** [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6, 53 packs) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) (precision P0–P7) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) (слои H1–H5).
 
 ---
@@ -204,8 +204,8 @@ R8  V8 live (post-merge): NewCalc chips + POST attr-suggest на prod/preview
 
 | ID | Packs (+/-) | Pack count | Probe rows | Done when |
 |----|-------------|------------|------------|-----------|
-| **Cov-P0** | WRONG fixes only | 53 | 4+ regression | **done** (PR Cov-P0) |
-| **Cov-P7** | grains-pasta, meat, fish-seafood, pantry-sweet, snacks, spirits | 53→**59** | ~95 food | **done** (this PR) |
+| **Cov-P0** | WRONG fixes only | 53 | 4+ regression | **done** (#50) |
+| **Cov-P7** | grains-pasta, meat, fish-seafood, pantry-sweet, snacks, spirits | 53→**59** | ~95 food | **done** (#51) |
 | **Cov-P8** | small-appliances, bedroom-furniture, cutlery, cleaning, pc-parts, photo-gear, auto-fluids, adhesives, baby-gear (partial) | 59→**68** | ~135 home+elec+auto | **done** (this PR) |
 | **Cov-P9** | stationery, jewelry, musical, tobacco, agri-feed, textiles-raw, gaming, auto-body, med-devices, electrical-install | 68→**78** | ~120 long-tail | traffic review OK |
 | **Cov-P10** | attr RULE parity: outerwear/accessories где pack null но attr generic | — | ~40 | ATTR-GAP=0 на matrix |
