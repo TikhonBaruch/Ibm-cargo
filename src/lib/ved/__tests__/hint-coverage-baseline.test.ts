@@ -54,10 +54,10 @@ describe("Cov-P0 baseline — WRONG fixes", () => {
     expect(matchHintPack("диван")?.id).toBe("furniture");
   });
 
-  it("стиральный порошок → null (not appliances)", () => {
+  it("стиральный порошок → cleaning (not appliances)", () => {
     expect(isLaundryDetergentQuery("стиральный порошок")).toBe(true);
-    expect(matchHintPack("стиральный порошок")).toBeNull();
-    expect(matchHintPack("порошок стиральный")?.id ?? null).not.toBe("appliances");
+    expect(matchHintPack("стиральный порошок")?.id).toBe("cleaning");
+    expect(matchHintPack("порошок стиральный")?.id).toBe("cleaning");
   });
 
   it("стиральная машина still maps to appliances", () => {

@@ -31,6 +31,7 @@ export const SHORT_TRIGGER_FALSE_FRIENDS: ReadonlyArray<{ stem: string; block: s
   { stem: "поло", block: "полотенц" },
   { stem: "кофе", block: "кофеин" },
   { stem: "кофе", block: "кофемаш" },
+  { stem: "кофе", block: "кофеварк" },
   { stem: "крем", block: "брюле" },
   { stem: "крем", block: "brulee" },
   { stem: "pod", block: "ipod" },
@@ -56,7 +57,7 @@ const JUICE_BEVERAGE_RE =
   /(?:^|[^a-zа-я0-9])сок(?:$|[^a-zа-я0-9])|нектар|(?:^|[^a-zа-я0-9])juice(?:$|[^a-zа-я0-9])|smoothie|морс\b|лимонад|lemonade|компот/i;
 
 /** Coffee appliance — not tea/coffee chapter 09. */
-const COFFEE_MACHINE_RE = /кофемаш|coffee\s*machine|espresso\s*machine/i;
+const COFFEE_MACHINE_RE = /кофемаш|кофеварк|coffee\s*machine|coffee\s*maker|espresso\s*machine/i;
 
 /** Child car seat — not home furniture «кресло». */
 const CAR_SEAT_RE = /автокрес|car\s*seat|детск\w*\s+кресл\w*\s+авто/i;
@@ -83,6 +84,18 @@ const FISH_SEAFOOD_RE =
 /** Vegetable/mushroom conserves — not fish pack. */
 const VEG_CONSERVE_RE = /консерв|тушенк|marinad/i;
 const VEG_CONTEXT_RE = /овощ|огур|томат|помидор|капуст|гриб|фасол|горошек/i;
+
+/** Motor oil / antifreeze — not pantry cooking oil / dairy. */
+const MOTOR_OIL_RE =
+  /моторн\w*\s+масло|масло\s+моторн|антифриз|engine\s*oil|antifreeze|тормозн\w*\s+колодк|тормозн\w*\s+жидкост|brake\s*pad/i;
+
+/** PC component / storage — not whole computer pack. */
+const PC_PARTS_RE =
+  /\bssd\b|ж[её]стк\w*\s+диск|видеокарт|процессор|материнск|оперативн\w*\s+памят|флешк|карта\s+памят|блок\s+питани|graphics\s*card|usb\s*flash|memory\s*card/i;
+
+/** Photo camera gear — not security CCTV. */
+const PHOTO_GEAR_RE =
+  /фотоаппарат|фотокамер|объектив|штатив|вспышк|gopro|camera\s*lens|tripod|\bdslr\b/i;
 
 export function isPlantDairyQuery(query: string): boolean {
   return PLANT_DAIRY_RE.test(normalizeTnvedQueryText(query));
@@ -127,6 +140,18 @@ export function isFishSeafoodQuery(query: string): boolean {
 export function isVegetableConservesQuery(query: string): boolean {
   const q = normalizeTnvedQueryText(query);
   return VEG_CONSERVE_RE.test(q) && VEG_CONTEXT_RE.test(q);
+}
+
+export function isMotorOilQuery(query: string): boolean {
+  return MOTOR_OIL_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isPcPartsQuery(query: string): boolean {
+  return PC_PARTS_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isPhotoGearQuery(query: string): boolean {
+  return PHOTO_GEAR_RE.test(normalizeTnvedQueryText(query));
 }
 
 export function normalizeTnvedQueryText(s: string): string {
