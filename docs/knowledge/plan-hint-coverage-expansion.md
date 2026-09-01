@@ -1,7 +1,7 @@
 # План: расширенный охват подсказок (Cov-P7+) — проход, словарь, выявление ошибок
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** **Cov-P0…P12** done. **78 packs.**  
+**Статус:** **Cov-P0…P11** done (#50–#55) · **Cov-P12** (this PR). **78 packs.**
 **Канон:** [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6, 53 packs) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) (precision P0–P7) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) (слои H1–H5).
 
 ---
@@ -204,12 +204,12 @@ R8  V8 live (post-merge): NewCalc chips + POST attr-suggest на prod/preview
 
 | ID | Packs (+/-) | Pack count | Probe rows | Done when |
 |----|-------------|------------|------------|-----------|
-| **Cov-P0** | WRONG fixes only | 53 | 4+ regression | **done** (PR Cov-P0) |
-| **Cov-P7** | grains-pasta, meat, fish-seafood, pantry-sweet, snacks, spirits | 53→**59** | ~95 food | **done** (this PR) |
-| **Cov-P8** | small-appliances, bedroom-furniture, cutlery, cleaning, pc-parts, photo-gear, auto-fluids, adhesives, baby-gear (partial) | 59→**68** | ~135 home+elec+auto | **done** (this PR) |
-| **Cov-P9** | stationery, jewelry, musical, tobacco, agri-feed, textiles-raw, gaming, auto-body, med-devices, electrical-install | 68→**78** | ~120 long-tail | **done** (this PR) |
-| **Cov-P10** | attr RULE parity: outerwear/accessories + C21 pack bridge | — | ~40 | **done** (this PR) |
-| **Cov-P11** | search/cascade rows для top-20 новых families | — | ~60 | **done** (this PR) |
+| **Cov-P0** | WRONG fixes only | 53 | 4+ regression | **done** (#50) |
+| **Cov-P7** | grains-pasta, meat, fish-seafood, pantry-sweet, snacks, spirits | 53→**59** | ~95 food | **done** (#51) |
+| **Cov-P8** | small-appliances, bedroom-furniture, cutlery, cleaning, pc-parts, photo-gear, auto-fluids, adhesives, baby-gear (partial) | 59→**68** | ~135 home+elec+auto | **done** (#52) |
+| **Cov-P9** | stationery, jewelry, musical, tobacco, agri-feed, textiles-raw, gaming, auto-body, med-devices, electrical-install | 68→**78** | ~120 long-tail | **done** (#53) |
+| **Cov-P10** | attr RULE parity: outerwear/accessories + C21 pack bridge | — | ~40 | **done** (#54) |
+| **Cov-P11** | search/cascade rows для top-20 новых families | — | ~60 | **done** (#55) |
 | **Cov-P12** | live H6/H7 prod checklist + miss-log triage | — | subset | **done** (this PR) |
 
 **MoSCoW:** Cov-P0 + P7 + P8 = **Must**; P9 = **Should**; P10–P12 = **Should** после merge P7–P8.
