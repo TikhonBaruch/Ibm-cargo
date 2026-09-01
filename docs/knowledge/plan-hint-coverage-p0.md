@@ -1,7 +1,7 @@
 # Plan: Hint coverage P0–P6
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0–P6 on main** · **Cov-P0…P8** (this stack). **68 packs.**  
+**Статус:** **P0–P6 on main** · **Cov-P0…P9** (this stack). **78 packs.**  
 **Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md).
 
 ## Сделано
