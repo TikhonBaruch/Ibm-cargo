@@ -2,6 +2,7 @@
   "asOf": "2026-09-01",
   "canon": "docs/knowledge/plan-hint-coverage-expansion.md §Cov-P12",
   "packCount": 78,
+  "note": "Golden regression dictionary; Cov-P13 +3 rows (nutmilk/yogamat/wardrobe)",
   "rows": [
     {
       "id": "cov0.lemonade",
@@ -384,6 +385,30 @@
       "expected": { "pack": null, "attr": "A0", "searchPrefix": null },
       "mustNotPack": ["milk", "grains-pasta"],
       "notes": "plant dairy ≠ milk; cascade mustNot 1006"
+    },
+    {
+      "id": "cov13.nutmilk",
+      "query": "ореховое молоко",
+      "phase": "Cov-P13",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": null },
+      "mustNotPack": ["milk", "pantry-sweet"],
+      "notes": "Cov-P13: plant dairy орехов* was POLICY-HIT → milk; also ≠ pantry nuts"
+    },
+    {
+      "id": "cov13.yogamat",
+      "query": "коврик йога",
+      "phase": "Cov-P13",
+      "expected": { "pack": "sports", "attr": "A~", "searchPrefix": null },
+      "mustNotPack": ["rugs"],
+      "notes": "Cov-P13: diverge rugs → sports"
+    },
+    {
+      "id": "cov13.wardrobe",
+      "query": "шкаф",
+      "phase": "Cov-P13",
+      "expected": { "pack": "bedroom-furniture", "attr": "A~", "searchPrefix": null },
+      "mustNotPack": ["furniture"],
+      "notes": "Cov-P13: шкаф wardrobe → bedroom-furniture"
     }
   ]
 }
