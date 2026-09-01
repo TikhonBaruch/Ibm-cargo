@@ -1,7 +1,7 @@
 # План: проверка точности цепочек подсказок (все packs, max precision)
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0/P1/P5** on main (#37/#38) · **P4+P6** #41 · **P2** #39 · **P3** #40 · **P7** (this PR #42) · human merge.  
+**Статус:** **P0–P6** on main (#37–#41) · **P7** (this PR #42) · human merge.  
 Канон: [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) (H0–H5) · [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) · [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · [`staging.md`](./staging.md) §P6 · D15 / D27 / D32.
 
 Связанный страх продукта: запрос **«огурец»** снова тянет **одежду / молоко / чужой pack**; при этом огурец бывает **свежий** или **маринованный/консервы**.
@@ -114,8 +114,7 @@ Ownership: Core (`tnved-hint-trees`, morph, cascade) + Client clarify apply. UI 
 |----|-----|-----------|--------|
 | **P0** | Этот план + ссылки в README / morph audit | merged docs | **done** (#37) |
 | **P1** | Fixture `hint-pack-precision.json` + vitest: все packs × pos/neg | 100% на golden | **done** (#38) |
-| **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | PR #39 |
-| **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | PR #39 |
+| **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | **done** (#39) |
 | **P3** | Search + cascade rows для маринованных / корнишонов; false-friend одежда | unit green | **done** (#40) |
 | **P4** | Attr-suggest: produce RULE **clarify-only** + test | нет silent generic на «огурец» | **done** (#41) |
 | **P5** | `npm run test:hint-precision` в CI рядом с morphology | script + docs | **done** (#38) |
@@ -129,12 +128,13 @@ Ownership: Core (`tnved-hint-trees`, morph, cascade) + Client clarify apply. UI 
 ```bash
 # P1–P3 + P7 (this PR)
 npm run test:hint-precision
-npm run test:tnved-morphology
+npx vitest run src/components/ved/client/__tests__/new-calc-clarify.test.ts
 npx vitest run src/lib/ved/__tests__/tnved-hint-trees.test.ts
+npm run test:tnved-morphology
 npm run test:classify-cascade
 npm run test:ci
 
-# live (P6)
+# live (P6, #41)
 # /cabinet/new → «огурец» → chips 0707/0711/2001; не майка/йогурт
 # search «огурец» → 07xx; «йогурт» → 0403
 # P7: «полотенце»≠knit-top; «перец» bare ≠ produce; «сладкий перец» → produce
@@ -167,6 +167,10 @@ npm run test:ci
 | [`current-app.md`](./current-app.md) | зрелость packs после ship |
 
 ---
+
+### P2 notes (#39)
+
+- `new-calc-clarify` apply path: fresh → **0707**, preserved → **0711**, prepared → **2001**; no apparel/dairy steal on apply.
 
 ### P3 notes (#40)
 
@@ -202,10 +206,8 @@ npm run test:ci
 
 ## 10. Следующий шаг
 
-1. ~~P0/P1/P5~~ **done** (#37/#38).  
-2. Human merge **#39** (P2) / **#40** (P3) if still open.  
-3. Merge this PR **P7** [#42](https://github.com/TikhonBaruch/Ibm-cargo/pull/42).  
-4. ~~P4+P6~~ **done** (#41); H6 live attr-suggest on prod post-merge.  
-5. Post-merge: miss-log → extend `SHORT_TRIGGER_FALSE_FRIENDS` as needed.
+1. ~~P0–P6~~ **done** (#37–#41).  
+2. Merge this PR **P7** [#42](https://github.com/TikhonBaruch/Ibm-cargo/pull/42).  
+3. Post-merge: H6 live attr-suggest on prod; miss-log → extend `SHORT_TRIGGER_FALSE_FRIENDS` as needed.
 
 Agent cannot merge — нужен human.
