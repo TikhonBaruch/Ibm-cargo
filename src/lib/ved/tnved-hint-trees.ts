@@ -3,7 +3,14 @@
  * JSON filename must not match this module (CJS would load the .json).
  */
 import overlayJson from "./tnved-hint-tree-packs.json";
-import { normalizeTnvedQueryText, packTriggerMatches } from "./tnved-query-match";
+import {
+  normalizeTnvedQueryText,
+  packTriggerMatches,
+  isPlantDairyQuery,
+  isPointerDeviceQuery,
+  isJuiceOrBeverageQuery,
+  isPreparedMealQuery,
+} from "./tnved-query-match";
 
 export type HintTreeOption = {
   id: string;
@@ -45,9 +52,19 @@ function scoreKeys(desc: string, keys: string[]) {
 export function matchHintPack(desc: string): OverlayPack | null {
   const text = String(desc || "").trim();
   if (text.length < 3) return null;
+  const plantDairy = isPlantDairyQuery(text);
+  const pointer = isPointerDeviceQuery(text);
+  const juice = isJuiceOrBeverageQuery(text);
+  const preparedMeal = isPreparedMealQuery(text);
   let best: OverlayPack | null = null;
   let bestScore = 0;
   for (const pack of overlay.packs || []) {
+    // Coverage P0: plant «молоко/йогурт» ≠ milk; «мышь» ≠ computers.
+    if (plantDairy && pack.id === "milk") continue;
+    if (pointer && pack.id === "computers") continue;
+    // Coverage P2: сок ≠ fruit; суп ≠ produce (овощной суп → prepared-food).
+    if (juice && pack.id === "fruit-fresh") continue;
+    if (preparedMeal && pack.id === "produce-fresh") continue;
     const score = scoreKeys(text, pack.triggers || []);
     if (score > bestScore) {
       best = pack;

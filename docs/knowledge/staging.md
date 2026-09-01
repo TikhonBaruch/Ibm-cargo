@@ -67,7 +67,7 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 
 | Дата | Smoke | Результат | Заметки |
 |------|-------|-----------|---------|
-| 2026-08-29 | **C32** Preview `probe:preview` (без bypass) | **SSO_BLOCK** | `ibm-cargo-o0eyq3bya-…` → 302 sso-api; C32c ждёт C32b secret · [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md) |
+| 2026-08-31 | **P6 hint precision** search `огурец` | **PASS** | top `0707*` / `0711*` / `2001*`; attr-suggest clarify-only = unit P4 (prod post-merge) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) |
 | 2026-08-29 | prod `/health` ibm-cargo-phi | **OK** | `databaseUrl: true` (reachability; не C32c) |
 | 2026-08-25 | **go-live merge** M2+M0+D36 → `main` | **done** | [`plan-go-live-mvp.md`](./plan-go-live-mvp.md) |
 | 2026-08-25 | post-merge prod smoke | **PASS** | mvp #47937 · full #47938 · client · broker · payments |
@@ -113,6 +113,27 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 | 2026-08-13 | `ops:track-a -- --vercel` | NEED | A2 RESEND / A1 ЮKassa still NEED; D27 holds OK |
 
 Повторять после каждого merge, затрагивающего auth / uploads / pay / schema.
+
+### P6 — hint-chains precision (NewCalc + search) · 2026-08-31
+
+Канон: [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) P4–P6.
+
+| # | Проверка | Ожидание | Результат |
+|---|----------|----------|-----------|
+| H1 | Unit `test:hint-precision` | 100% golden packs | **PASS** (P1 #38) |
+| H2 | Unit produce fork apply | 0707 / 0711 / 2001 chips | **PASS** unit (P2 #39) |
+| H3 | Unit cascade маринад/корнишоны | 2001 / 0711 | **PASS** unit (P3 #40) |
+| H4 | Unit attr-suggest «огурец» | clarify-only + hsHint 0707, не 61 | **PASS** unit (этот PR P4) |
+| H5 | Live search prod `q=огурец` | top codes глава **07** / **20**, не 61/04 | **PASS** 2026-08-31 `ibm-cargo-phi`: `0707000500` Огурцы · `0711400000` · `2001100000` |
+| H6 | Live attr-suggest prod «огурец» | clarify-only notes + 0707 (после merge P4) | **pre-deploy:** silent generic (ожидаемо до merge); **post-merge:** повторить probe |
+| H7 | Manual NewCalc `/cabinet/new` | chips «Овощи: в каком виде?» → свежий/рассол/консервы | **чеклист** (SSO Visit Preview / prod demo) |
+
+```bash
+# post-merge P4 probe (session cookie)
+# POST /api/v1/calculations/attr-suggest { "name":"огурец" }
+# → notes clarify-only, attrs.hsHint ~ 0707
+# GET /api/v1/tnved/search?q=огурец → 07xx / 20xx first
+```
 
 ### Track A ops keys (prod) — статус 2026-08-07
 
