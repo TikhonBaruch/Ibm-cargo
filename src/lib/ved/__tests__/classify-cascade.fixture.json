@@ -45,5 +45,8 @@
   { "q": "yogurt 酸奶", "expectHsPrefix": "0403", "minConf": 0.84 },
   { "q": "огурец", "expectHsPrefix": "0707", "minConf": 0.84 },
   { "q": "огурцы свежие", "expectHsPrefix": "0707", "minConf": 0.84 },
-  { "q": "помидор", "expectHsPrefix": "0702", "minConf": 0.84 }
+  { "q": "помидор", "expectHsPrefix": "0702", "minConf": 0.84 },
+  { "q": "маринованные огурцы", "expectHsPrefix": "2001", "minConf": 0.84 },
+  { "q": "корнишоны", "expectHsPrefix": "2001", "minConf": 0.84 },
+  { "q": "огурцы в рассоле", "expectHsPrefix": "0711", "minConf": 0.84 }
 ]

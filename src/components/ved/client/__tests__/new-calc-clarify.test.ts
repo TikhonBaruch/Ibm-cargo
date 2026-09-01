@@ -80,6 +80,59 @@ describe("new-calc clarify helper (C12)", () => {
     ).toBe("0401");
   });
 
+  it("P2: огурец fork — свежий 0707 / рассол 0711 / маринад·консервы 2001", async () => {
+    const qs = await getClarificationQuestions({
+      wizard: wizardDraftForClarify("огурец", "Китай"),
+      step: 1,
+    });
+    expect(qs[0]?.id).toBe("tnved-form");
+    expect(qs[0]?.text).toMatch(/овощ/i);
+    expect(qs.map((q) => q.id)).not.toContain("kind");
+
+    const fresh = qs[0]?.options?.find((o) => o.id === "fresh");
+    const preserved = qs[0]?.options?.find((o) => o.id === "preserved");
+    const prepared = qs[0]?.options?.find((o) => o.id === "prepared");
+    expect(fresh?.hsHeading).toBe("0707");
+    expect(preserved?.hsHeading).toBe("0711");
+    expect(prepared?.hsHeading).toBe("2001");
+
+    expect(hsHintFromClarify(qs, { "tnved-form": fresh!.value })).toBe("0707");
+    expect(hsHintFromClarify(qs, { "tnved-form": preserved!.value })).toBe("0711");
+    expect(hsHintFromClarify(qs, { "tnved-form": prepared!.value })).toBe("2001");
+
+    for (const opt of [fresh!, preserved!, prepared!]) {
+      const digits = (opt.hsHeading || "").replace(/\D/g, "");
+      expect(digits.startsWith("61") || digits.startsWith("04") || digits.startsWith("65")).toBe(
+        false,
+      );
+    }
+
+    const applied = appendClarifyBlock(
+      "огурец",
+      unansweredClarifyParts(qs, { "tnved-form": prepared!.value }, []),
+    );
+    expect(applied).toMatch(/овощи готовые консервы/i);
+    expect(applied).toContain("Овощи: в каком виде?");
+    expect(applied).not.toMatch(/футболка|майка|йогурт/i);
+  });
+
+  it("P2: маринованные огурцы / корнишоны still open produce fork (not knit-top)", async () => {
+    for (const desc of ["маринованные огурцы", "корнишоны"] as const) {
+      const qs = await getClarificationQuestions({
+        wizard: wizardDraftForClarify(desc, "Китай"),
+        step: 1,
+      });
+      expect(qs[0]?.id, desc).toBe("tnved-form");
+      const prepared = qs[0]?.options?.find((o) => o.id === "prepared");
+      expect(prepared, desc).toBeTruthy();
+      expect(hsHintFromClarify(qs, { "tnved-form": prepared!.value }), desc).toBe("2001");
+      expect(
+        qs[0]?.options?.some((o) => (o.hsHeading || "").startsWith("61")),
+        desc,
+      ).toBe(false);
+    }
+  });
+
   it("skips already-applied ids and empty answers", () => {
     const parts = unansweredClarifyParts(
       [
