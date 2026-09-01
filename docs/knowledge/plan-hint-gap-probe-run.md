@@ -1,7 +1,7 @@
 # План прогона: `probe:hint-gap` (golden + full observe)
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** план · **Cov-P13–P14 done** · next **Cov-P15** apparel/home.  
+**Статус:** план · **Cov-P13–P15 done** · next **Cov-P16** elec/auto/sport/long.  
 **Зависит от:** Cov-P12 tooling (#56).  
 **Канон:** [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) · [`staging.md`](./staging.md) §Cov · [`testing-branches.md`](./testing-branches.md).
 
@@ -191,14 +191,16 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 
 **Done when:** food miss ≤3 → **0**; golden +9 (62 OK).
 
-### 6.3 Should — Cov-P15 (apparel / home leftovers)
+### 6.3 Should — Cov-P15 (apparel / home leftovers) — **done** (this PR)
 
 | Query | Layer |
 |-------|-------|
-| галстук, ремень, пижама, халат, плащ | A+ RULES или thin apparel packs |
-| хлопок | `textiles-raw` trigger |
-| полка, стол, лампа, полотенце, посуда, контейнер | bedroom/furniture/lamps/home-textiles/tableware/cutlery triggers |
-| вешалка, корзина для белья | DEFER или thin home |
+| галстук, ремень, пижама, халат, плащ | **A+** RULES (6215/4203/6107/6201) |
+| хлопок | `textiles-raw` |
+| полка, стол, лампа, полотенце, посуда, контейнер | bedroom/furniture/lamps/home-textiles/tableware/cutlery |
+| вешалка, корзина для белья | **DEFER** (still MISS) |
+
+**Done when:** apparel/home miss ≤5 → apparel **0** · home **2** (DEFER only).
 
 ### 6.4 Should — Cov-P16 (elec / auto / sport / long-tail)
 
@@ -224,8 +226,7 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 |----|-------|--------|-------|-----------|
 | **Cov-P13** | plant + diverge guards | 0 | +3 golden | **done** — POLICY-HIT=0; DIVERGE=0 |
 | **Cov-P14** | food triggers / prepared-food fork | 0 | +9 golden | **done** — food miss 0; pack-hit 83.2% |
-| **Cov-P15** | apparel RULES + home stems | 0 | +10 | apparel/home miss ≤5 |
-| **Cov-P15** | apparel RULES + home stems | 0 | +10 | apparel/home miss ≤5 |
+| **Cov-P15** | apparel RULES + home stems | 0 | +12 golden | **done** — apparel miss 0; home miss 2 (DEFER); any 92.3% |
 | **Cov-P16** | elec/auto/sport/long triggers | 0–2 | +15 | plan-s7 pack-hit ≥88% |
 | **Cov-P17** | cascade aliases for CASCADE rows | — | fixture | CASCADE polish |
 | **Cov-P18** | live H5–H7 re-check + miss-log close | — | staging | human PASS |
@@ -292,7 +293,8 @@ npm run test:ci
 |---|------|-----------|---------------|------|------|---------|------------|-------|
 | 1 | 2026-09-01 | #56 Cov-P12 | 80.9 | 86.7 | 50 | 2 | 1 | first `--full`; tooling landed |
 | 2 | 2026-09-01 | #58 Cov-P13 | 80.9 | 86.7 | 50 | **0** | **0** | plant/yoga/шкаф guards |
-| 3 | 2026-09-01 | Cov-P14 (this PR) | **83.2** | **89.1** | **41** | 0 | 0 | food miss 0; +9 golden |
+| 3 | 2026-09-01 | #59 Cov-P14 | 83.2 | 89.1 | 41 | 0 | 0 | food miss 0 |
+| 4 | 2026-09-01 | Cov-P15 (this PR) | **85.1** | **92.3** | **29** | 0 | 0 | apparel 100% any; home miss 2 DEFER |
 
 ---
 

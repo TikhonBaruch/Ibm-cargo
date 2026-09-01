@@ -472,6 +472,90 @@
       "phase": "Cov-P14",
       "expected": { "pack": "prepared-food", "attr": "A~", "searchPrefix": "1905" },
       "mustNotPack": ["produce-fresh"]
+    },
+    {
+      "id": "attr.tie",
+      "query": "галстук",
+      "phase": "Cov-P15",
+      "expected": { "pack": null, "attr": "A+", "searchPrefix": "6215" },
+      "mustNotPack": []
+    },
+    {
+      "id": "attr.belt",
+      "query": "ремень",
+      "phase": "Cov-P15",
+      "expected": { "pack": null, "attr": "A+", "searchPrefix": "4203" },
+      "mustNotPack": []
+    },
+    {
+      "id": "attr.pajama",
+      "query": "пижама",
+      "phase": "Cov-P15",
+      "expected": { "pack": null, "attr": "A+", "searchPrefix": "6107" },
+      "mustNotPack": []
+    },
+    {
+      "id": "attr.robe",
+      "query": "халат",
+      "phase": "Cov-P15",
+      "expected": { "pack": null, "attr": "A+", "searchPrefix": "6107" },
+      "mustNotPack": []
+    },
+    {
+      "id": "attr.raincoat",
+      "query": "плащ",
+      "phase": "Cov-P15",
+      "expected": { "pack": null, "attr": "A+", "searchPrefix": "6201" },
+      "mustNotPack": []
+    },
+    {
+      "id": "home.cotton",
+      "query": "хлопок",
+      "phase": "Cov-P15",
+      "expected": { "pack": "textiles-raw", "attr": "A~", "searchPrefix": null },
+      "mustNotPack": ["knit-top", "woven-apparel"]
+    },
+    {
+      "id": "home.shelf",
+      "query": "полка",
+      "phase": "Cov-P15",
+      "expected": { "pack": "bedroom-furniture", "attr": "A~", "searchPrefix": null },
+      "mustNotPack": ["furniture"]
+    },
+    {
+      "id": "home.table",
+      "query": "стол",
+      "phase": "Cov-P15",
+      "expected": { "pack": "furniture", "attr": "A~", "searchPrefix": null },
+      "mustNotPack": ["cutlery"]
+    },
+    {
+      "id": "home.lamp",
+      "query": "лампа",
+      "phase": "Cov-P15",
+      "expected": { "pack": "lamps", "attr": "A~", "searchPrefix": null },
+      "mustNotPack": ["led"]
+    },
+    {
+      "id": "home.towel",
+      "query": "полотенце",
+      "phase": "Cov-P15",
+      "expected": { "pack": "home-textiles", "attr": "A~", "searchPrefix": null },
+      "mustNotPack": ["rugs"]
+    },
+    {
+      "id": "home.dishes",
+      "query": "посуда",
+      "phase": "Cov-P15",
+      "expected": { "pack": "tableware", "attr": "A~", "searchPrefix": null },
+      "mustNotPack": ["appliances", "cookware"]
+    },
+    {
+      "id": "home.container",
+      "query": "контейнер",
+      "phase": "Cov-P15",
+      "expected": { "pack": "cutlery", "attr": "A~", "searchPrefix": null },
+      "mustNotPack": ["tableware"]
     }
   ]
 }

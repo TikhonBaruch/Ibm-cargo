@@ -36,6 +36,7 @@ export const SHORT_TRIGGER_FALSE_FRIENDS: ReadonlyArray<{ stem: string; block: s
   { stem: "крем", block: "brulee" },
   { stem: "pod", block: "ipod" },
   { stem: "pod", block: "airpod" },
+  { stem: "стол", block: "столов" },
 ];
 
 /** Bare «перец» is spice/veg ambiguous (0904 vs 0709) — require sweet/bell qualifiers. */
@@ -121,6 +122,10 @@ const TEXTILES_RAW_RE =
 const YOGA_MAT_RE =
   /йог[аеи]|yoga\s*mat|exercise\s*mat|коврик\s+(?:для\s+)?(?:йог|фитнес|спорт)|(?:йог|фитнес)\w*\s+коврик/i;
 
+/** Finished apparel garment — хлопок as composition must not steal textiles-raw. */
+const FINISHED_APPAREL_RE =
+  /майк|футболк|худи|свитер|рубашк|брюк|джинс|юбк|куртк|плать|сарафан|носк|колгот|гольф|чулк|пижам|халат|плащ|пальто|пуховик|жилет|кардиган|водолазк/i;
+
 export function isPlantDairyQuery(query: string): boolean {
   return PLANT_DAIRY_RE.test(normalizeTnvedQueryText(query));
 }
@@ -203,6 +208,10 @@ export function isTextilesRawQuery(query: string): boolean {
 
 export function isYogaMatQuery(query: string): boolean {
   return YOGA_MAT_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isFinishedApparelQuery(query: string): boolean {
+  return FINISHED_APPAREL_RE.test(normalizeTnvedQueryText(query));
 }
 
 export function normalizeTnvedQueryText(s: string): string {

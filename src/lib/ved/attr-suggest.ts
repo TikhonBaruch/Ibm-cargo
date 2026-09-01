@@ -142,7 +142,7 @@ const RULES: CatalogRule[] = [
   },
   {
     id: "jacket",
-    test: /куртк|пальто|пиджак|пуховик|жилет/i,
+    test: /куртк|пальто|пиджак|пуховик|жилет|плащ/i,
     attrs: {
       material: "текстиль / уточните наполнитель",
       composition: "уточните волокна и %",
@@ -249,6 +249,41 @@ const RULES: CatalogRule[] = [
       hsHint: "6108 21 000 0",
     },
     notes: ["Нижнее бельё — гл. 6108/6109 (трикотаж) или 6208 (ткань)."],
+  },
+  {
+    id: "tie",
+    test: /галстук|necktie|(?:^|[^a-zа-я0-9])tie(?:$|[^a-zа-я0-9])/i,
+    attrs: {
+      material: "текстиль",
+      composition: "уточните волокна и %",
+      purpose: "галстук",
+      extra: { garmentType: "галстук" },
+      hsHint: "6215 20 000 0",
+    },
+    notes: ["Галстуки — 6215."],
+  },
+  {
+    id: "belt",
+    test: /ремень|ремни|(?:^|[^a-zа-я0-9])belt(?:$|[^a-zа-я0-9])/i,
+    attrs: {
+      material: "кожа / текстиль (уточните)",
+      purpose: "ремень",
+      extra: { garmentType: "ремень" },
+      hsHint: "4203 30 000 0",
+    },
+    notes: ["Ремни из кожи — 4203; текстильные — соседние позиции."],
+  },
+  {
+    id: "sleepwear",
+    test: /пижам|халат|pajamas?|bathrobe|dressing gown/i,
+    attrs: {
+      material: "трикотаж / текстиль",
+      composition: "уточните волокна и %",
+      purpose: "домашняя / ночная одежда",
+      extra: { garmentType: "пижама / халат" },
+      hsHint: "6107 21 000 0",
+    },
+    notes: ["Пижамы и халаты — гл. 6107/6207 по материалу."],
   },
 ];
 
