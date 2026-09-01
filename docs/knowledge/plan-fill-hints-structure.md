@@ -71,7 +71,7 @@ npx vitest run \
 |----|-----|--------------|
 | H1 | AttrSuggestChips orphan после C10 chrome | Вернуть chips под clarify **или** удалить dead UI + оставить API |
 | H2 | FieldSuggest нет на NewCalc textarea | Опционально: typeahead на описание (D32 combobox), не ломая C10 |
-| H3 | attr-suggest без footwear/dairy | Добавить RULE **или** явно «clarify-only» в KB |
+| H3 | attr-suggest без footwear/dairy/**produce** | footwear/dairy **done**; produce → **clarify-only RULE** (P4) |
 | H4 | StageTip не на NewCalc | Либо wire, либо deprecate `newCalcStageTip` для NewCalc |
 | H5 | Контракт `q` vs `query` | Уже в schema; упомянуть в contract/`d-suggest.json` examples |
 

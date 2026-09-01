@@ -44,7 +44,7 @@ const FILL_CASES: FillCase[] = [
   // Майка: C21 knit-top (tnved-form) + composition; attr-suggest всё ещё даёт 6109.
   { id: "tee", desc: "майка", firstQ: "tnved-form", pack: "knit-top", attrChips: true, attrHs: /6109/ },
   { id: "tee-cotton", desc: "майка хлопок", firstQ: "tnved-form", pack: "knit-top", attrChips: true, attrHs: /6109/ },
-  { id: "jeans", desc: "джинсы", firstQ: "composition", pack: null, attrChips: true },
+  { id: "jeans", desc: "джинсы", firstQ: "tnved-form", pack: "woven-apparel", attrChips: true },
   { id: "sneakers", desc: "кроссовки Nike", firstQ: "tnved-form", pack: "footwear", attrChips: true, attrHs: /6404/ },
   { id: "keds", desc: "кеды", firstQ: "tnved-form", pack: "footwear", attrChips: true, attrHs: /6404/ },
   { id: "cap", desc: "кепка", firstQ: "tnved-form", pack: "headgear", attrChips: true, attrHs: /6505/ },
@@ -290,10 +290,12 @@ describe("fill-hints structure — end-to-end fill scripts (no HTTP)", () => {
     // Keep in sync with tnved-hint-tree-packs.json — primary NewCalc help path.
     const ids = [
       "milk",
+      "produce-fresh",
       "tea-coffee",
       "chocolate",
       "headgear",
       "knit-top",
+      "woven-apparel",
       "footwear",
       "computers",
       "power",
@@ -302,16 +304,32 @@ describe("fill-hints structure — end-to-end fill scripts (no HTTP)", () => {
       "led",
       "vape",
       "toys",
+      "fruit-fresh",
+      "prepared-food",
     ];
     for (const id of ids) {
       expect(
         FILL_CASES.some((c) => c.pack === id) ||
-          ["chocolate", "power", "headphones", "led", "vape"].includes(id),
+          [
+            "chocolate",
+            "power",
+            "headphones",
+            "led",
+            "vape",
+            "produce-fresh",
+            "fruit-fresh",
+            "prepared-food",
+            "woven-apparel",
+          ].includes(id) ||
+          id === "woven-apparel",
       ).toBe(true);
     }
     expect(matchHintPack("майка")?.id).toBe("knit-top");
     expect(matchHintPack("кроссовки")?.id).toBe("footwear");
     expect(matchHintPack("кепка")?.id).toBe("headgear");
     expect(matchHintPack("наушники")?.id).toBe("headphones");
+    expect(matchHintPack("джинсы")?.id).toBe("woven-apparel");
+    expect(matchHintPack("яблоко")?.id).toBe("fruit-fresh");
+    expect(matchHintPack("суп")?.id).toBe("prepared-food");
   });
 });
