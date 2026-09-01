@@ -53,7 +53,7 @@ const POINTER_DEVICE_RE =
 
 /** Juice/soft drink — fruit pack must not win on «яблочный сок» / «лимонад». */
 const JUICE_BEVERAGE_RE =
-  /(?:^|[^a-zа-я0-9])сок(?:$|[^a-zа-я0-9])|нектар|(?:^|[^a-zа-я0-9])juice(?:$|[^a-zа-я0-9])|smoothie|морс\b|лимонад|lemonade/i;
+  /(?:^|[^a-zа-я0-9])сок(?:$|[^a-zа-я0-9])|нектар|(?:^|[^a-zа-я0-9])juice(?:$|[^a-zа-я0-9])|smoothie|морс\b|лимонад|lemonade|компот/i;
 
 /** Coffee appliance — not tea/coffee chapter 09. */
 const COFFEE_MACHINE_RE = /кофемаш|coffee\s*machine|espresso\s*machine/i;
@@ -68,6 +68,21 @@ const LAUNDRY_DETERGENT_RE =
 /** Prepared soup/stew — produce must not win on «овощной суп». */
 const PREPARED_MEAL_RE =
   /(?:^|[^a-zа-я0-9])суп(?:$|[^a-zа-я0-9])|борщ|бульон|похлебк|(?:^|[^a-zа-я0-9])soup(?:$|[^a-zа-я0-9])/i;
+
+/** Dairy butter — not plant-oil pantry pack. */
+const DAIRY_FAT_RE = /масло\s+сливоч|сливочн\w*\s+масло|(?:^|[^a-zа-я0-9])butter(?:$|[^a-zа-я0-9])/i;
+
+/** Edible plant cooking oil — not dairy milk/butter pack. */
+const COOKING_OIL_RE =
+  /масло\s+(?:подсол|оливков|растительн|кукуруз|sunflower|olive)|(?:подсол|оливков|растительн|sunflower|olive)\w*\s+масло/i;
+
+/** Fish/seafood context for conserves disambiguation. */
+const FISH_SEAFOOD_RE =
+  /рыб|лосос|форел|тунец|кревет|кальмар|икр|морепродукт|fish|seafood|salmon|tuna/i;
+
+/** Vegetable/mushroom conserves — not fish pack. */
+const VEG_CONSERVE_RE = /консерв|тушенк|marinad/i;
+const VEG_CONTEXT_RE = /овощ|огур|томат|помидор|капуст|гриб|фасол|горошек/i;
 
 export function isPlantDairyQuery(query: string): boolean {
   return PLANT_DAIRY_RE.test(normalizeTnvedQueryText(query));
@@ -95,6 +110,23 @@ export function isCarSeatQuery(query: string): boolean {
 
 export function isLaundryDetergentQuery(query: string): boolean {
   return LAUNDRY_DETERGENT_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isDairyFatQuery(query: string): boolean {
+  return DAIRY_FAT_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isCookingOilQuery(query: string): boolean {
+  return COOKING_OIL_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isFishSeafoodQuery(query: string): boolean {
+  return FISH_SEAFOOD_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isVegetableConservesQuery(query: string): boolean {
+  const q = normalizeTnvedQueryText(query);
+  return VEG_CONSERVE_RE.test(q) && VEG_CONTEXT_RE.test(q);
 }
 
 export function normalizeTnvedQueryText(s: string): string {
