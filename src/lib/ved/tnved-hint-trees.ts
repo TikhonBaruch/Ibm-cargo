@@ -17,6 +17,9 @@ import {
   isCookingOilQuery,
   isFishSeafoodQuery,
   isVegetableConservesQuery,
+  isMotorOilQuery,
+  isPcPartsQuery,
+  isPhotoGearQuery,
 } from "./tnved-query-match";
 
 export type HintTreeOption = {
@@ -70,6 +73,9 @@ export function matchHintPack(desc: string): OverlayPack | null {
   const cookingOil = isCookingOilQuery(text);
   const fishSeafood = isFishSeafoodQuery(text);
   const vegConserves = isVegetableConservesQuery(text);
+  const motorOil = isMotorOilQuery(text);
+  const pcParts = isPcPartsQuery(text);
+  const photoGear = isPhotoGearQuery(text);
   let best: OverlayPack | null = null;
   let bestScore = 0;
   for (const pack of overlay.packs || []) {
@@ -89,6 +95,11 @@ export function matchHintPack(desc: string): OverlayPack | null {
     if (dairyFat && pack.id === "pantry-sweet") continue;
     if (fishSeafood && pack.id === "produce-fresh") continue;
     if (vegConserves && pack.id === "fish-seafood") continue;
+    // Cov-P8 home/electronics/auto disambiguation.
+    if (motorOil && (pack.id === "pantry-sweet" || pack.id === "milk")) continue;
+    if (pcParts && pack.id === "computers") continue;
+    if (photoGear && pack.id === "security-cam") continue;
+    if (coffeeMachine && pack.id === "small-appliances" && /кофемаш/i.test(text)) continue;
     const score = scoreKeys(text, pack.triggers || []);
     if (score > bestScore) {
       best = pack;
