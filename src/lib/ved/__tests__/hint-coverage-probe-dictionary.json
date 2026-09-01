@@ -702,7 +702,8 @@
         "milk",
         "pantry-sweet"
       ],
-      "notes": "Cov-P13: plant dairy орехов* was POLICY-HIT → milk; also ≠ pantry nuts"
+      "notes": "Cov-P13: plant dairy орехов* was POLICY-HIT → milk; also ≠ pantry nuts",
+      "live": true
     },
     {
       "id": "cov13.yogamat",
@@ -852,7 +853,8 @@
       },
       "mustNotPack": [
         "produce-fresh"
-      ]
+      ],
+      "live": true
     },
     {
       "id": "attr.tie",
@@ -863,7 +865,8 @@
         "attr": "A+",
         "searchPrefix": "6215"
       },
-      "mustNotPack": []
+      "mustNotPack": [],
+      "live": true
     },
     {
       "id": "attr.belt",
@@ -934,7 +937,8 @@
       },
       "mustNotPack": [
         "furniture"
-      ]
+      ],
+      "live": true
     },
     {
       "id": "home.table",
@@ -960,7 +964,8 @@
       },
       "mustNotPack": [
         "led"
-      ]
+      ],
+      "live": true
     },
     {
       "id": "home.towel",
@@ -1014,7 +1019,8 @@
       "mustNotPack": [
         "headphones",
         "speakers"
-      ]
+      ],
+      "live": true
     },
     {
       "id": "elec.modem",
@@ -1067,7 +1073,8 @@
       "mustNotPack": [
         "toys",
         "computers"
-      ]
+      ],
+      "live": true
     },
     {
       "id": "elec.pccase",
@@ -1104,7 +1111,8 @@
         "attr": "A~",
         "searchPrefix": null
       },
-      "mustNotPack": []
+      "mustNotPack": [],
+      "live": true
     },
     {
       "id": "auto.brakedisc",
@@ -1156,7 +1164,8 @@
       },
       "mustNotPack": [
         "camping"
-      ]
+      ],
+      "live": true
     },
     {
       "id": "sport.racket",
@@ -1195,48 +1204,87 @@
       "id": "cascade.mors",
       "query": "морс",
       "phase": "Cov-P17",
-      "expected": { "pack": null, "attr": "A0", "searchPrefix": "2202" },
-      "mustNotPack": ["snacks", "fruit-fresh"],
-      "notes": "S+ cascade; juice guard blocks pack"
+      "expected": {
+        "pack": null,
+        "attr": "A0",
+        "searchPrefix": "2202"
+      },
+      "mustNotPack": [
+        "snacks",
+        "fruit-fresh"
+      ],
+      "notes": "S+ cascade; juice guard blocks pack",
+      "live": true
     },
     {
       "id": "cascade.mittens",
       "query": "варежки",
       "phase": "Cov-P17",
-      "expected": { "pack": null, "attr": "A0", "searchPrefix": "6116" },
-      "mustNotPack": ["knit-top"],
+      "expected": {
+        "pack": null,
+        "attr": "A0",
+        "searchPrefix": "6116"
+      },
+      "mustNotPack": [
+        "knit-top"
+      ],
       "notes": "S+ cascade; ATTR path for gloves family"
     },
     {
       "id": "cascade.hdd",
       "query": "HDD",
       "phase": "Cov-P17",
-      "expected": { "pack": null, "attr": "A0", "searchPrefix": "8471" },
-      "mustNotPack": ["computers", "pc-parts"],
+      "expected": {
+        "pack": null,
+        "attr": "A0",
+        "searchPrefix": "8471"
+      },
+      "mustNotPack": [
+        "computers",
+        "pc-parts"
+      ],
       "notes": "S+ cascade; bare HDD acronym"
     },
     {
       "id": "cascade.hdmi",
       "query": "hdmi кабель",
       "phase": "Cov-P17",
-      "expected": { "pack": null, "attr": "A0", "searchPrefix": "8544" },
-      "mustNotPack": ["power"],
+      "expected": {
+        "pack": null,
+        "attr": "A0",
+        "searchPrefix": "8544"
+      },
+      "mustNotPack": [
+        "power"
+      ],
       "notes": "S+ cascade; not bare POLICY кабель"
     },
     {
       "id": "cascade.airfilter",
       "query": "воздушный фильтр",
       "phase": "Cov-P17",
-      "expected": { "pack": null, "attr": "A0", "searchPrefix": "8421" },
-      "mustNotPack": ["auto-parts"],
+      "expected": {
+        "pack": null,
+        "attr": "A0",
+        "searchPrefix": "8421"
+      },
+      "mustNotPack": [
+        "auto-parts"
+      ],
       "notes": "S+ cascade; alias 842131"
     },
     {
       "id": "cascade.oilfilter",
       "query": "маслофильтр",
       "phase": "Cov-P17",
-      "expected": { "pack": null, "attr": "A0", "searchPrefix": "8421" },
-      "mustNotPack": ["auto-parts"],
+      "expected": {
+        "pack": null,
+        "attr": "A0",
+        "searchPrefix": "8421"
+      },
+      "mustNotPack": [
+        "auto-parts"
+      ],
       "notes": "S+ cascade; alias 842123"
     }
   ]

@@ -1,7 +1,7 @@
 # План прогона: `probe:hint-gap` (golden + full observe)
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** план · **Cov-P13–P17 done** · next **Cov-P18** live H5–H7.  
+**Статус:** план · **Cov-P13–P18 offline done** · G5 live H5–H7 **DEFER** (no deploy).  
 **Зависит от:** Cov-P12 tooling (#56).  
 **Канон:** [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) · [`staging.md`](./staging.md) §Cov · [`testing-branches.md`](./testing-branches.md).
 
@@ -222,6 +222,23 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 
 **Done when:** 6 CASCADE rows in dictionary + classify-cascade fixture; golden 95/95 OK.
 
+### 6.6 Cov-P18 — offline closeout (no deploy)
+
+**Scope:** G0–G3 + G6 без live SSO. G5 (H5–H7 prod/preview) — **DEFER** до human merge → main → deploy.
+
+| Gate | Команда / артеfact | Ожидание | Статус |
+|------|-------------------|----------|--------|
+| G0 | `npm run test:hint-coverage` + `test:hint-precision` + golden `--fail-on` | 0 STEAL | **PASS** |
+| G1 | `probe:hint-gap --live` | live subset OK (post-P18 rows) | **PASS** offline |
+| G2 | `probe:hint-gap:full --source plan-s7` | pack **90.9%** · any **98.1%** · miss **7** | **PASS** |
+| G3 | miss-log | 7 DEFER only (home×2 + industrial×5) | **closed** |
+| G5 | staging §Cov H5–H7 | prod search / attr / NewCalc | **DEFER** |
+| G6 | KB + staging H3b + live checklist | this PR | **PASS** |
+
+**Residual DEFER (not bugs):** вешалка · корзина для белья · труба · арматура · маска медицинская · бумага туалетная · миска для животных.
+
+**Post-deploy checklist:** [`staging.md`](./staging.md) §Cov P13–P17 live block.
+
 ---
 
 ## 7. Фазы реализации (MoSCoW)
@@ -233,7 +250,7 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 | **Cov-P15** | apparel RULES + home stems | 0 | +12 golden | **done** — apparel miss 0; home miss 2 (DEFER); any 92.3% |
 | **Cov-P16** | elec/auto/sport/long triggers | 0–2 | +15 | **done** — plan-s7 pack-hit **90.9%**; miss 7 DEFER |
 | **Cov-P17** | cascade aliases for CASCADE rows | — | +6 golden | **done** — 6 S+ rows fixture; golden 95/95 |
-| **Cov-P18** | live H5–H7 re-check + miss-log close | — | staging | human PASS |
+| **Cov-P18** | offline closeout + live checklist prep | — | probe #7 | **done** offline · G5 DEFER |
 
 **Не делать в этих фазах:** scrape Альта · `tnved:load --full` на sweb · трогать taurus-liart (D37) · раздувать golden до всего корпуса (observe ≠ golden).
 
@@ -266,16 +283,16 @@ npm run test:ci
 ## 9. Расписание одного прогона (чеклист)
 
 ```text
-[ ] G0 pre-flight (coverage + precision + golden fail-on)
-[ ] G1 golden table / live subset
-[ ] G2 full observe → записать pack%/any%/miss
-[ ] G3 triage MISS → T+/P+/A+/S+/G/POLICY/DEFER
-[ ] G4 open next Cov-P* plan section (если код)
-[ ] G5 live H5–H7 (human, post-merge)
-[ ] G6 KB closeout + corpus rebuild if §7 changed
+[x] G0 pre-flight (coverage + precision + golden fail-on)
+[x] G1 golden table / live subset
+[x] G2 full observe → записать pack%/any%/miss
+[x] G3 triage MISS → T+/P+/A+/S+/G/POLICY/DEFER
+[x] G4 Cov-P13…P17 code cycles (merged #58–#62)
+[ ] G5 live H5–H7 (human, post-deploy) — DEFER
+[x] G6 KB closeout + corpus rebuild if §7 changed
 ```
 
-**Критерий «прогон сдан»:** G0–G3 + G6 выполнены; цифры в этом файле; golden 0 STEAL. G4–G5 — только если открыт code/live цикл.
+**Критерий «прогон сдан» (offline):** G0–G3 + G6 выполнены; цифры в §11; golden 0 STEAL. G5 — после deploy на prod/preview.
 
 ---
 
@@ -300,7 +317,8 @@ npm run test:ci
 | 3 | 2026-09-01 | #59 Cov-P14 | 83.2 | 89.1 | 41 | 0 | 0 | food miss 0 |
 | 4 | 2026-09-01 | #60 Cov-P15 | **85.1** | **92.3** | **29** | 0 | 0 | apparel 100% any; home miss 2 DEFER |
 | 5 | 2026-09-01 | #61 Cov-P16 | **90.9** | **98.1** | **7** | 0 | 0 | elec/auto/sport/long |
-| 6 | 2026-09-01 | Cov-P17 (this PR) | **90.9** | **98.1** | **7** | 0 | 0 | 6 CASCADE S+ golden; alias hdmi/HDD/морс/варежки |
+| 6 | 2026-09-01 | #62 Cov-P17 | **90.9** | **98.1** | **7** | 0 | 0 | 6 CASCADE S+ golden |
+| 7 | 2026-09-01 | Cov-P18 offline | **90.9** | **98.1** | **7** | 0 | 0 | G0–G3+G6 PASS; G5 DEFER no deploy; live +10 rows |
 
 ---
 

@@ -146,13 +146,13 @@ Offline pre-flight: `npx vitest run src/lib/ved/__tests__/hint-coverage-p12.test
 | H1 | Unit `hint-coverage-p7…p12` + `test:hint-precision` | 0 NEW STEAL · pack matrix green | **PASS** unit (stack #50–#56) |
 | H2 | Unit cascade Cov-P11/P12 golden | рис→10 · рыба→03 · SSD→84 · playstation→95 | **PASS** unit |
 | H3 | Gap probe `--fail-on steal,misroute` | 0 STEAL / 0 MISROUTE on dictionary | **PASS** offline |
-| H3b | Gap probe `--full` observe | household pack-hit **85.1%** · any-help **92.3%** (after P15) | **PASS** offline 2026-09-01 |
+| H3b | Gap probe `--full` observe | household pack-hit **90.9%** · any-help **98.1%** · miss **7** (after P16–P18 offline) | **PASS** offline 2026-09-01 |
 | H4 | POLICY bare stays null | провод/камера/фильтр/свеча/перец/кот | **PASS** unit |
 | H5 | Live search prod (post-merge) | `q=рис`→10xx · `q=рыба`→03xx · `q=SSD`→84xx · `q=playstation`→95xx | **чеклист** post-merge |
 | H6 | Live attr-suggest prod | рис/колбаса/чайник → clarify-only + `clarifyPack`; носки→6115; куртка→6201 | **чеклист** post-merge (auth cookie) |
 | H7 | Manual NewCalc `/cabinet/new` | chips: рис→grains · колбаса→meat · SSD→pc-parts · playstation→gaming · лимонад≠fruit | **чеклист** (SSO Visit Preview / prod demo) |
 
-**Live subset (dictionary `live: true`):** огурец · молоко · кеды · ноутбук · кепка · рис · колбаса · рыба · водка · чайник · SSD · фотоаппарат · моторное масло · ручка · гитара · сигареты · playstation · носки.
+**Live subset (dictionary `live: true`):** огурец · молоко · кеды · ноутбук · кепка · рис · колбаса · рыба · водка · чайник · SSD · фотоаппарат · моторное масло · ручка · гитара · сигареты · playstation · носки · **+P13–P17:** ореховое молоко · пицца · галстук · полка · лампа · микрофон · steam deck · свечи зажигания · лыжи · морс.
 
 ```bash
 # offline
@@ -161,17 +161,61 @@ npm run probe:hint-gap -- --live --format table
 npm run probe:hint-gap -- --fail-on steal,misroute
 npm run probe:hint-gap:full
 
-# post-merge live (session cookie / SSO Visit Preview)
+# post-merge live (session cookie / SSO Visit Preview) — DEFER until deploy
 # POST /api/v1/calculations/attr-suggest { "description":"рис" }
 #   → clarifyPack=grains-pasta
 # GET /api/v1/tnved/search?q=рыба → 03xx first
 # /cabinet/new → type «playstation» → gaming chips, not toys
 ```
 
-**Miss-log triage (closed):** лимонад≠fruit · кофемашина≠tea-coffee · автокресло≠furniture · порошок→cleaning · сок≠fruit · e-cig≠tobacco · playstation≠toys · инвалидная коляска≠baby-gear / ≠8715 cascade.  
-**Residual POLICY (not bugs):** bare провод/камера/фильтр/свеча/перец · кот/собака · plant «рисовое молоко» ≠ milk.
+**Miss-log triage (closed):** лимонад≠fruit · кофемашина≠tea-coffee · автокресло≠furniture · порошок→cleaning · сок≠fruit · e-cig≠tobacco · playstation≠toys · инвалидная коляска≠baby-gear / ≠8715 cascade · food+apparel+elec+auto+sport MISS (P14–P16).  
+**Residual DEFER (7):** вешалка · корзина для белья · труба · арматура · маска медицинская · бумага туалетная · миска для животных.  
+**Residual POLICY (not bugs):** bare провод/камера/фильтр/свеча/перец · кот/собака · plant «рисовое молоко» · переходник/кабель/шланг.
 
-Повторять H5–H7 после human merge стека coverage → main → prod.
+Повторять H5–H7 после human merge стека coverage → main → **deploy** prod/preview.
+
+### Cov — P13–P17 residual + P18 offline closeout · 2026-09-01
+
+Канон: [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) §6.6 · PRs **#58–#62** merged into stack. **Deploy не выполнялся** — G5 live ниже = чеклист для оператора.
+
+| # | Проверка | Ожидание | Результат |
+|---|----------|----------|-----------|
+| H1 | Unit `hint-coverage-p13…p18` + `test:hint-precision` | 0 STEAL · golden **95/95** | **PASS** offline |
+| H2 | Cascade S+ P17 rows | морс→2202 · варежки→6116 · HDD→8471 · hdmi→8544 · фильтры→8421 | **PASS** unit |
+| H3 | Golden `--fail-on steal,misroute` | 0 STEAL / 0 MISROUTE | **PASS** offline |
+| H3b | Full observe plan-s7 | pack **90.9%** · any **98.1%** · miss **7** | **PASS** offline |
+| H4 | POLICY bare | переходник · кабель · шланг + legacy POLICY set | **PASS** unit |
+| H5 | Live search (post-deploy) | см. таблицу ниже | **DEFER** |
+| H6 | Live attr-suggest (post-deploy) | см. таблицу ниже | **DEFER** |
+| H7 | Manual NewCalc chips (post-deploy) | см. таблицу ниже | **DEFER** |
+
+**H5 live search (post-deploy checklist):**
+
+| Query | Ожидание top prefix |
+|-------|---------------------|
+| `пицца` | 19xx prepared |
+| `морс` | 2202 (не snacks) |
+| `микрофон` | 8518 |
+| `лыжи` | 9506 |
+| `ореховое молоко` | ≠ 0401 milk |
+
+**H6 live attr-suggest (post-deploy):**
+
+| Query | Ожидание |
+|-------|----------|
+| `галстук` | A+ ~6215 |
+| `полка` | clarifyPack=bedroom-furniture |
+| `свечи зажигания` | clarifyPack=auto-parts |
+| `steam deck` | clarifyPack=gaming |
+
+**H7 NewCalc chips (post-deploy):**
+
+| Query | Chip pack | mustNot |
+|-------|-----------|---------|
+| `лампа` | lamps | led (лампочка) |
+| `майка хлопок` | knit-top | textiles-raw |
+| `hdmi кабель` | cascade / power | bare POLICY «кабель» |
+| `лимонад` | beverages | fruit-fresh |
 ### Track A ops keys (prod) — статус 2026-08-07
 
 | Шаг | Env / host | Статус |

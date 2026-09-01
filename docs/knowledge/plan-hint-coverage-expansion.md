@@ -1,8 +1,8 @@
 # План: расширенный охват подсказок (Cov-P7+) — проход, словарь, выявление ошибок
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** **Cov-P0…P17** done (#50–#61+) · **78 packs.**  
-**Следующий прогон / residual:** [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (G0–G6 · **Cov-P18** live H5–H7).  
+**Статус:** **Cov-P0…P18 offline** done (#50–#62+) · **78 packs.** G5 live **DEFER** (no deploy).  
+**Следующий:** human merge stack → main → deploy → staging §Cov H5–H7.  
 **Канон:** [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6, 53 packs) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) (precision P0–P7) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) (слои H1–H5).
 
 ---
@@ -217,7 +217,8 @@ R8  V8 live (post-merge): NewCalc chips + POST attr-suggest на prod/preview
 | **Cov-P14** | food MISS triggers (bakery/chicken/drinks/ready) | 78 | +9 golden | **done** (#59) |
 | **Cov-P15** | apparel ATTR + home/textiles stems | 78 | +12 golden | **done** (#60) |
 | **Cov-P16** | elec/auto/sport/long triggers + POLICY bare | 78 | +15 golden | **done** (#61) |
-| **Cov-P17** | cascade S+ for 6 CASCADE rows | 78 | +6 golden | **done** (this PR) |
+| **Cov-P17** | cascade S+ for 6 CASCADE rows | 78 | +6 golden | **done** (#62) |
+| **Cov-P18** | offline closeout + live checklist prep | 78 | probe #7 | **done** offline · G5 DEFER |
 
 **MoSCoW:** Cov-P0 + P7 + P8 = **Must**; P9 = **Should**; P10–P12 = **Should** после merge P7–P8; P13+ = residual from [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md).
 
@@ -368,8 +369,9 @@ npm run probe:hint-gap -- --full --source plan-s7 --format summary
 11. ~~**Cov-P15:** apparel/home leftovers.~~  
 12. ~~**Cov-P16:** elec/auto/sport/long ([`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) §6.4).~~  
 13. ~~**Cov-P17:** cascade aliases.~~  
-14. **Cov-P18:** live H5–H7.  
-15. **Human merge** stack → main → staging.md §Cov H5–H7 live.
+14. ~~**Cov-P18 offline:** G0–G3+G6 closeout + live checklist.~~  
+15. **Post-deploy:** staging §Cov H5–H7 (human SSO).  
+16. **Human merge** stack → main → deploy.
 
 Agent cannot merge.
 
@@ -553,4 +555,13 @@ Apparel MISS закрыт ATTR (носки…плащ) — any-help 100% на ap
 | Unit | `hint-coverage-p17.test.ts` |
 | Probe #6 | observe unchanged (90.9%/98.1%/miss 7); golden **95/95** |
 
-Live H5–H7: human post-merge on prod/preview — agent cannot SSO.
+### Cov-P18 notes (this PR, no deploy)
+
+| Fix | Detail |
+|-----|--------|
+| Offline G0–G3+G6 | golden 95/95 · live 28 rows · plan-s7 90.9%/98.1% |
+| G5 DEFER | H5–H7 checklist in [`staging.md`](./staging.md) §Cov P13–P17 |
+| Live subset | +10 rows: nutmilk · pizza · tie · shelf · lamp · mic · steam deck · spark · ski · morse |
+| Unit | `hint-coverage-p18.test.ts` |
+
+Live H5–H7: human **post-deploy** on prod/preview — agent cannot SSO.
