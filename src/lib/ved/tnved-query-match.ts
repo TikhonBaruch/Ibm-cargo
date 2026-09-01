@@ -30,6 +30,7 @@ export const TNVED_FALSE_FRIEND_PAIRS: ReadonlyArray<{ query: string; block: str
 export const SHORT_TRIGGER_FALSE_FRIENDS: ReadonlyArray<{ stem: string; block: string }> = [
   { stem: "поло", block: "полотенц" },
   { stem: "кофе", block: "кофеин" },
+  { stem: "кофе", block: "кофемаш" },
   { stem: "крем", block: "брюле" },
   { stem: "крем", block: "brulee" },
   { stem: "pod", block: "ipod" },
@@ -50,9 +51,19 @@ const PLANT_DAIRY_RE =
 const POINTER_DEVICE_RE =
   /(?:^|[^a-zа-я0-9])мышь(?:$|[^a-zа-я0-9])|(?:^|[^a-zа-я0-9])mouse(?:$|[^a-zа-я0-9])/i;
 
-/** Juice/beverage — fruit pack must not win on «яблочный сок». */
+/** Juice/soft drink — fruit pack must not win on «яблочный сок» / «лимонад». */
 const JUICE_BEVERAGE_RE =
-  /(?:^|[^a-zа-я0-9])сок(?:$|[^a-zа-я0-9])|нектар|(?:^|[^a-zа-я0-9])juice(?:$|[^a-zа-я0-9])|smoothie|морс\b/i;
+  /(?:^|[^a-zа-я0-9])сок(?:$|[^a-zа-я0-9])|нектар|(?:^|[^a-zа-я0-9])juice(?:$|[^a-zа-я0-9])|smoothie|морс\b|лимонад|lemonade/i;
+
+/** Coffee appliance — not tea/coffee chapter 09. */
+const COFFEE_MACHINE_RE = /кофемаш|coffee\s*machine|espresso\s*machine/i;
+
+/** Child car seat — not home furniture «кресло». */
+const CAR_SEAT_RE = /автокрес|car\s*seat|детск\w*\s+кресл\w*\s+авто/i;
+
+/** Laundry detergent — not washing machine appliance. */
+const LAUNDRY_DETERGENT_RE =
+  /стиральн\w*\s+порошок|порошок\s+стиральн|стиральный\s+порошок|washing\s+powder|laundry\s+detergent/i;
 
 /** Prepared soup/stew — produce must not win on «овощной суп». */
 const PREPARED_MEAL_RE =
@@ -72,6 +83,18 @@ export function isJuiceOrBeverageQuery(query: string): boolean {
 
 export function isPreparedMealQuery(query: string): boolean {
   return PREPARED_MEAL_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isCoffeeMachineQuery(query: string): boolean {
+  return COFFEE_MACHINE_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isCarSeatQuery(query: string): boolean {
+  return CAR_SEAT_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isLaundryDetergentQuery(query: string): boolean {
+  return LAUNDRY_DETERGENT_RE.test(normalizeTnvedQueryText(query));
 }
 
 export function normalizeTnvedQueryText(s: string): string {
