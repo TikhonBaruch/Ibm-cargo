@@ -581,6 +581,238 @@
           }
         ]
       }
+    },
+    {
+      "id": "art",
+      "triggers": ["картин", "живопис", "репродукц", "скульптур", "painting", "sculpture", "canvas art"],
+      "skipQuestionIds": ["kind"],
+      "question": {
+        "id": "tnved-form",
+        "text": "Какое произведение искусства?",
+        "hint": "Живопись и рисунки — 9701; скульптура — 9703.",
+        "options": [
+          {
+            "id": "painting",
+            "label": "Картина / живопись / репродукция",
+            "value": "картина или живопись",
+            "hsHeading": "9701",
+            "why": "9701 — картины, рисунки и пастели.",
+            "triggers": ["картин", "живопис", "репродукц", "painting"]
+          },
+          {
+            "id": "sculpture",
+            "label": "Скульптура",
+            "value": "скульптура",
+            "hsHeading": "9703",
+            "why": "9703 — оригинальные скульптуры и статуэтки.",
+            "triggers": ["скульптур", "sculpture"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "bags",
+      "triggers": ["сумк", "рюкзак", "чемодан", "портфел", "handbag", "backpack", "suitcase", "luggage"],
+      "skipQuestionIds": ["kind"],
+      "question": {
+        "id": "tnved-form",
+        "text": "Какая сумка / багаж?",
+        "hint": "Сумки и чемоданы — обычно 4202.",
+        "options": [
+          {
+            "id": "handbag",
+            "label": "Сумка / портфель",
+            "value": "сумка или портфель",
+            "hsHeading": "4202",
+            "why": "4202 — сумки, портфели и аналогичные изделия.",
+            "triggers": ["сумк", "портфел", "handbag"]
+          },
+          {
+            "id": "backpack",
+            "label": "Рюкзак",
+            "value": "рюкзак",
+            "hsHeading": "4202929800",
+            "why": "Типичные рюкзаки — 4202 92.",
+            "triggers": ["рюкзак", "backpack"]
+          },
+          {
+            "id": "luggage",
+            "label": "Чемодан / багаж",
+            "value": "чемодан или багаж",
+            "hsHeading": "4202129900",
+            "why": "Чемоданы — 4202 12.",
+            "triggers": ["чемодан", "багаж", "suitcase", "luggage"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "watches",
+      "triggers": ["часы", "watch", "wristwatch", "наручные часы", "smartwatch", "apple watch"],
+      "skipQuestionIds": ["kind"],
+      "question": {
+        "id": "tnved-form",
+        "text": "Какие часы?",
+        "hint": "Наручные часы — глава 91 (не компьютер).",
+        "options": [
+          {
+            "id": "wrist",
+            "label": "Наручные / карманные",
+            "value": "часы наручные",
+            "hsHeading": "9102",
+            "why": "9102 — наручные часы (прочие, не из драгметаллов 9101).",
+            "triggers": ["часы", "watch", "wristwatch", "наручн"]
+          },
+          {
+            "id": "smartwatch",
+            "label": "Смарт-часы",
+            "value": "смарт-часы",
+            "hsHeading": "9102",
+            "why": "Смарт-часы обычно классифицируют в 9102 — уточните функции.",
+            "triggers": ["smartwatch", "apple watch", "смарт"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "beverages",
+      "triggers": ["пиво", "beer", "вино", "wine", "сидр", "cider", "вода минеральн", "mineral water"],
+      "skipQuestionIds": ["kind"],
+      "question": {
+        "id": "tnved-form",
+        "text": "Какой напиток?",
+        "hint": "Пиво 2203, вино 2204, минеральная вода 2201. Соки — не этот pack.",
+        "options": [
+          {
+            "id": "beer",
+            "label": "Пиво",
+            "value": "пиво",
+            "hsHeading": "2203",
+            "why": "2203 — пиво солодовое.",
+            "triggers": ["пиво", "beer"]
+          },
+          {
+            "id": "wine",
+            "label": "Вино",
+            "value": "вино",
+            "hsHeading": "2204",
+            "why": "2204 — вина виноградные.",
+            "triggers": ["вино", "wine"]
+          },
+          {
+            "id": "water",
+            "label": "Минеральная / газированная вода",
+            "value": "вода минеральная",
+            "hsHeading": "2201",
+            "why": "2201 — воды, включая минеральные и газированные.",
+            "triggers": ["вода минеральн", "mineral water", "газиров"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "speakers",
+      "triggers": ["колонк", "bluetooth колонк", "speaker", "soundbar", "акустик систем"],
+      "skipQuestionIds": ["kind"],
+      "question": {
+        "id": "tnved-form",
+        "text": "Колонка / акустика?",
+        "hint": "Громкоговорители — 8518. Наушники — другой pack.",
+        "options": [
+          {
+            "id": "speaker",
+            "label": "Колонка / Bluetooth-колонка",
+            "value": "громкоговоритель колонка",
+            "hsHeading": "8518210000",
+            "why": "8518 21 — одиночные громкоговорители в корпусе.",
+            "triggers": ["колонк", "speaker", "bluetooth"]
+          },
+          {
+            "id": "soundbar",
+            "label": "Саундбар / акустическая система",
+            "value": "акустическая система",
+            "hsHeading": "8518",
+            "why": "Уточните комплектность; глава 8518.",
+            "triggers": ["soundbar", "акустик"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "furniture",
+      "triggers": ["мебел", "стул", "стулья", "шкаф", "диван", "кресл", "столы", "обеденный стол", "furniture", "chair", "table", "sofa"],
+      "skipQuestionIds": ["kind"],
+      "question": {
+        "id": "tnved-form",
+        "text": "Какая мебель?",
+        "hint": "Мебель — глава 94.",
+        "options": [
+          {
+            "id": "seat",
+            "label": "Стул / кресло / диван",
+            "value": "мебель для сидения",
+            "hsHeading": "9401",
+            "why": "9401 — мебель для сидения.",
+            "triggers": ["стул", "кресл", "диван", "chair", "sofa"]
+          },
+          {
+            "id": "table",
+            "label": "Стол / шкаф / прочая мебель",
+            "value": "прочая мебель",
+            "hsHeading": "9403",
+            "why": "9403 — прочая мебель и её части.",
+            "triggers": ["столы", "шкаф", "мебел", "table", "furniture", "обеденный стол"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tires",
+      "triggers": ["шина", "шины", "покрышк", "tire", "tyre", "автошин"],
+      "skipQuestionIds": ["kind"],
+      "question": {
+        "id": "tnved-form",
+        "text": "Шины / покрышки?",
+        "hint": "Новые пневматические шины — 4011.",
+        "options": [
+          {
+            "id": "new-tire",
+            "label": "Новые пневматические шины",
+            "value": "шины пневматические новые",
+            "hsHeading": "4011",
+            "why": "4011 — новые пневматические шины из резины.",
+            "triggers": ["шина", "шины", "покрышк", "tire", "tyre", "автошин"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cycles",
+      "triggers": ["велосипед", "самокат", "bicycle", "scooter", "электросамокат"],
+      "skipQuestionIds": ["kind"],
+      "question": {
+        "id": "tnved-form",
+        "text": "Велосипед или самокат?",
+        "hint": "Велосипеды 8712; самокаты уточняйте (часто 8711/9506).",
+        "options": [
+          {
+            "id": "bicycle",
+            "label": "Велосипед",
+            "value": "велосипед",
+            "hsHeading": "8712003000",
+            "why": "8712 — велосипеды и прочие цикла без мотора.",
+            "triggers": ["велосипед", "bicycle"]
+          },
+          {
+            "id": "scooter",
+            "label": "Самокат / электросамокат",
+            "value": "самокат",
+            "hsHeading": "8711",
+            "why": "Моторизованные самокаты часто 8711 — уточните мощность.",
+            "triggers": ["самокат", "scooter", "электросамокат"]
+          }
+        ]
+      }
     }
   ]
 }

@@ -1,51 +1,34 @@
-# Plan: Hint coverage P0–P2 — WRONG fixes + triggers + new packs
+# Plan: Hint coverage P0–P3
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0+P1+P2 done** (this PR) · post-cycle §C7.  
-**Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) · D15 / D27.
+**Статус:** **P0–P3 done** (PR #43) · post-cycle §C8.  
+**Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md).
 
-## Идея
+## Сделано
 
-Матрица запросов → **WRONG** чинить, **GAP** закрывать triggers/packs, после каждого цикла — **новые тестовые секции**.
+| Phase | Content |
+|-------|---------|
+| **P0** | WRONG: apparel attr · plant dairy · mouse≠PC |
+| **P1** | Triggers: овощи · сапоги · свитер · power bank · сметана · системный блок |
+| **P2** | Packs: `fruit-fresh` · `woven-apparel` · `prepared-food` (+ juice/soup guards) |
+| **P3** | Packs: `art` · `bags` · `watches` · `beverages` · `speakers` · `furniture` · `tires` · `cycles` |
 
-### P0 — WRONG
-apparel attr split · plant dairy · mouse≠PC
+## C8 — Post-cycle re-probe (after P3)
 
-### P1 — triggers
-овощи/чеснок/зелень · сапоги/кросовки · свитер · power bank · сметана · системный блок
+**0 NEW WRONG** on prior matrix after tire fix (`шина` token-boundary ≠ `машина`). Closed C6/C7 open sections (art/bags/watches/bev/audio/furniture/tires/bikes).
 
-### P2 — new C21 packs
-| Pack | Глава | Guards |
-|------|-------|--------|
-| `fruit-fresh` | 08 | skip if сок/juice |
-| `woven-apparel` | 62 | не bare `shirt` (polo shirt → knit) |
-| `prepared-food` | 21 | skip produce if суп/борщ |
+### New open test sections (no C21 pack yet)
 
-## Фазы
-
-| ID | Status |
-|----|--------|
-| C0–C6 | done (P0+P1) |
-| **C7** | P2 packs + re-probe | **done** |
-
-## C7 — Post-cycle re-probe (after P2)
-
-**0 NEW WRONG** on regression.
-
-### Closed by P2
-fruit-08 · woven-62 / pants-62 · prepared-21
-
-### Still open (next packs / Could)
 | Секция | Примеры |
 |--------|---------|
-| art-97 | картина |
-| bags-42 | сумка, рюкзак |
-| watches-91 | часы |
-| bev-22 | пиво |
-| audio-8518 | колонка |
-| furniture-94 | мебель |
-| tires-40 | шина |
-| vehicles-87 | велосипед |
+| pharma-30 | лекарство, витамины |
+| books-49 | книга, тетрадь |
+| home-appliances | утюг, фен, пылесос, холодильник, стиральная машина |
+| lighting-ex-led | лампа настольная (led pack covers LED only) |
+| hardware-73 | гвозди, шурупы |
+| paint-32 | краска, обои |
+| pets-live | кот, собака (не toys) |
+| agri-inputs | семена, удобрение |
 
 ## Проверка
 
