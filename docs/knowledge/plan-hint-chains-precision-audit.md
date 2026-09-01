@@ -207,7 +207,8 @@ npm run test:ci
 ## 10. Следующий шаг
 
 1. ~~P0–P6~~ **done** (#37–#41).  
-2. Merge this PR **P7** [#42](https://github.com/TikhonBaruch/Ibm-cargo/pull/42).  
-3. Post-merge: H6 live attr-suggest on prod; miss-log → extend `SHORT_TRIGGER_FALSE_FRIENDS` as needed.
+2. Merge **P7** [#42](https://github.com/TikhonBaruch/Ibm-cargo/pull/42) (trigger hygiene).  
+3. Coverage expansion: [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) (Cov-P0 WRONG → Cov-P7 food → Cov-P8 home/elec).  
+4. Post-merge: H6 live attr-suggest on prod; miss-log → extend `SHORT_TRIGGER_FALSE_FRIENDS` as needed.
 
 Agent cannot merge — нужен human.
