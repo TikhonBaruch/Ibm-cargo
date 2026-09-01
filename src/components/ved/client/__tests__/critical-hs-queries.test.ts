@@ -83,11 +83,15 @@ describe("critical HS reliability — attr-suggest must not steal chapters", () 
     expect(out.attrs.purpose).toMatch(/обув/i);
   });
 
-  it("кепка / молоко / кроссовки get dedicated hints", () => {
+  it("кепка / молоко / кроссовки / огурец get dedicated hints", () => {
     expect(heuristicAttrSuggest({ name: "кепка" }).attrs.hsHint || "").toMatch(/6505\s*00\s*300/);
     expect(heuristicAttrSuggest({ name: "шапка" }).attrs.hsHint || "").toMatch(/6505\s*00\s*900/);
     expect(heuristicAttrSuggest({ name: "молоко" }).attrs.hsHint || "").toMatch(/0401/);
     expect(heuristicAttrSuggest({ name: "кроссовки" }).attrs.hsHint || "").toMatch(/6404/);
+    const produce = heuristicAttrSuggest({ name: "огурец" });
+    expect(produce.attrs.hsHint || "").toMatch(/0707/);
+    expect(produce.attrs.hsHint || "").not.toMatch(/61|0403/);
+    expect(produce.notes.join(" ")).toMatch(/clarify-only/i);
   });
 });
 

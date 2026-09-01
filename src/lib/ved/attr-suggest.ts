@@ -4,6 +4,7 @@
  */
 import { z } from "zod";
 import { fillEmptyProductAttrs, type ProductAttrs } from "./product-description";
+import { isPlantDairyQuery, isPointerDeviceQuery } from "./tnved-query-match";
 
 export const attrSuggestInputSchema = z.object({
   title: z.string().trim().max(300).optional(),
@@ -93,6 +94,24 @@ const RULES: CatalogRule[] = [
     notes: ["Питьевое молоко 0401; сухое 0402 10; сгущёнка 0402 99; йогурт/кефир 0403."],
   },
   {
+    /**
+     * P4 clarify-only: do not leave silent generic purpose on «огурец».
+     * Form (свежий / рассол / консервы) → C21 produce-fresh chips on NewCalc.
+     */
+    id: "produce",
+    test: /огурец|огурц|помидор|томат|картофел|картошк|морков|капуст|баклажан|кабачок|тыква|свекл|корнишон|cucumber|tomato|potato|carrot|gherkin|pickle|黄瓜|番茄|土豆/i,
+    attrs: {
+      purpose: "овощи / fresh produce",
+      composition: "уточните вид: свежие / временно консервированные / готовые консервы",
+      extra: { foodKind: "овощи", clarifyPack: "produce-fresh" },
+      hsHint: "0707",
+    },
+    notes: [
+      "clarify-only: на /cabinet/new выберите форму (свежий 0707 / рассол 0711 / маринад·консервы 2001).",
+      "Не одежда (61) и не молочка (04) — pack produce-fresh.",
+    ],
+  },
+  {
     id: "tee",
     test: /майк|футболк|t-?shirt|tee\b|поло\b/i,
     attrs: {
@@ -109,9 +128,45 @@ const RULES: CatalogRule[] = [
     notes: ["Для ТН ВЭД важны состав, трикотаж/ткань, возраст и пол."],
   },
   {
-    // Do not match bare «текстиль» — steals footwear («кеды текстиль» → 62xx).
+    id: "jeans",
+    test: /джинс|брюк/i,
+    attrs: {
+      material: "текстиль",
+      composition: "уточните волокна и % (часто хлопок)",
+      purpose: "предмет одежды",
+      extra: { garmentType: "брюки / джинсы" },
+      hsHint: "6203 42 310 0",
+    },
+    notes: ["Брюки/джинсы тканые — типично 6203; трикотаж — глава 61."],
+  },
+  {
+    id: "jacket",
+    test: /куртк|пальто|пиджак|пуховик/i,
+    attrs: {
+      material: "текстиль / уточните наполнитель",
+      composition: "уточните волокна и %",
+      purpose: "предмет одежды, верхняя",
+      extra: { garmentType: "куртка / пальто" },
+      hsHint: "6201 40 000 0",
+    },
+    notes: ["Верхняя одежда — гл. 61/62 по материалу; не путать с брюками 6203."],
+  },
+  {
+    id: "dress",
+    test: /плать|сарафан/i,
+    attrs: {
+      material: "текстиль",
+      composition: "уточните волокна и %",
+      purpose: "предмет одежды",
+      extra: { garmentType: "платье / сарафан" },
+      hsHint: "6104 43 000 0",
+    },
+    notes: ["Платья — 6104 (трикотаж) / 6204 (ткань); не джинсы 6203."],
+  },
+  {
+    // Generic apparel without a fake jeans hsHint (coverage P0).
     id: "apparel",
-    test: /одежд|куртк|брюк|плать|джинс|cotton|apparel/i,
+    test: /одежд|cotton|apparel/i,
     attrs: {
       material: "текстиль",
       composition: "уточните волокна и %",
@@ -121,13 +176,13 @@ const RULES: CatalogRule[] = [
         ageGroup: "уточните: взрослый / детский",
         color: "уточните цвет",
       },
-      hsHint: "6203 42 310 0",
     },
-    notes: ["Глава 61/62 зависит от трикотажа vs ткани."],
+    notes: ["Глава 61/62 зависит от трикотажа vs ткани — уточните тип изделия."],
   },
   {
     id: "laptop",
-    test: /ноутбук|laptop|notebook|macbook|компьютер/i,
+    // «компьютер» as whole token only — not «компьютерная мышь».
+    test: /ноутбук|laptop|notebook|macbook|(?:^|[^a-zа-я0-9])компьютер(?:$|[^а-яa-z0-9])/i,
     attrs: {
       purpose: "портативная вычислительная машина",
       material: "пластик / металл",
@@ -157,7 +212,14 @@ export function heuristicAttrSuggest(input: AttrSuggestInput): AttrSuggestResult
   if (text.length < 3) {
     return { engine: "heuristic-v1", attrs: {}, notes: [] };
   }
-  const rule = RULES.find((r) => r.test.test(text));
+  const plantDairy = isPlantDairyQuery(text);
+  const pointer = isPointerDeviceQuery(text);
+  const rule = RULES.find((r) => {
+    if (!r.test.test(text)) return false;
+    if (plantDairy && r.id === "milk") return false;
+    if (pointer && r.id === "laptop") return false;
+    return true;
+  });
   if (!rule) {
     return {
       engine: "heuristic-v1",
@@ -193,4 +255,10 @@ export function attrSuggestHasChips(result: AttrSuggestResult): boolean {
       a.hsHint ||
       (a.extra && Object.keys(a.extra).length)
   );
+}
+
+/** P4: produce (and similar) — chips exist but form fork is C21 clarify, not silent generic. */
+export function attrSuggestIsClarifyOnly(result: AttrSuggestResult): boolean {
+  if (result.attrs.extra?.clarifyPack) return true;
+  return result.notes.some((n) => /clarify-only/i.test(n));
 }
