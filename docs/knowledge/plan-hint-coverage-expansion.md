@@ -1,8 +1,8 @@
 # План: расширенный охват подсказок (Cov-P7+) — проход, словарь, выявление ошибок
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** **Cov-P0…P12** done (#50–#56) · **Cov-P13** (this PR). **78 packs.**  
-**Следующий прогон / residual:** [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (G0–G6 · **Cov-P14+**).  
+**Статус:** **Cov-P0…P13** done (#50–#58) · **Cov-P14** (this PR). **78 packs.**  
+**Следующий прогон / residual:** [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (G0–G6 · **Cov-P15+**).  
 **Канон:** [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6, 53 packs) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) (precision P0–P7) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) (слои H1–H5).
 
 ---
@@ -213,7 +213,8 @@ R8  V8 live (post-merge): NewCalc chips + POST attr-suggest на prod/preview
 | **Cov-P10** | attr RULE parity: outerwear/accessories + C21 pack bridge | — | ~40 | **done** (#54) |
 | **Cov-P11** | search/cascade rows для top-20 новых families | — | ~60 | **done** (#55) |
 | **Cov-P12** | live H6/H7 prod checklist + miss-log triage + `--full` | — | subset | **done** (#56) |
-| **Cov-P13** | plant-dairy + yoga/шкаф diverge guards | 78 | +3 golden | **done** (this PR) |
+| **Cov-P13** | plant-dairy + yoga/шкаф diverge guards | 78 | +3 golden | **done** (#58) |
+| **Cov-P14** | food MISS triggers (bakery/chicken/drinks/ready) | 78 | +9 golden | **done** (this PR) |
 
 **MoSCoW:** Cov-P0 + P7 + P8 = **Must**; P9 = **Should**; P10–P12 = **Should** после merge P7–P8; P13+ = residual from [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md).
 
@@ -360,8 +361,9 @@ npm run probe:hint-gap -- --full --source plan-s7 --format summary
 7. ~~**Cov-P11:** search/cascade rows for new families.~~  
 8. ~~**Cov-P12:** live H6/H7 prod checklist + miss-log triage + `--full`.~~  
 9. ~~**Cov-P13:** plant-dairy + yoga/шкаф diverge guards.~~  
-10. **Cov-P14:** food MISS triggers (see [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) §6.2).  
-11. **Human merge** stack → main → staging.md §Cov H5–H7 live.
+10. ~~**Cov-P14:** food MISS triggers.~~  
+11. **Cov-P15:** apparel/home leftovers ([`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) §6.3).  
+12. **Human merge** stack → main → staging.md §Cov H5–H7 live.
 
 Agent cannot merge.
 
@@ -499,14 +501,16 @@ Apparel MISS частично закрыт ATTR (носки/колготки/к�
 
 **План прогона / residual:** [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md).
 
-### Cov-P13 notes (this PR)
+### Cov-P14 notes (this PR)
 
 | Fix | Detail |
 |-----|--------|
-| Plant dairy | `орехов\w*` / hazelnut / nut milk; skip `milk` **and** `pantry-sweet`; 0401 exclude |
-| Yoga mat | `isYogaMatQuery` skip `rugs`; sports triggers + clarify option |
-| Шкаф | trigger moved furniture → `bedroom-furniture` |
-| Unit | `hint-coverage-p13.test.ts` · golden +3 (53 rows) |
-| Probe #2 | diverge **0** · POLICY-HIT **0** · pack-hit still 80.9% |
+| Bakery | `вафл`/`торт`/`waffle`/`cake` → grains-pasta |
+| Chicken | stem `куриц` (+ chicken); суп куриный stays prepared-food |
+| Soft drinks | `кола`/`пепси`; `минеральн` word-order fix; `шампанск` → beverages |
+| Ready meals | `морожен`/`пельмен`/`пицц` → prepared-food fork |
+| Cascade | aliases 1905/0207/2201/2202/2204/2105/1902 |
+| Unit | `hint-coverage-p14.test.ts` · golden 62/62 |
+| Probe #3 | pack-hit **83.2%** · any **89.1%** · miss 41 · food miss **0** |
 
 Live H5–H7: human post-merge on prod/preview — agent cannot SSO.

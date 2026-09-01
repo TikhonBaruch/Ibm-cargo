@@ -409,6 +409,69 @@
       "expected": { "pack": "bedroom-furniture", "attr": "A~", "searchPrefix": null },
       "mustNotPack": ["furniture"],
       "notes": "Cov-P13: шкаф wardrobe → bedroom-furniture"
+    },
+    {
+      "id": "food.waffles",
+      "query": "вафли",
+      "phase": "Cov-P14",
+      "expected": { "pack": "grains-pasta", "attr": "A~", "searchPrefix": "1905" },
+      "mustNotPack": ["chocolate", "produce-fresh"]
+    },
+    {
+      "id": "food.cake",
+      "query": "торт",
+      "phase": "Cov-P14",
+      "expected": { "pack": "grains-pasta", "attr": "A~", "searchPrefix": "1905" },
+      "mustNotPack": ["produce-fresh"]
+    },
+    {
+      "id": "food.chicken",
+      "query": "курица",
+      "phase": "Cov-P14",
+      "expected": { "pack": "meat", "attr": "A~", "searchPrefix": "0207" },
+      "mustNotPack": ["prepared-food", "pet-food"]
+    },
+    {
+      "id": "food.champagne",
+      "query": "шампанское",
+      "phase": "Cov-P14",
+      "expected": { "pack": "beverages", "attr": "A~", "searchPrefix": "2204" },
+      "mustNotPack": ["spirits"]
+    },
+    {
+      "id": "food.cola",
+      "query": "кола",
+      "phase": "Cov-P14",
+      "expected": { "pack": "beverages", "attr": "A~", "searchPrefix": "2202" },
+      "mustNotPack": ["speakers", "spirits"]
+    },
+    {
+      "id": "food.mineral",
+      "query": "минеральная вода",
+      "phase": "Cov-P14",
+      "expected": { "pack": "beverages", "attr": "A~", "searchPrefix": "2201" },
+      "mustNotPack": ["snacks"]
+    },
+    {
+      "id": "food.icecream",
+      "query": "мороженое",
+      "phase": "Cov-P14",
+      "expected": { "pack": "prepared-food", "attr": "A~", "searchPrefix": "2105" },
+      "mustNotPack": ["milk", "produce-fresh"]
+    },
+    {
+      "id": "food.pelmeni",
+      "query": "пельмени",
+      "phase": "Cov-P14",
+      "expected": { "pack": "prepared-food", "attr": "A~", "searchPrefix": "1902" },
+      "mustNotPack": ["meat", "produce-fresh"]
+    },
+    {
+      "id": "food.pizza",
+      "query": "пицца",
+      "phase": "Cov-P14",
+      "expected": { "pack": "prepared-food", "attr": "A~", "searchPrefix": "1905" },
+      "mustNotPack": ["produce-fresh"]
     }
   ]
 }

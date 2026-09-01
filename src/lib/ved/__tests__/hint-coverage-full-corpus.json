@@ -481,7 +481,7 @@
       "domain": "food",
       "source": "plan-s7",
       "policy": false,
-      "wantPack": "spirits"
+      "wantPack": "beverages"
     },
     {
       "id": "food.0060",
@@ -761,7 +761,7 @@
       "domain": "food",
       "source": "plan-s7",
       "policy": false,
-      "wantPack": null
+      "wantPack": "prepared-food"
     },
     {
       "id": "food.0095",
@@ -769,7 +769,7 @@
       "domain": "food",
       "source": "plan-s7",
       "policy": false,
-      "wantPack": null
+      "wantPack": "prepared-food"
     },
     {
       "id": "food.0096",
@@ -777,7 +777,7 @@
       "domain": "food",
       "source": "plan-s7",
       "policy": false,
-      "wantPack": null
+      "wantPack": "prepared-food"
     },
     {
       "id": "apparel.0097",
