@@ -44,8 +44,8 @@ describe("Cov-P15 — home / textiles packs", () => {
     expect(matchHintPack("лампочка")?.id).toBe("led");
   });
 
-  it("DEFER hangers / laundry basket", () => {
-    expect(matchHintPack("вешалка")).toBeNull();
-    expect(matchHintPack("корзина для белья")).toBeNull();
+  it("laundry hangers closed in Cov-P19 → home-textiles", () => {
+    expect(matchHintPack("вешалка")?.id).toBe("home-textiles");
+    expect(matchHintPack("корзина для белья")?.id).toBe("home-textiles");
   });
 });

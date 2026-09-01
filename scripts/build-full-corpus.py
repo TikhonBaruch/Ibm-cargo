@@ -208,8 +208,8 @@ PLAN: list[tuple[str, str, str | None]] = [
     ("home", "посудомоечная машина", "appliances"),
     ("home", "чайник электрический", "small-appliances"),
     ("home", "тумбочка", "bedroom-furniture"),
-    ("home", "вешалка", None),
-    ("home", "корзина для белья", None),
+    ("home", "вешалка", "home-textiles"),
+    ("home", "корзина для белья", "home-textiles"),
     ("home", "мыло", "personal-care"),
     ("home", "зубная паста", "personal-care"),
     ("home", "шампунь", "cosmetics"),
@@ -384,7 +384,7 @@ PLAN: list[tuple[str, str, str | None]] = [
     ("long", "кулон", "jewelry"),
     ("long", "флейта", "musical"),
     ("long", "гармонь", "musical"),
-    ("long", "бумага туалетная", None),
+    ("long", "бумага туалетная", "cleaning"),
     ("long", "подгузники", "baby"),
     ("long", "бутылочка", "baby-gear"),
     ("long", "соска", "baby-gear"),
@@ -405,6 +405,8 @@ PLAN: list[tuple[str, str, str | None]] = [
     ("policy", "шланг", None),
     ("policy", "переходник", None),
     ("policy", "кабель", None),
+    ("policy", "труба", None),
+    ("policy", "арматура", None),
 ]
 
 POLICY = {
@@ -421,6 +423,8 @@ POLICY = {
     "шланг",
     "переходник",
     "кабель",
+    "труба",
+    "арматура",
 }
 
 

@@ -146,7 +146,7 @@ Offline pre-flight: `npx vitest run src/lib/ved/__tests__/hint-coverage-p12.test
 | H1 | Unit `hint-coverage-p7…p12` + `test:hint-precision` | 0 NEW STEAL · pack matrix green | **PASS** unit (stack #50–#56) |
 | H2 | Unit cascade Cov-P11/P12 golden | рис→10 · рыба→03 · SSD→84 · playstation→95 | **PASS** unit |
 | H3 | Gap probe `--fail-on steal,misroute` | 0 STEAL / 0 MISROUTE on dictionary | **PASS** offline |
-| H3b | Gap probe `--full` observe | household pack-hit **90.9%** · any-help **98.1%** · miss **7** (after P16–P18 offline) | **PASS** offline 2026-09-01 |
+| H3b | Gap probe `--full` observe | household pack-hit **92.7%** · any-help **100%** · miss **0** (after P19) | **PASS** offline 2026-09-01 |
 | H4 | POLICY bare stays null | провод/камера/фильтр/свеча/перец/кот | **PASS** unit |
 | H5 | Live search prod (post-merge) | `q=рис`→10xx · `q=рыба`→03xx · `q=SSD`→84xx · `q=playstation`→95xx | **чеклист** post-merge |
 | H6 | Live attr-suggest prod | рис/колбаса/чайник → clarify-only + `clarifyPack`; носки→6115; куртка→6201 | **чеклист** post-merge (auth cookie) |
@@ -168,9 +168,9 @@ npm run probe:hint-gap:full
 # /cabinet/new → type «playstation» → gaming chips, not toys
 ```
 
-**Miss-log triage (closed):** лимонад≠fruit · кофемашина≠tea-coffee · автокресло≠furniture · порошок→cleaning · сок≠fruit · e-cig≠tobacco · playstation≠toys · инвалидная коляска≠baby-gear / ≠8715 cascade · food+apparel+elec+auto+sport MISS (P14–P16).  
-**Residual DEFER (7):** вешалка · корзина для белья · труба · арматура · маска медицинская · бумага туалетная · миска для животных.  
-**Residual POLICY (not bugs):** bare провод/камера/фильтр/свеча/перец · кот/собака · plant «рисовое молоко» · переходник/кабель/шланг.
+**Miss-log triage (closed):** лимонад≠fruit · кофемашина≠tea-coffee · автокресло≠furniture · порошок→cleaning · сок≠fruit · e-cig≠tobacco · playstation≠toys · инвалидная коляска≠baby-gear · food+apparel+elec+auto+sport (P14–P16) · hangers/mask/bowl/toilet paper (P19).  
+**Residual POLICY (not bugs):** bare провод/камера/фильтр/свеча/перец · кот/собака · plant «рисовое молоко» · переходник/кабель/шланг · труба/арматура.  
+**Residual MISS:** **0** (plan-s7 after P19).
 
 Повторять H5–H7 после human merge стека coverage → main → **deploy** prod/preview.
 
@@ -183,8 +183,8 @@ npm run probe:hint-gap:full
 | H1 | Unit `hint-coverage-p13…p18` + `test:hint-precision` | 0 STEAL · golden **95/95** | **PASS** offline |
 | H2 | Cascade S+ P17 rows | морс→2202 · варежки→6116 · HDD→8471 · hdmi→8544 · фильтры→8421 | **PASS** unit |
 | H3 | Golden `--fail-on steal,misroute` | 0 STEAL / 0 MISROUTE | **PASS** offline |
-| H3b | Full observe plan-s7 | pack **90.9%** · any **98.1%** · miss **7** | **PASS** offline |
-| H4 | POLICY bare | переходник · кабель · шланг + legacy POLICY set | **PASS** unit |
+| H3b | Full observe plan-s7 | pack **92.7%** · any **100%** · miss **0** | **PASS** offline (P19) |
+| H4 | POLICY bare | переходник · кабель · шланг · труба · арматура + legacy | **PASS** unit |
 | H5 | Live search (post-deploy) | см. таблицу ниже | **DEFER** |
 | H6 | Live attr-suggest (post-deploy) | см. таблицу ниже | **DEFER** |
 | H7 | Manual NewCalc chips (post-deploy) | см. таблицу ниже | **DEFER** |
