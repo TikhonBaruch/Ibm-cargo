@@ -1,7 +1,7 @@
 # План прогона: `probe:hint-gap` (golden + full observe)
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** план · **Cov-P13 done** (this PR) · next **Cov-P14** food MISS.  
+**Статус:** план · **Cov-P13–P14 done** · next **Cov-P15** apparel/home.  
 **Зависит от:** Cov-P12 tooling (#56).  
 **Канон:** [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) · [`staging.md`](./staging.md) §Cov · [`testing-branches.md`](./testing-branches.md).
 
@@ -179,15 +179,17 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 
 **Done when:** POLICY-HIT=0 · DIVERGE=0 · golden 53/53 OK (0 STEAL).
 
-### 6.2 Must — Cov-P14 (food MISS triggers)
+### 6.2 Must — Cov-P14 (food MISS triggers) — **done** (this PR)
 
 | Query | Target pack / notes |
 |-------|---------------------|
-| вафли, торт | `grains-pasta` или thin `bakery` |
-| курица | `meat` (stem куриц / курин) |
-| шампанское | `spirits` / beverages guard |
-| кола, минеральная вода | `beverages` |
-| мороженое, пельмени, пицца | new `ready-meals` **или** DEFER prepared-food fork |
+| вафли, торт | `grains-pasta` (+ bakery option) |
+| курица | `meat` stem `куриц` (was only `курин`) |
+| шампанское | `beverages` (2204 sparkling; not spirits) |
+| кола, минеральная вода | `beverages` (`минеральн` fixes word-order) |
+| мороженое, пельмени, пицца | extend `prepared-food` (no new pack) |
+
+**Done when:** food miss ≤3 → **0**; golden +9 (62 OK).
 
 ### 6.3 Should — Cov-P15 (apparel / home leftovers)
 
@@ -221,7 +223,8 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 | ID | Scope | Pack Δ | Probe | Done when |
 |----|-------|--------|-------|-----------|
 | **Cov-P13** | plant + diverge guards | 0 | +3 golden | **done** — POLICY-HIT=0; DIVERGE=0 |
-| **Cov-P14** | food triggers / bakery-ready | 0–1 | +8 | food miss ≤3 |
+| **Cov-P14** | food triggers / prepared-food fork | 0 | +9 golden | **done** — food miss 0; pack-hit 83.2% |
+| **Cov-P15** | apparel RULES + home stems | 0 | +10 | apparel/home miss ≤5 |
 | **Cov-P15** | apparel RULES + home stems | 0 | +10 | apparel/home miss ≤5 |
 | **Cov-P16** | elec/auto/sport/long triggers | 0–2 | +15 | plan-s7 pack-hit ≥88% |
 | **Cov-P17** | cascade aliases for CASCADE rows | — | fixture | CASCADE polish |
@@ -288,7 +291,8 @@ npm run test:ci
 | # | Дата | Branch/PR | plan-s7 pack% | any% | miss | diverge | POLICY-HIT | Notes |
 |---|------|-----------|---------------|------|------|---------|------------|-------|
 | 1 | 2026-09-01 | #56 Cov-P12 | 80.9 | 86.7 | 50 | 2 | 1 | first `--full`; tooling landed |
-| 2 | 2026-09-01 | Cov-P13 (this PR) | 80.9 | 86.7 | 50 | **0** | **0** | plant/yoga/шкаф guards; miss list unchanged |
+| 2 | 2026-09-01 | #58 Cov-P13 | 80.9 | 86.7 | 50 | **0** | **0** | plant/yoga/шкаф guards |
+| 3 | 2026-09-01 | Cov-P14 (this PR) | **83.2** | **89.1** | **41** | 0 | 0 | food miss 0; +9 golden |
 
 ---
 
