@@ -60,11 +60,16 @@ describe("coverage P0 — mouse ≠ PC", () => {
     (q) => {
       expect(isPointerDeviceQuery(q)).toBe(true);
       expect(matchHintPack(q)?.id ?? null).not.toBe("computers");
+      // Cov-P16: compound mouse → peripherals (8471 input), still ≠ laptop PURPOSE.
+      expect(matchHintPack(q)?.id).toBe("peripherals");
       const attr = heuristicAttrSuggest({ name: q });
-      expect(attr.attrs.hsHint || "").not.toMatch(/8471/);
       expect(attr.attrs.purpose || "").not.toMatch(/вычислительн/);
     },
   );
+
+  it("bare мышь stays null pack", () => {
+    expect(matchHintPack("мышь")).toBeNull();
+  });
 
   it("ноутбук / компьютер still computers", () => {
     expect(matchHintPack("ноутбук")?.id).toBe("computers");
