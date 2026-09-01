@@ -1,7 +1,7 @@
 # План: расширенный охват подсказок (Cov-P7+) — проход, словарь, выявление ошибок
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** **план** (до merge P4–P6 #48 и baseline Cov-P0).  
+**Статус:** **Cov-P0** (this PR) · Cov-P7+ pending.  
 **Канон:** [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6, 53 packs) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) (precision P0–P7) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) (слои H1–H5).
 
 ---
@@ -204,7 +204,7 @@ R8  V8 live (post-merge): NewCalc chips + POST attr-suggest на prod/preview
 
 | ID | Packs (+/-) | Pack count | Probe rows | Done when |
 |----|-------------|------------|------------|-----------|
-| **Cov-P0** | WRONG fixes only | 53 | 4+ regression | 0 known MISROUTE |
+| **Cov-P0** | WRONG fixes only | 53 | 4+ regression | **done** (PR Cov-P0) |
 | **Cov-P7** | grains-pasta, meat, fish-seafood, pantry-sweet, snacks, spirits | 53→**59** | ~95 food | food null <20% on food corpus |
 | **Cov-P8** | small-appliances, bedroom-furniture, cutlery, cleaning, pc-parts, photo-gear, auto-fluids, adhesives, baby-gear (partial) | 59→**68** | ~135 home+elec+auto | WRONG fixes + V1–V7 green |
 | **Cov-P9** | stationery, jewelry, musical, tobacco, agri-feed, textiles-raw, gaming, auto-body, med-devices, electrical-install | 68→**78** | ~120 long-tail | traffic review OK |
@@ -345,9 +345,22 @@ node scripts/hint-gap-probe.mjs --phase Cov-P7 --fail-on steal,misroute
 
 ## 16. Следующий шаг
 
-1. Human merge **#48** (53 packs → main).  
-2. **Cov-P0:** baseline WRONG fixes + `hint-coverage-baseline.test.ts`.  
+1. ~~Human merge **#48** (53 packs → main).~~  
+2. ~~**Cov-P0:** baseline WRONG fixes + `hint-coverage-baseline.test.ts`.~~  
 3. **Cov-P7:** dictionary JSON + 6 food packs + `hint-coverage-p7.test.ts`.  
 4. Post-P7: C12 re-probe §7.2 apparel + §7.3 home gaps.
 
 Agent cannot merge.
+
+---
+
+### Cov-P0 notes
+
+| Query | Было | Стало | Механизм |
+|-------|------|-------|----------|
+| лимонад | fruit-fresh | beverages | `isJuiceOrBeverageQuery` + trigger `лимонад` |
+| кофемашина | tea-coffee | appliances | guard + `SHORT_TRIGGER_FALSE_FRIENDS` кофе/кофемаш |
+| автокресло | furniture | baby | `isCarSeatQuery` guard + trigger `автокрес` |
+| стиральный порошок | appliances | null | `isLaundryDetergentQuery` guard (cleaning pack → Cov-P8) |
+
+Unit: `hint-coverage-baseline.test.ts` (13 asserts).

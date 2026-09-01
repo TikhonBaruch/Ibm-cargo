@@ -10,6 +10,9 @@ import {
   isPointerDeviceQuery,
   isJuiceOrBeverageQuery,
   isPreparedMealQuery,
+  isCoffeeMachineQuery,
+  isCarSeatQuery,
+  isLaundryDetergentQuery,
 } from "./tnved-query-match";
 
 export type HintTreeOption = {
@@ -56,6 +59,9 @@ export function matchHintPack(desc: string): OverlayPack | null {
   const pointer = isPointerDeviceQuery(text);
   const juice = isJuiceOrBeverageQuery(text);
   const preparedMeal = isPreparedMealQuery(text);
+  const coffeeMachine = isCoffeeMachineQuery(text);
+  const carSeat = isCarSeatQuery(text);
+  const laundryDetergent = isLaundryDetergentQuery(text);
   let best: OverlayPack | null = null;
   let bestScore = 0;
   for (const pack of overlay.packs || []) {
@@ -65,6 +71,10 @@ export function matchHintPack(desc: string): OverlayPack | null {
     // Coverage P2: сок ≠ fruit; суп ≠ produce (овощной суп → prepared-food).
     if (juice && pack.id === "fruit-fresh") continue;
     if (preparedMeal && pack.id === "produce-fresh") continue;
+    // Cov-P0 baseline: known WRONG steals.
+    if (coffeeMachine && pack.id === "tea-coffee") continue;
+    if (carSeat && pack.id === "furniture") continue;
+    if (laundryDetergent && pack.id === "appliances") continue;
     const score = scoreKeys(text, pack.triggers || []);
     if (score > bestScore) {
       best = pack;
