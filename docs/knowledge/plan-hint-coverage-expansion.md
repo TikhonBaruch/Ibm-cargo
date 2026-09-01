@@ -1,7 +1,7 @@
 # План: расширенный охват подсказок (Cov-P7+) — проход, словарь, выявление ошибок
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** **Cov-P0…P10** done (#50–#54) · **Cov-P11** (this PR) · Cov-P12 pending. **78 packs.**
+**Статус:** **Cov-P0…P11** done (#50–#55) · **Cov-P12** (this PR). **78 packs.**
 **Канон:** [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6, 53 packs) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) (precision P0–P7) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) (слои H1–H5).
 
 ---
@@ -63,7 +63,7 @@
 | Phase fixtures | `hint-coverage-p7.fixture.json` … | ≥3 pos / ≥5 mustNot на pack |
 | Phase tests | `hint-coverage-p7.test.ts` … | vitest per phase |
 | Miss-log | секция в этом плане + PR notes | STEAL/MISROUTE до fix |
-| Gap probe script | `scripts/hint-gap-probe.mjs` | offline batch: pack/attr/search |
+| Gap probe script | `scripts/hint-gap-probe.ts` | offline batch: pack/attr/search |
 
 **Формат строки словаря:**
 
@@ -209,8 +209,8 @@ R8  V8 live (post-merge): NewCalc chips + POST attr-suggest на prod/preview
 | **Cov-P8** | small-appliances, bedroom-furniture, cutlery, cleaning, pc-parts, photo-gear, auto-fluids, adhesives, baby-gear (partial) | 59→**68** | ~135 home+elec+auto | **done** (#52) |
 | **Cov-P9** | stationery, jewelry, musical, tobacco, agri-feed, textiles-raw, gaming, auto-body, med-devices, electrical-install | 68→**78** | ~120 long-tail | **done** (#53) |
 | **Cov-P10** | attr RULE parity: outerwear/accessories + C21 pack bridge | — | ~40 | **done** (#54) |
-| **Cov-P11** | search/cascade rows для top-20 новых families | — | ~60 | **done** (this PR) |
-| **Cov-P12** | live H6/H7 prod checklist + miss-log triage | — | subset | staging.md §Cov |
+| **Cov-P11** | search/cascade rows для top-20 новых families | — | ~60 | **done** (#55) |
+| **Cov-P12** | live H6/H7 prod checklist + miss-log triage | — | subset | **done** (this PR) |
 
 **MoSCoW:** Cov-P0 + P7 + P8 = **Must**; P9 = **Should**; P10–P12 = **Should** после merge P7–P8.
 
@@ -352,7 +352,8 @@ node scripts/hint-gap-probe.mjs --phase Cov-P7 --fail-on steal,misroute
 5. ~~**Cov-P9:** long-tail (stationery, jewelry, tobacco, …).~~  
 6. ~~**Cov-P10:** attr RULE parity for remaining ATTR-GAP.~~  
 7. ~~**Cov-P11:** search/cascade rows for new families.~~  
-8. **Cov-P12:** live H6/H7 prod checklist + miss-log triage.
+8. ~~**Cov-P12:** live H6/H7 prod checklist + miss-log triage.~~  
+9. **Human merge** stack #50–#56 → main → staging.md §Cov H5–H7 live.
 
 Agent cannot merge.
 
@@ -436,3 +437,35 @@ Unit: `hint-coverage-p10.test.ts` (32 asserts) + `attr-suggest.test.ts` колг
 | critical-hs | +10 classify alias probes in `critical-hs-queries.test.ts` |
 
 Unit: `hint-coverage-p11.test.ts` (68 asserts). Cascade golden **35** families × alias/search matrix.
+
+### Cov-P12 notes (this PR)
+
+| Artifact | Detail |
+|----------|--------|
+| Master dictionary | `hint-coverage-probe-dictionary.json` — **50** rows (P+/A+/A~/S+/POLICY) |
+| Gap probe | `scripts/hint-gap-probe.ts` · `npm run probe:hint-gap` |
+| Unit | `hint-coverage-p12.test.ts` — pack/attr/cascade dictionary + closed STEAL matrix |
+| Staging | [`staging.md`](./staging.md) §Cov H1–H7 live checklist |
+| Cascade extras | лимонад/кофемашина/автокресло/сливочное/подсолнечное/суп/перчатки; wheelchair→8713 ≠8715 |
+| Scripts | `npm run test:hint-coverage` |
+
+#### Miss-log triage (closed)
+
+| Type | Query | Was | Fix |
+|------|-------|-----|-----|
+| STEAL | лимонад | fruit-fresh | beverages (Cov-P0) |
+| STEAL | кофемашина | tea-coffee | appliances (Cov-P0) |
+| STEAL | автокресло | furniture | baby (Cov-P0) |
+| MISROUTE | стиральный порошок | appliances / null | cleaning (Cov-P8) |
+| STEAL | сок | fruit-fresh | snacks + guard (Cov-P7) |
+| STEAL | e-cig | tobacco | vape + cascade 854340 (Cov-P9/P11) |
+| STEAL | playstation | toys | gaming (Cov-P9) |
+| STEAL | инвалидная коляска | baby-gear / 8715 | med-devices + cascade 8713 (Cov-P9/P12) |
+| ATTR-GAP | колготки/перчатки/шарф… | generic | apparel RULES (Cov-P10) |
+| SEARCH-MISS | рис/рыба/SSD/… | null cascade | invoice aliases (Cov-P11) |
+
+#### Residual POLICY (not bugs)
+
+`провод` · `камера` · `фильтр` · `свеча` · `перец` · `кот`/`собака` · plant «рисовое молоко» ≠ milk · `куртка`/`платье` = attr-path (no pack).
+
+Live H5–H7: human post-merge on prod/preview — agent cannot SSO.

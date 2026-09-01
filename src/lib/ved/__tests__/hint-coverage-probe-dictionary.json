@@ -1,0 +1,389 @@
+{
+  "asOf": "2026-09-01",
+  "canon": "docs/knowledge/plan-hint-coverage-expansion.md §Cov-P12",
+  "packCount": 78,
+  "rows": [
+    {
+      "id": "cov0.lemonade",
+      "query": "лимонад",
+      "phase": "Cov-P0",
+      "expected": { "pack": "beverages", "attr": "A~", "searchPrefix": "2202" },
+      "mustNotPack": ["fruit-fresh"],
+      "notes": "WRONG fix: was fruit-fresh"
+    },
+    {
+      "id": "cov0.coffeemaker",
+      "query": "кофемашина",
+      "phase": "Cov-P0",
+      "expected": { "pack": "appliances", "attr": "A~", "searchPrefix": "8516" },
+      "mustNotPack": ["tea-coffee"],
+      "notes": "WRONG fix: was tea-coffee"
+    },
+    {
+      "id": "cov0.carseat",
+      "query": "автокресло",
+      "phase": "Cov-P0",
+      "expected": { "pack": "baby", "attr": "A~", "searchPrefix": "9401" },
+      "mustNotPack": ["furniture", "baby-gear"],
+      "notes": "WRONG fix: was furniture"
+    },
+    {
+      "id": "cov0.detergent",
+      "query": "стиральный порошок",
+      "phase": "Cov-P8",
+      "expected": { "pack": "cleaning", "attr": "A~", "searchPrefix": "3402" },
+      "mustNotPack": ["appliances"],
+      "notes": "Cov-P0 null → Cov-P8 cleaning"
+    },
+    {
+      "id": "food.rice",
+      "query": "рис",
+      "phase": "Cov-P7",
+      "expected": { "pack": "grains-pasta", "attr": "A~", "searchPrefix": "1006" },
+      "mustNotPack": ["produce-fresh", "fruit-fresh", "milk"],
+      "live": true
+    },
+    {
+      "id": "food.sausage",
+      "query": "колбаса",
+      "phase": "Cov-P7",
+      "expected": { "pack": "meat", "attr": "A~", "searchPrefix": "1601" },
+      "mustNotPack": ["produce-fresh", "pet-food"],
+      "live": true
+    },
+    {
+      "id": "food.fish",
+      "query": "рыба",
+      "phase": "Cov-P7",
+      "expected": { "pack": "fish-seafood", "attr": "A~", "searchPrefix": "0302" },
+      "mustNotPack": ["produce-fresh", "meat"],
+      "live": true
+    },
+    {
+      "id": "food.honey",
+      "query": "мёд",
+      "phase": "Cov-P7",
+      "expected": { "pack": "pantry-sweet", "attr": "A~", "searchPrefix": "0409" },
+      "mustNotPack": ["milk"]
+    },
+    {
+      "id": "food.chips",
+      "query": "чипсы",
+      "phase": "Cov-P7",
+      "expected": { "pack": "snacks", "attr": "A~", "searchPrefix": "1905" },
+      "mustNotPack": ["fruit-fresh", "produce-fresh"]
+    },
+    {
+      "id": "food.vodka",
+      "query": "водка",
+      "phase": "Cov-P7",
+      "expected": { "pack": "spirits", "attr": "A~", "searchPrefix": "2208" },
+      "mustNotPack": ["beverages"],
+      "live": true
+    },
+    {
+      "id": "food.juice",
+      "query": "сок апельсиновый",
+      "phase": "Cov-P7",
+      "expected": { "pack": "snacks", "attr": "A~", "searchPrefix": "2202" },
+      "mustNotPack": ["fruit-fresh"]
+    },
+    {
+      "id": "food.butter.dairy",
+      "query": "сливочное масло",
+      "phase": "Cov-P7",
+      "expected": { "pack": "milk", "attr": "A~", "searchPrefix": "0405" },
+      "mustNotPack": ["pantry-sweet"]
+    },
+    {
+      "id": "food.oil.cooking",
+      "query": "масло подсолнечное",
+      "phase": "Cov-P7",
+      "expected": { "pack": "pantry-sweet", "attr": "A~", "searchPrefix": "1512" },
+      "mustNotPack": ["milk", "auto-fluids"],
+      "notes": "cascade mustNot 2710"
+    },
+    {
+      "id": "food.soup",
+      "query": "суп куриный",
+      "phase": "Cov-P7",
+      "expected": { "pack": "prepared-food", "attr": "A~", "searchPrefix": "2104" },
+      "mustNotPack": ["meat"]
+    },
+    {
+      "id": "home.kettle",
+      "query": "чайник",
+      "phase": "Cov-P8",
+      "expected": { "pack": "small-appliances", "attr": "A~", "searchPrefix": "8516" },
+      "mustNotPack": ["tea-coffee"],
+      "live": true
+    },
+    {
+      "id": "home.mattress",
+      "query": "матрас",
+      "phase": "Cov-P8",
+      "expected": { "pack": "bedroom-furniture", "attr": "A~", "searchPrefix": "9404" },
+      "mustNotPack": ["furniture"]
+    },
+    {
+      "id": "home.knife",
+      "query": "нож",
+      "phase": "Cov-P8",
+      "expected": { "pack": "cutlery", "attr": "A~", "searchPrefix": "8211" },
+      "mustNotPack": ["tools"]
+    },
+    {
+      "id": "elec.ssd",
+      "query": "SSD",
+      "phase": "Cov-P8",
+      "expected": { "pack": "pc-parts", "attr": "A~", "searchPrefix": "8471" },
+      "mustNotPack": ["computers"],
+      "live": true
+    },
+    {
+      "id": "elec.camera",
+      "query": "фотоаппарат",
+      "phase": "Cov-P8",
+      "expected": { "pack": "photo-gear", "attr": "A~", "searchPrefix": "9006" },
+      "mustNotPack": ["security-cam"],
+      "live": true
+    },
+    {
+      "id": "auto.oil",
+      "query": "моторное масло",
+      "phase": "Cov-P8",
+      "expected": { "pack": "auto-fluids", "attr": "A~", "searchPrefix": "2710" },
+      "mustNotPack": ["pantry-sweet", "milk"],
+      "live": true
+    },
+    {
+      "id": "chem.glue",
+      "query": "клей",
+      "phase": "Cov-P8",
+      "expected": { "pack": "adhesives-chemicals", "attr": "A~", "searchPrefix": "3506" },
+      "mustNotPack": ["paint"]
+    },
+    {
+      "id": "baby.stroller",
+      "query": "коляска",
+      "phase": "Cov-P8",
+      "expected": { "pack": "baby-gear", "attr": "A~", "searchPrefix": "8715" },
+      "mustNotPack": ["med-devices"]
+    },
+    {
+      "id": "tail.pen",
+      "query": "ручка",
+      "phase": "Cov-P9",
+      "expected": { "pack": "stationery", "attr": "A~", "searchPrefix": "9608" },
+      "mustNotPack": ["books"],
+      "live": true
+    },
+    {
+      "id": "tail.ring",
+      "query": "кольцо",
+      "phase": "Cov-P9",
+      "expected": { "pack": "jewelry", "attr": "A~", "searchPrefix": "7113" },
+      "mustNotPack": ["watches"]
+    },
+    {
+      "id": "tail.guitar",
+      "query": "гитара",
+      "phase": "Cov-P9",
+      "expected": { "pack": "musical", "attr": "A~", "searchPrefix": "9202" },
+      "mustNotPack": [],
+      "live": true
+    },
+    {
+      "id": "tail.cigs",
+      "query": "сигареты",
+      "phase": "Cov-P9",
+      "expected": { "pack": "tobacco", "attr": "A~", "searchPrefix": "2402" },
+      "mustNotPack": ["vape"],
+      "live": true
+    },
+    {
+      "id": "tail.ecig",
+      "query": "электронная сигарета",
+      "phase": "Cov-P9",
+      "expected": { "pack": "vape", "attr": "A~", "searchPrefix": "8543" },
+      "mustNotPack": ["tobacco"]
+    },
+    {
+      "id": "tail.feed",
+      "query": "комбикорм",
+      "phase": "Cov-P9",
+      "expected": { "pack": "agri-feed", "attr": "A~", "searchPrefix": "2309" },
+      "mustNotPack": ["pet-food"]
+    },
+    {
+      "id": "tail.fabric",
+      "query": "ткань",
+      "phase": "Cov-P9",
+      "expected": { "pack": "textiles-raw", "attr": "A~", "searchPrefix": "5208" },
+      "mustNotPack": ["knit-top", "woven-apparel"]
+    },
+    {
+      "id": "tail.ps",
+      "query": "playstation",
+      "phase": "Cov-P9",
+      "expected": { "pack": "gaming", "attr": "A~", "searchPrefix": "9504" },
+      "mustNotPack": ["toys"],
+      "live": true
+    },
+    {
+      "id": "tail.bumper",
+      "query": "бампер",
+      "phase": "Cov-P9",
+      "expected": { "pack": "auto-body", "attr": "A~", "searchPrefix": "8708" },
+      "mustNotPack": ["auto-parts"]
+    },
+    {
+      "id": "tail.thermo",
+      "query": "термометр",
+      "phase": "Cov-P9",
+      "expected": { "pack": "med-devices", "attr": "A~", "searchPrefix": "9025" },
+      "mustNotPack": ["med-disposables"]
+    },
+    {
+      "id": "tail.socket",
+      "query": "розетка",
+      "phase": "Cov-P9",
+      "expected": { "pack": "electrical-install", "attr": "A~", "searchPrefix": "8536" },
+      "mustNotPack": ["power"]
+    },
+    {
+      "id": "tail.wheelchair",
+      "query": "инвалидная коляска",
+      "phase": "Cov-P9",
+      "expected": { "pack": "med-devices", "attr": "A~", "searchPrefix": "8713" },
+      "mustNotPack": ["baby-gear", "baby"]
+    },
+    {
+      "id": "attr.socks",
+      "query": "носки",
+      "phase": "Cov-P10",
+      "expected": { "pack": null, "attr": "A+", "searchPrefix": "6115" },
+      "mustNotPack": [],
+      "live": true,
+      "notes": "attr-path, not pack"
+    },
+    {
+      "id": "attr.jacket",
+      "query": "куртка",
+      "phase": "Cov-P10",
+      "expected": { "pack": null, "attr": "A+", "searchPrefix": "6201" },
+      "mustNotPack": [],
+      "notes": "POLICY attr-path"
+    },
+    {
+      "id": "attr.tights",
+      "query": "колготки",
+      "phase": "Cov-P10",
+      "expected": { "pack": null, "attr": "A+", "searchPrefix": "6115" },
+      "mustNotPack": []
+    },
+    {
+      "id": "attr.gloves",
+      "query": "перчатки",
+      "phase": "Cov-P10",
+      "expected": { "pack": null, "attr": "A+", "searchPrefix": "6116" },
+      "mustNotPack": []
+    },
+    {
+      "id": "reg.cucumber",
+      "query": "огурец",
+      "phase": "Cov-P12",
+      "expected": { "pack": "produce-fresh", "attr": "A~", "searchPrefix": "0707" },
+      "mustNotPack": ["fruit-fresh", "milk", "knit-top"],
+      "live": true
+    },
+    {
+      "id": "reg.milk",
+      "query": "молоко",
+      "phase": "Cov-P12",
+      "expected": { "pack": "milk", "attr": "A+", "searchPrefix": "0401" },
+      "mustNotPack": ["pantry-sweet"],
+      "live": true
+    },
+    {
+      "id": "reg.sneakers",
+      "query": "кеды",
+      "phase": "Cov-P12",
+      "expected": { "pack": "footwear", "attr": "A+", "searchPrefix": "6404" },
+      "mustNotPack": ["knit-top"],
+      "live": true
+    },
+    {
+      "id": "reg.laptop",
+      "query": "ноутбук",
+      "phase": "Cov-P12",
+      "expected": { "pack": "computers", "attr": "A+", "searchPrefix": "8471" },
+      "mustNotPack": ["pc-parts"],
+      "live": true
+    },
+    {
+      "id": "reg.cap",
+      "query": "кепка",
+      "phase": "Cov-P12",
+      "expected": { "pack": "headgear", "attr": "A+", "searchPrefix": "6505" },
+      "mustNotPack": [],
+      "live": true
+    },
+    {
+      "id": "policy.wire",
+      "query": "провод",
+      "phase": "Cov-P10",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": null },
+      "mustNotPack": ["electrical-install", "power"],
+      "notes": "POLICY bare ambiguous"
+    },
+    {
+      "id": "policy.camera",
+      "query": "камера",
+      "phase": "Cov-P10",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": null },
+      "mustNotPack": ["photo-gear", "security-cam"],
+      "notes": "POLICY bare ambiguous"
+    },
+    {
+      "id": "policy.filter",
+      "query": "фильтр",
+      "phase": "Cov-P10",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": null },
+      "mustNotPack": ["auto-parts"],
+      "notes": "POLICY bare ambiguous"
+    },
+    {
+      "id": "policy.candle",
+      "query": "свеча",
+      "phase": "Cov-P10",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": null },
+      "mustNotPack": [],
+      "notes": "POLICY bare ambiguous"
+    },
+    {
+      "id": "policy.pepper",
+      "query": "перец",
+      "phase": "Cov-P10",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": null },
+      "mustNotPack": ["produce-fresh", "spices"],
+      "notes": "POLICY bare — сладкий перец vs чёрный"
+    },
+    {
+      "id": "policy.cat",
+      "query": "кот",
+      "phase": "Cov-P0",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": null },
+      "mustNotPack": ["pet-food", "pet-accessories"],
+      "notes": "POLICY live animals"
+    },
+    {
+      "id": "policy.plantmilk",
+      "query": "рисовое молоко",
+      "phase": "Cov-P11",
+      "expected": { "pack": null, "attr": "A0", "searchPrefix": null },
+      "mustNotPack": ["milk", "grains-pasta"],
+      "notes": "plant dairy ≠ milk; cascade mustNot 1006"
+    }
+  ]
+}
