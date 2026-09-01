@@ -138,6 +138,7 @@ Online probes цепочки: `npm run probe:ai-chain` → `tmp/chain-probes-*.j
 ### Cov — hint coverage expansion (P7–P12) · 2026-09-01
 
 Канон: [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md). **78 packs** после merge стека #50–#56.  
+Прогон: [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (G0–G6).  
 Offline pre-flight: `npx vitest run src/lib/ved/__tests__/hint-coverage-p12.test.ts` · `npm run probe:hint-gap -- --live` · `npm run probe:hint-gap:full`.
 
 | # | Проверка | Ожидание | Результат |

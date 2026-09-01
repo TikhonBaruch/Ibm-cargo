@@ -1,7 +1,8 @@
 # План: расширенный охват подсказок (Cov-P7+) — проход, словарь, выявление ошибок
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** **Cov-P0…P11** done (#50–#55) · **Cov-P12** (this PR). **78 packs.**
+**Статус:** **Cov-P0…P11** done (#50–#55) · **Cov-P12** (this PR). **78 packs.**  
+**Следующий прогон / residual:** [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (G0–G6 · Cov-P13+).  
 **Канон:** [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6, 53 packs) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) (precision P0–P7) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) (слои H1–H5).
 
 ---
@@ -330,7 +331,8 @@ npm run probe:hint-gap -- --full --source plan-s7 --format summary
 | [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) | must-not matrix; не дублировать P7 trigger policy |
 | [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) | ATTR-GAP / H1 orphan UI |
 | [`staging.md`](./staging.md) | §Cov live V8 |
-| [`testing-branches.md`](./testing-branches.md) | `test:hint-coverage` script (future) |
+| [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) | прогон golden/`--full` · residual Cov-P13+ |
+| [`testing-branches.md`](./testing-branches.md) | `test:hint-coverage` · `probe:hint-gap[:full]` |
 | [`current-app.md`](./current-app.md) | pack count после каждой фазы |
 
 ---
@@ -491,5 +493,7 @@ Precision-блок **100%** pack-hit by construction — знаменатель 
 **MISS (50, residual next cycle):** вафли/торт · курица · шампанское · кола/мин.вода · мороженое/пельмени/пицца · галстук/ремень/пижама/халат/плащ/хлопок · полка/стол/лампа/полотенце/посуда/контейнер/вешалка · микрофон/модем/свитч/переходник/кабель/саундбар/steam deck · свечи зажигания/шланг/диск тормозной/колесо · лыжи/коньки/ролики/ракетка · труба/арматура · фломастер/бусы/кулон/гармонь · бумага туалетная.
 
 Apparel MISS частично закрыт ATTR (носки/колготки/куртка/платье/перчатки…) — в any-help.
+
+**План следующего прогона / triage MISS → Cov-P13+:** [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md).
 
 Live H5–H7: human post-merge on prod/preview — agent cannot SSO.
