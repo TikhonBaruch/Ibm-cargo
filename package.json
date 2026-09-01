@@ -18,7 +18,7 @@
     "test:unit": "vitest run src",
     "test:classify-cascade": "vitest run src/lib/ved/__tests__/classify-cascade.fixture.test.ts src/lib/ved/__tests__/tnved-classify.test.ts",
     "test:tnved-morphology": "vitest run src/lib/ved/__tests__/tnved-search-morphology.test.ts src/components/ved/client/__tests__/critical-hs-queries.test.ts",
-    "test:hint-precision": "vitest run src/lib/ved/__tests__/hint-pack-precision.test.ts",
+    "test:hint-precision": "vitest run src/lib/ved/__tests__/hint-pack-precision.test.ts src/lib/ved/__tests__/hint-short-triggers.test.ts",
     "test:e2e": "RUN_E2E=1 vitest run --config vitest.e2e.config.ts",
     "test:integration": "RUN_DB_INTEGRATION=1 vitest run --config vitest.integration.config.ts",
     "test:structure": "node scripts/verify-structure.cjs",

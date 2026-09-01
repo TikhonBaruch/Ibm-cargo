@@ -3,7 +3,14 @@
  * JSON filename must not match this module (CJS would load the .json).
  */
 import overlayJson from "./tnved-hint-tree-packs.json";
-import { isPlantDairyQuery, isPointerDeviceQuery, isJuiceOrBeverageQuery, isPreparedMealQuery } from "./tnved-query-match";
+import {
+  normalizeTnvedQueryText,
+  packTriggerMatches,
+  isPlantDairyQuery,
+  isPointerDeviceQuery,
+  isJuiceOrBeverageQuery,
+  isPreparedMealQuery,
+} from "./tnved-query-match";
 
 export type HintTreeOption = {
   id: string;
@@ -32,30 +39,12 @@ type OverlayFile = { asOf?: string; packs: OverlayPack[] };
 
 const overlay = overlayJson as OverlayFile;
 
-function escapeRe(s: string) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function normalize(s: string) {
-  return String(s || "")
-    .toLowerCase()
-    .replace(/ё/g, "е");
-}
-
-function matches(desc: string, raw: string) {
-  const q = normalize(desc);
-  const p = normalize(raw).trim();
-  if (!p) return false;
-  if (p.length <= 3) {
-    return new RegExp(`(?:^|[^a-zа-я0-9])${escapeRe(p)}(?:$|[^a-zа-я0-9])`, "i").test(q);
-  }
-  return q.includes(p);
-}
-
 function scoreKeys(desc: string, keys: string[]) {
   let score = 0;
   for (const k of keys) {
-    if (matches(desc, k)) score += Math.min(normalize(k).length, 10);
+    if (packTriggerMatches(desc, k)) {
+      score += Math.min(normalizeTnvedQueryText(k).trim().length, 10);
+    }
   }
   return score;
 }
