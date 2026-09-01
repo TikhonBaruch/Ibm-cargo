@@ -137,3 +137,63 @@ describe("block C critical HS regression", () => {
     expect(hit!.alias.code.replace(/\D/g, "").startsWith(prefix)).toBe(true);
   });
 });
+
+describe("P3 produce cascade + search false-friend clothing", () => {
+  it.each([
+    ["маринованные огурцы", "2001"],
+    ["корнишоны", "2001"],
+    ["огурцы в рассоле", "0711"],
+    ["огурцы свежие", "0707"],
+  ] as const)("cascade alias %s → %s", (q, prefix) => {
+    const hit = matchClassifyAlias(q);
+    expect(hit, q).toBeTruthy();
+    expect(hit!.alias.code.replace(/\D/g, "").startsWith(prefix)).toBe(true);
+  });
+
+  it("огурец cascade is not apparel 61 / milk 0403 / headgear 65", () => {
+    const hit = matchClassifyAlias("огурец");
+    const digits = hit!.alias.code.replace(/\D/g, "");
+    expect(digits.startsWith("0707")).toBe(true);
+    expect(digits.startsWith("61") || digits.startsWith("0403") || digits.startsWith("65")).toBe(
+      false,
+    );
+  });
+
+  it("search: огурец scores produce title above футболка / майка rows", () => {
+    const stems = tnvedSearchStems("огурец");
+    const q = { stems, digits: "", phrase: "огурец" };
+    const produce = scoreTnvedSearchHit(
+      {
+        code: "0707009001",
+        titleRu: "Огурцы",
+        notes: "огурцы свежие охлаждённые",
+        isLeaf: true,
+        level: 10,
+      },
+      q,
+    );
+    const tee = scoreTnvedSearchHit(
+      {
+        code: "6109100000",
+        titleRu: "Футболки",
+        notes: "майки, футболки трикотажные",
+        isLeaf: true,
+        level: 10,
+      },
+      q,
+    );
+    const tank = scoreTnvedSearchHit(
+      {
+        code: "6109100000",
+        titleRu: "Майки",
+        notes: "майка хлопок",
+        isLeaf: true,
+        level: 10,
+      },
+      q,
+    );
+    expect(produce).toBeGreaterThan(tee);
+    expect(produce).toBeGreaterThan(tank);
+    expect(tee).toBeLessThan(40);
+  });
+});
