@@ -60,10 +60,11 @@
 | Артефакт | Путь | Назначение |
 |----------|------|------------|
 | Master probe dictionary | `src/lib/ved/__tests__/hint-coverage-probe-dictionary.json` | все фазы × queries × expected |
+| Full household corpus | `src/lib/ved/__tests__/hint-coverage-full-corpus.json` | observe `--full` (~516 unique; §7 + precision) |
 | Phase fixtures | `hint-coverage-p7.fixture.json` … | ≥3 pos / ≥5 mustNot на pack |
 | Phase tests | `hint-coverage-p7.test.ts` … | vitest per phase |
 | Miss-log | секция в этом плане + PR notes | STEAL/MISROUTE до fix |
-| Gap probe script | `scripts/hint-gap-probe.ts` | offline batch: pack/attr/search |
+| Gap probe script | `scripts/hint-gap-probe.ts` | offline batch: pack/attr/search; `--full` observe |
 
 **Формат строки словаря:**
 
@@ -308,9 +309,11 @@ npm run test:tnved-morphology
 npm run test:classify-cascade
 npm run test:ci
 
-# Gap probe (после добавления scripts/hint-gap-probe.mjs)
-node scripts/hint-gap-probe.mjs --phase all --format table
-node scripts/hint-gap-probe.mjs --phase Cov-P7 --fail-on steal,misroute
+# Gap probe
+npm run probe:hint-gap -- --phase all --format table
+npm run probe:hint-gap -- --phase Cov-P7 --fail-on steal,misroute
+npm run probe:hint-gap:full
+npm run probe:hint-gap -- --full --source plan-s7 --format summary
 
 # Live (post-merge)
 # /cabinet/new → probe queries → chips + hsHint
@@ -443,8 +446,10 @@ Unit: `hint-coverage-p11.test.ts` (68 asserts). Cascade golden **35** families �
 | Artifact | Detail |
 |----------|--------|
 | Master dictionary | `hint-coverage-probe-dictionary.json` — **50** rows (P+/A+/A~/S+/POLICY) |
-| Gap probe | `scripts/hint-gap-probe.ts` · `npm run probe:hint-gap` |
+| Gap probe | `scripts/hint-gap-probe.ts` · `npm run probe:hint-gap` · `npm run probe:hint-gap:full` |
 | Unit | `hint-coverage-p12.test.ts` — pack/attr/cascade dictionary + closed STEAL matrix |
+| Full corpus | `hint-coverage-full-corpus.json` — **516** unique (386 plan-s7 + 130 precision positives) |
+| Builder | `scripts/build-full-corpus.py` (regenerate JSON) |
 | Staging | [`staging.md`](./staging.md) §Cov H1–H7 live checklist |
 | Cascade extras | лимонад/кофемашина/автокресло/сливочное/подсолнечное/суп/перчатки; wheelchair→8713 ≠8715 |
 | Scripts | `npm run test:hint-coverage` |
@@ -467,5 +472,24 @@ Unit: `hint-coverage-p11.test.ts` (68 asserts). Cascade golden **35** families �
 #### Residual POLICY (not bugs)
 
 `провод` · `камера` · `фильтр` · `свеча` · `перец` · `кот`/`собака` · plant «рисовое молоко» ≠ milk · `куртка`/`платье` = attr-path (no pack).
+
+#### Full observe probe (2026-09-01)
+
+Команда: `npm run probe:hint-gap:full` (observe, не golden). `--fail-on steal,misroute` остаётся на 50-row dictionary.
+
+| Срез | n | denom (без POLICY) | pack-hit | any-help | miss | diverge |
+|------|---|--------------------|----------|----------|------|---------|
+| plan-s7 household | 386 | 376 | **80.9%** (304) | **86.7%** (326) | 50 (13.3%) | 2 |
+| + precision positives | 516 | 506 | 85.8% (434) | 90.1% (456) | 50 | 2 |
+
+Precision-блок **100%** pack-hit by construction — знаменатель покрытия = **plan-s7**. Это сжатая карта §7 (примеры, под которые писали packs), не traffic-weighted prod sample.
+
+**DIVERGE (observe, не fail):** `шкаф` → `furniture` (want `bedroom-furniture`, sibling) · `коврик йога` → `rugs` (want `sports`).
+
+**POLICY-HIT:** `ореховое молоко` → milk (plant-dairy regex покрывает рисовое/соевое/овсяное/миндальное/кокосовое, не общее «ореховое»).
+
+**MISS (50, residual next cycle):** вафли/торт · курица · шампанское · кола/мин.вода · мороженое/пельмени/пицца · галстук/ремень/пижама/халат/плащ/хлопок · полка/стол/лампа/полотенце/посуда/контейнер/вешалка · микрофон/модем/свитч/переходник/кабель/саундбар/steam deck · свечи зажигания/шланг/диск тормозной/колесо · лыжи/коньки/ролики/ракетка · труба/арматура · фломастер/бусы/кулон/гармонь · бумага туалетная.
+
+Apparel MISS частично закрыт ATTR (носки/колготки/куртка/платье/перчатки…) — в any-help.
 
 Live H5–H7: human post-merge on prod/preview — agent cannot SSO.

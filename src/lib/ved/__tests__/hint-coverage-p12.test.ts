@@ -91,6 +91,26 @@ describe("Cov-P12 — live subset marked", () => {
   });
 });
 
+describe("Cov-P12 — full household corpus (observe, not golden)", () => {
+  const corpus = JSON.parse(
+    readFileSync(path.join(__dirname, "hint-coverage-full-corpus.json"), "utf8"),
+  ) as {
+    rows: Array<{ query: string; source: string; policy: boolean; wantPack: string | null }>;
+  };
+
+  it("has ≥380 unique household+precision queries", () => {
+    const keys = new Set(corpus.rows.map((r) => r.query.toLowerCase()));
+    expect(corpus.rows.length).toBeGreaterThanOrEqual(380);
+    expect(keys.size).toBe(corpus.rows.length);
+  });
+
+  it("plan-s7 household block is the coverage denominator", () => {
+    const household = corpus.rows.filter((r) => r.source === "plan-s7");
+    expect(household.length).toBeGreaterThanOrEqual(350);
+    expect(household.filter((r) => r.policy).length).toBeGreaterThanOrEqual(8);
+  });
+});
+
 describe("Cov-P12 — miss-log regressions (closed STEAL)", () => {
   it.each([
     ["лимонад", "beverages", "fruit-fresh"],
