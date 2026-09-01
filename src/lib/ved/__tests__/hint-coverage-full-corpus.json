@@ -1784,7 +1784,7 @@
       "query": "переходник",
       "domain": "elec",
       "source": "plan-s7",
-      "policy": false,
+      "policy": true,
       "wantPack": null
     },
     {
@@ -1792,7 +1792,7 @@
       "query": "кабель",
       "domain": "elec",
       "source": "plan-s7",
-      "policy": false,
+      "policy": true,
       "wantPack": null
     },
     {
@@ -2216,7 +2216,7 @@
       "query": "шланг",
       "domain": "auto",
       "source": "plan-s7",
-      "policy": false,
+      "policy": true,
       "wantPack": null
     },
     {
