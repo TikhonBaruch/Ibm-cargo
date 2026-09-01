@@ -26,6 +26,7 @@ import {
   isTextilesRawQuery,
   isWheelchairQuery,
   isYogaMatQuery,
+  isFinishedApparelQuery,
 } from "./tnved-query-match";
 
 export type HintTreeOption = {
@@ -88,6 +89,7 @@ export function matchHintPack(desc: string): OverlayPack | null {
   const textilesRaw = isTextilesRawQuery(text);
   const wheelchair = isWheelchairQuery(text);
   const yogaMat = isYogaMatQuery(text);
+  const finishedApparel = isFinishedApparelQuery(text);
   let best: OverlayPack | null = null;
   let bestScore = 0;
   for (const pack of overlay.packs || []) {
@@ -118,6 +120,7 @@ export function matchHintPack(desc: string): OverlayPack | null {
     if (gamingConsole && pack.id === "toys") continue;
     if (agriFeed && pack.id === "pet-food") continue;
     if (textilesRaw && (pack.id === "knit-top" || pack.id === "woven-apparel")) continue;
+    if (finishedApparel && pack.id === "textiles-raw") continue;
     if (wheelchair && pack.id === "baby-gear") continue;
     // Cov-P13: yoga mat ≠ rugs; wardrobe шкаф → bedroom-furniture (not seating furniture).
     if (yogaMat && pack.id === "rugs") continue;
