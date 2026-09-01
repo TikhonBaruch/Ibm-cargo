@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import overlay from "../tnved-hint-tree-packs.json";
 import {
   hintTreeFocusCodes,
+  hintTreeHeadingForAnswer,
   hintTreeQuestions,
   matchHintPack,
 } from "../tnved-hint-trees";
@@ -48,5 +49,18 @@ describe("C21 TNVED hint trees", () => {
     const qs = hintTreeQuestions("кепка");
     expect(qs[0].options.find((o) => o.id === "cap")?.hsHeading).toBe("6505003000");
     expect(qs[0].options.find((o) => o.id === "hat")?.hsHeading).toBe("6505009000");
+  });
+
+  it("P2: hintTreeHeadingForAnswer maps produce fork by option id/value/label", () => {
+    expect(hintTreeHeadingForAnswer("огурец", "tnved-form", "fresh")).toBe("0707");
+    expect(hintTreeHeadingForAnswer("огурец", "tnved-form", "preserved")).toBe("0711");
+    expect(hintTreeHeadingForAnswer("огурец", "tnved-form", "prepared")).toBe("2001");
+    expect(
+      hintTreeHeadingForAnswer("огурец", "tnved-form", "овощи готовые консервы"),
+    ).toBe("2001");
+    expect(
+      hintTreeHeadingForAnswer("огурец", "tnved-form", "Готовые / консервы"),
+    ).toBe("2001");
+    expect(hintTreeHeadingForAnswer("майка", "tnved-form", "fresh")).not.toBe("0707");
   });
 });

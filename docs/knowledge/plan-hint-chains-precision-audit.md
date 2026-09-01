@@ -1,7 +1,7 @@
 # План: проверка точности цепочек подсказок (все packs, max precision)
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0/P1/P5** on main (#37/#38) · **P4+P6** #41 · **P2** #39 · **P3** (this PR #40) · **P7** open.  
+**Статус:** **P0/P1/P5** on main (#37/#38) · **P4+P6** #41 · **P2** (this PR #39) · **P3** #40 · **P7** open.  
 Канон: [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) (H0–H5) · [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) · [`plan-c35-offline-first-hs.md`](./plan-c35-offline-first-hs.md) · [`staging.md`](./staging.md) §P6 · D15 / D27 / D32.
 
 Связанный страх продукта: запрос **«огурец»** снова тянет **одежду / молоко / чужой pack**; при этом огурец бывает **свежий** или **маринованный/консервы**.
@@ -114,8 +114,8 @@ Ownership: Core (`tnved-hint-trees`, morph, cascade) + Client clarify apply. UI 
 |----|-----|-----------|--------|
 | **P0** | Этот план + ссылки в README / morph audit | merged docs | **done** (#37) |
 | **P1** | Fixture `hint-pack-precision.json` + vitest: все packs × pos/neg | 100% на golden | **done** (#38) |
-| **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | PR #39 |
-| **P3** | Search + cascade rows для маринованных / корнишонов; false-friend одежда | unit green | **done** (this PR #40) |
+| **P2** | Produce fork apply unit (свежий/рассол/маринад → 0707/0711/2001) | 3 asserts | **done** (this PR #39) |
+| **P3** | Search + cascade rows для маринованных / корнишонов; false-friend одежда | unit green | **done** (#40) |
 | **P4** | Attr-suggest: produce RULE **clarify-only** + test | нет silent generic на «огурец» | **done** (#41) |
 | **P5** | `npm run test:hint-precision` в CI рядом с morphology | script + docs | **done** (#38) |
 | **P6** | Live checklist staging (NewCalc + search) | PASS notes in staging.md | **done** (#41; H6 post-merge) |
@@ -126,14 +126,15 @@ Ownership: Core (`tnved-hint-trees`, morph, cascade) + Client clarify apply. UI 
 ## 7. Проверка (команды)
 
 ```bash
-# P1–P3
+# P1–P2 (this PR) / P3 (#40)
 npm run test:hint-precision
-npm run test:tnved-morphology
+npx vitest run src/components/ved/client/__tests__/new-calc-clarify.test.ts
 npx vitest run src/lib/ved/__tests__/tnved-hint-trees.test.ts
+npm run test:tnved-morphology
 npm run test:classify-cascade
 npm run test:ci
 
-# live (P6)
+# live (P6, #41)
 # /cabinet/new → «огурец» → chips 0707/0711/2001; не майка/йогурт
 # search «огурец» → 07xx; «йогурт» → 0403
 ```
@@ -165,7 +166,11 @@ npm run test:ci
 
 ---
 
-### P3 notes (this PR #40)
+### P2 notes (this PR #39)
+
+- `new-calc-clarify` apply path: fresh → **0707**, preserved → **0711**, prepared → **2001**; no apparel/dairy steal on apply.
+
+### P3 notes (#40)
 
 - Cascade + search rows: маринованные огурцы / корнишоны → **2001**; false-friend apparel queries stay non-produce.
 - `critical-hs-queries` + `classify-cascade` fixture extended; `tnved-invoice-aliases.json` produce variants.
@@ -185,8 +190,8 @@ npm run test:ci
 ## 10. Следующий шаг
 
 1. ~~P0/P1/P5~~ **done** (#37/#38).  
-2. Merge **P2** [#39](https://github.com/TikhonBaruch/Ibm-cargo/pull/39) if still open.  
-3. Merge this PR **P3** [#40](https://github.com/TikhonBaruch/Ibm-cargo/pull/40).  
+2. Merge this PR **P2** [#39](https://github.com/TikhonBaruch/Ibm-cargo/pull/39).  
+3. Merge **P3** [#40](https://github.com/TikhonBaruch/Ibm-cargo/pull/40) if still open.  
 4. ~~P4+P6~~ **done** (#41); H6 live attr-suggest on prod post-merge.  
 5. Optional **P7** short triggers (`лук`).
 
