@@ -1,7 +1,7 @@
 # Plan: Hint coverage P0–P6
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0–P6 on main** · **Cov-P0…P9** (this stack). **78 packs.**  
+**Статус:** **P0–P6 on main** · **Cov-P0…P10** (this stack). **78 packs.**  
 **Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md).
 
 ## Сделано
@@ -77,6 +77,7 @@ C10 sections closed. **Cov-P0** fixes 4 WRONG steals (лимонад, кофем
 ```bash
 npx vitest run src/lib/ved/__tests__/hint-coverage-p*.test.ts
 npx vitest run src/lib/ved/__tests__/hint-coverage-baseline.test.ts
+npx vitest run src/lib/ved/__tests__/hint-coverage-p10.test.ts
 npm run test:hint-precision
 npm run test:ci
 ```
