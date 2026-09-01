@@ -20,6 +20,11 @@ import {
   isMotorOilQuery,
   isPcPartsQuery,
   isPhotoGearQuery,
+  isVapeDeviceQuery,
+  isGamingConsoleQuery,
+  isAgriFeedQuery,
+  isTextilesRawQuery,
+  isWheelchairQuery,
 } from "./tnved-query-match";
 
 export type HintTreeOption = {
@@ -76,6 +81,11 @@ export function matchHintPack(desc: string): OverlayPack | null {
   const motorOil = isMotorOilQuery(text);
   const pcParts = isPcPartsQuery(text);
   const photoGear = isPhotoGearQuery(text);
+  const vapeDevice = isVapeDeviceQuery(text);
+  const gamingConsole = isGamingConsoleQuery(text);
+  const agriFeed = isAgriFeedQuery(text);
+  const textilesRaw = isTextilesRawQuery(text);
+  const wheelchair = isWheelchairQuery(text);
   let best: OverlayPack | null = null;
   let bestScore = 0;
   for (const pack of overlay.packs || []) {
@@ -100,6 +110,12 @@ export function matchHintPack(desc: string): OverlayPack | null {
     if (pcParts && pack.id === "computers") continue;
     if (photoGear && pack.id === "security-cam") continue;
     if (coffeeMachine && pack.id === "small-appliances" && /кофемаш/i.test(text)) continue;
+    // Cov-P9 long-tail disambiguation.
+    if (vapeDevice && pack.id === "tobacco") continue;
+    if (gamingConsole && pack.id === "toys") continue;
+    if (agriFeed && pack.id === "pet-food") continue;
+    if (textilesRaw && (pack.id === "knit-top" || pack.id === "woven-apparel")) continue;
+    if (wheelchair && pack.id === "baby-gear") continue;
     const score = scoreKeys(text, pack.triggers || []);
     if (score > bestScore) {
       best = pack;
