@@ -362,7 +362,7 @@ Agent cannot merge.
 | лимонад | fruit-fresh | beverages | `isJuiceOrBeverageQuery` + trigger `лимонад` |
 | кофемашина | tea-coffee | appliances | guard + `SHORT_TRIGGER_FALSE_FRIENDS` кофе/кофемаш |
 | автокресло | furniture | baby | `isCarSeatQuery` guard + trigger `автокрес` |
-| стиральный порошок | appliances | null | `isLaundryDetergentQuery` guard (cleaning pack → Cov-P8) |
+| стиральный порошок | appliances | **cleaning** (Cov-P8; was null in Cov-P0) | `isLaundryDetergentQuery` + cleaning pack |
 
 Unit: `hint-coverage-baseline.test.ts` (13 asserts).
 
