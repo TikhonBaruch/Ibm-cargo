@@ -634,7 +634,13 @@
         "парфюм",
         "skincare",
         "perfume",
-        "化妆品"
+        "化妆品",
+        "помад",
+        "шампун",
+        "тушь",
+        "тональн",
+        "lipstick",
+        "shampoo"
       ],
       "skipQuestionIds": [
         "kind"
@@ -668,6 +674,30 @@
               "парфюм",
               "туалетная вода",
               "perfume"
+            ]
+          },
+          {
+            "id": "makeup",
+            "label": "Декоративная косметика",
+            "value": "помада тушь тональный",
+            "hsHeading": "3304",
+            "why": "3304 — средства для макияжа.",
+            "triggers": [
+              "помад",
+              "тушь",
+              "тональн",
+              "lipstick"
+            ]
+          },
+          {
+            "id": "hair",
+            "label": "Шампунь / уход за волосами",
+            "value": "шампунь",
+            "hsHeading": "3305",
+            "why": "3305 — средства для волос.",
+            "triggers": [
+              "шампун",
+              "shampoo"
             ]
           }
         ]
@@ -773,7 +803,11 @@
         "консоль",
         "playstation",
         "nintendo",
-        "steam deck"
+        "steam deck",
+        "лего",
+        "lego",
+        "пазл",
+        "puzzle"
       ],
       "skipQuestionIds": [
         "kind"
@@ -1823,6 +1857,836 @@
               "гербицид",
               "пестицид",
               "инсектицид"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "personal-care",
+      "triggers": [
+        "мыло",
+        "зубн паст",
+        "зубная паста",
+        "toothpaste",
+        "soap",
+        "гель для душа",
+        "дезодорант"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Средство гигиены?",
+        "hint": "Мыло 3401; зубные пасты 3306.",
+        "options": [
+          {
+            "id": "soap",
+            "label": "Мыло",
+            "value": "мыло",
+            "hsHeading": "3401",
+            "why": "3401 — мыло.",
+            "triggers": [
+              "мыло",
+              "soap",
+              "гель для душа"
+            ]
+          },
+          {
+            "id": "toothpaste",
+            "label": "Зубная паста",
+            "value": "зубная паста",
+            "hsHeading": "3306",
+            "why": "3306 — средства для гигиены полости рта.",
+            "triggers": [
+              "зубн",
+              "toothpaste"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "baby",
+      "triggers": [
+        "подгузник",
+        "памперс",
+        "diaper",
+        "nappy",
+        "детск подгуз"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Детские расходники?",
+        "hint": "Подгузники — 9619.",
+        "options": [
+          {
+            "id": "diaper",
+            "label": "Подгузники",
+            "value": "подгузники",
+            "hsHeading": "9619",
+            "why": "9619 — подгузники и аналогичные изделия.",
+            "triggers": [
+              "подгузник",
+              "памперс",
+              "diaper",
+              "nappy"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tools",
+      "triggers": [
+        "дрель",
+        "молоток",
+        "отвёртк",
+        "отвертк",
+        "шуруповёрт",
+        "шуруповерт",
+        "инструмент ручн",
+        "hammer",
+        "drill"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Какой инструмент?",
+        "hint": "Ручной инструмент — 8205; электроинструмент — 8467.",
+        "options": [
+          {
+            "id": "hand",
+            "label": "Молоток / отвёртка",
+            "value": "ручной инструмент",
+            "hsHeading": "8205",
+            "why": "8205 — ручные инструменты.",
+            "triggers": [
+              "молоток",
+              "отвёртк",
+              "отвертк",
+              "hammer"
+            ]
+          },
+          {
+            "id": "power-tool",
+            "label": "Дрель / шуруповёрт",
+            "value": "электроинструмент",
+            "hsHeading": "8467",
+            "why": "8467 — инструменты с собственным двигателем.",
+            "triggers": [
+              "дрель",
+              "шуруповёрт",
+              "шуруповерт",
+              "drill"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cookware",
+      "triggers": [
+        "кастрюл",
+        "сковород",
+        "сотейник",
+        "посуда кухон",
+        "teapot metal",
+        "frying pan",
+        "saucepan"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Кухонная посуда?",
+        "hint": "Кастрюли/сковороды часто 7323 (сталь) или 7615 (алюминий).",
+        "options": [
+          {
+            "id": "steel",
+            "label": "Кастрюля / сковорода (металл)",
+            "value": "металлическая кухонная посуда",
+            "hsHeading": "7323",
+            "why": "7323 — столовая/кухонная посуда из чёрных металлов.",
+            "triggers": [
+              "кастрюл",
+              "сковород",
+              "сотейник",
+              "frying pan",
+              "saucepan"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tableware",
+      "triggers": [
+        "тарелка",
+        "тарелки",
+        "чашка",
+        "кружка",
+        "столовая посуда",
+        "посуда столов",
+        "plate",
+        "mug"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Столовая посуда?",
+        "hint": "Керамика 6911/6912; стекло 7013.",
+        "options": [
+          {
+            "id": "ceramic",
+            "label": "Тарелка / чашка",
+            "value": "столовая посуда",
+            "hsHeading": "6912",
+            "why": "6912 — керамическая столовая и кухонная посуда.",
+            "triggers": [
+              "тарелка",
+              "тарелки",
+              "чашка",
+              "кружка",
+              "plate",
+              "mug"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "batteries",
+      "triggers": [
+        "батарейк",
+        "батарея",
+        "аккумулятор",
+        "battery",
+        "аккумуляторн батар"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Батарея / аккумулятор?",
+        "hint": "Гальванические элементы — 8506; аккумуляторы — 8507. Не путать с power bank.",
+        "options": [
+          {
+            "id": "cell",
+            "label": "Батарейка",
+            "value": "батарейка",
+            "hsHeading": "8506",
+            "why": "8506 — первичные элементы и батареи.",
+            "triggers": [
+              "батарейк",
+              "батарея",
+              "battery"
+            ]
+          },
+          {
+            "id": "accum",
+            "label": "Аккумулятор",
+            "value": "аккумулятор",
+            "hsHeading": "8507",
+            "why": "8507 — электрические аккумуляторы.",
+            "triggers": [
+              "аккумулятор"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "networking",
+      "triggers": [
+        "роутер",
+        "маршрутизатор",
+        "router",
+        "wi-fi роутер",
+        "wifi роутер",
+        "коммутатор сетев",
+        "switch сетев"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Сетевое оборудование?",
+        "hint": "Маршрутизаторы — 8517.",
+        "options": [
+          {
+            "id": "router",
+            "label": "Роутер / маршрутизатор",
+            "value": "роутер",
+            "hsHeading": "8517",
+            "why": "8517 — аппаратура для связи.",
+            "triggers": [
+              "роутер",
+              "маршрутизатор",
+              "router",
+              "wi-fi",
+              "wifi"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "home-textiles",
+      "triggers": [
+        "одеяло",
+        "подушка",
+        "постельн",
+        "простын",
+        "пододеяльник",
+        "blanket",
+        "pillow",
+        "bedding"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Домашний текстиль?",
+        "hint": "Одеяла 9404; постельное бельё 6302.",
+        "options": [
+          {
+            "id": "blanket",
+            "label": "Одеяло / подушка",
+            "value": "одеяло или подушка",
+            "hsHeading": "9404",
+            "why": "9404 — матрацы, одеяла, подушки.",
+            "triggers": [
+              "одеяло",
+              "подушка",
+              "blanket",
+              "pillow"
+            ]
+          },
+          {
+            "id": "bedding",
+            "label": "Постельное бельё",
+            "value": "постельное бельё",
+            "hsHeading": "6302",
+            "why": "6302 — бельё постельное.",
+            "triggers": [
+              "постельн",
+              "простын",
+              "пододеяльник",
+              "bedding"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rugs",
+      "triggers": [
+        "ковёр",
+        "ковер",
+        "коврик",
+        "carpet",
+        "rug",
+        "палас"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Ковёр / коврик?",
+        "hint": "Ковры — 5702/5703.",
+        "options": [
+          {
+            "id": "carpet",
+            "label": "Ковёр / коврик",
+            "value": "ковёр",
+            "hsHeading": "5703",
+            "why": "5703 — ковры и прочие текстильные напольные покрытия.",
+            "triggers": [
+              "ковёр",
+              "ковер",
+              "коврик",
+              "carpet",
+              "rug"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "sports",
+      "triggers": [
+        "мяч",
+        "гантел",
+        "гантель",
+        "тренажёр",
+        "тренажер",
+        "спорт инвентар",
+        "dumbbell",
+        "football",
+        "soccer ball"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Спорт инвентарь?",
+        "hint": "Мячи 9506; гантели часто 9506.",
+        "options": [
+          {
+            "id": "ball",
+            "label": "Мяч",
+            "value": "мяч",
+            "hsHeading": "9506",
+            "why": "9506 — изделия и оборудование для спорта.",
+            "triggers": [
+              "мяч",
+              "football",
+              "soccer"
+            ]
+          },
+          {
+            "id": "weights",
+            "label": "Гантели / тренажёр",
+            "value": "гантели",
+            "hsHeading": "9506",
+            "why": "9506 — спортинвентарь.",
+            "triggers": [
+              "гантел",
+              "гантель",
+              "тренажёр",
+              "тренажер",
+              "dumbbell"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "camping",
+      "triggers": [
+        "палатк",
+        "спальный мешок",
+        "спальник",
+        "tent",
+        "sleeping bag",
+        "турист палат"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Туризм / кемпинг?",
+        "hint": "Палатки 6306; спальники 9404.",
+        "options": [
+          {
+            "id": "tent",
+            "label": "Палатка",
+            "value": "палатка",
+            "hsHeading": "6306",
+            "why": "6306 — палатки.",
+            "triggers": [
+              "палатк",
+              "tent"
+            ]
+          },
+          {
+            "id": "sleeping-bag",
+            "label": "Спальный мешок",
+            "value": "спальный мешок",
+            "hsHeading": "9404",
+            "why": "9404 — спальные мешки.",
+            "triggers": [
+              "спальный мешок",
+              "спальник",
+              "sleeping bag"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "umbrellas",
+      "triggers": [
+        "зонт",
+        "зонтик",
+        "umbrella",
+        "parasol"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Зонт?",
+        "hint": "Зонты — 6601.",
+        "options": [
+          {
+            "id": "umbrella",
+            "label": "Зонт",
+            "value": "зонт",
+            "hsHeading": "6601",
+            "why": "6601 — зонты и солнцезащитные зонты.",
+            "triggers": [
+              "зонт",
+              "зонтик",
+              "umbrella",
+              "parasol"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "optics",
+      "triggers": [
+        "очки",
+        "очков",
+        "солнцезащитн очк",
+        "линза очков",
+        "spectacles",
+        "sunglasses",
+        "eyeglasses"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Очки?",
+        "hint": "Очки — 9004.",
+        "options": [
+          {
+            "id": "glasses",
+            "label": "Очки / солнцезащитные",
+            "value": "очки",
+            "hsHeading": "9004",
+            "why": "9004 — очки и подобные.",
+            "triggers": [
+              "очки",
+              "очков",
+              "sunglasses",
+              "spectacles",
+              "eyeglasses"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "med-disposables",
+      "triggers": [
+        "шприц",
+        "бинт",
+        "пластыр",
+        "медицинск маск",
+        "syringe",
+        "bandage",
+        "gauze"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Медрасходники?",
+        "hint": "Шприцы 9018; бинты/марля 3005.",
+        "options": [
+          {
+            "id": "syringe",
+            "label": "Шприц",
+            "value": "шприц",
+            "hsHeading": "9018",
+            "why": "9018 — шприцы и инструменты.",
+            "triggers": [
+              "шприц",
+              "syringe"
+            ]
+          },
+          {
+            "id": "bandage",
+            "label": "Бинт / пластырь",
+            "value": "бинт",
+            "hsHeading": "3005",
+            "why": "3005 — вата, марля, бинты.",
+            "triggers": [
+              "бинт",
+              "пластыр",
+              "bandage",
+              "gauze"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "pet-accessories",
+      "triggers": [
+        "ошейник",
+        "поводок",
+        "наполнитель для лотка",
+        "лоток для кош",
+        "collar",
+        "leash",
+        "cat litter"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Аксессуары для животных?",
+        "hint": "Ошейники/поводки 4201; наполнители часто 2508/3824. Не живые животные.",
+        "options": [
+          {
+            "id": "collar",
+            "label": "Ошейник / поводок",
+            "value": "ошейник или поводок",
+            "hsHeading": "4201",
+            "why": "4201 — изделия для животных (ошейники и т.п.).",
+            "triggers": [
+              "ошейник",
+              "поводок",
+              "collar",
+              "leash"
+            ]
+          },
+          {
+            "id": "litter",
+            "label": "Наполнитель для лотка",
+            "value": "наполнитель для лотка",
+            "hsHeading": "2508",
+            "why": "2508 — глины (наполнители); уточняйте состав.",
+            "triggers": [
+              "наполнитель",
+              "cat litter",
+              "лоток"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "displays",
+      "triggers": [
+        "телевизор",
+        "монитор",
+        "дисплей",
+        "television",
+        "tv ",
+        " monitor",
+        "monitor ",
+        "lcd монитор"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Телевизор или монитор?",
+        "hint": "ТВ/мониторы — 8528.",
+        "options": [
+          {
+            "id": "tv",
+            "label": "Телевизор",
+            "value": "телевизор",
+            "hsHeading": "8528",
+            "why": "8528 — мониторы и проекционные аппараты; ТВ.",
+            "triggers": [
+              "телевизор",
+              "television",
+              "tv"
+            ]
+          },
+          {
+            "id": "monitor",
+            "label": "Монитор",
+            "value": "монитор",
+            "hsHeading": "8528",
+            "why": "8528 — мониторы.",
+            "triggers": [
+              "монитор",
+              "дисплей",
+              "monitor"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "printers",
+      "triggers": [
+        "принтер",
+        "сканер",
+        "мфу",
+        "printer",
+        "scanner",
+        "многофункциональн устройств"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Принтер / сканер?",
+        "hint": "Принтеры/сканеры — 8443.",
+        "options": [
+          {
+            "id": "printer",
+            "label": "Принтер / МФУ",
+            "value": "принтер",
+            "hsHeading": "8443",
+            "why": "8443 — печатные машины.",
+            "triggers": [
+              "принтер",
+              "мфу",
+              "printer"
+            ]
+          },
+          {
+            "id": "scanner",
+            "label": "Сканер",
+            "value": "сканер",
+            "hsHeading": "8471",
+            "why": "Сканеры часто 8471 — уточняйте.",
+            "triggers": [
+              "сканер",
+              "scanner"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "peripherals",
+      "triggers": [
+        "клавиатур",
+        "keyboard",
+        "webcam",
+        "веб-камер",
+        "вебкамер"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Периферия ПК?",
+        "hint": "Клавиатуры — 8471. Мышь — отдельно (pointer guard).",
+        "options": [
+          {
+            "id": "keyboard",
+            "label": "Клавиатура",
+            "value": "клавиатура",
+            "hsHeading": "8471",
+            "why": "8471 — клавиатуры для компьютеров.",
+            "triggers": [
+              "клавиатур",
+              "keyboard"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "auto-parts",
+      "triggers": [
+        "фильтр маслян",
+        "масляный фильтр",
+        "свеча зажиган",
+        "подшипник",
+        "bearing",
+        "oil filter",
+        "spark plug",
+        "автозапчаст"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Автозапчасть?",
+        "hint": "Фильтры 8421; свечи 8511; подшипники 8482.",
+        "options": [
+          {
+            "id": "filter",
+            "label": "Масляный фильтр",
+            "value": "масляный фильтр",
+            "hsHeading": "8421",
+            "why": "8421 — фильтрующие аппараты.",
+            "triggers": [
+              "фильтр",
+              "oil filter"
+            ]
+          },
+          {
+            "id": "spark",
+            "label": "Свеча зажигания",
+            "value": "свеча зажигания",
+            "hsHeading": "8511",
+            "why": "8511 — свечи зажигания.",
+            "triggers": [
+              "свеча зажиган",
+              "spark plug"
+            ]
+          },
+          {
+            "id": "bearing",
+            "label": "Подшипник",
+            "value": "подшипник",
+            "hsHeading": "8482",
+            "why": "8482 — подшипники.",
+            "triggers": [
+              "подшипник",
+              "bearing"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "security-cam",
+      "triggers": [
+        "камера видеонаблюд",
+        "видеонаблюден",
+        "cctv",
+        "ip камер",
+        "security camera"
+      ],
+      "skipQuestionIds": [
+        "kind"
+      ],
+      "question": {
+        "id": "tnved-form",
+        "text": "Камера наблюдения?",
+        "hint": "Видеокамеры — 8525.",
+        "options": [
+          {
+            "id": "cctv",
+            "label": "Камера видеонаблюдения",
+            "value": "камера видеонаблюдения",
+            "hsHeading": "8525",
+            "why": "8525 — телевизионные камеры.",
+            "triggers": [
+              "камера",
+              "видеонаблюд",
+              "cctv",
+              "security camera"
             ]
           }
         ]
