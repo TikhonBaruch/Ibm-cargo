@@ -70,6 +70,8 @@ Pack count **41 → 53**. Bare `камера` / `фильтр` / `свеча` st
 
 C10 sections closed. Gap probe ~280 queries → ~262 null pack; 4 known WRONG (лимонад, кофемашина, автокресло, порошок).
 
+Remaining long-tail POLICY: generic `провод`, photo cameras, candles/filters without qualifier, etc. — defer unless probes show traffic.
+
 **Следующий цикл:** расширенный охват **Cov-P7+** — [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) (master dictionary ~450 queries, фазы Cov-P0…P12, слои R0–V8).
 
 ## Проверка
