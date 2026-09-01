@@ -2,7 +2,7 @@
   "asOf": "2026-09-01",
   "canon": "docs/knowledge/plan-hint-coverage-expansion.md §Cov-P12",
   "packCount": 78,
-  "note": "Golden regression dictionary; Cov-P17 +6 CASCADE S+ rows",
+  "note": "Golden regression dictionary; Cov-P19 residual DEFER closed",
   "rows": [
     {
       "id": "cov0.lemonade",
@@ -1286,6 +1286,75 @@
         "auto-parts"
       ],
       "notes": "S+ cascade; alias 842123"
+    },
+    {
+      "id": "home.hanger",
+      "query": "вешалка",
+      "phase": "Cov-P19",
+      "expected": {
+        "pack": "home-textiles",
+        "attr": "A~",
+        "searchPrefix": null
+      },
+      "mustNotPack": [
+        "furniture",
+        "rugs"
+      ]
+    },
+    {
+      "id": "home.laundry-basket",
+      "query": "корзина для белья",
+      "phase": "Cov-P19",
+      "expected": {
+        "pack": "home-textiles",
+        "attr": "A~",
+        "searchPrefix": null
+      },
+      "mustNotPack": [
+        "furniture"
+      ]
+    },
+    {
+      "id": "med.mask",
+      "query": "маска медицинская",
+      "phase": "Cov-P19",
+      "expected": {
+        "pack": "med-disposables",
+        "attr": "A~",
+        "searchPrefix": null
+      },
+      "mustNotPack": [
+        "cosmetics",
+        "personal-care"
+      ]
+    },
+    {
+      "id": "pet.bowl",
+      "query": "миска для животных",
+      "phase": "Cov-P19",
+      "expected": {
+        "pack": "pet-accessories",
+        "attr": "A~",
+        "searchPrefix": null
+      },
+      "mustNotPack": [
+        "tableware",
+        "cutlery"
+      ]
+    },
+    {
+      "id": "clean.toiletpaper",
+      "query": "бумага туалетная",
+      "phase": "Cov-P19",
+      "expected": {
+        "pack": "cleaning",
+        "attr": "A~",
+        "searchPrefix": null
+      },
+      "mustNotPack": [
+        "stationery",
+        "books"
+      ]
     }
   ]
 }

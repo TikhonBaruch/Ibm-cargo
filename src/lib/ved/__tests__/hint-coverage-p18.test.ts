@@ -17,11 +17,11 @@ const mockDb = {
   tnvedCode: { findUnique: async () => null, findMany: async () => [] },
 } as never;
 
-/** Final observe metrics (plan-s7, post P16). */
+/** Observe metrics target (plan-s7); P19 closed residual MISS → miss 0. */
 const FINAL_OBSERVE = {
   packPctMin: 90,
   anyPctMin: 98,
-  missMax: 7,
+  missMax: 0,
   goldenRowsMin: 95,
   liveRowsMin: 28,
 } as const;

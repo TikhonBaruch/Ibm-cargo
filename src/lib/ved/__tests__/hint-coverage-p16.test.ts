@@ -61,11 +61,8 @@ describe("Cov-P16 — sport + long-tail", () => {
   });
 });
 
-describe("Cov-P16 — industrial DEFER", () => {
-  it.each(["труба", "арматура", "бумага туалетная", "маска медицинская", "миска для животных"] as const)(
-    "%s stays MISS/DEFER",
-    (q) => {
-      expect(matchHintPack(q)).toBeNull();
-    },
-  );
+describe("Cov-P16 — industrial ambiguous stay null (POLICY as of P19)", () => {
+  it.each(["труба", "арматура"] as const)("%s stays null", (q) => {
+    expect(matchHintPack(q)).toBeNull();
+  });
 });

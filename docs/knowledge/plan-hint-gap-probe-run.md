@@ -1,7 +1,7 @@
 # План прогона: `probe:hint-gap` (golden + full observe)
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** план · **Cov-P13–P18 offline done** · G5 live H5–H7 **DEFER** (no deploy).  
+**Статус:** план · **Cov-P13–P19 done** · G5 live H5–H7 **DEFER** (no deploy).  
 **Зависит от:** Cov-P12 tooling (#56).  
 **Канон:** [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) · [`staging.md`](./staging.md) §Cov · [`testing-branches.md`](./testing-branches.md).
 
@@ -239,6 +239,18 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 
 **Post-deploy checklist:** [`staging.md`](./staging.md) §Cov P13–P17 live block.
 
+### 6.7 Cov-P19 — residual DEFER thin (no deploy) — **done** (this PR)
+
+| Query | Action |
+|-------|--------|
+| вешалка, корзина для белья | `home-textiles` |
+| маска медицинская | `med-disposables` (word-order triggers) |
+| миска для животных | `pet-accessories` |
+| бумага туалетная | `cleaning` |
+| труба, арматура | **POLICY** (ambiguous industrial) |
+
+**Done when:** plan-s7 miss **0** · any **100%** · pack-hit ≥92%.
+
 ---
 
 ## 7. Фазы реализации (MoSCoW)
@@ -251,6 +263,7 @@ Golden kinds (без `--full`): OK / STEAL / MISROUTE / FALSE-POS / ATTR-GAP / L
 | **Cov-P16** | elec/auto/sport/long triggers | 0–2 | +15 | **done** — plan-s7 pack-hit **90.9%**; miss 7 DEFER |
 | **Cov-P17** | cascade aliases for CASCADE rows | — | +6 golden | **done** — 6 S+ rows fixture; golden 95/95 |
 | **Cov-P18** | offline closeout + live checklist prep | — | probe #7 | **done** offline · G5 DEFER |
+| **Cov-P19** | residual DEFER thin + industrial POLICY | 0 | +5 golden | **done** — plan-s7 miss **0**; any **100%** |
 
 **Не делать в этих фазах:** scrape Альта · `tnved:load --full` на sweb · трогать taurus-liart (D37) · раздувать golden до всего корпуса (observe ≠ golden).
 
@@ -318,7 +331,8 @@ npm run test:ci
 | 4 | 2026-09-01 | #60 Cov-P15 | **85.1** | **92.3** | **29** | 0 | 0 | apparel 100% any; home miss 2 DEFER |
 | 5 | 2026-09-01 | #61 Cov-P16 | **90.9** | **98.1** | **7** | 0 | 0 | elec/auto/sport/long |
 | 6 | 2026-09-01 | #62 Cov-P17 | **90.9** | **98.1** | **7** | 0 | 0 | 6 CASCADE S+ golden |
-| 7 | 2026-09-01 | Cov-P18 offline | **90.9** | **98.1** | **7** | 0 | 0 | G0–G3+G6 PASS; G5 DEFER no deploy; live +10 rows |
+| 7 | 2026-09-01 | #63 Cov-P18 offline | **90.9** | **98.1** | **7** | 0 | 0 | G0–G3+G6; G5 DEFER |
+| 8 | 2026-09-01 | Cov-P19 (this PR) | **92.7** | **100** | **0** | 0 | 0 | residual DEFER closed; труба/арматура POLICY |
 
 ---
 

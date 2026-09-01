@@ -1577,7 +1577,7 @@
       "domain": "home",
       "source": "plan-s7",
       "policy": false,
-      "wantPack": null
+      "wantPack": "home-textiles"
     },
     {
       "id": "home.0197",
@@ -1585,7 +1585,7 @@
       "domain": "home",
       "source": "plan-s7",
       "policy": false,
-      "wantPack": null
+      "wantPack": "home-textiles"
     },
     {
       "id": "home.0198",
@@ -2512,7 +2512,7 @@
       "query": "труба",
       "domain": "long",
       "source": "plan-s7",
-      "policy": false,
+      "policy": true,
       "wantPack": null
     },
     {
@@ -2520,7 +2520,7 @@
       "query": "арматура",
       "domain": "long",
       "source": "plan-s7",
-      "policy": false,
+      "policy": true,
       "wantPack": null
     },
     {

@@ -1,7 +1,7 @@
 # План: расширенный охват подсказок (Cov-P7+) — проход, словарь, выявление ошибок
 
 **Дата:** 2026-09-01. **D33.**  
-**Статус:** **Cov-P0…P18 offline** done (#50–#62+) · **78 packs.** G5 live **DEFER** (no deploy).  
+**Статус:** **Cov-P0…P19** done (#50–#63+) · **78 packs.** plan-s7 miss **0**. G5 live **DEFER** (no deploy).  
 **Следующий:** human merge stack → main → deploy → staging §Cov H5–H7.  
 **Канон:** [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6, 53 packs) · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) (precision P0–P7) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) (слои H1–H5).
 
@@ -218,7 +218,8 @@ R8  V8 live (post-merge): NewCalc chips + POST attr-suggest на prod/preview
 | **Cov-P15** | apparel ATTR + home/textiles stems | 78 | +12 golden | **done** (#60) |
 | **Cov-P16** | elec/auto/sport/long triggers + POLICY bare | 78 | +15 golden | **done** (#61) |
 | **Cov-P17** | cascade S+ for 6 CASCADE rows | 78 | +6 golden | **done** (#62) |
-| **Cov-P18** | offline closeout + live checklist prep | 78 | probe #7 | **done** offline · G5 DEFER |
+| **Cov-P18** | offline closeout + live checklist | 78 | probe #7 | **done** (#63) |
+| **Cov-P19** | residual DEFER thin + industrial POLICY | 78 | +5 golden | **done** (this PR) |
 
 **MoSCoW:** Cov-P0 + P7 + P8 = **Must**; P9 = **Should**; P10–P12 = **Should** после merge P7–P8; P13+ = residual from [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md).
 
@@ -370,8 +371,9 @@ npm run probe:hint-gap -- --full --source plan-s7 --format summary
 12. ~~**Cov-P16:** elec/auto/sport/long ([`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) §6.4).~~  
 13. ~~**Cov-P17:** cascade aliases.~~  
 14. ~~**Cov-P18 offline:** G0–G3+G6 closeout + live checklist.~~  
-15. **Post-deploy:** staging §Cov H5–H7 (human SSO).  
-16. **Human merge** stack → main → deploy.
+15. ~~**Cov-P19:** residual DEFER thin (hangers/mask/bowl/toilet paper; труба POLICY).~~  
+16. **Post-deploy:** staging §Cov H5–H7 (human SSO).  
+17. **Human merge** stack → main → deploy.
 
 Agent cannot merge.
 
@@ -503,7 +505,7 @@ Precision-блок **100%** pack-hit by construction — знаменатель 
 
 **POLICY-HIT:** ~~`ореховое молоко` → milk~~ — **closed Cov-P13** (`орехов\w*` + skip pantry).
 
-**MISS (7 after P16, residual DEFER):** вешалка/корзина · труба/арматура · маска медицинская · бумага туалетная · миска для животных. POLICY bare: переходник/кабель/шланг (+ existing). Food+apparel+elec+auto+sport MISS closed.
+**MISS (0 after P19):** plan-s7 household miss closed. POLICY bare: переходник/кабель/шланг/труба/арматура (+ legacy). Food+apparel+elec+auto+sport+home residual closed.
 
 Apparel MISS закрыт ATTR (носки…плащ) — any-help 100% на apparel.
 
@@ -563,5 +565,16 @@ Apparel MISS закрыт ATTR (носки…плащ) — any-help 100% на ap
 | G5 DEFER | H5–H7 checklist in [`staging.md`](./staging.md) §Cov P13–P17 |
 | Live subset | +10 rows: nutmilk · pizza · tie · shelf · lamp · mic · steam deck · spark · ski · morse |
 | Unit | `hint-coverage-p18.test.ts` |
+
+### Cov-P19 notes (this PR, no deploy)
+
+| Fix | Detail |
+|-----|--------|
+| home-textiles | вешалка · корзина для белья |
+| med-disposables | маска медицинская (word-order) |
+| pet-accessories | миска для животных |
+| cleaning | бумага туалетная |
+| POLICY | труба · арматура |
+| Probe #8 | pack-hit **92.7%** · any **100%** · miss **0** |
 
 Live H5–H7: human **post-deploy** on prod/preview — agent cannot SSO.
