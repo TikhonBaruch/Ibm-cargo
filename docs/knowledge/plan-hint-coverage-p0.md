@@ -1,7 +1,7 @@
 # Plan: Hint coverage P0–P6
 
 **Дата:** 2026-08-31. **D33.**  
-**Статус:** **P0–P6 on main** (#43/#44/#48) · **Cov-P0…P9** (#50–#53) · **Cov-P10** (this PR). **78 packs.**
+**Статус:** **P0–P6 on main** (#43/#44/#48) · **Cov-P0…P19** (#50–#64) · **78 packs.**
 **Канон:** coverage probes · [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md).
 
 ## Сделано
@@ -72,7 +72,7 @@ C10 sections closed. Gap probe ~280 queries → ~262 null pack; **Cov-P0** (#50)
 
 Remaining long-tail POLICY: generic `провод`, photo cameras, candles/filters without qualifier, etc. — defer unless probes show traffic.
 
-**Следующий цикл:** **Cov-P10** (this PR = attr RULE parity) → Cov-P11…P12.
+**Следующий цикл:** post-deploy live H5–H7 ([`staging.md`](./staging.md) §Cov P13–P17) после merge этого PR в main.
 
 ## Проверка
 

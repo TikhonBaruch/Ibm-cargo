@@ -1,0 +1,4135 @@
+{
+  "asOf": "2026-09-01",
+  "canon": "docs/knowledge/plan-hint-coverage-expansion.md §7",
+  "note": "Full household corpus for observe-mode probe:hint-gap --full. wantPack is a hint, not a hard golden.",
+  "rows": [
+    {
+      "id": "food.0000",
+      "query": "рис",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0001",
+      "query": "мука",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0002",
+      "query": "макароны",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0003",
+      "query": "гречка",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0004",
+      "query": "овсянка",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0005",
+      "query": "перловка",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0006",
+      "query": "крупа",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0007",
+      "query": "лапша",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0008",
+      "query": "спагетти",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0009",
+      "query": "хлеб",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0010",
+      "query": "булка",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0011",
+      "query": "печенье",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0012",
+      "query": "крекер",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0013",
+      "query": "вафли",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0014",
+      "query": "торт",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0015",
+      "query": "колбаса",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "meat"
+    },
+    {
+      "id": "food.0016",
+      "query": "сосиски",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "meat"
+    },
+    {
+      "id": "food.0017",
+      "query": "ветчина",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "meat"
+    },
+    {
+      "id": "food.0018",
+      "query": "бекон",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "meat"
+    },
+    {
+      "id": "food.0019",
+      "query": "мясо",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "meat"
+    },
+    {
+      "id": "food.0020",
+      "query": "говядина",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "meat"
+    },
+    {
+      "id": "food.0021",
+      "query": "свинина",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "meat"
+    },
+    {
+      "id": "food.0022",
+      "query": "курица",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "meat"
+    },
+    {
+      "id": "food.0023",
+      "query": "индейка",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "meat"
+    },
+    {
+      "id": "food.0024",
+      "query": "рыба",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fish-seafood"
+    },
+    {
+      "id": "food.0025",
+      "query": "лосось",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fish-seafood"
+    },
+    {
+      "id": "food.0026",
+      "query": "форель",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fish-seafood"
+    },
+    {
+      "id": "food.0027",
+      "query": "тунец",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fish-seafood"
+    },
+    {
+      "id": "food.0028",
+      "query": "икра",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fish-seafood"
+    },
+    {
+      "id": "food.0029",
+      "query": "креветки",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fish-seafood"
+    },
+    {
+      "id": "food.0030",
+      "query": "кальмар",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fish-seafood"
+    },
+    {
+      "id": "food.0031",
+      "query": "консервы рыбные",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fish-seafood"
+    },
+    {
+      "id": "food.0032",
+      "query": "мёд",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0033",
+      "query": "орехи",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0034",
+      "query": "миндаль",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0035",
+      "query": "сахар",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0036",
+      "query": "соль",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0037",
+      "query": "масло подсолнечное",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0038",
+      "query": "масло оливковое",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0039",
+      "query": "уксус",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0040",
+      "query": "кетчуп",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0041",
+      "query": "майонез",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0042",
+      "query": "соус",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pantry-sweet"
+    },
+    {
+      "id": "food.0043",
+      "query": "чипсы",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0044",
+      "query": "сухарики",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0045",
+      "query": "попкорн",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0046",
+      "query": "батончик",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0047",
+      "query": "жвачка",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0048",
+      "query": "мармелад",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0049",
+      "query": "сок",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0050",
+      "query": "сок апельсиновый",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0051",
+      "query": "компот",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0052",
+      "query": "морс",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0053",
+      "query": "энергетик",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "snacks"
+    },
+    {
+      "id": "food.0054",
+      "query": "лимонад",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "beverages"
+    },
+    {
+      "id": "food.0055",
+      "query": "водка",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "spirits"
+    },
+    {
+      "id": "food.0056",
+      "query": "коньяк",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "spirits"
+    },
+    {
+      "id": "food.0057",
+      "query": "виски",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "spirits"
+    },
+    {
+      "id": "food.0058",
+      "query": "ром",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "spirits"
+    },
+    {
+      "id": "food.0059",
+      "query": "шампанское",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "beverages"
+    },
+    {
+      "id": "food.0060",
+      "query": "ликёр",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "spirits"
+    },
+    {
+      "id": "food.0061",
+      "query": "текила",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "spirits"
+    },
+    {
+      "id": "food.0062",
+      "query": "молоко",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "milk"
+    },
+    {
+      "id": "food.0063",
+      "query": "йогурт",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "milk"
+    },
+    {
+      "id": "food.0064",
+      "query": "кефир",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "milk"
+    },
+    {
+      "id": "food.0065",
+      "query": "сыр",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "milk"
+    },
+    {
+      "id": "food.0066",
+      "query": "творог",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "milk"
+    },
+    {
+      "id": "food.0067",
+      "query": "сливочное масло",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "milk"
+    },
+    {
+      "id": "food.0068",
+      "query": "огурец",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "food.0069",
+      "query": "помидор",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "food.0070",
+      "query": "картофель",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "food.0071",
+      "query": "лук",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "food.0072",
+      "query": "морковь",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "food.0073",
+      "query": "капуста",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "food.0074",
+      "query": "чеснок",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "food.0075",
+      "query": "яблоко",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fruit-fresh"
+    },
+    {
+      "id": "food.0076",
+      "query": "банан",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fruit-fresh"
+    },
+    {
+      "id": "food.0077",
+      "query": "апельсин",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fruit-fresh"
+    },
+    {
+      "id": "food.0078",
+      "query": "лимон",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fruit-fresh"
+    },
+    {
+      "id": "food.0079",
+      "query": "виноград",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fruit-fresh"
+    },
+    {
+      "id": "food.0080",
+      "query": "чай",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tea-coffee"
+    },
+    {
+      "id": "food.0081",
+      "query": "кофе",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tea-coffee"
+    },
+    {
+      "id": "food.0082",
+      "query": "шоколад",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "chocolate"
+    },
+    {
+      "id": "food.0083",
+      "query": "суп",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "prepared-food"
+    },
+    {
+      "id": "food.0084",
+      "query": "суп куриный",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "prepared-food"
+    },
+    {
+      "id": "food.0085",
+      "query": "борщ",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "prepared-food"
+    },
+    {
+      "id": "food.0086",
+      "query": "пиво",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "beverages"
+    },
+    {
+      "id": "food.0087",
+      "query": "вино",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "beverages"
+    },
+    {
+      "id": "food.0088",
+      "query": "консервы овощные",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "food.0089",
+      "query": "рис шлифованный",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0090",
+      "query": "мука пшеничная",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0091",
+      "query": "хлеб белый",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "grains-pasta"
+    },
+    {
+      "id": "food.0092",
+      "query": "кола",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "beverages"
+    },
+    {
+      "id": "food.0093",
+      "query": "минеральная вода",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "beverages"
+    },
+    {
+      "id": "food.0094",
+      "query": "мороженое",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "prepared-food"
+    },
+    {
+      "id": "food.0095",
+      "query": "пельмени",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "prepared-food"
+    },
+    {
+      "id": "food.0096",
+      "query": "пицца",
+      "domain": "food",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "prepared-food"
+    },
+    {
+      "id": "apparel.0097",
+      "query": "носки",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0098",
+      "query": "колготки",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0099",
+      "query": "чулки",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0100",
+      "query": "гольфы",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0101",
+      "query": "майка",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "knit-top"
+    },
+    {
+      "id": "apparel.0102",
+      "query": "футболка",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "knit-top"
+    },
+    {
+      "id": "apparel.0103",
+      "query": "худи",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "knit-top"
+    },
+    {
+      "id": "apparel.0104",
+      "query": "свитер",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "knit-top"
+    },
+    {
+      "id": "apparel.0105",
+      "query": "рубашка",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "woven-apparel"
+    },
+    {
+      "id": "apparel.0106",
+      "query": "брюки",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "woven-apparel"
+    },
+    {
+      "id": "apparel.0107",
+      "query": "джинсы",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "woven-apparel"
+    },
+    {
+      "id": "apparel.0108",
+      "query": "юбка",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "woven-apparel"
+    },
+    {
+      "id": "apparel.0109",
+      "query": "куртка",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0110",
+      "query": "пальто",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0111",
+      "query": "пуховик",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0112",
+      "query": "жилет",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0113",
+      "query": "платье",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0114",
+      "query": "сарафан",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0115",
+      "query": "перчатки",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0116",
+      "query": "шарф",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0117",
+      "query": "галстук",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0118",
+      "query": "ремень",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0119",
+      "query": "костюм",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0120",
+      "query": "бельё",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0121",
+      "query": "трусы",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0122",
+      "query": "лифчик",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0123",
+      "query": "кепка",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "headgear"
+    },
+    {
+      "id": "apparel.0124",
+      "query": "шапка",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "headgear"
+    },
+    {
+      "id": "apparel.0125",
+      "query": "бейсболка",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "headgear"
+    },
+    {
+      "id": "apparel.0126",
+      "query": "кроссовки",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "footwear"
+    },
+    {
+      "id": "apparel.0127",
+      "query": "кеды",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "footwear"
+    },
+    {
+      "id": "apparel.0128",
+      "query": "ботинки",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "footwear"
+    },
+    {
+      "id": "apparel.0129",
+      "query": "туфли",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "footwear"
+    },
+    {
+      "id": "apparel.0130",
+      "query": "сапоги",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "footwear"
+    },
+    {
+      "id": "apparel.0131",
+      "query": "ткань",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "textiles-raw"
+    },
+    {
+      "id": "apparel.0132",
+      "query": "хлопок",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "textiles-raw"
+    },
+    {
+      "id": "apparel.0133",
+      "query": "пряжа",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "textiles-raw"
+    },
+    {
+      "id": "apparel.0134",
+      "query": "нитки",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "textiles-raw"
+    },
+    {
+      "id": "apparel.0135",
+      "query": "пижама",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0136",
+      "query": "халат",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0137",
+      "query": "шорты",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "woven-apparel"
+    },
+    {
+      "id": "apparel.0138",
+      "query": "кардиган",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "knit-top"
+    },
+    {
+      "id": "apparel.0139",
+      "query": "водолазка",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "knit-top"
+    },
+    {
+      "id": "apparel.0140",
+      "query": "плащ",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0141",
+      "query": "варежки",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "apparel.0142",
+      "query": "зонтик",
+      "domain": "apparel",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "umbrellas"
+    },
+    {
+      "id": "home.0143",
+      "query": "матрас",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bedroom-furniture"
+    },
+    {
+      "id": "home.0144",
+      "query": "кровать",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bedroom-furniture"
+    },
+    {
+      "id": "home.0145",
+      "query": "шкаф",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bedroom-furniture"
+    },
+    {
+      "id": "home.0146",
+      "query": "комод",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bedroom-furniture"
+    },
+    {
+      "id": "home.0147",
+      "query": "полка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bedroom-furniture"
+    },
+    {
+      "id": "home.0148",
+      "query": "зеркало",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bedroom-furniture"
+    },
+    {
+      "id": "home.0149",
+      "query": "шторы",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bedroom-furniture"
+    },
+    {
+      "id": "home.0150",
+      "query": "жалюзи",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bedroom-furniture"
+    },
+    {
+      "id": "home.0151",
+      "query": "кондиционер",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0152",
+      "query": "обогреватель",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0153",
+      "query": "вентилятор",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0154",
+      "query": "чайник",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0155",
+      "query": "блендер",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0156",
+      "query": "мультиварка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0157",
+      "query": "тостер",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0158",
+      "query": "кофеварка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0159",
+      "query": "кофемашина",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "appliances"
+    },
+    {
+      "id": "home.0160",
+      "query": "нож",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cutlery"
+    },
+    {
+      "id": "home.0161",
+      "query": "вилка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cutlery"
+    },
+    {
+      "id": "home.0162",
+      "query": "ложка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cutlery"
+    },
+    {
+      "id": "home.0163",
+      "query": "термос",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cutlery"
+    },
+    {
+      "id": "home.0164",
+      "query": "контейнер",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cutlery"
+    },
+    {
+      "id": "home.0165",
+      "query": "стиральный порошок",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cleaning"
+    },
+    {
+      "id": "home.0166",
+      "query": "губка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cleaning"
+    },
+    {
+      "id": "home.0167",
+      "query": "швабра",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cleaning"
+    },
+    {
+      "id": "home.0168",
+      "query": "средство для мытья",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cleaning"
+    },
+    {
+      "id": "home.0169",
+      "query": "диван",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "furniture"
+    },
+    {
+      "id": "home.0170",
+      "query": "стул",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "furniture"
+    },
+    {
+      "id": "home.0171",
+      "query": "кресло",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "furniture"
+    },
+    {
+      "id": "home.0172",
+      "query": "стол",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "furniture"
+    },
+    {
+      "id": "home.0173",
+      "query": "тарелка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tableware"
+    },
+    {
+      "id": "home.0174",
+      "query": "чашка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tableware"
+    },
+    {
+      "id": "home.0175",
+      "query": "кастрюля",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cookware"
+    },
+    {
+      "id": "home.0176",
+      "query": "сковорода",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cookware"
+    },
+    {
+      "id": "home.0177",
+      "query": "пылесос",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "appliances"
+    },
+    {
+      "id": "home.0178",
+      "query": "стиральная машина",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "appliances"
+    },
+    {
+      "id": "home.0179",
+      "query": "холодильник",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "appliances"
+    },
+    {
+      "id": "home.0180",
+      "query": "фен",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "appliances"
+    },
+    {
+      "id": "home.0181",
+      "query": "утюг",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "appliances"
+    },
+    {
+      "id": "home.0182",
+      "query": "микроволновка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "appliances"
+    },
+    {
+      "id": "home.0183",
+      "query": "лампа",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "lamps"
+    },
+    {
+      "id": "home.0184",
+      "query": "светильник",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "lamps"
+    },
+    {
+      "id": "home.0185",
+      "query": "люстра",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "lamps"
+    },
+    {
+      "id": "home.0186",
+      "query": "ковёр",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "rugs"
+    },
+    {
+      "id": "home.0187",
+      "query": "одеяло",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "home-textiles"
+    },
+    {
+      "id": "home.0188",
+      "query": "подушка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "home-textiles"
+    },
+    {
+      "id": "home.0189",
+      "query": "полотенце",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "home-textiles"
+    },
+    {
+      "id": "home.0190",
+      "query": "посуда",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tableware"
+    },
+    {
+      "id": "home.0191",
+      "query": "миксер",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0192",
+      "query": "увлажнитель",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0193",
+      "query": "посудомоечная машина",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "appliances"
+    },
+    {
+      "id": "home.0194",
+      "query": "чайник электрический",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "small-appliances"
+    },
+    {
+      "id": "home.0195",
+      "query": "тумбочка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bedroom-furniture"
+    },
+    {
+      "id": "home.0196",
+      "query": "вешалка",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "home-textiles"
+    },
+    {
+      "id": "home.0197",
+      "query": "корзина для белья",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "home-textiles"
+    },
+    {
+      "id": "home.0198",
+      "query": "мыло",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "personal-care"
+    },
+    {
+      "id": "home.0199",
+      "query": "зубная паста",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "personal-care"
+    },
+    {
+      "id": "home.0200",
+      "query": "шампунь",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cosmetics"
+    },
+    {
+      "id": "home.0201",
+      "query": "помада",
+      "domain": "home",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cosmetics"
+    },
+    {
+      "id": "elec.0202",
+      "query": "ноутбук",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "computers"
+    },
+    {
+      "id": "elec.0203",
+      "query": "смартфон",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "elec.0204",
+      "query": "телефон",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "elec.0205",
+      "query": "планшет",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "computers"
+    },
+    {
+      "id": "elec.0206",
+      "query": "телевизор",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "displays"
+    },
+    {
+      "id": "elec.0207",
+      "query": "монитор",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "displays"
+    },
+    {
+      "id": "elec.0208",
+      "query": "SSD",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "elec.0209",
+      "query": "HDD",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "elec.0210",
+      "query": "видеокарта",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "elec.0211",
+      "query": "процессор",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "elec.0212",
+      "query": "оперативная память",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "elec.0213",
+      "query": "блок питания",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "elec.0214",
+      "query": "материнская плата",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "elec.0215",
+      "query": "флешка",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "elec.0216",
+      "query": "карта памяти",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "elec.0217",
+      "query": "микрофон",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "peripherals"
+    },
+    {
+      "id": "elec.0218",
+      "query": "модем",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "networking"
+    },
+    {
+      "id": "elec.0219",
+      "query": "роутер",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "networking"
+    },
+    {
+      "id": "elec.0220",
+      "query": "свитч",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "networking"
+    },
+    {
+      "id": "elec.0221",
+      "query": "hdmi кабель",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "power"
+    },
+    {
+      "id": "elec.0222",
+      "query": "переходник",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "elec.0223",
+      "query": "кабель",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "elec.0224",
+      "query": "фотоаппарат",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "photo-gear"
+    },
+    {
+      "id": "elec.0225",
+      "query": "объектив",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "photo-gear"
+    },
+    {
+      "id": "elec.0226",
+      "query": "штатив",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "photo-gear"
+    },
+    {
+      "id": "elec.0227",
+      "query": "GoPro",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "photo-gear"
+    },
+    {
+      "id": "elec.0228",
+      "query": "наушники",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "headphones"
+    },
+    {
+      "id": "elec.0229",
+      "query": "колонки",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "speakers"
+    },
+    {
+      "id": "elec.0230",
+      "query": "саундбар",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "speakers"
+    },
+    {
+      "id": "elec.0231",
+      "query": "playstation",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "gaming"
+    },
+    {
+      "id": "elec.0232",
+      "query": "xbox",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "gaming"
+    },
+    {
+      "id": "elec.0233",
+      "query": "геймпад",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "gaming"
+    },
+    {
+      "id": "elec.0234",
+      "query": "джойстик",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "gaming"
+    },
+    {
+      "id": "elec.0235",
+      "query": "камера видеонаблюдения",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "security-cam"
+    },
+    {
+      "id": "elec.0236",
+      "query": "power bank",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "power"
+    },
+    {
+      "id": "elec.0237",
+      "query": "зарядка",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "power"
+    },
+    {
+      "id": "elec.0238",
+      "query": "провод usb",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "power"
+    },
+    {
+      "id": "elec.0239",
+      "query": "клавиатура",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "peripherals"
+    },
+    {
+      "id": "elec.0240",
+      "query": "принтер",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "printers"
+    },
+    {
+      "id": "elec.0241",
+      "query": "сканер",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "printers"
+    },
+    {
+      "id": "elec.0242",
+      "query": "лампа led",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "led"
+    },
+    {
+      "id": "elec.0243",
+      "query": "led лента",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "led"
+    },
+    {
+      "id": "elec.0244",
+      "query": "системный блок",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "computers"
+    },
+    {
+      "id": "elec.0245",
+      "query": "мышь компьютерная",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "peripherals"
+    },
+    {
+      "id": "elec.0246",
+      "query": "веб-камера",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "elec.0247",
+      "query": "наушники bluetooth",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "headphones"
+    },
+    {
+      "id": "elec.0248",
+      "query": "смарт-часы",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "watches"
+    },
+    {
+      "id": "elec.0249",
+      "query": "часы",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "watches"
+    },
+    {
+      "id": "elec.0250",
+      "query": "nintendo",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "gaming"
+    },
+    {
+      "id": "elec.0251",
+      "query": "steam deck",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "gaming"
+    },
+    {
+      "id": "elec.0252",
+      "query": "корпус пк",
+      "domain": "elec",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pc-parts"
+    },
+    {
+      "id": "auto.0253",
+      "query": "шина",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tires"
+    },
+    {
+      "id": "auto.0254",
+      "query": "подшипник",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-parts"
+    },
+    {
+      "id": "auto.0255",
+      "query": "масляный фильтр",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-parts"
+    },
+    {
+      "id": "auto.0256",
+      "query": "свечи зажигания",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-parts"
+    },
+    {
+      "id": "auto.0257",
+      "query": "моторное масло",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-fluids"
+    },
+    {
+      "id": "auto.0258",
+      "query": "антифриз",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-fluids"
+    },
+    {
+      "id": "auto.0259",
+      "query": "тормозная жидкость",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-fluids"
+    },
+    {
+      "id": "auto.0260",
+      "query": "тормозные колодки",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-fluids"
+    },
+    {
+      "id": "auto.0261",
+      "query": "бампер",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-body"
+    },
+    {
+      "id": "auto.0262",
+      "query": "фара",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-body"
+    },
+    {
+      "id": "auto.0263",
+      "query": "дворники",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-body"
+    },
+    {
+      "id": "auto.0264",
+      "query": "клей",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "adhesives-chemicals"
+    },
+    {
+      "id": "auto.0265",
+      "query": "смазка",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "adhesives-chemicals"
+    },
+    {
+      "id": "auto.0266",
+      "query": "WD-40",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "adhesives-chemicals"
+    },
+    {
+      "id": "auto.0267",
+      "query": "ацетон",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "adhesives-chemicals"
+    },
+    {
+      "id": "auto.0268",
+      "query": "краска",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "paint"
+    },
+    {
+      "id": "auto.0269",
+      "query": "обои",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "paint"
+    },
+    {
+      "id": "auto.0270",
+      "query": "гвозди",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fasteners"
+    },
+    {
+      "id": "auto.0271",
+      "query": "шуруп",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fasteners"
+    },
+    {
+      "id": "auto.0272",
+      "query": "болт",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fasteners"
+    },
+    {
+      "id": "auto.0273",
+      "query": "гайка",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "fasteners"
+    },
+    {
+      "id": "auto.0274",
+      "query": "аккумулятор",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "batteries"
+    },
+    {
+      "id": "auto.0275",
+      "query": "батарея",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "batteries"
+    },
+    {
+      "id": "auto.0276",
+      "query": "шланг",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "auto.0277",
+      "query": "воздушный фильтр",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-parts"
+    },
+    {
+      "id": "auto.0278",
+      "query": "маслофильтр",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-parts"
+    },
+    {
+      "id": "auto.0279",
+      "query": "диск тормозной",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-parts"
+    },
+    {
+      "id": "auto.0280",
+      "query": "зеркала боковые",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "auto-body"
+    },
+    {
+      "id": "auto.0281",
+      "query": "колесо",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tires"
+    },
+    {
+      "id": "auto.0282",
+      "query": "велосипед",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cycles"
+    },
+    {
+      "id": "auto.0283",
+      "query": "самокат",
+      "domain": "auto",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "cycles"
+    },
+    {
+      "id": "long.0284",
+      "query": "ручка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "stationery"
+    },
+    {
+      "id": "long.0285",
+      "query": "карандаш",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "stationery"
+    },
+    {
+      "id": "long.0286",
+      "query": "бумага А4",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "stationery"
+    },
+    {
+      "id": "long.0287",
+      "query": "скотч",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "stationery"
+    },
+    {
+      "id": "long.0288",
+      "query": "степлер",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "stationery"
+    },
+    {
+      "id": "long.0289",
+      "query": "блокнот",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "stationery"
+    },
+    {
+      "id": "long.0290",
+      "query": "кольцо",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "jewelry"
+    },
+    {
+      "id": "long.0291",
+      "query": "серьги",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "jewelry"
+    },
+    {
+      "id": "long.0292",
+      "query": "браслет",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "jewelry"
+    },
+    {
+      "id": "long.0293",
+      "query": "цепочка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "jewelry"
+    },
+    {
+      "id": "long.0294",
+      "query": "гитара",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "musical"
+    },
+    {
+      "id": "long.0295",
+      "query": "синтезатор",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "musical"
+    },
+    {
+      "id": "long.0296",
+      "query": "скрипка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "musical"
+    },
+    {
+      "id": "long.0297",
+      "query": "барабан",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "musical"
+    },
+    {
+      "id": "long.0298",
+      "query": "пианино",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "musical"
+    },
+    {
+      "id": "long.0299",
+      "query": "сигареты",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tobacco"
+    },
+    {
+      "id": "long.0300",
+      "query": "табак",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tobacco"
+    },
+    {
+      "id": "long.0301",
+      "query": "кальян",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tobacco"
+    },
+    {
+      "id": "long.0302",
+      "query": "сигары",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tobacco"
+    },
+    {
+      "id": "long.0303",
+      "query": "электронная сигарета",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "vape"
+    },
+    {
+      "id": "long.0304",
+      "query": "вейп",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "vape"
+    },
+    {
+      "id": "long.0305",
+      "query": "коляска",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "baby-gear"
+    },
+    {
+      "id": "long.0306",
+      "query": "пустышка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "baby-gear"
+    },
+    {
+      "id": "long.0307",
+      "query": "манеж",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "baby-gear"
+    },
+    {
+      "id": "long.0308",
+      "query": "автокресло",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "baby"
+    },
+    {
+      "id": "long.0309",
+      "query": "подгузник",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "baby"
+    },
+    {
+      "id": "long.0310",
+      "query": "комбикорм",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "agri-feed"
+    },
+    {
+      "id": "long.0311",
+      "query": "сено",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "agri-feed"
+    },
+    {
+      "id": "long.0312",
+      "query": "силос",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "agri-feed"
+    },
+    {
+      "id": "long.0313",
+      "query": "труба",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "long.0314",
+      "query": "арматура",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "long.0315",
+      "query": "кабель силовой",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "electrical-install"
+    },
+    {
+      "id": "long.0316",
+      "query": "розетка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "electrical-install"
+    },
+    {
+      "id": "long.0317",
+      "query": "выключатель",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "electrical-install"
+    },
+    {
+      "id": "long.0318",
+      "query": "термометр",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "med-devices"
+    },
+    {
+      "id": "long.0319",
+      "query": "тонометр",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "med-devices"
+    },
+    {
+      "id": "long.0320",
+      "query": "инвалидная коляска",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "med-devices"
+    },
+    {
+      "id": "long.0321",
+      "query": "ингалятор",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "med-devices"
+    },
+    {
+      "id": "long.0322",
+      "query": "лыжи",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "long.0323",
+      "query": "коньки",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "long.0324",
+      "query": "ролики",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "long.0325",
+      "query": "ракетка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "long.0326",
+      "query": "книга",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "books"
+    },
+    {
+      "id": "long.0327",
+      "query": "тетрадь",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "books"
+    },
+    {
+      "id": "long.0328",
+      "query": "учебник",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "books"
+    },
+    {
+      "id": "long.0329",
+      "query": "журнал",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "books"
+    },
+    {
+      "id": "long.0330",
+      "query": "картина",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "art"
+    },
+    {
+      "id": "long.0331",
+      "query": "скульптура",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "art"
+    },
+    {
+      "id": "long.0332",
+      "query": "сумка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bags"
+    },
+    {
+      "id": "long.0333",
+      "query": "рюкзак",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bags"
+    },
+    {
+      "id": "long.0334",
+      "query": "чемодан",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "bags"
+    },
+    {
+      "id": "long.0335",
+      "query": "игрушка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "toys"
+    },
+    {
+      "id": "long.0336",
+      "query": "лего",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "toys"
+    },
+    {
+      "id": "long.0337",
+      "query": "кукла",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "toys"
+    },
+    {
+      "id": "long.0338",
+      "query": "конструктор",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "toys"
+    },
+    {
+      "id": "long.0339",
+      "query": "лекарство",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pharma"
+    },
+    {
+      "id": "long.0340",
+      "query": "витамины",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pharma"
+    },
+    {
+      "id": "long.0341",
+      "query": "таблетки",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pharma"
+    },
+    {
+      "id": "long.0342",
+      "query": "молоток",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tools"
+    },
+    {
+      "id": "long.0343",
+      "query": "дрель",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tools"
+    },
+    {
+      "id": "long.0344",
+      "query": "шуруповёрт",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "tools"
+    },
+    {
+      "id": "long.0345",
+      "query": "палатка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "camping"
+    },
+    {
+      "id": "long.0346",
+      "query": "спальник",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "camping"
+    },
+    {
+      "id": "long.0347",
+      "query": "очки",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "optics"
+    },
+    {
+      "id": "long.0348",
+      "query": "солнечные очки",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "optics"
+    },
+    {
+      "id": "long.0349",
+      "query": "шприц",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "med-disposables"
+    },
+    {
+      "id": "long.0350",
+      "query": "бинт",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "med-disposables"
+    },
+    {
+      "id": "long.0351",
+      "query": "корм для кошек",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pet-food"
+    },
+    {
+      "id": "long.0352",
+      "query": "ошейник",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pet-accessories"
+    },
+    {
+      "id": "long.0353",
+      "query": "семена",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "agri-inputs"
+    },
+    {
+      "id": "long.0354",
+      "query": "удобрение",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "agri-inputs"
+    },
+    {
+      "id": "long.0355",
+      "query": "гербицид",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "agri-inputs"
+    },
+    {
+      "id": "long.0356",
+      "query": "зонт",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "umbrellas"
+    },
+    {
+      "id": "long.0357",
+      "query": "мяч",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "long.0358",
+      "query": "гантели",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "long.0359",
+      "query": "коврик йога",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "long.0360",
+      "query": "костыли",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "med-devices"
+    },
+    {
+      "id": "long.0361",
+      "query": "маска медицинская",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "med-disposables"
+    },
+    {
+      "id": "long.0362",
+      "query": "фломастер",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "stationery"
+    },
+    {
+      "id": "long.0363",
+      "query": "ластик",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "stationery"
+    },
+    {
+      "id": "long.0364",
+      "query": "линейка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "stationery"
+    },
+    {
+      "id": "long.0365",
+      "query": "бусы",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "jewelry"
+    },
+    {
+      "id": "long.0366",
+      "query": "кулон",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "jewelry"
+    },
+    {
+      "id": "long.0367",
+      "query": "флейта",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "musical"
+    },
+    {
+      "id": "long.0368",
+      "query": "гармонь",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "musical"
+    },
+    {
+      "id": "long.0369",
+      "query": "бумага туалетная",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": null
+    },
+    {
+      "id": "long.0370",
+      "query": "подгузники",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "baby"
+    },
+    {
+      "id": "long.0371",
+      "query": "бутылочка",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "baby-gear"
+    },
+    {
+      "id": "long.0372",
+      "query": "соска",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "baby-gear"
+    },
+    {
+      "id": "long.0373",
+      "query": "корм для собак",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pet-food"
+    },
+    {
+      "id": "long.0374",
+      "query": "поводок",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pet-accessories"
+    },
+    {
+      "id": "long.0375",
+      "query": "миска для животных",
+      "domain": "long",
+      "source": "plan-s7",
+      "policy": false,
+      "wantPack": "pet-accessories"
+    },
+    {
+      "id": "policy.0376",
+      "query": "провод",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "policy.0377",
+      "query": "камера",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "policy.0378",
+      "query": "фильтр",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "policy.0379",
+      "query": "свеча",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "policy.0380",
+      "query": "перец",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "policy.0381",
+      "query": "кот",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "policy.0382",
+      "query": "собака",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "policy.0383",
+      "query": "мышь",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "policy.0384",
+      "query": "рисовое молоко",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "policy.0385",
+      "query": "ореховое молоко",
+      "domain": "policy",
+      "source": "plan-s7",
+      "policy": true,
+      "wantPack": null
+    },
+    {
+      "id": "precision.0386",
+      "query": "огурцы",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "precision.0387",
+      "query": "огурец свежий",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "precision.0388",
+      "query": "томат",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "precision.0389",
+      "query": "луковица",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "precision.0390",
+      "query": "сладкий перец",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "precision.0391",
+      "query": "овощи",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "precision.0392",
+      "query": "маринованные огурцы",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "precision.0393",
+      "query": "корнишоны",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "precision.0394",
+      "query": "огурцы в рассоле",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "produce-fresh"
+    },
+    {
+      "id": "precision.0395",
+      "query": "сгущёнка",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "milk"
+    },
+    {
+      "id": "precision.0396",
+      "query": "сметана",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "milk"
+    },
+    {
+      "id": "precision.0397",
+      "query": "масло сливочное",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "milk"
+    },
+    {
+      "id": "precision.0398",
+      "query": "зелёный чай",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "tea-coffee"
+    },
+    {
+      "id": "precision.0399",
+      "query": "coffee beans",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "tea-coffee"
+    },
+    {
+      "id": "precision.0400",
+      "query": "конфеты",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "chocolate"
+    },
+    {
+      "id": "precision.0401",
+      "query": "chocolate bar",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "chocolate"
+    },
+    {
+      "id": "precision.0402",
+      "query": "фуражка",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "headgear"
+    },
+    {
+      "id": "precision.0403",
+      "query": "толстовка",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "knit-top"
+    },
+    {
+      "id": "precision.0404",
+      "query": "polo shirt",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "knit-top"
+    },
+    {
+      "id": "precision.0405",
+      "query": "sneakers",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "footwear"
+    },
+    {
+      "id": "precision.0406",
+      "query": "кросовки",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "footwear"
+    },
+    {
+      "id": "precision.0407",
+      "query": "laptop",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "computers"
+    },
+    {
+      "id": "precision.0408",
+      "query": "iphone",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "computers"
+    },
+    {
+      "id": "precision.0409",
+      "query": "powerbank",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "power"
+    },
+    {
+      "id": "precision.0410",
+      "query": "кабель usb",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "power"
+    },
+    {
+      "id": "precision.0411",
+      "query": "повербанк",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "power"
+    },
+    {
+      "id": "precision.0412",
+      "query": "usb charger",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "power"
+    },
+    {
+      "id": "precision.0413",
+      "query": "внешний аккумулятор",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "power"
+    },
+    {
+      "id": "precision.0414",
+      "query": "airpods",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "headphones"
+    },
+    {
+      "id": "precision.0415",
+      "query": "earbuds",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "headphones"
+    },
+    {
+      "id": "precision.0416",
+      "query": "гарнитура",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "headphones"
+    },
+    {
+      "id": "precision.0417",
+      "query": "крем",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cosmetics"
+    },
+    {
+      "id": "precision.0418",
+      "query": "духи",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cosmetics"
+    },
+    {
+      "id": "precision.0419",
+      "query": "парфюм",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cosmetics"
+    },
+    {
+      "id": "precision.0420",
+      "query": "skincare",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cosmetics"
+    },
+    {
+      "id": "precision.0421",
+      "query": "lipstick",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cosmetics"
+    },
+    {
+      "id": "precision.0422",
+      "query": "led лампа",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "led"
+    },
+    {
+      "id": "precision.0423",
+      "query": "светодиодная лента",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "led"
+    },
+    {
+      "id": "precision.0424",
+      "query": "лампочка светодиод",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "led"
+    },
+    {
+      "id": "precision.0425",
+      "query": "vape pod",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "vape"
+    },
+    {
+      "id": "precision.0426",
+      "query": "lego",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "toys"
+    },
+    {
+      "id": "precision.0427",
+      "query": "пазл",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "toys"
+    },
+    {
+      "id": "precision.0428",
+      "query": "фрукты",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "fruit-fresh"
+    },
+    {
+      "id": "precision.0429",
+      "query": "ягоды",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "fruit-fresh"
+    },
+    {
+      "id": "precision.0430",
+      "query": "клубника",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "fruit-fresh"
+    },
+    {
+      "id": "precision.0431",
+      "query": "блузка",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "woven-apparel"
+    },
+    {
+      "id": "precision.0432",
+      "query": "бульон",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "prepared-food"
+    },
+    {
+      "id": "precision.0433",
+      "query": "washing powder",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cleaning"
+    },
+    {
+      "id": "precision.0434",
+      "query": "engine oil",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "auto-fluids"
+    },
+    {
+      "id": "precision.0435",
+      "query": "герметик",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "adhesives-chemicals"
+    },
+    {
+      "id": "precision.0436",
+      "query": "animal feed",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "agri-feed"
+    },
+    {
+      "id": "precision.0437",
+      "query": "fabric",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "textiles-raw"
+    },
+    {
+      "id": "precision.0438",
+      "query": "bumper",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "auto-body"
+    },
+    {
+      "id": "precision.0439",
+      "query": "кабель электрический",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "electrical-install"
+    },
+    {
+      "id": "precision.0440",
+      "query": "провод электрический",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "electrical-install"
+    },
+    {
+      "id": "precision.0441",
+      "query": "картины маслом",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "art"
+    },
+    {
+      "id": "precision.0442",
+      "query": "репродукция",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "art"
+    },
+    {
+      "id": "precision.0443",
+      "query": "сумка женская",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "bags"
+    },
+    {
+      "id": "precision.0444",
+      "query": "часы наручные",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "watches"
+    },
+    {
+      "id": "precision.0445",
+      "query": "apple watch",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "watches"
+    },
+    {
+      "id": "precision.0446",
+      "query": "wristwatch",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "watches"
+    },
+    {
+      "id": "precision.0447",
+      "query": "вода минеральная",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "beverages"
+    },
+    {
+      "id": "precision.0448",
+      "query": "beer",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "beverages"
+    },
+    {
+      "id": "precision.0449",
+      "query": "колонка",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "speakers"
+    },
+    {
+      "id": "precision.0450",
+      "query": "колонка bluetooth",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "speakers"
+    },
+    {
+      "id": "precision.0451",
+      "query": "soundbar",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "speakers"
+    },
+    {
+      "id": "precision.0452",
+      "query": "speaker",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "speakers"
+    },
+    {
+      "id": "precision.0453",
+      "query": "мебель",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "furniture"
+    },
+    {
+      "id": "precision.0454",
+      "query": "шины",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "tires"
+    },
+    {
+      "id": "precision.0455",
+      "query": "покрышка",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "tires"
+    },
+    {
+      "id": "precision.0456",
+      "query": "автошина",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "tires"
+    },
+    {
+      "id": "precision.0457",
+      "query": "электросамокат",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cycles"
+    },
+    {
+      "id": "precision.0458",
+      "query": "bicycle",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cycles"
+    },
+    {
+      "id": "precision.0459",
+      "query": "medicine",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "pharma"
+    },
+    {
+      "id": "precision.0460",
+      "query": "printed book",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "books"
+    },
+    {
+      "id": "precision.0461",
+      "query": "торшер",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "lamps"
+    },
+    {
+      "id": "precision.0462",
+      "query": "лампа настольная",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "lamps"
+    },
+    {
+      "id": "precision.0463",
+      "query": "краски",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "paint"
+    },
+    {
+      "id": "precision.0464",
+      "query": "paint",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "paint"
+    },
+    {
+      "id": "precision.0465",
+      "query": "pet food",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "pet-food"
+    },
+    {
+      "id": "precision.0466",
+      "query": "cat food",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "pet-food"
+    },
+    {
+      "id": "precision.0467",
+      "query": "fertilizer",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "agri-inputs"
+    },
+    {
+      "id": "precision.0468",
+      "query": "семена для посева",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "agri-inputs"
+    },
+    {
+      "id": "precision.0469",
+      "query": "toothpaste",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "personal-care"
+    },
+    {
+      "id": "precision.0470",
+      "query": "soap",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "personal-care"
+    },
+    {
+      "id": "precision.0471",
+      "query": "памперс",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "baby"
+    },
+    {
+      "id": "precision.0472",
+      "query": "diaper",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "baby"
+    },
+    {
+      "id": "precision.0473",
+      "query": "nappy",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "baby"
+    },
+    {
+      "id": "precision.0474",
+      "query": "drill",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "tools"
+    },
+    {
+      "id": "precision.0475",
+      "query": "сотейник",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cookware"
+    },
+    {
+      "id": "precision.0476",
+      "query": "frying pan",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "cookware"
+    },
+    {
+      "id": "precision.0477",
+      "query": "кружка",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "tableware"
+    },
+    {
+      "id": "precision.0478",
+      "query": "plate",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "tableware"
+    },
+    {
+      "id": "precision.0479",
+      "query": "батарейка",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "batteries"
+    },
+    {
+      "id": "precision.0480",
+      "query": "battery",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "batteries"
+    },
+    {
+      "id": "precision.0481",
+      "query": "маршрутизатор",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "networking"
+    },
+    {
+      "id": "precision.0482",
+      "query": "router",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "networking"
+    },
+    {
+      "id": "precision.0483",
+      "query": "wi-fi роутер",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "networking"
+    },
+    {
+      "id": "precision.0484",
+      "query": "постельное",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "home-textiles"
+    },
+    {
+      "id": "precision.0485",
+      "query": "blanket",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "home-textiles"
+    },
+    {
+      "id": "precision.0486",
+      "query": "коврик",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "rugs"
+    },
+    {
+      "id": "precision.0487",
+      "query": "carpet",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "rugs"
+    },
+    {
+      "id": "precision.0488",
+      "query": "rug",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "rugs"
+    },
+    {
+      "id": "precision.0489",
+      "query": "гантель",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "precision.0490",
+      "query": "dumbbell",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "precision.0491",
+      "query": "football",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "sports"
+    },
+    {
+      "id": "precision.0492",
+      "query": "спальный мешок",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "camping"
+    },
+    {
+      "id": "precision.0493",
+      "query": "tent",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "camping"
+    },
+    {
+      "id": "precision.0494",
+      "query": "sleeping bag",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "camping"
+    },
+    {
+      "id": "precision.0495",
+      "query": "umbrella",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "umbrellas"
+    },
+    {
+      "id": "precision.0496",
+      "query": "parasol",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "umbrellas"
+    },
+    {
+      "id": "precision.0497",
+      "query": "sunglasses",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "optics"
+    },
+    {
+      "id": "precision.0498",
+      "query": "spectacles",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "optics"
+    },
+    {
+      "id": "precision.0499",
+      "query": "eyeglasses",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "optics"
+    },
+    {
+      "id": "precision.0500",
+      "query": "syringe",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "med-disposables"
+    },
+    {
+      "id": "precision.0501",
+      "query": "bandage",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "med-disposables"
+    },
+    {
+      "id": "precision.0502",
+      "query": "наполнитель для лотка",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "pet-accessories"
+    },
+    {
+      "id": "precision.0503",
+      "query": "collar",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "pet-accessories"
+    },
+    {
+      "id": "precision.0504",
+      "query": "television",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "displays"
+    },
+    {
+      "id": "precision.0505",
+      "query": "lcd монитор",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "displays"
+    },
+    {
+      "id": "precision.0506",
+      "query": "printer",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "printers"
+    },
+    {
+      "id": "precision.0507",
+      "query": "scanner",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "printers"
+    },
+    {
+      "id": "precision.0508",
+      "query": "keyboard",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "peripherals"
+    },
+    {
+      "id": "precision.0509",
+      "query": "webcam",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "peripherals"
+    },
+    {
+      "id": "precision.0510",
+      "query": "фильтр масляный",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "auto-parts"
+    },
+    {
+      "id": "precision.0511",
+      "query": "свеча зажигания",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "auto-parts"
+    },
+    {
+      "id": "precision.0512",
+      "query": "bearing",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "auto-parts"
+    },
+    {
+      "id": "precision.0513",
+      "query": "видеонаблюдение",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "security-cam"
+    },
+    {
+      "id": "precision.0514",
+      "query": "cctv",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "security-cam"
+    },
+    {
+      "id": "precision.0515",
+      "query": "security camera",
+      "domain": "precision",
+      "source": "precision-positive",
+      "policy": false,
+      "wantPack": "security-cam"
+    }
+  ]
+}
