@@ -50,6 +50,11 @@
 
 На **Preview** проекта [ibm-cargo](https://vercel.com/tikhonbaruchs-projects/ibm-cargo) (Production alias этого имени — чужой сайт, не копировать как origin):
 
+- `DATABASE_URL` — Postgres **`newlsu_lbm`** на `pg4.sweb.ru:5433` (`sslmode=require`), **с seed** (`client@example.com` / `demo1234`). Пароль БД **без** `#` (это фрагмент URL, не символ пароля). Shape: [`database.md`](./database.md). Без seed вход даст CredentialsSignin; можно `/register`.
+- `NEXTAUTH_SECRET` (длинный random; можно то же значение, что `AUTH_SECRET`)
+- `NEXTAUTH_URL` — **не** `https://ibm-cargo.vercel.app`; на Preview лучше не копировать чужой/prod origin — код подставит branch URL
+- `NEXT_PUBLIC_SITE_URL` — origin Preview, не `ibm-cargo.vercel.app`
+
 1. **Settings → Environment Variables**
 2. Найти `DATABASE_URL` (часто стоит только **Production**)
 3. **Edit** → включить **Preview** (и Development, если нужно) → **Save**

@@ -11,11 +11,46 @@ SSL на prod: `sslmode=require` (при необходимости `uselibpqcom
 SUPER UI: блок «Инфраструктура и доступы» читает `DATABASE_URL` и опциональные `OPS_*` через `GET /api/admin/infra` (только `SUPER_ADMIN`). Seed-пароль в эту панель не кладём.
 
 ```env
-DATABASE_URL="postgresql://USER:<PASSWORD>@HOST:PORT/DB?schema=public&connect_timeout=15&sslmode=require"
+DATABASE_URL="postgresql://newlsu_lbm:YOUR_PASSWORD@pg4.sweb.ru:5433/newlsu_lbm?schema=public&connect_timeout=15&sslmode=require"
 ```
 
-**As-is (Ibm-cargo / `newlsu_lbm` на sweb):** пароль БД **без** символа `#` — в `DATABASE_URL` его можно писать как есть, `%23` не нужен.  
-Если позже снова появятся спецсимволы в пароле (`#`, `@`, `/`, …) — URL-encode (`#` → `%23`). Не коммитить боевой URL.
+Пароль — только `.env` / `.env.local` / Vercel. Не коммитить боевой URL. План: [`plan-sweb-db-url.md`](./plan-sweb-db-url.md).
+
+### As-is sweb (проверено 2026-08-26)
+
+| Поле | Значение |
+|------|----------|
+| Провайдер | Timeweb / sweb PostgreSQL |
+| Host | `pg4.sweb.ru` |
+| Port | **5433** (SSL). `5432` открыт, но TLS нет — `sslmode=require` падает на handshake |
+| User | `newlsu_lbm` |
+| Database | `newlsu_lbm` |
+| SSL | `sslmode=require` |
+| Пароль | **без** `#` `@` `/` — в URL как есть, `%23` не нужен |
+
+Ловушки при копировании строки:
+
+1. Символ `#` в «пароле» — это **фрагмент URL**, не часть пароля. `new URL(...)` → `Invalid URL`; Prisma → Authentication failed. Рабочий пароль = конкатенация **до и после** `#` (сам `#` выкинуть). **Не** кодировать `#` как `%23` — такая строка тоже даёт Authentication failed.
+2. Лишнее двоеточие `:5433:/newlsu_lbm` — тоже `Invalid URL` / invalid port. Нужно `:5433/newlsu_lbm`.
+3. `env -u DATABASE_URL` перед `npm run db:seed` / Prisma CLI, если в процессе уже стоит плейсхолдер Vercel `[SENSITIVE]` — `prisma.config.ts` / `loadEnvFile` его не перезапишет.
+
+Если позже в пароле появятся `#` `@` `/` — URL-encode (`#` → `%23`). На as-is sweb 2026-08-26 `%23` **не** нужен.
+
+### Где агентам брать `DATABASE_URL`
+
+Порядок (пароль не печатать, `.env*` не коммитить):
+
+| # | Источник | Когда |
+|---|----------|--------|
+| 1 | **`/workspace/.env`** (repo-root `.env` / `.env.local`) | **Канон.** Next.js и `prisma.config.ts` читают **cwd = корень репо**. Не удалять. |
+| 2 | **`/workspace/app/.env`** | **Дубликат канона** для агентов, которые открывают каталог `app/` (App Router, не пакет). Next/Prisma CLI этот файл **не** грузят. |
+| 3 | **`prisma/.env`** | Второй файл, который грузит Prisma CLI (`prisma.config.ts`), если файл есть. |
+| — | git | Секреты gitignored (`.env*` покрывает `app/.env` и `prisma/.env`). |
+| — | `vercel env pull` | Плейсхолдер `[SENSITIVE]` — Prisma: URL must start with `postgresql://`. Не источник пароля. |
+
+Проверка 2026-08-26 (Cloud VM): корневой `.env` — `$queryRaw SELECT current_database()` → `newlsu_lbm`. Тот же рабочий URL продублирован в `app/.env` и `prisma/.env` (gitignored). `process.env.DATABASE_URL=[SENSITIVE]` — fail. Сырой paste с `#` + `:5433:/db` — invalid port. `%23` и «пароль только до `#`» — Authentication failed.
+
+План: [`plan-sweb-db-url.md`](./plan-sweb-db-url.md).
 
 ## Схема и миграции
 

@@ -20,7 +20,7 @@
 **C32 DevEx:** полный чеклист Visit Preview + mock topup + SSO bypass — [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md).
 
 1. Push ветки → Vercel создаёт preview URL (`https://ibm-cargo-*-*.vercel.app`).
-2. Env: **зеркало** ключей — как минимум `DATABASE_URL` на **Preview** (часто переменная висит только на Production) → seeded Postgres `newlsu_lbm` (`client@example.com` / `demo1234`; пароль БД без `#`). Клики: [`plan-preview-auth.md`](./plan-preview-auth.md) §5. Проверка: `GET /health` → `databaseUrl: true`. Также `NEXTAUTH_SECRET`, не копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app`, `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, `S3_*`. Без seed вход даст «неверный пароль»; можно `/register`.
+2. Env: **зеркало** ключей — как минимум `DATABASE_URL` на **Preview** (часто переменная висит только на Production) → seeded Postgres `newlsu_lbm` на `pg4.sweb.ru:5433` (`client@example.com` / `demo1234`; пароль БД без `#` — канон [`database.md`](./database.md)). Клики: [`plan-preview-auth.md`](./plan-preview-auth.md) §5. Проверка: `GET /health` → `databaseUrl: true`. Также `NEXTAUTH_SECRET`, не копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app`, `NEXT_PUBLIC_SITE_URL`, `ALLOW_MOCK_TOPUP`, `S3_*`. Без seed вход даст «неверный пароль»; можно `/register`.
 3. Доступ: **Visit Preview** (SSO) **или** `VERCEL_AUTOMATION_BYPASS_SECRET` + header `x-vercel-protection-bypass` (C32b). Без этого curl/агент → `vercel.com/sso-api`.
 4. Smoke: при выключенном mock topup `smoke:mvp` падает на seeded `client@example.com` (баланс ≥ 1000 ₽). Полный signup→topup: `ALLOW_MOCK_TOPUP=1` + `mockTopupAllowed` в admin.
 

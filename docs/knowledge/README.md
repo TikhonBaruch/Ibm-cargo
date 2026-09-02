@@ -95,6 +95,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-vercel-services.md    # Vercel Services BFF; Root=.; post-hoist frontend.root=. (PR#5 app/ superseded)
   plan-ui-auth-stubs.md      # UI: RSC layout stubs + requirePathAccess (дыры без middleware)
   plan-preview-auth.md       # Preview NextAuth: чужой хост ibm-cargo.vercel.app; seed/DATABASE_URL; полные демо-email
+  plan-sweb-db-url.md        # Канон sweb DATABASE_URL: pg4.sweb.ru:5433 / newlsu_lbm (пароль не в git)
   plan-llm-fill-hints.md     # Client: attr chips + 👍 на черновик HS; broker similar precedents
   plan-field-suggest.md      # Client: local typeahead имя/страна/материал/бренд/состав
   plan-precedent-suggest-service.md  # Precedent typeahead container + query guard

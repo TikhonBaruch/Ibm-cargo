@@ -44,6 +44,8 @@ describe("Vercel root Next detection", () => {
     expect(config).toContain("defineConfig");
     expect(config).toContain("prisma/config");
     expect(config).toContain("prisma/seed.ts");
+    expect(config).toContain('[".env", "prisma/.env"]');
+    expect(config).not.toMatch(/loadEnvFile\(\s*["']app\/\.env["']\s*\)/);
     expect(config).not.toMatch(/postgresql:\/\//);
     const schema = fs.readFileSync(path.join(repoRoot, "prisma/schema.prisma"), "utf8");
     expect(schema).toContain('url      = env("DATABASE_URL")');

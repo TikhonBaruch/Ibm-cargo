@@ -6,7 +6,13 @@ Preview / результаты prod smoke: [`staging.md`](./staging.md). Пла�
 
 ## Local (Next + sweb DB)
 
-1. `.env` / `.env.local`: `DATABASE_URL` (sweb), `NEXTAUTH_*`, optional `S3_*`, optional `PAYMENTS_SERVICE_URL`.
+1. **Корень репо** `.env` / `.env.local` — канон `DATABASE_URL` на sweb (lookup [`database.md`](./database.md)). Дубликаты для агентов: `app/.env`, `prisma/.env` (gitignored; Next/Prisma CLI грузят корень). `NEXTAUTH_*`, optional `S3_*`, optional `PAYMENTS_SERVICE_URL`.
+
+   ```env
+   DATABASE_URL="postgresql://newlsu_lbm:YOUR_PASSWORD@pg4.sweb.ru:5433/newlsu_lbm?schema=public&connect_timeout=15&sslmode=require"
+   ```
+
+   Пароль без `#`. Не коммитить. Если в shell уже `DATABASE_URL=[SENSITIVE]`: `env -u DATABASE_URL npm run db:seed`.
 2. `npx prisma db push` · `npm run db:seed` (тарифы, demo client/broker/admin, баланс demo-клиента).
 3. `npm run dev` → http://localhost:3000  
 4. Mock topup: без `PAYMENTS_SERVICE_URL` в non-prod **или** `ALLOW_MOCK_TOPUP=1` (не включать на prod без stub/payments).
@@ -103,7 +109,7 @@ Local: `node containers/ocr/src/index.js` → `curl :4700/health` + extract.
 
 ## Vercel + sweb
 
-- `DATABASE_URL` → внешний Postgres (`sslmode=require`).
+- `DATABASE_URL` → `pg4.sweb.ru:5433` / `newlsu_lbm`, `sslmode=require` ([`database.md`](./database.md)). Пароль только в Vercel env.
 - After D26 commit: `npx prisma migrate deploy` (or `db push`) for `service_orchestration` (+ support ownership if missing).
 - S3_* → Yandex Object Storage; set `S3_OBJECT_ACL=public-read` (or public bucket) for thumbs.
 - **Do not** set `USE_DOMAIN_API` until C5 cutover (D22).

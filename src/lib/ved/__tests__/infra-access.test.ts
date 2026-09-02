@@ -19,6 +19,37 @@ describe("parsePostgresUrl", () => {
   it("handles missing url", () => {
     expect(parsePostgresUrl(undefined).present).toBe(false);
   });
+
+  it("parses as-is sweb LBM shape (password is a placeholder)", () => {
+    const p = parsePostgresUrl(
+      "postgresql://newlsu_lbm:secret@pg4.sweb.ru:5433/newlsu_lbm?schema=public&connect_timeout=15&sslmode=require"
+    );
+    expect(p.present).toBe(true);
+    expect(p.host).toBe("pg4.sweb.ru");
+    expect(p.port).toBe("5433");
+    expect(p.user).toBe("newlsu_lbm");
+    expect(p.database).toBe("newlsu_lbm");
+    expect(p.sslmode).toBe("require");
+  });
+
+  it("treats '#' in a pasted password as an unusable URL (fragment, not the sweb password)", () => {
+    const p = parsePostgresUrl(
+      "postgresql://u:xxxx#rest@pg4.sweb.ru:5433:/db"
+    );
+    expect(p.present).toBe(true);
+    expect(p.host).toBeUndefined();
+    expect(p.database).toBeUndefined();
+  });
+
+  it("treats extra colon after port as an unusable URL", () => {
+    const p = parsePostgresUrl(
+      "postgresql://u:secret@pg4.sweb.ru:5433:/newlsu_lbm?sslmode=require"
+    );
+    expect(p.present).toBe(true);
+    expect(p.host).toBeUndefined();
+    expect(p.port).toBeUndefined();
+    expect(p.database).toBeUndefined();
+  });
 });
 
 describe("buildInfraSections", () => {

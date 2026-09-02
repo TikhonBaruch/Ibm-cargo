@@ -25,7 +25,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 
 | Variable | Пример / заметка |
 |----------|------------------|
-| `DATABASE_URL` | Postgres (sweb или другой); URL-encode спецсимволы в пароле |
+| `DATABASE_URL` | Postgres (sweb `pg4.sweb.ru:5433/newlsu_lbm`, `sslmode=require`; пароль в Dashboard, не в git) · [`database.md`](./database.md) |
 | `NEXTAUTH_SECRET` | Длинный random secret |
 | `NEXTAUTH_URL` | origin **этого** деплоя (Preview branch URL). **Не** `https://ibm-cargo.vercel.app` — чужой проект |
 | `NEXT_PUBLIC_SITE_URL` | Тот же origin |
@@ -39,7 +39,7 @@ Preview / prod smoke: [`staging.md`](./staging.md). План: [`roadmap.md`](./r
 **Не** ставить на Vercel: `USE_DOMAIN_API=1`, docker DNS (`http://ai:4100`, `http://api:4000`).  
 **Qwen / DeepSeek on Vercel:** `LLM_PROVIDER=deepseek` + `DEEPSEEK_API_KEY` (+ optional `QWEN_API_KEY` / `QWEN_VISION_MODEL`) на Production+Preview. Next вызывает провайдеров напрямую (`provider-mesh`, кандидаты из `TnvedCode`); не нужен публичный `LLM_SERVICE_URL`. Create `maxDuration=60`. Fail-open + брокер-QC.
 
-**Preview:** скопировать тот же набор ключей (включая `S3_*` и auth). `DATABASE_URL` часто висит только на Production — включить **Preview** и Redeploy, иначе Prisma: `Environment variable not found: DATABASE_URL`. Значение — Postgres **`newlsu_lbm` с seed**; без seed `/login` даст «неверный пароль» (можно `/register`). NextAuth v4: задать **`NEXTAUTH_SECRET`** (не только `AUTH_SECRET`). На Preview не копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app` (чужой хост); код подставляет `VERCEL_BRANCH_URL`. Проверка: `GET /health` → `databaseUrl: true`. Канон: [`plan-preview-auth.md`](./plan-preview-auth.md).
+**Preview:** скопировать тот же набор ключей (включая `S3_*` и auth). `DATABASE_URL` часто висит только на Production — включить **Preview** и Redeploy, иначе Prisma: `Environment variable not found: DATABASE_URL`. Значение — Postgres **`newlsu_lbm`** на `pg4.sweb.ru:5433` с seed; без seed `/login` даст «неверный пароль» (можно `/register`). Пароль БД без `#` (символ в вставленной строке = фрагмент URL, не пароль). NextAuth v4: задать **`NEXTAUTH_SECRET`** (не только `AUTH_SECRET`). На Preview не копировать `NEXTAUTH_URL=https://ibm-cargo.vercel.app` (чужой хост); код подставляет `VERCEL_BRANCH_URL`. Проверка: `GET /health` → `databaseUrl: true`. Канон: [`plan-preview-auth.md`](./plan-preview-auth.md) · [`database.md`](./database.md).
 
 **Vercel Pro (2026-08-20):** `NEXT_PUBLIC_FACTORY_UI=1` на Production/Preview; cron `jobs-tick` каждые 15 мин (+ daily `sla-tick`). Build не делает `migrate deploy` — схема на sweb отдельно; не `WEB_SURFACE=slim`; не второй Postgres; Compose на Vercel не крутится. Отдельный проект `manufacturer` — ignore build + без git; UI `/manufacturer` из root. Канон: [`feature-cycle.md`](./feature-cycle.md) шаг 8.
 

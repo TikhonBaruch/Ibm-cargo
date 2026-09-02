@@ -10,7 +10,7 @@ coverage/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 
-# secrets & local env
+# secrets & local env (root, app/.env, prisma/.env — all matched by .env*)
 .env
 .env.local
 .env.development.local
@@ -19,6 +19,8 @@ tsconfig.tsbuildinfo
 .env.*.local
 .env*
 !.env.example
+app/.env
+prisma/.env
 lbm.txt
 
 # vercel / docker local
