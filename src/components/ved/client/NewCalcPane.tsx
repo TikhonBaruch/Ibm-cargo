@@ -534,7 +534,7 @@ export function NewCalcPane({
   );
 
   return (
-    <section className="wiz-full">
+    <section className="wiz-full" data-wiz-step={wizardStep} data-wiz-pack={isPack ? "1" : "0"}>
       <div className="wiz-head">
         <div>
           <Link href={homeHref} className="btn btn-ghost btn-sm">
@@ -711,13 +711,17 @@ export function NewCalcPane({
               : "Одна позиция: описание товара и документы. Код ТН ВЭД откроется после оплаты."}
           </p>
 
-          <div className="field">
+          <div className="field wiz-pack-field">
             <label>Режим</label>
             <div className="amt-chips">
               <button type="button" className={!isPack ? "on" : ""} onClick={() => pickPack("one")}>
                 Одна позиция · {fmtRub(payAmount)} ₽
               </button>
-              <button type="button" className={isPack ? "on" : ""} onClick={() => pickPack("m20")}>
+              <button
+                type="button"
+                className={`wiz-pack-multi${isPack ? " on" : ""}`}
+                onClick={() => pickPack("m20")}
+              >
                 Мультипозиция
               </button>
               {isPack ? (

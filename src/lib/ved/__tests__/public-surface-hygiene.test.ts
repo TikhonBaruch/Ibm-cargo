@@ -88,7 +88,7 @@ describe("public surface hygiene", () => {
     expect(src).not.toContain("HsCodeAutocomplete");
   });
 
-  it("keeps mobile client shell after desktop cl-side rules (C-mobile)", () => {
+  it("keeps mobile client shell after desktop cl-side rules (C-mobile / M1 tabbar)", () => {
     const css = fs.readFileSync(
       path.join(repoRoot, "src/lbm-bro/globals.css"),
       "utf8",
@@ -101,8 +101,17 @@ describe("public surface hygiene", () => {
     const mobileStrip = css.indexOf("Mobile strip AFTER desktop rules");
     expect(sideDesktop).toBeGreaterThan(-1);
     expect(mobileStrip).toBeGreaterThan(sideDesktop);
-    expect(live).toContain("cl-new-label");
+    expect(live).toContain("cl-tabbar");
+    expect(live).toContain("cl-tab-fab");
+    expect(live).toContain("display: none !important");
     expect(live).toContain("flex-wrap: wrap !important");
+    expect(live).toContain("lbm-m-hide");
+    expect(live).toContain("wiz-pack-multi");
+    expect(live).toContain('data-wiz-step="1"');
+    expect(live).toContain("orders-pane");
+    expect(live).toContain("order-next");
+    expect(live).toContain("order-chat");
+    expect(live).toContain("im-shell");
   });
 
   it("keeps a gap between stepper numbers and labels (C13)", () => {

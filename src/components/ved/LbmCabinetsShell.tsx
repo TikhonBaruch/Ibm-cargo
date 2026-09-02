@@ -12,6 +12,7 @@ import { useState, type ReactNode } from "react";
 import { Icon } from "@/lbm-bro/components/icon";
 import type { VedIconName, VedNavItem } from "./VedShell";
 import { clientNavHighlight, type LiveBellNote } from "./lbm-pane-visual";
+import { buildClientMobileTabs, clientMobileTabActive } from "./client/types";
 import "@/lbm-bro/globals.css";
 import "./lbm-cabinets-live.css";
 
@@ -146,6 +147,9 @@ export function LbmCabinetsShell({
   const [q, setQ] = useState("");
   const [notesOpen, setNotesOpen] = useState(false);
   const highlightHref = isClient ? clientNavHighlight(pathname, nav) : "";
+  const mobileTabs = isClient
+    ? buildClientMobileTabs(nav, { newHref: newCalcHref })
+    : null;
 
   function runSearch() {
     if (!onSearch) return;
@@ -303,6 +307,53 @@ export function LbmCabinetsShell({
               </div>
               <div className="cl-content">{children}</div>
             </div>
+            {mobileTabs ? (
+              <nav className="cl-tabbar" aria-label="Основная навигация">
+                {mobileTabs.tabs.slice(0, 2).map((tab) => {
+                  const active = clientMobileTabActive(pathname, tab, highlightHref);
+                  return (
+                    <Link
+                      key={tab.key}
+                      href={tab.href}
+                      className={`cl-tab${active ? " active" : ""}`}
+                      aria-current={active ? "page" : undefined}
+                    >
+                      <Icon name={tab.icon} />
+                      <span className="cl-tab-lbl">{tab.label}</span>
+                    </Link>
+                  );
+                })}
+                <Link href={mobileTabs.newHref} className="cl-tab cl-tab-new" aria-label="Новый просчёт">
+                  <span className="cl-tab-fab">
+                    <Icon name="plus" />
+                  </span>
+                  <span className="cl-tab-lbl">Новый</span>
+                </Link>
+                {mobileTabs.tabs.slice(2).map((tab) => {
+                  const active = clientMobileTabActive(pathname, tab, highlightHref);
+                  const badge =
+                    tab.key === "chat"
+                      ? nav.find((n) => n.label === "Чат" || n.label === "Поддержка")?.badge
+                      : undefined;
+                  return (
+                    <Link
+                      key={tab.key}
+                      href={tab.href}
+                      className={`cl-tab${active ? " active" : ""}`}
+                      aria-current={active ? "page" : undefined}
+                    >
+                      <span className="cl-tab-ico-wrap">
+                        <Icon name={tab.icon} />
+                        {badge != null && badge !== "" && Number(badge) !== 0 ? (
+                          <span className="cl-tab-badge">{badge}</span>
+                        ) : null}
+                      </span>
+                      <span className="cl-tab-lbl">{tab.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            ) : null}
           </div>
         ) : (
           <div className="app">

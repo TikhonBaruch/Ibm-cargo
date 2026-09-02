@@ -310,3 +310,51 @@ export function maxPositionsForTariffCode(code: string): number {
   if (code === "STANDARD") return 3;
   return 1;
 }
+
+/** Mobile tabbar destinations (M0d/M2a) — 4 tabs + center New CTA. */
+export type ClientMobileTab = {
+  key: "home" | "orders" | "chat" | "company";
+  href: string;
+  label: string;
+  icon: "home" | "list" | "message" | "user";
+};
+
+export function buildClientMobileTabs(
+  nav: Array<{ href: string; label: string }>,
+  opts?: { newHref?: string }
+): { tabs: ClientMobileTab[]; newHref: string } {
+  const find = (pred: (label: string) => boolean) => nav.find((n) => pred(n.label));
+  const home = find((l) => l === "Главная" || l === "Дашборд");
+  const orders = find((l) => l.startsWith("Заявки"));
+  const chat = find((l) => l === "Чат" || l === "Поддержка");
+  const company = find((l) => l === "Компания" || l === "Профиль");
+  const root = home?.href || nav[0]?.href || "/cabinet";
+  const base = root.replace(/\/$/, "") || "/cabinet";
+  const path = (suffix: string) => `${base}${suffix}`;
+  const tabs: ClientMobileTab[] = [
+    { key: "home", href: root, label: "Главная", icon: "home" },
+    { key: "orders", href: orders?.href || path("/orders"), label: "Заявки", icon: "list" },
+    { key: "chat", href: chat?.href || path("/support"), label: "Чат", icon: "message" },
+    { key: "company", href: company?.href || path("/profile"), label: "Компания", icon: "user" },
+  ];
+  return { tabs, newHref: opts?.newHref || path("/new") };
+}
+
+export function clientMobileTabActive(
+  pathname: string,
+  tab: ClientMobileTab,
+  highlightHref: string
+): boolean {
+  if (tab.key === "home") {
+    return highlightHref === tab.href || pathname === tab.href || pathname.replace(/\/$/, "") === tab.href.replace(/\/$/, "");
+  }
+  if (tab.key === "orders") {
+    return (
+      highlightHref === tab.href ||
+      pathname === tab.href ||
+      pathname.startsWith(`${tab.href}/`) ||
+      /\/new$/.test(pathname.replace(/\/$/, ""))
+    );
+  }
+  return highlightHref === tab.href || pathname === tab.href || pathname.startsWith(`${tab.href}/`);
+}

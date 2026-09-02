@@ -271,7 +271,7 @@ export function OrderDetail({
             </div>
           ) : null}
 
-          <div className="card" id="order-customs-form">
+          <div className="card lbm-m-hide" id="order-customs-form">
             <h3>Стоимость и налоги</h3>
             <p className="meta" style={{ margin: "0 0 14px" }}>
               Куда едет партия и условия поставки. Платежи справа — пошлина, НДС 22% и сбор ПП 1637.
@@ -365,13 +365,13 @@ export function OrderDetail({
                 ))}
               </div>
             ) : null}
-            <div className="dropzone order-hold-drop" aria-disabled>
+            <div className="dropzone order-hold-drop lbm-m-hide" aria-disabled>
               <strong>Добавить документ</strong>
               <span className="meta">CSV, PDF, JPG · до 12 МБ</span>
             </div>
           </div>
 
-          <div className="card">
+          <div className="card lbm-m-hide">
             <h3>Доплатить по этой заявке</h3>
             <p className="meta" style={{ margin: "0 0 14px" }}>
               Таможня и брокер — отдельные пакеты в макете. Здесь тариф уже выбран при создании.
@@ -404,7 +404,7 @@ export function OrderDetail({
             </div>
           </div>
 
-          <div className="order-svc order-hold-svc">
+          <div className="order-svc order-hold-svc lbm-m-hide">
             <div className="go-tile svc ship">
               <div className="gt-ico">
                 <Icon name="truck" />
@@ -547,7 +547,7 @@ export function OrderDetail({
                 Брокер появится после оплаты тарифа STANDARD/PRO (D11). EXPRESS — без очереди при high conf.
               </p>
             )}
-            {children}
+            {children ? <div className="order-chat">{children}</div> : null}
           </div>
 
           <div className="card">

@@ -153,15 +153,15 @@ export function DashboardPane({
 
   if (pane === "orders") {
     return (
-      <section>
+      <section className="orders-pane">
         <div className="card-head">
           <div>
             <h3 style={{ fontFamily: "var(--display)", fontSize: "1.2rem" }}>Заявки на просчёт</h3>
             <p>Карточки вместо таблицы — откройте любую, чтобы увидеть код, платежи и чат</p>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
-          <label style={{ flex: 1, minWidth: 260 }}>
+        <div className="orders-search" style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+          <label style={{ flex: 1, minWidth: 0 }}>
             <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--muted)", marginBottom: 6 }}>
               Поиск по №, товару, брокеру, HS и документам
             </span>
@@ -606,7 +606,7 @@ function OrdersTable({
       )}
       {!compact && c.status === "DONE" && (
         <a
-          className="btn btn-ghost btn-sm"
+          className="btn btn-primary btn-sm cl-order-pdf"
           href={`/api/v1/calculations/${c.id}/pdf`}
           target="_blank"
           rel="noreferrer"

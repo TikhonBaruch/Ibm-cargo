@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
-import { LandingAuthShell } from "@/components/landing/LandingAuthShell";
+import { LbmAuthShell } from "@/components/ved/LbmAuthShell";
 import { messageForAuthError, normalizeLoginEmail } from "@/lib/auth-login";
 
 export default function LoginPage() {
@@ -11,31 +10,17 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [dbMissing, setDbMissing] = useState(false);
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("error");
     if (code === "Configuration" || code === "Callback") {
       setError(messageForAuthError(code));
     }
-    fetch("/health")
-      .then((r) => r.json())
-      .then((j: { databaseUrl?: boolean }) => {
-        if (j?.databaseUrl === false) {
-          setDbMissing(true);
-          setError((prev) => prev || messageForAuthError("Callback"));
-        }
-      })
-      .catch(() => undefined);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (dbMissing) {
-      setError(messageForAuthError("Callback"));
-      return;
-    }
     setLoading(true);
     try {
       const result = await signIn("credentials", {
@@ -59,31 +44,22 @@ export default function LoginPage() {
       else window.location.href = "/admin";
     } catch {
       setLoading(false);
-      try {
-        const health = await fetch("/health").then((r) => r.json());
-        if (health?.databaseUrl === false) {
-          setDbMissing(true);
-          setError(messageForAuthError("Callback"));
-          return;
-        }
-      } catch {
-        /* keep generic */
-      }
       setError("Ошибка соединения");
     }
   };
 
   return (
-    <LandingAuthShell title="Вход в кабинет" subtitle="Email и пароль учётки LBM Брокер." active="login">
+    <LbmAuthShell title="Вход в кабинет" subtitle="Email и пароль учётки LBM Брокер." active="login">
       <form onSubmit={handleSubmit} noValidate>
-        {error && (
+        {error ? (
           <div className="pill warn" style={{ marginBottom: 14, display: "block", padding: "10px 14px" }}>
             {error}
           </div>
-        )}
+        ) : null}
         <div className="field">
-          <label>Email</label>
+          <label htmlFor="login-email">Email</label>
           <input
+            id="login-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -93,8 +69,9 @@ export default function LoginPage() {
           />
         </div>
         <div className="field">
-          <label>Пароль</label>
+          <label htmlFor="login-password">Пароль</label>
           <input
+            id="login-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -102,22 +79,14 @@ export default function LoginPage() {
             autoComplete="current-password"
           />
         </div>
-        <div className="modal-actions" style={{ justifyContent: "stretch", marginTop: 8 }}>
-          <button type="submit" className="btn btn-primary" disabled={loading || dbMissing} style={{ width: "100%" }}>
-            {loading ? "Вход…" : "Войти"}
-          </button>
-        </div>
+        <button type="submit" className="btn btn-primary" disabled={loading} style={{ marginTop: 8 }}>
+          {loading ? "Вход…" : "Войти"}
+        </button>
         <p className="auth-hint">
           Демо: client@example.com / broker@example.com / admin@example.com — пароль{" "}
           <code>demo1234</code>
-          {/* Hidden from this hint until restore is requested:
-              manufacturer@example.com / operator@example.com */}
-        </p>
-        <p className="auth-hint">
-          Нет аккаунта?{" "}
-          <Link href="/register">Регистрация</Link>
         </p>
       </form>
-    </LandingAuthShell>
+    </LbmAuthShell>
   );
 }
