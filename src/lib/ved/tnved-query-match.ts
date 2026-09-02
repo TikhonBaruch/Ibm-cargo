@@ -36,6 +36,7 @@ export const SHORT_TRIGGER_FALSE_FRIENDS: ReadonlyArray<{ stem: string; block: s
   { stem: "крем", block: "brulee" },
   { stem: "pod", block: "ipod" },
   { stem: "pod", block: "airpod" },
+  { stem: "стол", block: "столов" },
 ];
 
 /** Bare «перец» is spice/veg ambiguous (0904 vs 0709) — require sweet/bell qualifiers. */
@@ -46,7 +47,7 @@ export const PRODUCE_PEPPER_REQUIRE_QUALIFIER = true;
  * Canon: docs/knowledge/plan-hint-coverage-p0.md
  */
 const PLANT_DAIRY_RE =
-  /соев\w*|овсян\w*|миндальн\w*|кокосов\w*|рисов\w*|растительн\w*|plant[- ]?based|soy\s*(?:milk|yogurt|yoghurt)|oat\s*(?:milk|yogurt)|almond\s*(?:milk|yogurt)|coconut\s*(?:milk|yogurt)|rice\s*milk/i;
+  /соев\w*|овсян\w*|миндальн\w*|кокосов\w*|рисов\w*|орехов\w*|растительн\w*|plant[- ]?based|soy\s*(?:milk|yogurt|yoghurt)|oat\s*(?:milk|yogurt)|almond\s*(?:milk|yogurt)|coconut\s*(?:milk|yogurt)|hazelnut\s*(?:milk|yogurt)|nut\s*milk|rice\s*milk/i;
 
 /** Input device «мышь», not PC — blocks computers pack / laptop attr. */
 const POINTER_DEVICE_RE =
@@ -116,6 +117,14 @@ const WHEELCHAIR_RE =
 /** Raw fabric/yarn — not finished apparel packs. */
 const TEXTILES_RAW_RE =
   /ткань|пряжа|нитки|полотно\s+ткацк|fabric|(?:^|[^a-zа-я0-9])yarn(?:$|[^a-zа-я0-9])|(?:^|[^a-zа-я0-9])thread(?:$|[^a-zа-я0-9])/i;
+
+/** Yoga / exercise mat — not floor rug (570x). */
+const YOGA_MAT_RE =
+  /йог[аеи]|yoga\s*mat|exercise\s*mat|коврик\s+(?:для\s+)?(?:йог|фитнес|спорт)|(?:йог|фитнес)\w*\s+коврик/i;
+
+/** Finished apparel garment — хлопок as composition must not steal textiles-raw. */
+const FINISHED_APPAREL_RE =
+  /майк|футболк|худи|свитер|рубашк|брюк|джинс|юбк|куртк|плать|сарафан|носк|колгот|гольф|чулк|пижам|халат|плащ|пальто|пуховик|жилет|кардиган|водолазк/i;
 
 export function isPlantDairyQuery(query: string): boolean {
   return PLANT_DAIRY_RE.test(normalizeTnvedQueryText(query));
@@ -195,6 +204,14 @@ export function isWheelchairQuery(query: string): boolean {
 
 export function isTextilesRawQuery(query: string): boolean {
   return TEXTILES_RAW_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isYogaMatQuery(query: string): boolean {
+  return YOGA_MAT_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isFinishedApparelQuery(query: string): boolean {
+  return FINISHED_APPAREL_RE.test(normalizeTnvedQueryText(query));
 }
 
 export function normalizeTnvedQueryText(s: string): string {

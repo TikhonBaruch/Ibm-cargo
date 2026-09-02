@@ -136,6 +136,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-hint-chains-precision-audit.md # max precision: все C21 packs × cross-family; свежий/маринад
   plan-hint-coverage-p0.md            # coverage P0–P6: 53 packs; C11 gap probe
   plan-hint-coverage-expansion.md     # Cov-P7+: расширенный охват ~450 queries, WRONG detection
+  plan-hint-gap-probe-run.md          # прогон probe:hint-gap (golden + --full) · residual Cov-P13+
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
@@ -198,7 +199,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: связи кодов (C20) | [`plan-tnved-relations.md`](./plan-tnved-relations.md) · related overlay + children parentCode |
 | ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
 | ТН ВЭД: морфология / false friends | [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) · огурец≠йогурт · H1–H5 done |
-| ТН ВЭД: точность всех hint-packs | [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) · [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6) · [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) (Cov-P7+) |
+| ТН ВЭД: точность всех hint-packs | [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) · [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6) · [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) (Cov-P7+) · [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (прогон / P13+) |
 | Live UX результата AI (C22) | [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) · ai-run · disclaimer · conf |
 | Classify cascade C23–C27 | [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · cascade-v1 · classify-preview · import |
 | Следующий вектор C28+ | [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · ship · post-pay UX · слои B/D · quality · [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md) · **C35 brief** |
