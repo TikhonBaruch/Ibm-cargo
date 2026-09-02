@@ -60,6 +60,11 @@ describe("Clar-DB forklift / battery boost", () => {
     });
     expect(akb.attrs.hsHint).toMatch(/^8507/);
     expect(akb.attrs.extra?.vehicleKind).toBe("battery-only");
+    expect(akb.attrs.extra?.powerSource).toBe("battery-pack");
+
+    const traction = heuristicAttrSuggest({ name: "тяговый аккумулятор" });
+    expect(traction.attrs.hsHint).toMatch(/^8507/);
+    expect(traction.attrs.extra?.powerSource).toBe("battery-pack");
   });
 
   it("fingerprint includes powerSource / vehicleKind", () => {
