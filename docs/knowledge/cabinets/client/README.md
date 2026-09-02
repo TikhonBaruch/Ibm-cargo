@@ -3,7 +3,8 @@
 **Код:** `src/components/ved/ClientCabinet.tsx` + `src/components/ved/client/*`  
 **Routes web:** `app/cabinet/*` · **Extract:** `containers/client/app/*` (:3003, `NEXT_PUBLIC_CLIENT_BASE`)  
 **Flag:** `NEXT_PUBLIC_SHIPPING_UI` — UI «Перевозка» (default **off**)  
-**UI lab:** референс суперприложения на `/client` (`src/lbm-bro`). Live лицо — этот контейнер (`LbmCabinetsShell`). План: [`plan-lbm-bro-visual.md`](../../plan-lbm-bro-visual.md).
+**UI lab:** референс суперприложения на `/client` (`src/lbm-bro`). Live лицо — этот контейнер (`LbmCabinetsShell`). План: [`plan-lbm-bro-visual.md`](../../plan-lbm-bro-visual.md).  
+**Mobile (план до кода):** [`plan-mobile-client-lbm.md`](../../plan-mobile-client-lbm.md) — блок → login/password → D27 chain; визуал из lab `/client` (lbm-bro). As-is = responsive web, не RN/PWA.
 
 ## Nav (`getClientNav`)
 

@@ -49,6 +49,7 @@ const knowledgeRequired = [
   "docs/knowledge/design-interactive.md",
   "docs/knowledge/design-parity.md",
   "docs/knowledge/design-patterns.md",
+  "docs/knowledge/plan-mobile-client-lbm.md",
   "docs/knowledge/plan-lbm-bro-visual.md",
   "docs/knowledge/plan-lbm-bro-max-match.md",
   "docs/knowledge/plan-lbm-bro-tnved-dir.md",
