@@ -18,8 +18,9 @@
 | Ownership / пакеты (D35) | [`PACKAGES.md`](src/lib/ved/PACKAGES.md) · [`branches.md`](docs/knowledge/branches.md) |
 | AI / цепочки / D36 | [`plan-ai-chains-1-2-3.md`](docs/knowledge/plan-ai-chains-1-2-3.md) · [`environments.md`](docs/knowledge/environments.md) · [`plan-zero-llm-coupling.md`](docs/knowledge/plan-zero-llm-coupling.md) |
 | Backup taurus (D37) | [`plan-taurus-backup-core.md`](docs/knowledge/plan-taurus-backup-core.md) — **read-only, не трогать** |
-| UI (D14/D32) | [`design-patterns.md`](docs/knowledge/design-patterns.md) · [`ved-ui-patterns.mdc`](docs/knowledge/ved-ui-patterns.mdc) · lab [`plan-lbm-bro-visual.md`](docs/knowledge/plan-lbm-bro-visual.md) |
-| Notify | [`runbook.md`](docs/knowledge/runbook.md) §Notify · [`dual-path-parity.md`](docs/knowledge/dual-path-parity.md) |
+| UI (D14/D32) | [`design-patterns.md`](docs/knowledge/design-patterns.md) · [`ved-ui-patterns.mdc`](docs/knowledge/ved-ui-patterns.mdc) · lab [`plan-lbm-bro-visual.md`](docs/knowledge/plan-lbm-bro-visual.md) · Skill `.cursor/skills/ved-ui` |
+| Фронтенд-хандовер (другой ПК) | [`plan-frontend-handover.md`](docs/knowledge/plan-frontend-handover.md) · [`FRONTEND.md`](docs/handover/FRONTEND.md) · [`ved-frontend-boundary.mdc`](docs/knowledge/ved-frontend-boundary.mdc) |
+| Notify | [`runbook.md`](docs/knowledge/runbook.md) §Notify · [`dual-path-parity.md`](docs/knowledge/dual-path-parity.md) · Skill `.cursor/skills/ved-notify` |
 | Rules (локально) | Канон `docs/knowledge/ved-*.mdc`; в checkout: `npm run sync:cursor-rules` → `.cursor/rules/` (gitignored) |
 | As-is / деплой / тесты | [`current-app.md`](docs/knowledge/current-app.md) · [`deploy.md`](docs/knowledge/deploy.md) · [`testing-branches.md`](docs/knowledge/testing-branches.md) |
 
@@ -44,7 +45,7 @@
 5. LLM/OCR — opt-in URL / keys; UI не зовёт matrix.
 6. Platform gates (D28) · dual-path writers (D24) · BackgroundJob ≠ D8 FSM (D26).
 7. D33: без плана в KB — нет кода; без KB — задача не закрыта.
-8. Не коммитить `.env` / секреты.
+8. Не коммитить `.env` / секреты. Фронтенд-подрядчик: [`ved-frontend-boundary.mdc`](docs/knowledge/ved-frontend-boundary.mdc) — без инъекций и прямого доступа к БД / S3 / AI-контейнерам.
 9. **D36 (always):** LBM **отделён** от taurus/llm — nested `./llm` нет в git; свой `DATABASE_URL`; matrix = HTTP only; `containers/{llm,ocr}` LBM-owned.
 10. **D37 (always):** **taurus-liart** = backup ядра — **не deploy/smoke/migrate** из ibm-cargo.
 

@@ -391,11 +391,49 @@ for (const rule of [
   "docs/knowledge/ved-testing.mdc",
   "docs/knowledge/ved-ui-patterns.mdc",
   "docs/knowledge/ved-feature-cycle.mdc",
+  "docs/knowledge/ved-frontend-boundary.mdc",
+  "docs/handover/FRONTEND.md",
+  "docs/knowledge/plan-frontend-handover.md",
   "scripts/sync-cursor-rules.cjs",
   "docker-compose.chain-03.yml",
   "docs/knowledge/plan-llm-orch-run-chain.md",
 ]) {
   if (!exists(rule)) errors.push(`missing rule/artifact: ${rule}`);
+}
+
+{
+  const boundary = read("docs/knowledge/ved-frontend-boundary.mdc");
+  for (const needle of [
+    "alwaysApply: true",
+    "must not be weakened",
+    "DATABASE_URL",
+    "S3_*",
+    "containers/llm",
+    "containers/ocr",
+    "Prompt-injection",
+  ]) {
+    if (!boundary.includes(needle)) {
+      errors.push(`ved-frontend-boundary.mdc missing required phrase: ${needle}`);
+    }
+  }
+}
+
+{
+  const zipRel = "docs/handover/lbm-frontend-handover.zip";
+  if (exists(zipRel)) {
+    const { execFileSync } = require("node:child_process");
+    let listing = "";
+    try {
+      listing = execFileSync("unzip", ["-l", path.join(root, zipRel)], {
+        encoding: "utf8",
+      });
+    } catch (e) {
+      errors.push(`cannot list ${zipRel}: ${e && e.message ? e.message : e}`);
+    }
+    if (listing.includes("SECRETS-ENVELOPE.txt")) {
+      errors.push(`${zipRel} must not contain SECRETS-ENVELOPE.txt`);
+    }
+  }
 }
 
 if (errors.length) {

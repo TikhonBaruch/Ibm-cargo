@@ -109,6 +109,8 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-cabinets-ux-sprints.md    # UX Sprint 1–2: петли кабинетов (live)
   feature-cycle.md           # D33: идея → план → код → проверка → Hobby → KB
   ved-feature-cycle.mdc      # alwaysApply: без плана код не писать
+  ved-frontend-boundary.mdc  # alwaysApply: фронтенд-подрядчик, без инъекций в БД/S3/AI
+  plan-frontend-handover.md  # zip + GitHub/Vercel доступы без prod secrets
   admin-ops.md               # D28: toggles / integrations / cabinet UX / tnved·orch·finance / hide SUPER
   design.md                  # индекс UX / дизайн-KB
   design-baseline.md         # D14, токены, shell, IA
@@ -215,6 +217,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | Post-polish очередь (ops хвост → Growth) | [`roadmap.md`](./roadmap.md) §«Post-polish» · [`cabinets/shared/correctness.md`](./cabinets/shared/correctness.md) |
 | Техдолг / hardening после аудита | [`plan-tech-debt.md`](./plan-tech-debt.md) → migrate sweb → lint/tsc → WIP split |
 | Цикл любой фичи (**D33**, план до кода) | [`feature-cycle.md`](./feature-cycle.md) → dual-path → test:ci → smoke → Hobby → KB |
+| Фронтенд на другой ПК / Cursor (без БД/S3/AI) | [`plan-frontend-handover.md`](./plan-frontend-handover.md) · [`../handover/FRONTEND.md`](../handover/FRONTEND.md) · правило [`ved-frontend-boundary.mdc`](./ved-frontend-boundary.mdc) |
 | Кабинеты (D32 волны клиент→брокер→админ→супер) | [`plan-cabinets-d32.md`](./plan-cabinets-d32.md) · [`cabinets/`](./cabinets/) |
 | Конвейер расшифровки (схема логистов) | [`plan-ai-mesh.md`](./plan-ai-mesh.md) → [`ai-pipeline.md`](./ai-pipeline.md) · брокер навсегда; MVP D27 не ломать |
 | Глобальный горизонт (поиск ТН ВЭД → mesh → фото/ссылка → сборка) | [`plan-global.md`](./plan-global.md) · этап 1 = поиск HS; скрытое возвращается после этапа 3 |
