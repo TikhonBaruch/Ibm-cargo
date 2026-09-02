@@ -4,7 +4,7 @@
  */
 import { z } from "zod";
 import { fillEmptyProductAttrs, type ProductAttrs } from "./product-description";
-import { isPlantDairyQuery, isPointerDeviceQuery } from "./tnved-query-match";
+import { isPlantDairyQuery, isPointerDeviceQuery, isForkliftMachineQuery } from "./tnved-query-match";
 import { hintTreeQuestions, matchHintPack } from "./tnved-hint-trees";
 
 export const attrSuggestInputSchema = z.object({
@@ -285,6 +285,36 @@ const RULES: CatalogRule[] = [
     },
     notes: ["Пижамы и халаты — гл. 6107/6207 по материалу."],
   },
+  {
+    id: "forklift",
+    test: /(?:электро)?погрузчик|штабел[её]р|ричтрак|forklift|reach\s*truck|stacker/i,
+    attrs: {
+      material: "сталь / металлоконструкция",
+      composition: "уточните АКБ (Li-ion / Pb) или ДВС — встроенный источник не меняет код машины",
+      purpose: "складской погрузчик / тележка с подъёмом",
+      hsHint: "8427 10 100 0",
+      extra: { powerSource: "electric | ICE (уточните)", vehicleKind: "forklift" },
+    },
+    notes: [
+      "Погрузчики — 8427; возможен утильсбор (ПП 81).",
+      "Отдельный тяговый АКБ — 8507 (экосбор РОП), не код машины.",
+    ],
+  },
+  {
+    id: "traction-battery",
+    test: /(?:тягов[а-яa-z]*\s*аккумулятор)|(?:аккумулятор|акб|батарея).{0,40}(?:для|к)\s*(?:погруз|штабел|ричтрак|forklift)|(?:li-?ion|литий[-\s]?ион).{0,24}(?:аккумулятор|акб|батарея)|(?:аккумулятор|акб|батарея).{0,24}(?:li-?ion|литий[-\s]?ион|lifepo4)/i,
+    attrs: {
+      material: "элементы / корпус",
+      composition: "литий-ион / Pb / NiMH (уточните химию)",
+      purpose: "тяговый / сменный аккумулятор",
+      hsHint: "8507 60 000 0",
+      extra: { powerSource: "battery-pack", vehicleKind: "battery-only" },
+    },
+    notes: [
+      "Отдельные АКБ — 8507; экосбор РОП, не утильсбор ТС.",
+      "Погрузчик в сборе — 8427.",
+    ],
+  },
 ];
 
 function blob(input: AttrSuggestInput): string {
@@ -341,6 +371,9 @@ export function heuristicAttrSuggest(input: AttrSuggestInput): AttrSuggestResult
     if (!r.test.test(text)) return false;
     if (plantDairy && r.id === "milk") return false;
     if (pointer && r.id === "laptop") return false;
+    // Clar-DB: machine vs «АКБ для погрузчика» (substring «погрузчик» in both).
+    if (r.id === "forklift" && !isForkliftMachineQuery(text)) return false;
+    if (r.id === "traction-battery" && isForkliftMachineQuery(text)) return false;
     return true;
   });
   if (rule) return applyRule(rule, input);

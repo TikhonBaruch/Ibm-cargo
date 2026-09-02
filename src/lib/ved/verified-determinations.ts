@@ -65,6 +65,8 @@ export function buildCanonicalText(input: PrecedentMatchInput): string {
     input.attrs?.extra?.color,
     input.attrs?.extra?.ageGroup,
     input.attrs?.extra?.garmentType,
+    input.attrs?.extra?.powerSource,
+    input.attrs?.extra?.vehicleKind,
   ].filter(Boolean);
   return parts
     .join(" ")

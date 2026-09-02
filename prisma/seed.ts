@@ -5,6 +5,8 @@ import path from "path";
 import { PLATFORM_SETTING_KEYS } from "../src/lib/ved/domain";
 import { upsertTnvedBatch, type TnvedImportItem } from "../src/lib/ved/tnved";
 import { TNVED_DEMO_RATE_SOURCE } from "../src/lib/ved/tnved-fns";
+import { buildFingerprint } from "../src/lib/ved/verified-determinations";
+import type { ProductAttrs } from "../src/lib/ved/product-description";
 
 const prisma = new PrismaClient();
 const DEMO_PASSWORD = "demo1234";
@@ -21,6 +23,113 @@ async function seedTnvedDirectory() {
   });
   const { upserted } = await upsertTnvedBatch(prisma, pack.items);
   console.log("TN VED seeded: leaves", pack.leafCount, "upserts", upserted);
+}
+
+/** Clar-DB-4: demo БД-2 pairs so create can hit precedent without LLM (forklift ≠ AKB). */
+async function seedDemoPrecedents(brokerUserId: string) {
+  const rows: Array<{
+    name: string;
+    description: string;
+    attrs: ProductAttrs;
+    hsCodeFinal: string;
+    brokerComment: string;
+  }> = [
+    {
+      name: "Вилочный электропогрузчик",
+      description: "Самоходный погрузчик с вилочным захватом, встроенный Li-ion АКБ",
+      attrs: {
+        composition: "сталь; встроенный Li-ion аккумулятор",
+        purpose: "складской погрузчик",
+        hsHint: "8427 10 100 0",
+        originCountry: "CN",
+        extra: { powerSource: "electric", vehicleKind: "forklift" },
+      },
+      hsCodeFinal: "8427101000",
+      brokerComment: "Clar-DB seed: машина 8427, не АКБ 8507",
+    },
+    {
+      name: "Погрузчик дизельный вилочный",
+      description: "Самоходный погрузчик с ДВС",
+      attrs: {
+        composition: "сталь; двигатель дизельный",
+        purpose: "складской погрузчик ДВС",
+        hsHint: "8427 20 190 0",
+        originCountry: "CN",
+        extra: { powerSource: "ICE", vehicleKind: "forklift" },
+      },
+      hsCodeFinal: "8427201900",
+      brokerComment: "Clar-DB seed: прочие самоходные 8427 20",
+    },
+    {
+      name: "Тяговый литий-ионный аккумулятор для погрузчика",
+      description: "Сменный АКБ LiFePO4 для электропогрузчика",
+      attrs: {
+        composition: "литий-ион LiFePO4",
+        purpose: "тяговый аккумулятор",
+        hsHint: "8507 60 000 0",
+        originCountry: "CN",
+        extra: { powerSource: "battery-pack", vehicleKind: "battery-only" },
+      },
+      hsCodeFinal: "8507600000",
+      brokerComment: "Clar-DB seed: отдельный АКБ 8507, экосбор РОП",
+    },
+    {
+      name: "Аккумулятор литий-ионный",
+      description: "Перезаряжаемый Li-ion аккумулятор",
+      attrs: {
+        composition: "литий-ион",
+        purpose: "электрический аккумулятор",
+        hsHint: "8507 60 000 0",
+        originCountry: "CN",
+        extra: { powerSource: "battery-pack" },
+      },
+      hsCodeFinal: "8507600000",
+      brokerComment: "Clar-DB seed: Li-ion 8507 60",
+    },
+  ];
+
+  let upserted = 0;
+  for (const row of rows) {
+    const fingerprint = buildFingerprint({
+      name: row.name,
+      description: row.description,
+      attrs: row.attrs,
+    });
+    const digits = row.hsCodeFinal.replace(/\D/g, "");
+    const existing = await prisma.verifiedDetermination.findFirst({
+      where: { fingerprint },
+      orderBy: { approvedAt: "desc" },
+    });
+    if (existing) {
+      await prisma.verifiedDetermination.update({
+        where: { id: existing.id },
+        data: {
+          canonicalText: `${row.name} ${row.description}`.toLowerCase(),
+          attrsSnapshot: row.attrs,
+          hsCodeFinal: row.hsCodeFinal,
+          hsCodeDigits: digits,
+          brokerComment: row.brokerComment,
+          approvedByUserId: brokerUserId,
+          quality: "BROKER",
+        },
+      });
+    } else {
+      await prisma.verifiedDetermination.create({
+        data: {
+          fingerprint,
+          canonicalText: `${row.name} ${row.description}`.toLowerCase(),
+          attrsSnapshot: row.attrs,
+          hsCodeFinal: row.hsCodeFinal,
+          hsCodeDigits: digits,
+          brokerComment: row.brokerComment,
+          approvedByUserId: brokerUserId,
+          quality: "BROKER",
+        },
+      });
+    }
+    upserted += 1;
+  }
+  console.log("Demo precedents seeded:", upserted);
 }
 
 async function main() {
@@ -442,6 +551,8 @@ async function main() {
     },
     update: { moderationStatus: "APPROVED", acceptingJobs: true },
   });
+
+  await seedDemoPrecedents(broker.id);
 
   const mfgCompany = await prisma.company.upsert({
     where: { id: "seed-company-manufacturer" },

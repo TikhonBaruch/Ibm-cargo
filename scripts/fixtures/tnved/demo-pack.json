@@ -2,7 +2,7 @@
   "source": "fns-tnved4",
   "asOf": "2026-04-27",
   "layer": "A",
-  "leafCount": 59,
+  "leafCount": 61,
   "items": [
     {
       "code": "18",
@@ -291,6 +291,17 @@
       "notes": null
     },
     {
+      "code": "8427",
+      "codeDisplay": "84 27",
+      "level": 4,
+      "parentCode": "84",
+      "titleRu": "АВТОПОГРУЗЧИКИ С ВИЛОЧНЫМ ЗАХВАТОМ; ПРОЧИЕ ТЕЛЕЖКИ, ОСНАЩЕННЫЕ ПОДЪЕМНЫМ ИЛИ ТРАНСПОРТИРУЮЩИМ ОБОРУДОВАНИЕМ",
+      "titleEn": null,
+      "isLeaf": false,
+      "isActive": true,
+      "notes": "погрузчик, вилочный погрузчик, электропогрузчик, штабелер, ричтрак, forklift, works truck; утильсбор возможен (ПП 81); не путать с АКБ 8507"
+    },
+    {
       "code": "8471",
       "codeDisplay": "84 71",
       "level": 4,
@@ -321,7 +332,7 @@
       "titleEn": null,
       "isLeaf": false,
       "isActive": true,
-      "notes": null
+      "notes": "аккумулятор, батарея, АКБ, lithium, Li-ion, тяговый; экосбор РОП (не утильсбор ТС); не путать с погрузчиком 8427"
     },
     {
       "code": "8517",
@@ -692,6 +703,28 @@
       "level": 6,
       "parentCode": "8204",
       "titleRu": "- головки для гаечных ключей сменные, с ручками или без них",
+      "titleEn": null,
+      "isLeaf": false,
+      "isActive": true,
+      "notes": null
+    },
+    {
+      "code": "842710",
+      "codeDisplay": "84 27 10",
+      "level": 6,
+      "parentCode": "8427",
+      "titleRu": "- самоходные, с электрическим двигателем",
+      "titleEn": null,
+      "isLeaf": false,
+      "isActive": true,
+      "notes": null
+    },
+    {
+      "code": "842720",
+      "codeDisplay": "84 27 20",
+      "level": 6,
+      "parentCode": "8427",
+      "titleRu": "- прочие самоходные",
       "titleEn": null,
       "isLeaf": false,
       "isActive": true,
@@ -1275,6 +1308,28 @@
       "level": 8,
       "parentCode": "820420",
       "titleRu": "- головки для гаечных ключей сменные, с ручками или без них",
+      "titleEn": null,
+      "isLeaf": false,
+      "isActive": true,
+      "notes": null
+    },
+    {
+      "code": "84271010",
+      "codeDisplay": "84 27 10 10",
+      "level": 8,
+      "parentCode": "842710",
+      "titleRu": "- - автопогрузчики с вилочным захватом",
+      "titleEn": null,
+      "isLeaf": false,
+      "isActive": true,
+      "notes": null
+    },
+    {
+      "code": "84272019",
+      "codeDisplay": "84 27 20 19",
+      "level": 8,
+      "parentCode": "842720",
+      "titleRu": "- - прочие",
       "titleEn": null,
       "isLeaf": false,
       "isActive": true,
@@ -2104,6 +2159,42 @@
       }
     },
     {
+      "code": "8427101000",
+      "codeDisplay": "8427 10 100 0",
+      "level": 10,
+      "parentCode": "84271010",
+      "titleRu": "- - автопогрузчики с вилочным захватом",
+      "titleEn": null,
+      "isLeaf": true,
+      "isActive": true,
+      "notes": "погрузчик электрический, вилочный погрузчик, электропогрузчик, штабелер электрический, ричтрак, electric forklift; Li-ion/свинцовый АКБ встроен — код машины 8427, не 8507",
+      "rate": {
+        "code": "8427101000",
+        "dutyKind": "AD_VALOREM",
+        "dutyPct": null,
+        "vatPct": 22,
+        "source": "seed-demo-pack+fns-tnved4"
+      }
+    },
+    {
+      "code": "8427201900",
+      "codeDisplay": "8427 20 190 0",
+      "level": 10,
+      "parentCode": "84272019",
+      "titleRu": "- - прочие",
+      "titleEn": null,
+      "isLeaf": true,
+      "isActive": true,
+      "notes": "погрузчик дизельный, погрузчик бензиновый, вилочный погрузчик ДВС, forklift ICE; утильсбор возможен",
+      "rate": {
+        "code": "8427201900",
+        "dutyKind": "AD_VALOREM",
+        "dutyPct": null,
+        "vatPct": 22,
+        "source": "seed-demo-pack+fns-tnved4"
+      }
+    },
+    {
       "code": "8471300000",
       "codeDisplay": "8471 30 000 0",
       "level": 10,
@@ -2184,7 +2275,7 @@
       "titleEn": null,
       "isLeaf": true,
       "isActive": true,
-      "notes": "аккумулятор, батарея, lithium, АКБ",
+      "notes": "аккумулятор свинцово-кислотный стартерный, АКБ >5 кг, батарея Pb; не погрузчик 8427",
       "rate": {
         "code": "8507102003",
         "dutyKind": "AD_VALOREM",
@@ -2202,7 +2293,7 @@
       "titleEn": null,
       "isLeaf": true,
       "isActive": true,
-      "notes": "аккумулятор, батарея, lithium, АКБ",
+      "notes": "аккумулятор свинцово-кислотный, АКБ прочие, батарея Pb; не погрузчик 8427",
       "rate": {
         "code": "8507102009",
         "dutyKind": "AD_VALOREM",
@@ -2220,7 +2311,7 @@
       "titleEn": null,
       "isLeaf": true,
       "isActive": true,
-      "notes": "аккумулятор, батарея, lithium, АКБ",
+      "notes": "аккумулятор гидридно-никелевый, NiMH, батарея; не погрузчик 8427",
       "rate": {
         "code": "8507500000",
         "dutyKind": "AD_VALOREM",
@@ -2238,7 +2329,7 @@
       "titleEn": null,
       "isLeaf": true,
       "isActive": true,
-      "notes": "аккумулятор литий-ионный, батарея, powerbank, аккумулятор, батарея, lithium, АКБ",
+      "notes": "аккумулятор литий-ионный, Li-ion, LiFePO4, тяговый аккумулятор, АКБ для погрузчика, powerbank; отдельный АКБ — 8507, не код машины 8427",
       "rate": {
         "code": "8507600000",
         "dutyKind": "AD_VALOREM",

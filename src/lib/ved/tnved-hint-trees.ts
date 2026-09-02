@@ -27,6 +27,7 @@ import {
   isWheelchairQuery,
   isYogaMatQuery,
   isFinishedApparelQuery,
+  isForkliftMachineQuery,
 } from "./tnved-query-match";
 
 export type HintTreeOption = {
@@ -129,6 +130,8 @@ export function matchHintPack(desc: string): OverlayPack | null {
     if (/(?:^|[^a-zа-я0-9])led(?:$|[^a-zа-я0-9])|светодиод|лампочк/i.test(text) && pack.id === "lamps") {
       continue;
     }
+    // Clar-DB: погрузчик с АКБ ≠ batteries (8507); АКБ для погрузчика остаётся batteries.
+    if (isForkliftMachineQuery(text) && pack.id === "batteries") continue;
     const score = scoreKeys(text, pack.triggers || []);
     if (score > bestScore) {
       best = pack;
