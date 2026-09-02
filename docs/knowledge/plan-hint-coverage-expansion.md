@@ -584,7 +584,6 @@ Live H5–H7: human **post-deploy** on prod/preview — agent cannot SSO.
 
 **Layer G (card flags):** `8427` (погрузчики), `8429`/`8430`, `8701`… — `utilSborPossible` (ПП 81 / 1291). АКБ `8506`/`8507` — **экосбор РОП**, не утильсбор ТС.
 
-**Hint packs (gap):** нет pack для погрузчик / штабелер / ричтрак / электропогрузчик / экскаватор / бульдозер / трактор.  
-Запросы вида «погрузчик с литий-ионным аккумулятором» **STEAL → `batteries` (8506/8507)** — неверный HS-путь для машины.
+**Закрыто Clar-DB** ([`plan-ai-clarify-db-boost.md`](./plan-ai-clarify-db-boost.md)): pack `forklift-trucks` + guard skip `batteries`; demo-pack листья `8427101000` / `8427201900`; seed прецеденты машина≠АКБ.
 
-**Следствие:** утильсбор на карточке сработает только если код уже `8427*`; клиентский hint-path сейчас не ведёт к погрузчику. Follow-up: Cov-P20 self-propelled pack + guard «машина+АКБ ≠ batteries» (нужен ADR/секция плана перед кодом).
+**Ещё gap (hold):** экскаватор / бульдозер / трактор — нет dedicated pack (Layer G util на `8429`/`8430`/`8701` при известном коде).

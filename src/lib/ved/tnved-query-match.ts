@@ -214,6 +214,26 @@ export function isFinishedApparelQuery(query: string): boolean {
   return FINISHED_APPAREL_RE.test(normalizeTnvedQueryText(query));
 }
 
+/** Works truck / forklift as the product — not «АКБ для погрузчика». */
+const FORKLIFT_MACHINE_RE =
+  /(?:электро)?погрузчик|штабел[её]р|ричтрак|вилочн\w*\s*погруз|forklift|reach\s*truck|stacker/i;
+
+const TRACTION_BATTERY_PRIMARY_RE =
+  /^(?:аккумулятор|акб|батарея|тяговый)|(?:аккумулятор|акб|батарея|тягов\w*\s*аккумулятор)\w*(?:\s+\w+){0,6}\s+(?:для|к)\s+(?:погруз|штабел|ричтрак|forklift)/i;
+
+export function isForkliftMachineQuery(query: string): boolean {
+  const q = normalizeTnvedQueryText(query);
+  if (!FORKLIFT_MACHINE_RE.test(q)) return false;
+  if (TRACTION_BATTERY_PRIMARY_RE.test(q)) return false;
+  return true;
+}
+
+export function isTractionBatteryQuery(query: string): boolean {
+  const q = normalizeTnvedQueryText(query);
+  return TRACTION_BATTERY_PRIMARY_RE.test(q) ||
+    (/(?:аккумулятор|акб|батарея)/i.test(q) && /тягов/i.test(q));
+}
+
 export function normalizeTnvedQueryText(s: string): string {
   return String(s || "")
     .trim()

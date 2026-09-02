@@ -30,6 +30,7 @@
 | Dual-path / notify / gateway | [`dual-path-parity.md`](./dual-path-parity.md) · [`runbook.md`](./runbook.md) |
 | Цепочка шагов + live проверка | [`chain-verification.md`](./chain-verification.md) |
 | Прецеденты + CSV import (Growth local) | [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) |
+| Ускорение ИИ-уточнения через БД (Clar-DB) | [`plan-ai-clarify-db-boost.md`](./plan-ai-clarify-db-boost.md) |
 | OCR / PDF / vision (`imageBase64`) | [`plan-ocr-vision.md`](./plan-ocr-vision.md) |
 | Конвейер расшифровки (схема логистов) | [`plan-ai-mesh.md`](./plan-ai-mesh.md) |
 | Гладкий create / smoke S3 / compress | [`plan-smooth-create-path.md`](./plan-smooth-create-path.md) |
@@ -73,6 +74,7 @@ docs/knowledge/              # единая KB (этот каталог)
   roadmap.md                 # план работ + риски + статус фаз + post-polish очередь
   plan-mvp-polish.md         # поэтапный polish (без logistics/LLM/acquiring)
   plan-precedent-bulk.md     # БД-2 прецеденты + CSV/XLSX/PDF import (Growth local)
+  plan-ai-clarify-db-boost.md # Clar-DB: demo 8427/8507 + pack + seed precedents
   plan-ocr-vision.md         # OCR P2: text PDF done; imageBase64 vision hold + спринты
   plan-ai-mesh.md            # конвейер mesh (срезы 1–5) + срез 0: OpenAI-compatible профили
   plan-parallel-ownership.md # D35: пакеты domain/orch/mesh + model≠container
@@ -199,7 +201,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: связи кодов (C20) | [`plan-tnved-relations.md`](./plan-tnved-relations.md) · related overlay + children parentCode |
 | ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
 | ТН ВЭД: морфология / false friends | [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) · огурец≠йогурт · H1–H5 done |
-| ТН ВЭД: точность всех hint-packs | [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) · [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6) · [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) (Cov-P7+) · [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (прогон / P13+) |
+| ТН ВЭД: точность всех hint-packs | [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) · [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6) · [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) (Cov-P7+) · [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (прогон / P13+) · Clar-DB [`plan-ai-clarify-db-boost.md`](./plan-ai-clarify-db-boost.md) |
 | Live UX результата AI (C22) | [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) · ai-run · disclaimer · conf |
 | Classify cascade C23–C27 | [`plan-classify-cascade-c23.md`](./plan-classify-cascade-c23.md) · cascade-v1 · classify-preview · import |
 | Следующий вектор C28+ | [`plan-next-vector-c28.md`](./plan-next-vector-c28.md) · ship · post-pay UX · слои B/D · quality · [`plan-c32-preview-devex.md`](./plan-c32-preview-devex.md) · **C35 brief** |
