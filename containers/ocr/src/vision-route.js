@@ -5,7 +5,7 @@
 
 export function resolveVisionProvider(body = {}, env = process.env) {
   const raw = String(
-    body.chainId ?? body.chain ?? env.AI_CHAIN_ID ?? env.LLM_CHAIN_ID ?? "2"
+    body.chainId ?? body.chain ?? env.AI_CHAIN_ID ?? env.LLM_CHAIN_ID ?? "3"
   )
     .trim()
     .toLowerCase();

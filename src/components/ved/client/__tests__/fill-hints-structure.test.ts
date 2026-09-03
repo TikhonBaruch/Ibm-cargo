@@ -1,7 +1,7 @@
 /**
  * Extended fill-hints audit: layers that help the client fill a calculation.
  *
- * Live `/cabinet/new` (lbm-bro): description → country → C12/C21 clarify → apply.
+ * Live `/cabinet/new` (lbm-bro photo-first C36): photo → description → country → C12/C21 clarify → tariff.
  * Dashboard quick-calc: StageTip + FieldSuggest (precedent + local).
  * Orphaned UI (not mounted): AttrSuggestChips, HsHintCandidates, newCalcStageTip on NewCalc.
  *

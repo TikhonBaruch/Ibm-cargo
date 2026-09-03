@@ -638,7 +638,7 @@ export function ClientWizard() {
                     </div>
                   ) : isPack ? (
                     wizard.docs.length
-                      ? <span className="meta pack-read-fail">Не удалось вычитать позиции. Нужен CSV/Excel или более чёткое фото таблицы инвойса.</span>
+                      ? <span className="meta pack-read-fail">Не удалось вычитать позиции: скан размытый или плохо читается. Пришлите более чёткое фото таблицы либо файл CSV/Excel.</span>
                       : <span className="meta">Прикрепите invoice, CSV или фото — читаем реальные строки и считаем стоимость.</span>
                   ) : null}
                 </div>
@@ -1136,7 +1136,7 @@ export function ClientWizard() {
                 </span>
               </div>
             ) : wizard.docs.length ? (
-              <p className="meta pack-read-fail">Не удалось вычитать позиции. Попробуйте CSV/Excel или более чёткое фото таблицы.</p>
+              <p className="meta pack-read-fail">Не удалось вычитать позиции: скан размытый или плохо читается. Пришлите более чёткое фото таблицы либо файл CSV/Excel.</p>
             ) : null}
             <div className="pack-modal-actions">
               <button type="button" className="btn btn-ghost" onClick={resetMulti}>Очистить</button>

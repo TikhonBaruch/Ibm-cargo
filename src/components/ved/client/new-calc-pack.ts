@@ -102,6 +102,8 @@ type PreviewRow = {
   rowIndex: number;
   name: string;
   description?: string;
+  qty?: number;
+  unitPrice?: number;
   rowStatus: string;
   attrs?: FormItem["attrs"];
   hsCode?: string;
@@ -110,6 +112,8 @@ type PreviewRow = {
 type PreviewResponse = {
   rowCount: number;
   rows: PreviewRow[];
+  truncated?: boolean;
+  sourceCount?: number;
   error?: string;
 };
 
@@ -117,15 +121,38 @@ function isSheetFile(name: string): boolean {
   return /\.(csv|xlsx|xls|pdf)$/i.test(name);
 }
 
+function isImageFile(name: string, mime = ""): boolean {
+  if (/^image\/(jpeg|jpg|png|webp|gif)$/i.test(mime)) return true;
+  return /\.(jpe?g|png|webp|gif)$/i.test(name);
+}
+
+async function fileToBase64(file: File): Promise<string> {
+  const buf = await file.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]!);
+  return btoa(binary);
+}
+
 export async function previewPackFile(
   file: File,
   opts: { tariffCode: string; country?: string },
-): Promise<{ items: FormItem[]; rowCount: number }> {
-  if (!isSheetFile(file.name)) {
-    throw new Error("NEED_TABLE");
-  }
+): Promise<{ items: FormItem[]; rowCount: number; truncated?: boolean; sourceCount?: number }> {
+  const mime = file.type || "";
   let body: Record<string, unknown>;
-  if (/\.pdf$/i.test(file.name)) {
+
+  if (isImageFile(file.name, mime)) {
+    body = {
+      imageBase64: await fileToBase64(file),
+      mimeType: mime || "image/jpeg",
+      filename: file.name,
+      tariffCode: opts.tariffCode,
+      country: opts.country,
+      hint: "invoice packing list table",
+    };
+  } else if (!isSheetFile(file.name)) {
+    throw new Error("NEED_TABLE");
+  } else if (/\.pdf$/i.test(file.name)) {
     body = {
       pdfBase64: await fileToBase64(file),
       filename: file.name,
@@ -142,31 +169,38 @@ export async function previewPackFile(
   } else {
     body = { csv: await file.text(), tariffCode: opts.tariffCode, country: opts.country };
   }
+
   const res = await fetch("/api/v1/imports/products/preview", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  const data = (await res.json()) as PreviewResponse;
+  const data = (await res.json().catch(() => ({}))) as PreviewResponse;
   if (!res.ok) throw new Error(data.error || `Preview ${res.status}`);
   const usable = (data.rows || []).filter((r) => r.rowStatus !== "PARSE_ERROR" && r.name.trim());
+  if (usable.length < MIN_PACK) {
+    throw new Error(
+      data.error ||
+        (usable.length
+          ? `NEED_MORE_ROWS:${usable.length}`
+          : "No product rows found; need a header row with name/наименование")
+    );
+  }
   const items: FormItem[] = usable.map((r) => ({
     name: r.name,
-    qty: 1,
-    unitPrice: 0,
+    qty: r.qty && r.qty > 0 ? r.qty : 1,
+    unitPrice: r.unitPrice != null && r.unitPrice >= 0 ? r.unitPrice : 0,
     attrs: {
       ...r.attrs,
       composition: r.attrs?.composition || r.description || r.name,
       hsHint: r.hsCode || r.attrs?.hsHint,
     },
   }));
-  return { items, rowCount: data.rowCount || items.length };
+  return {
+    items,
+    rowCount: data.rowCount || items.length,
+    truncated: data.truncated,
+    sourceCount: data.sourceCount,
+  };
 }
 
-async function fileToBase64(file: File): Promise<string> {
-  const buf = await file.arrayBuffer();
-  const bytes = new Uint8Array(buf);
-  let binary = "";
-  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]!);
-  return btoa(binary);
-}

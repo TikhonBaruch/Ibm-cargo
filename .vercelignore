@@ -13,3 +13,6 @@ tsconfig.tsbuildinfo
 .env
 .env.local
 .env*.local
+
+lbm2.txt
+bd.txt

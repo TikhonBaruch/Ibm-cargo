@@ -23,6 +23,9 @@ import {
 } from "@/lib/ved/ai-classification-copy";
 import { clientOrderHsLabel, wizardStepClass } from "../lbm-pane-visual";
 import { AiRunCard } from "./AiRunCard";
+import { HsHintCandidates } from "./HsHintCandidates";
+import { HsLinesTable } from "@/lbm-bro/components/hs-lines";
+import type { HsLine } from "@/lbm-bro/lib/types";
 import type { HeuristicHsCandidate } from "@/lib/ved/ai-draft-engine";
 import { api } from "../VedShell";
 import { originCountrySelectOptions, resolveOriginCountryCode } from "@/lib/ved/field-suggest";
@@ -47,9 +50,46 @@ import {
   type PackMode,
 } from "./new-calc-pack";
 
+function formItemsToHsLines(items: FormItem[], currency = "USD"): HsLine[] {
+  return items
+    .filter((it) => it.name.trim())
+    .map((it, i) => ({
+      id: `pack-${i}-${it.name.slice(0, 12)}`,
+      n: i + 1,
+      name: it.name,
+      qty: it.qty != null && it.qty > 0 ? String(it.qty) : "1",
+      price: it.unitPrice != null && it.unitPrice >= 0 ? String(it.unitPrice) : "",
+      currency,
+      hs: it.attrs?.hsHint || "—",
+      conf: 0,
+      why: "",
+      risk: "",
+      status: it.attrs?.hsHint ? ("ok" as const) : ("wait" as const),
+    }));
+}
+
+function hsLinesToFormItems(lines: HsLine[], prev: FormItem[]): FormItem[] {
+  return lines.map((l, i) => {
+    const base = prev[i] || { name: "", qty: 1, unitPrice: 0 };
+    const qty = Number(String(l.qty).replace(",", "."));
+    const unitPrice = Number(String(l.price).replace(",", "."));
+    return {
+      ...base,
+      name: l.name.trim(),
+      qty: Number.isFinite(qty) && qty > 0 ? qty : 1,
+      unitPrice: Number.isFinite(unitPrice) && unitPrice >= 0 ? unitPrice : 0,
+      attrs: {
+        ...base.attrs,
+        composition: base.attrs?.composition?.trim() || l.name.trim(),
+        ...(l.hs && l.hs !== "—" ? { hsHint: l.hs } : {}),
+      },
+    };
+  });
+}
 const COUNTRY_OPTIONS = originCountrySelectOptions();
 
-function createBusyLabel(phase: CreatePhase, busy: boolean): string {
+function createBusyLabel(phase: CreatePhase, busy: boolean, photoVisionBusy = false): string {
+  if (photoVisionBusy) return "ИИ описывает товар…";
   if (phase === "uploading") return "Загружаем фото…";
   if (phase === "enriching") return "Уточняем ТН ВЭД…";
   if (phase === "paying") return "Оплата тарифа…";
@@ -110,7 +150,7 @@ export function NewCalcPane({
     opts?: { payAfter?: boolean; stayOnNew?: boolean }
   ) => void | Promise<Calc | void>;
   onPreferred: (id: string) => void;
-  onUpload: (file: File, index: number) => Promise<void>;
+  onUpload: (file: File, index: number) => Promise<string | void>;
 }) {
   void catalogSkus;
   const fileRef = useRef<HTMLInputElement>(null);
@@ -123,12 +163,18 @@ export function NewCalcPane({
   const [packModal, setPackModal] = useState(false);
   const [packReading, setPackReading] = useState(false);
   const [packFail, setPackFail] = useState(false);
+  const [packFailFromImage, setPackFailFromImage] = useState(false);
   const [packDocName, setPackDocName] = useState("");
+  const [packTruncated, setPackTruncated] = useState<{ kept: number; total: number } | null>(null);
+  const [packReadingImage, setPackReadingImage] = useState(false);
   const [clarifyQs, setClarifyQs] = useState<ClarificationQuestion[]>([]);
   const [clarifyAnswers, setClarifyAnswers] = useState<Record<string, string>>({});
   const [clarifyLoading, setClarifyLoading] = useState(false);
   const [clarifyAppliedIds, setClarifyAppliedIds] = useState<string[]>([]);
   const [postPayAlts, setPostPayAlts] = useState<HeuristicHsCandidate[]>([]);
+  const [hsCandidates, setHsCandidates] = useState<HeuristicHsCandidate[]>([]);
+  const [photoVisionBusy, setPhotoVisionBusy] = useState(false);
+  const [photoVisionNote, setPhotoVisionNote] = useState("");
   const isPack = packMode === "multi";
   const packId = packIdForLiveCode(
     isPack ? form.tariffCode || "STANDARD" : "EXPRESS"
@@ -147,7 +193,7 @@ export function NewCalcPane({
   const validSingle = desc.length >= 5;
   const validPack = packN >= MIN_PACK;
   const valid = isPack ? validPack : validSingle;
-  const uploading = createPhase === "uploading" || packReading;
+  const uploading = createPhase === "uploading" || packReading || photoVisionBusy;
   const goodsText = form.description || form.title;
   const clarifyEnabled = !isPack;
   const visibleClarifyQs = clarifyEnabled ? clarifyQs : [];
@@ -221,6 +267,44 @@ export function NewCalcPane({
       alive = false;
     };
   }, [wizardStep, selected]);
+
+  /** C26: heuristic TN VED hints while client fills description (pre-pay, single item). */
+  useEffect(() => {
+    if (isPack || wizardStep !== 1) {
+      setHsCandidates([]);
+      return;
+    }
+    const q = goodsText.trim();
+    if (q.length < 5) {
+      setHsCandidates([]);
+      return;
+    }
+    let alive = true;
+    const t = window.setTimeout(() => {
+      void api<{ items: Array<{ hsCode: string; confidence: number; why: string }> }>(
+        `/api/v1/tnved/classify-preview?q=${encodeURIComponent(q)}&limit=3`,
+      )
+        .then((res) => {
+          if (!alive) return;
+          const items = Array.isArray(res?.items) ? res.items : [];
+          setHsCandidates(
+            items.map((it, i) => ({
+              id: `pre-${it.hsCode}-${i}`,
+              hsCode: it.hsCode,
+              confidence: it.confidence,
+              why: it.why,
+            })),
+          );
+        })
+        .catch(() => {
+          if (alive) setHsCandidates([]);
+        });
+    }, 450);
+    return () => {
+      alive = false;
+      window.clearTimeout(t);
+    };
+  }, [goodsText, isPack, wizardStep]);
 
   useEffect(() => {
     if (!clarifyEnabled) return;
@@ -343,40 +427,109 @@ export function NewCalcPane({
     }
   };
 
-  const addPhoto = (list: FileList | null) => {
+  const addPhoto = async (list: FileList | null) => {
     const file = list?.[0];
-    if (!file) return;
-    void onUpload(file, 0);
+    if (!file || photoVisionBusy) return;
+    setPhotoVisionBusy(true);
+    setPhotoVisionNote("");
+    try {
+      const url = await onUpload(file, 0);
+      if (!url) return;
+      // Fail-open: do not use api() — 4xx must not wipe the upload.
+      const res = await fetch("/api/v1/imports/products/describe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mediaUrl: url, hint: goodsText.trim().slice(0, 120) }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        description?: string;
+        name?: string;
+        attrs?: FormItem["attrs"];
+        skipped?: boolean;
+        error?: string;
+      };
+      const text = typeof data.description === "string" ? data.description.trim() : "";
+      if (res.ok && text) {
+        const title =
+          data.name?.trim() || text.split(/[.!?\n]/)[0]?.trim().slice(0, 120) || text.slice(0, 80);
+        onForm({ title, description: text });
+        const base = items[0] || { name: "", qty: 1, unitPrice: 0 };
+        const next = [...items];
+        next[0] = {
+          ...base,
+          mediaUrl: url,
+          name: title || base.name,
+          attrs: {
+            ...base.attrs,
+            ...(data.attrs?.composition ? { composition: data.attrs.composition } : {}),
+            ...(data.attrs?.material ? { material: data.attrs.material } : {}),
+            ...(data.attrs?.purpose ? { purpose: data.attrs.purpose } : {}),
+            ...(data.attrs?.brand ? { brand: data.attrs.brand } : {}),
+          },
+        };
+        onItems(next);
+        setPhotoVisionNote("Описание заполнено по фото");
+      } else {
+        setPhotoVisionNote(
+          "Фото прикреплено. Описание ИИ недоступно — заполните наименование вручную."
+        );
+      }
+    } catch {
+      setPhotoVisionNote(
+        "Фото прикреплено. Не удалось описать товар — заполните наименование вручную."
+      );
+    } finally {
+      setPhotoVisionBusy(false);
+    }
   };
+
+  const packFailHint = packFailFromImage
+    ? "Не удалось вычитать позиции: скан размытый или плохо читается. Пришлите более чёткое фото таблицы либо файл CSV/Excel."
+    : "Не удалось вычитать позиции. Нужен CSV/Excel/PDF или более чёткое фото таблицы инвойса.";
 
   const addPackFile = async (list: FileList | null) => {
     const file = list?.[0];
     if (!file || packReading) return;
+    const fromImage =
+      /\.(jpe?g|png|webp|gif)$/i.test(file.name) || /^image\//i.test(file.type);
     setPackReading(true);
     setPackFail(false);
+    setPackFailFromImage(false);
+    setPackTruncated(null);
+    setPackReadingImage(fromImage);
     setPackDocName(file.name);
     try {
-      const { items: parsed } = await previewPackFile(file, {
+      const { items: parsed, truncated, sourceCount } = await previewPackFile(file, {
         tariffCode: picked.liveCode,
         country: countryLabel,
       });
       if (parsed.length < MIN_PACK) {
         setPackFail(true);
+        setPackFailFromImage(fromImage);
         onItems([{ name: "", qty: 1, unitPrice: 0 }]);
         return;
       }
       applyPackItems(parsed, file.name);
       setPackFail(false);
+      setPackFailFromImage(false);
+      if (truncated && sourceCount) {
+        setPackTruncated({ kept: parsed.length, total: sourceCount });
+      }
     } catch {
       setPackFail(true);
+      setPackFailFromImage(fromImage);
       onItems([{ name: "", qty: 1, unitPrice: 0 }]);
     } finally {
       setPackReading(false);
+      setPackReadingImage(false);
     }
   };
 
   const resetMulti = () => {
     setPackFail(false);
+    setPackFailFromImage(false);
+    setPackTruncated(null);
     setPackDocName("");
     onItems([{ name: "", qty: 1, unitPrice: 0 }]);
     onForm({ title: "", description: "" });
@@ -429,7 +582,7 @@ export function NewCalcPane({
         title,
         description: desc,
         country: countryLabel,
-        tariffCode: "EXPRESS",
+        tariffCode: picked.liveCode,
         preferredBrokerUserId,
       },
     };
@@ -499,17 +652,27 @@ export function NewCalcPane({
       >
         <strong>
           {packReading
-            ? "Читаем файл…"
+            ? packReadingImage
+              ? "Читаем фото инвойса…"
+              : "Читаем файл…"
             : kind === "photo"
               ? uploading
-                ? "Загружаем фото…"
+                ? photoVisionBusy
+                  ? "ИИ описывает товар…"
+                  : "Загружаем фото…"
                 : "Перетащите фото товара или сделайте снимок"
               : "Перетащите invoice, packing list или таблицу"}
         </strong>
         <span className="meta">
           {kind === "photo"
-            ? "JPG, PNG, WEBP · ИИ опишет товар · до 12 МБ"
-            : "CSV, PDF, JPG · читаем реальные позиции · до 12 МБ"}
+            ? photoVisionBusy
+              ? "DeepSeek vision · подставим описание для поиска кода"
+              : "JPG, PNG, WEBP · до 12 МБ"
+            : packReading
+              ? packReadingImage
+                ? "DeepSeek vision · позиции с фото…"
+                : "Таблица · извлекаем позиции…"
+              : "CSV, Excel, PDF, JPG · читаем реальные позиции · до 12 МБ"}
         </span>
         <div className="dropzone-actions" onClick={(e) => e.stopPropagation()}>
           <button
@@ -541,7 +704,7 @@ export function NewCalcPane({
             ← На главную
           </Link>
           <span className="go-kicker" style={{ display: "block", marginTop: 14 }}>
-            Просчёт кода ТН ВЭД ЕАЭС · код после оплаты
+            Просчёт кода ТН ВЭД ЕАЭС · этот просчёт только ТН ВЭД
           </span>
           <h2>{wizardTitles[wizardStep]}</h2>
         </div>
@@ -626,7 +789,7 @@ export function NewCalcPane({
                     onClick={payAndCreate}
                   >
                     {busy
-                      ? createBusyLabel(createPhase, busy)
+                      ? createBusyLabel(createPhase, busy, photoVisionBusy)
                       : `Оплатить ${fmtRub(payAmount)} ₽ и получить код`}
                   </button>
                 ) : (
@@ -639,12 +802,19 @@ export function NewCalcPane({
           ) : wizardStep === 3 && selected?.paidAt ? (
             <>
               <p className="wiz-lead">
-                {previewHasHs
-                  ? "Черновик кода готов. Финал подтверждает брокер (D15)."
-                  : "AI уточняет код — обновится через минуту."}
+                {previewHasHs && aiEnriching
+                  ? "Черновик кода — AI ещё уточняет. Финал подтверждает брокер (D15)."
+                  : previewHasHs
+                    ? "Черновик кода готов. Финал подтверждает брокер (D15)."
+                    : "AI уточняет код — обновится через минуту."}
               </p>
               {previewHasHs && selected ? (
                 <>
+                  {aiEnriching ? (
+                    <span className="pill warn" style={{ marginBottom: 10 }}>
+                      Уточняется
+                    </span>
+                  ) : null}
                   <div className="metric-row">
                     <div className="metric">
                       <div className="k">ТН ВЭД</div>
@@ -659,6 +829,11 @@ export function NewCalcPane({
                       </div>
                     ) : null}
                   </div>
+                  {aiEnriching ? (
+                    <p className="meta" style={{ marginTop: 10 }}>
+                      Предварительный черновик. Точный код обновится через 1–2 минуты.
+                    </p>
+                  ) : null}
                   {previewConf != null ? (
                     <div className="conf">
                       <i style={{ width: `${previewConf}%` }} />
@@ -708,14 +883,14 @@ export function NewCalcPane({
           <p className="wiz-lead">
             {isPack
               ? "Прикрепите инвойс, таблицу или фото — читаем реальные позиции и считаем стоимость."
-              : "Одна позиция: описание товара и документы. Код ТН ВЭД откроется после оплаты."}
+              : "Одна позиция: описание товара и документы для кода ТН ВЭД."}
           </p>
 
           <div className="field">
             <label>Режим</label>
             <div className="amt-chips">
               <button type="button" className={!isPack ? "on" : ""} onClick={() => pickPack("one")}>
-                Одна позиция · {fmtRub(payAmount)} ₽
+                Одна позиция
               </button>
               <button type="button" className={isPack ? "on" : ""} onClick={() => pickPack("m20")}>
                 Мультипозиция
@@ -735,11 +910,8 @@ export function NewCalcPane({
                 </span>
               </div>
             ) : isPack ? (
-              packDocName || packFail ? (
-                <span className="meta pack-read-fail">
-                  Не удалось вычитать позиции. Нужен CSV/Excel или более чёткое фото таблицы
-                  инвойса.
-                </span>
+              packFail ? (
+                <span className="meta pack-read-fail">{packFailHint}</span>
               ) : (
                 <span className="meta">
                   Прикрепите invoice, CSV или фото — читаем реальные строки и считаем стоимость.
@@ -786,66 +958,89 @@ export function NewCalcPane({
               {packN >= MIN_PACK ? (
                 <div className="field">
                   <label>Позиции и характеристики</label>
-                  <div className="doc-list">
-                    {items
-                      .filter((it) => it.name.trim())
-                      .map((it, i) => (
-                        <div key={`${it.name}-${i}`} className="doc-chip">
-                          <div className="doc-info">
-                            <b>
-                              {i + 1}. {it.name}
-                            </b>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+                  {packTruncated ? (
+                    <p className="meta" style={{ margin: "0 0 8px" }}>
+                      На фото ~{packTruncated.total} строк — взяли первые {packTruncated.kept} по лимиту
+                      тарифа. Можно поправить наименование, количество и цену.
+                    </p>
+                  ) : (
+                    <p className="meta" style={{ margin: "0 0 8px" }}>
+                      Строки с файла/фото. Проверьте наименования, количество и цену.
+                    </p>
+                  )}
+                  <HsLinesTable
+                    lines={formItemsToHsLines(items)}
+                    editable
+                    onChange={(lines) => {
+                      const next = hsLinesToFormItems(lines, items);
+                      onItems(next.slice(0, picked.max));
+                      onForm({
+                        title: next[0]?.name.slice(0, 120) || form.title,
+                        description: form.description.trim() || `Пакет ${next.length} позиций`,
+                      });
+                    }}
+                  />
                 </div>
               ) : null}
-              <div className="field" style={{ marginTop: 22 }}>
-                <label>Тариф просчёта кода ТН ВЭД</label>
-                <p className="meta" style={{ margin: "0 0 10px" }}>
-                  Сначала считаем только код. Таможню — пошлину и НДС — после кода, отдельным шагом.
-                </p>
-                <div className="tariff-pick">
-                  {packs.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      className={`${picked.id === t.id ? "on" : ""}${t.featured ? " featured" : ""}`}
-                      onClick={() => pickPack(t.id)}
-                    >
-                      <span className="tariff-tag">{t.tag}</span>
-                      <strong>{t.name}</strong>
-                      <div className="tariff-price">
-                        {fmtRub(t.priceRub)} ₽
-                        <small>{t.id === "one" ? "/ 1 позиция" : `/ до ${t.max} поз.`}</small>
-                      </div>
-                      <p>{t.summary}</p>
-                      <ul>
-                        {t.includes.map((line) => (
-                          <li key={line}>{line}</li>
-                        ))}
-                      </ul>
-                    </button>
-                  ))}
-                </div>
-                <div className="tariff-note">
-                  <strong>{picked.name}:</strong> {fmtRub(picked.priceRub)} ₽ за просчёт кодов, без
-                  таможни.
-                </div>
-              </div>
             </>
           ) : (
             <>
+              <div className="field">
+                <label>Фото товара</label>
+                <p className="meta" style={{ margin: "0 0 10px" }}>
+                  Загрузите фото — ИИ распознает товар, заполнит описание и спросит, чего не хватает
+                  для кода.
+                </p>
+                {dropzone("photo", fileRef, camRef)}
+                {photoUrl ? (
+                  <div className="doc-list">
+                    <div className="doc-chip">
+                      <a href={photoUrl} target="_blank" rel="noreferrer" className="doc-thumb">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={photoUrl} alt="" />
+                      </a>
+                      <div className="doc-info">
+                        <b>Фото товара</b>
+                        <span className="meta">
+                          {photoVisionBusy ? "ИИ описывает…" : "прикреплено"}
+                        </span>
+                      </div>
+                      <span className="pill ok">Фото</span>
+                    </div>
+                  </div>
+                ) : null}
+                {photoVisionNote ? (
+                  <p className="meta" style={{ margin: "8px 0 0" }}>
+                    {photoVisionNote}
+                  </p>
+                ) : null}
+              </div>
               <div className="field">
                 <label>Наименование и описание</label>
                 <textarea
                   rows={5}
                   style={{ minHeight: 132, resize: "vertical" }}
-                  placeholder="Ноутбуки Lenovo ThinkPad, 14'', для офиса — или загрузите фото ниже"
+                  placeholder="Или опишите сами: ноутбуки Lenovo ThinkPad, 14'' — либо загрузите фото выше"
                   value={form.description || form.title}
                   onChange={(e) => setGoodsText(e.target.value)}
                 />
+                {hsCandidates.length ? (
+                  <div style={{ marginTop: 12 }}>
+                    <HsHintCandidates
+                      candidates={hsCandidates}
+                      selectedHs={items[0]?.attrs?.hsHint}
+                      onPick={(hsCode) => {
+                        const next = [...items];
+                        if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
+                        next[0] = {
+                          ...next[0],
+                          attrs: { ...next[0].attrs, hsHint: hsCode },
+                        };
+                        onItems(next);
+                      }}
+                    />
+                  </div>
+                ) : null}
               </div>
               <div className="field">
                 <label>Страна происхождения</label>
@@ -923,30 +1118,42 @@ export function NewCalcPane({
                   </div>
                 </div>
               ) : null}
-              <div className="field">
-                <label>Документы и фото</label>
-                <p className="meta" style={{ margin: "0 0 10px" }}>
-                  Перетащите фото товара или сделайте снимок — ИИ поможет уточнить код.
-                </p>
-                {dropzone("photo", fileRef, camRef)}
-                {photoUrl ? (
-                  <div className="doc-list">
-                    <div className="doc-chip">
-                      <a href={photoUrl} target="_blank" rel="noreferrer" className="doc-thumb">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={photoUrl} alt="" />
-                      </a>
-                      <div className="doc-info">
-                        <b>Фото товара</b>
-                        <span className="meta">прикреплено</span>
-                      </div>
-                      <span className="pill ok">Фото</span>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
             </>
           )}
+
+          <div className="field" style={{ marginTop: 22 }}>
+            <label>Тариф просчёта кода ТН ВЭД</label>
+            <p className="meta" style={{ margin: "0 0 10px" }}>
+              Сначала считаем только код. Таможню — пошлину и НДС — после кода, отдельным шагом.
+            </p>
+            <div className="tariff-pick">
+              {packs.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`${picked.id === t.id ? "on" : ""}${t.featured ? " featured" : ""}`}
+                  onClick={() => pickPack(t.id)}
+                >
+                  <span className="tariff-tag">{t.tag}</span>
+                  <strong>{t.name}</strong>
+                  <div className="tariff-price">
+                    {fmtRub(t.priceRub)} ₽
+                    <small>{t.id === "one" ? "/ 1 позиция" : `/ до ${t.max} поз.`}</small>
+                  </div>
+                  <p>{t.summary}</p>
+                  <ul>
+                    {t.includes.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                </button>
+              ))}
+            </div>
+            <div className="tariff-note">
+              <strong>{picked.name}:</strong> {fmtRub(picked.priceRub)} ₽ за просчёт кодов, без
+              таможни.
+            </div>
+          </div>
 
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
             <button
@@ -955,7 +1162,7 @@ export function NewCalcPane({
               disabled={busy || !valid}
               onClick={tryCreate}
             >
-              {createBusyLabel(createPhase, busy)}
+              {createBusyLabel(createPhase, busy, photoVisionBusy)}
             </button>
             {isPack ? (
               <button
@@ -985,7 +1192,7 @@ export function NewCalcPane({
               <div className="order-hs-copy">
                 <span className="gt-kicker">
                   {wizardStep >= 3 && previewHasHs && selected
-                    ? classificationHeroKicker(selected, false)
+                    ? classificationHeroKicker(selected, aiEnriching)
                     : wizardStep < 3
                       ? isPack
                         ? packN
@@ -1009,8 +1216,10 @@ export function NewCalcPane({
                 ) : null}
                 <p>
                   {wizardStep >= 3 && previewHasHs && selected
-                    ? classificationWhyBody(selected).slice(0, 160) +
-                      (classificationWhyBody(selected).length > 160 ? "…" : "")
+                    ? aiEnriching
+                      ? "Предварительный черновик. Точный код обновится через 1–2 минуты."
+                      : classificationWhyBody(selected).slice(0, 160) +
+                        (classificationWhyBody(selected).length > 160 ? "…" : "")
                     : wizardStep === 2
                       ? picked.summary
                       : isPack
@@ -1087,10 +1296,10 @@ export function NewCalcPane({
                   <small> · до {picked.max} строк</small>
                 </span>
               </div>
-            ) : packDocName || packFail ? (
-              <p className="meta pack-read-fail">
-                Не удалось вычитать позиции. Попробуйте CSV/Excel или более чёткое фото таблицы.
-              </p>
+            ) : packFail ? (
+              <p className="meta pack-read-fail">{packFailHint}</p>
+            ) : packDocName ? (
+              <p className="meta">{packDocName} · прикреплён</p>
             ) : null}
             <div className="pack-modal-actions">
               <button type="button" className="btn btn-ghost" onClick={resetMulti}>

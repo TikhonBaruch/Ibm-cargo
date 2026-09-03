@@ -1,5 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import * as XLSX from "xlsx";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import {
   parseProductCsv,
@@ -40,6 +42,59 @@ describe("product-import", () => {
     expect(mapped).toHaveLength(1);
     expect(mapped[0].name).toBe("Ноутбук Apple");
     expect(mapped[0].attrs?.brand).toBe("Apple");
+  });
+
+  it("mapCsvToRows uses description as name when name column missing (C37b)", () => {
+    const mapped = mapCsvToRows(
+      ["description", "qty", "price"],
+      [
+        ["Cotton T-shirt", "800", "3.1"],
+        ["Mens polo shirt", "240", "5.6"],
+      ]
+    );
+    expect(mapped).toHaveLength(2);
+    expect(mapped[0].name).toBe("Cotton T-shirt");
+    expect(mapped[0].qty).toBe(800);
+    expect(mapped[0].unitPrice).toBe(3.1);
+    expect(mapped[0].description).toBeUndefined();
+  });
+
+  it("sample invoice-positions.xlsx maps via description column", () => {
+    const buf = readFileSync(
+      resolve(__dirname, "../../../../public/lbm-bro/samples/invoice-positions.xlsx")
+    );
+    const table = parseProductXlsx(buf);
+    const mapped = mapCsvToRows(table.headers, table.rows);
+    expect(mapped.length).toBeGreaterThanOrEqual(2);
+    expect(mapped[0].name.toLowerCase()).toContain("t-shirt");
+  });
+
+  it("sheetTableFromText parses numbered invoice lines and drops header noise (C37b)", () => {
+    const table = sheetTableFromText(`
+COMMERCIAL INVOICE LBM-TEST-01
+Seller: Shenzhen Cargo Ltd Buyer: LBM Broker
+1 Cotton T-shirt 800 3.10
+2 Mens polo shirt 240 5.60
+3 Leather sneakers 120 28.00
+Currency USD Incoterm FOB Shenzhen
+`);
+    const mapped = mapCsvToRows(table.headers, table.rows);
+    expect(mapped.length).toBe(3);
+    expect(mapped[0].name).toBe("Cotton T-shirt");
+    expect(mapped[0].qty).toBe(800);
+    expect(mapped[0].unitPrice).toBe(3.1);
+    expect(mapped.every((r) => !/invoice|seller|currency/i.test(r.name))).toBe(true);
+  });
+
+  it("sample invoice-positions.pdf maps product rows", async () => {
+    const buf = readFileSync(
+      resolve(__dirname, "../../../../public/lbm-bro/samples/invoice-positions.pdf")
+    );
+    const table = await parseProductPdf(buf);
+    const mapped = mapCsvToRows(table.headers, table.rows);
+    expect(mapped.length).toBeGreaterThanOrEqual(2);
+    expect(mapped.some((r) => /t-shirt|polo|thinkpad/i.test(r.name))).toBe(true);
+    expect(mapped.every((r) => !/^commercial invoice/i.test(r.name))).toBe(true);
   });
 
   it("parseProductXlsx reads first sheet", () => {

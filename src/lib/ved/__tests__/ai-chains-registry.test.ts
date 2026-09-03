@@ -6,9 +6,9 @@ import {
 } from "../chains";
 
 describe("AI chains registry", () => {
-  it("defaults to chain 2 (qwen-deepseek)", () => {
-    expect(resolveAiChainId({})).toBe(2);
-    expect(AI_CHAINS[2].slug).toBe("qwen-deepseek");
+  it("defaults to chain 3 (deepseek vision + classify)", () => {
+    expect(resolveAiChainId({})).toBe(3);
+    expect(AI_CHAINS[3].slug).toBe("deepseek");
   });
 
   it("resolves numeric and slug aliases", () => {

@@ -31,4 +31,20 @@ describe("ai-drain-client", () => {
     expect(n).toBe(2);
     expect((out.aiDraft as { llmEnrich?: string }).llmEnrich).toBe("llm-openai-v1");
   });
+
+  it("payAfter-sized timeout returns while still pending (C39)", async () => {
+    type Calc = { id: string; aiDraft?: { llmEnrichPending?: boolean } };
+    const seed: Calc = { id: "c2", aiDraft: { llmEnrichPending: true } };
+    let polls = 0;
+    const out = await waitForAiEnrich(
+      seed,
+      async () => {
+        polls += 1;
+        return { id: "c2", aiDraft: { llmEnrichPending: true } } satisfies Calc;
+      },
+      { intervalMs: 20, timeoutMs: 50 }
+    );
+    expect(polls).toBeGreaterThanOrEqual(1);
+    expect(isAiDrainPending(out)).toBe(true);
+  });
 });

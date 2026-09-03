@@ -42,15 +42,15 @@ export const AI_CHAINS: Record<AiChainId, AiChainMeta> = {
   },
 };
 
-/** Resolve active chain. Default 2 (prod hybrid). */
+/** Resolve active chain. Default 3 (DeepSeek vision + classify). */
 export function resolveAiChainId(env: EnvBag = process.env): AiChainId {
-  const raw = String(env.AI_CHAIN_ID || env.LLM_CHAIN_ID || "2").trim().toLowerCase();
+  const raw = String(env.AI_CHAIN_ID || env.LLM_CHAIN_ID || "3").trim().toLowerCase();
   if (raw === "1" || raw === "nvidia") return 1;
   if (raw === "3" || raw === "deepseek") return 3;
   if (raw === "2" || raw === "qwen-deepseek" || raw === "hybrid") return 2;
   const n = Number(raw);
   if (n === 1 || n === 2 || n === 3) return n as AiChainId;
-  return 2;
+  return 3;
 }
 
 export function aiChainMeta(id: AiChainId = resolveAiChainId()): AiChainMeta {

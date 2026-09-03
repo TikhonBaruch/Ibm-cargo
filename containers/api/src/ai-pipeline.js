@@ -7,13 +7,13 @@ import { isAllowedMediaUrl } from "./media-url.js";
 import { shouldSkipLlmClassify } from "./llm-skip-gate.js";
 
 function resolveAiChainId(env = process.env) {
-  const raw = String(env.AI_CHAIN_ID || env.LLM_CHAIN_ID || "2").trim().toLowerCase();
+  const raw = String(env.AI_CHAIN_ID || env.LLM_CHAIN_ID || "3").trim().toLowerCase();
   if (raw === "1" || raw === "nvidia") return 1;
   if (raw === "3" || raw === "deepseek") return 3;
   if (raw === "2" || raw === "qwen-deepseek" || raw === "hybrid") return 2;
   const n = Number(raw);
   if (n === 1 || n === 2 || n === 3) return n;
-  return 2;
+  return 3;
 }
 
 export function shouldEnqueueAiDrain(settings, env = process.env) {

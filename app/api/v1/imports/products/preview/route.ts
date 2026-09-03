@@ -23,15 +23,27 @@ import { buildCascadeDraft } from "@/lib/ved/tnved-classify";
 import { maxPositionsForTariff } from "@/lib/ved/domain";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import type { TariffCode } from "@prisma/client";
+import {
+  extractTableFromVisionImage,
+  isImageImportFilename,
+  sheetTableFromVisionItems,
+  visionImportConfigured,
+} from "@/lib/ved/import-vision-table";
+
+/** Vision + PDF parse can exceed the default Hobby kill; crash page shows Request ID. */
+export const maxDuration = 120;
 
 const jsonSchema = z.object({
   csv: z.string().min(1).max(500_000).optional(),
   xlsxBase64: z.string().min(1).max(2_000_000).optional(),
   pdfBase64: z.string().min(1).max(4_000_000).optional(),
+  imageBase64: z.string().min(32).max(6_000_000).optional(),
+  mimeType: z.string().max(80).optional(),
   filename: z.string().max(200).optional(),
   tariffCode: z.enum(["EXPRESS", "STANDARD", "PRO"]).optional(),
   country: z.string().optional(),
   shipmentValue: z.string().optional(),
+  hint: z.string().max(240).optional(),
 });
 
 async function tableFromOcrService(
@@ -93,6 +105,7 @@ async function tableFromRequest(req: NextRequest): Promise<{
   tariffCode?: string;
   country?: string;
   shipmentValue?: string;
+  source?: "vision" | "sheet";
 }> {
   const ct = req.headers.get("content-type") || "";
   if (ct.includes("multipart/form-data")) {
@@ -101,15 +114,31 @@ async function tableFromRequest(req: NextRequest): Promise<{
     if (!(file instanceof File)) throw new Error("file required");
     const buf = Buffer.from(await file.arrayBuffer());
     let table: SheetTable;
+    let source: "vision" | "sheet" = "sheet";
     if (isPdfFilename(file.name)) {
       table = await tableFromPdf(buf, file.name);
     } else if (isXlsxFilename(file.name)) {
       table = parseProductXlsx(buf);
+    } else if (isImageImportFilename(file.name, file.type)) {
+      if (!visionImportConfigured()) {
+        throw new Error("Vision not configured for invoice photo");
+      }
+      const vision = await extractTableFromVisionImage({
+        imageBase64: buf.toString("base64"),
+        mimeType: file.type || "image/jpeg",
+        hint: String(form.get("hint") || "") || undefined,
+      });
+      if (!vision?.items.length) {
+        throw new Error("No product rows found on image");
+      }
+      table = sheetTableFromVisionItems(vision.items);
+      source = "vision";
     } else {
       table = parseProductCsv(buf.toString("utf8"));
     }
     return {
       table,
+      source,
       tariffCode: String(form.get("tariffCode") || "") || undefined,
       country: String(form.get("country") || "") || undefined,
       shipmentValue: String(form.get("shipmentValue") || "") || undefined,
@@ -121,6 +150,7 @@ async function tableFromRequest(req: NextRequest): Promise<{
     const buf = Buffer.from(body.pdfBase64, "base64");
     return {
       table: await tableFromPdf(buf, body.filename),
+      source: "sheet",
       tariffCode: body.tariffCode,
       country: body.country,
       shipmentValue: body.shipmentValue,
@@ -130,6 +160,7 @@ async function tableFromRequest(req: NextRequest): Promise<{
     const buf = Buffer.from(body.xlsxBase64, "base64");
     return {
       table: parseProductXlsx(buf),
+      source: "sheet",
       tariffCode: body.tariffCode,
       country: body.country,
       shipmentValue: body.shipmentValue,
@@ -138,12 +169,33 @@ async function tableFromRequest(req: NextRequest): Promise<{
   if (body.csv) {
     return {
       table: parseProductCsv(body.csv),
+      source: "sheet",
       tariffCode: body.tariffCode,
       country: body.country,
       shipmentValue: body.shipmentValue,
     };
   }
-  throw new Error("csv, xlsxBase64, pdfBase64, or multipart file required");
+  if (body.imageBase64) {
+    if (!visionImportConfigured()) {
+      throw new Error("Vision not configured for invoice photo");
+    }
+    const vision = await extractTableFromVisionImage({
+      imageBase64: body.imageBase64,
+      mimeType: body.mimeType || "image/jpeg",
+      hint: body.hint,
+    });
+    if (!vision?.items.length) {
+      throw new Error("No product rows found on image");
+    }
+    return {
+      table: sheetTableFromVisionItems(vision.items),
+      source: "vision",
+      tariffCode: body.tariffCode,
+      country: body.country,
+      shipmentValue: body.shipmentValue,
+    };
+  }
+  throw new Error("csv, xlsxBase64, pdfBase64, imageBase64, or multipart file required");
 }
 
 export async function POST(req: NextRequest) {
@@ -155,20 +207,20 @@ export async function POST(req: NextRequest) {
     const tariffCode = tc || "STANDARD";
     const maxRows = maxPositionsForTariff(tariffCode as TariffCode);
 
-    const parsed = mapCsvToRows(table.headers, table.rows);
-    if (!parsed.length) {
+    const parsedAll = mapCsvToRows(table.headers, table.rows);
+    if (!parsedAll.length) {
       return NextResponse.json(
         { error: "No product rows found; need a header row with name/наименование" },
         { status: 400 }
       );
     }
-    if (parsed.length > maxRows) {
-      return NextResponse.json(
-        {
-          error: `Too many rows (${parsed.length}); max ${maxRows} for tariff ${tariffCode}`,
-        },
-        { status: 400 }
-      );
+    // D10: keep first N for tariff (vision + sheet/PDF). Over-max used to 400 and
+    // made every sample invoice PDF fail under STANDARD (max 3).
+    let truncated = false;
+    let parsed = parsedAll;
+    if (parsedAll.length > maxRows) {
+      parsed = parsedAll.slice(0, maxRows);
+      truncated = true;
     }
 
     const settings = await getPlatformSettings();
@@ -240,6 +292,8 @@ export async function POST(req: NextRequest) {
       tariffCode,
       maxRows,
       rowCount: rows.length,
+      truncated: truncated || undefined,
+      sourceCount: truncated ? parsedAll.length : undefined,
       summary: {
         matchedPrecedent: rows.filter((r) => r.rowStatus === "MATCHED_PRECEDENT").length,
         classifiedNew: rows.filter((r) => r.rowStatus === "CLASSIFIED_NEW").length,

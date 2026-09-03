@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { HS_EXAMPLES } from "@/lbm-bro/lib/hs-catalog";
 import { TNVED_GROUPS } from "@/lbm-bro/lib/tnved-groups";
-import { DesignerStub } from "@/lbm-bro/components/designer-stub";
 import { formatHsCode } from "@/lib/ved/tnved";
 import {
   directoryReadFromCard,
@@ -13,6 +12,8 @@ import {
 } from "@/lib/ved/tnved-directory-read";
 import { TNVED_RELATION_KIND_LABEL, type TnvedRelationKind } from "@/lib/ved/tnved-relations";
 import { api } from "../VedShell";
+
+const FREE_PEEK_STORAGE_KEY = "lbm.tnved.freePeekHs";
 
 /** Same labels as lab chips; queries are short tokens for live Postgres contains-search. */
 const LIVE_HS_EXAMPLES = HS_EXAMPLES.map((ex) => {
@@ -41,6 +42,22 @@ function hitHs(h: Hit) {
   return h.codeDisplay || formatHsCode(h.code) || h.code;
 }
 
+function readFreePeekHs(): string | null {
+  try {
+    const v = sessionStorage.getItem(FREE_PEEK_STORAGE_KEY);
+    return v && v.trim() ? v.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeFreePeekHs(hs: string) {
+  try {
+    sessionStorage.setItem(FREE_PEEK_STORAGE_KEY, hs);
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
 export function TnvedDirectoryPane({
   initialQuery = "",
   homeHref,
@@ -62,11 +79,25 @@ export function TnvedDirectoryPane({
   const [catalogTotal, setCatalogTotal] = useState<number | null>(null);
   const [catalogLeaves, setCatalogLeaves] = useState<number | null>(null);
   const [catalogVariations, setCatalogVariations] = useState<number | null>(null);
+  const [freePeekHs, setFreePeekHs] = useState<string | null>(null);
+  const [freePeekReady, setFreePeekReady] = useState(false);
 
   function applyStats(res: { total?: number; leaves?: number; variations?: number }) {
     if (typeof res.total === "number") setCatalogTotal(res.total);
     if (typeof res.leaves === "number") setCatalogLeaves(res.leaves);
     if (typeof res.variations === "number") setCatalogVariations(res.variations);
+  }
+
+  useEffect(() => {
+    setFreePeekHs(readFreePeekHs());
+    setFreePeekReady(true);
+  }, []);
+
+  function consumeFreePeek(hs: string) {
+    const clean = String(hs || "").trim();
+    if (!clean || freePeekHs) return;
+    setFreePeekHs(clean);
+    writeFreePeekHs(clean);
   }
 
   useEffect(() => {
@@ -132,6 +163,12 @@ export function TnvedDirectoryPane({
   }, [hits, query, busy]);
 
   useEffect(() => {
+    if (!freePeekReady || !picked) return;
+    const hs = hitHs(picked);
+    if (!freePeekHs) consumeFreePeek(hs);
+  }, [picked, freePeekHs, freePeekReady]);
+
+  useEffect(() => {
     if (!picked?.code) {
       setCard(null);
       return;
@@ -162,11 +199,24 @@ export function TnvedDirectoryPane({
         titleRu: card?.titleRu || picked.titleRu,
       })
     : newCalcHref;
+  const canReadRates =
+    Boolean(picked && read) && (!freePeekHs || freePeekHs === (picked ? hitHs(picked) : ""));
+
+  function selectHit(h: Hit) {
+    setPicked(h);
+  }
+
+  // Consume free peek only after rates are actually shown (C39), not on bare pick.
+  useEffect(() => {
+    if (!freePeekReady || freePeekHs || !picked || !read) return;
+    if (!canReadRates) return;
+    consumeFreePeek(hitHs(picked));
+  }, [freePeekReady, freePeekHs, picked, read, canReadRates]);
 
   function openLinkedCode(code: string, titleRu?: string | null) {
     setGroup("");
     setQuery(code);
-    setPicked({ code, titleRu: titleRu || "" });
+    selectHit({ code, titleRu: titleRu || "" });
   }
 
   const related = card?.related || [];
@@ -193,18 +243,20 @@ export function TnvedDirectoryPane({
                     .join(" · ")
                 : "Живой справочник · НДС 22% / сбор ПП 1637"}
           </p>
+          {freePeekReady ? (
+            <p style={{ marginTop: 8 }}>
+              <span className={`pill ${freePeekHs ? "warn" : "ok"}`}>
+                {freePeekHs
+                  ? "1 бесплатный просмотр ставки использован"
+                  : "1-й просмотр ставки бесплатно"}
+              </span>
+            </p>
+          ) : null}
         </div>
         <Link href={homeHref} className="btn btn-ghost btn-sm">
           На главную
         </Link>
       </div>
-
-      <DesignerStub
-        title="1-й код бесплатно"
-        intent="В макете первый просмотр кода в справочнике бесплатный, повтор — после оплаты."
-        gap="Freemium-гейта в LBM нет. Карточка ниже — directory rates (НДС 22% / сбор ПП 1637), не решение таможни. Финальный код подтверждает брокер."
-        compact
-      />
 
       <div className="two tnved-page">
         <div className="card" style={{ margin: 0 }}>
@@ -280,7 +332,7 @@ export function TnvedDirectoryPane({
                   key={h.code}
                   type="button"
                   className={picked?.code === h.code ? "on" : ""}
-                  onClick={() => setPicked(h)}
+                  onClick={() => selectHit(h)}
                 >
                   <strong>{hitHs(h)}</strong>
                   <span>{h.titleRu || ""}</span>
@@ -299,9 +351,9 @@ export function TnvedDirectoryPane({
         </div>
 
         <div className="card tnved-read" style={{ margin: 0 }}>
-          {picked && read ? (
+          {picked && read && canReadRates ? (
             <>
-              <span className="pill muted">Справочник</span>
+              <span className="pill ok">Первый раз бесплатно</span>
               <div className="meta" style={{ marginTop: 10 }}>
                 {groupLabel(picked.code)}
               </div>
@@ -407,8 +459,8 @@ export function TnvedDirectoryPane({
                 {read.riskLabel}
               </div>
               <p className="meta" style={{ marginTop: 10 }}>
-                Рекомендация справочника, не решение таможенного органа. Финальный код подтверждает
-                брокер.
+                Следующее чтение ставки и рисков — в оплаченной заявке. Сам классификатор можно
+                листать дальше.
               </p>
               <Link
                 href={wizardHref}
@@ -424,12 +476,43 @@ export function TnvedDirectoryPane({
                 Оформить заявку по этому коду
               </Link>
             </>
+          ) : picked && read ? (
+            <>
+              <span className="pill warn">Нужна оплата</span>
+              <div className="meta" style={{ marginTop: 10 }}>
+                {groupLabel(picked.code)}
+              </div>
+              <div className="tnved-code" style={{ filter: "blur(3px)", userSelect: "none" }}>
+                {read.hs}
+              </div>
+              <h3 style={{ marginTop: 10 }}>{read.title}</h3>
+              <p className="meta" style={{ marginTop: 8, lineHeight: 1.45 }}>
+                Бесплатный просмотр ставки уже использован на другом коде. Ставки и риски здесь
+                скрыты — откройте полный разбор в заявке.
+              </p>
+              <Link
+                href={wizardHref}
+                className="btn btn-primary"
+                style={{ width: "100%", marginTop: 14, justifyContent: "center" }}
+                onClick={() => {
+                  onApplyCode?.({
+                    code: picked.code,
+                    titleRu: card?.titleRu || picked.titleRu || read.title,
+                  });
+                }}
+              >
+                Оплатить и открыть код
+              </Link>
+            </>
           ) : (
             <>
-              <span className="pill muted">Справочник</span>
+              <span className={`pill ${freePeekHs ? "warn" : "ok"}`}>
+                {freePeekHs ? "Просмотр ставки использован" : "1-й просмотр ставки бесплатно"}
+              </span>
               <h3 style={{ marginTop: 10 }}>Выберите группу или введите запрос</h3>
               <p className="meta" style={{ marginTop: 8 }}>
-                96 товарных групп ТН ВЭД ЕАЭС. Это не официальное решение ФТС.
+                96 товарных групп ТН ВЭД ЕАЭС. Первый раз ставки и риски откроются бесплатно — дальше
+                через заявку. Это не официальное решение ФТС.
               </p>
             </>
           )}

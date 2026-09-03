@@ -346,7 +346,12 @@ Lab находит большинство кодов из `tnved.json` (13 123
 
 ### C16 — максимальный visual match
 
-Сверка live↔lab: шелл высокий, `/new` почти 1:1 после C10–C12, список заявок и developer-copy расходились. C16: поиск в шапке как в lab (есть на `/new`, нет на карточке заявки); порядок полей single = описание → страна → clarify → фото; чипы списка = Все / Оплата / ТН ВЭД / В работе / Готово через `liveFeedMatch`; плитки и справочник без API-path. Не копировать proto-bar, НДС 20%, сбор 15k, free pay.
+| **C36** | `/cabinet/new` single = photo-first как live lab (`/client/new`): фото → описание → страна → clarify → тариф. DeepSeek describe. [`plan-lbm-bro-newcalc-photo-first.md`](./plan-lbm-bro-newcalc-photo-first.md) | Не freemium 0 ₽ (C29c) |
+| **C37** | Multi: фото инвойса → DeepSeek vision → editable name/qty/price (D10 truncate). [`plan-lbm-bro-newcalc-invoice-photo.md`](./plan-lbm-bro-newcalc-invoice-photo.md) | Не Tesseract; не caps 20/100 |
+| **C38** | `/cabinet/tnved`: freemium peek 1-й ставки + ranking длинных описаний (цвет «красная» не топит топ). [`plan-lbm-bro-tnved-directory-peek.md`](./plan-lbm-bro-tnved-directory-peek.md) | Не 0 ₽ на `/new` (C29c); не `tnved.json` |
+| **C39** | Prod hardening: wizard create/pay hang, describe JSON unwrap, HS draft badge, ThinkPad 14 ranking, peek chrome. [`plan-lbm-bro-prod-hardening-c39.md`](./plan-lbm-bro-prod-hardening-c39.md) | Regression gates на C36–C38; не трогать S3 keys если Put/Get ok |
+
+Сверка live↔lab: шелл высокий, `/new` photo-first после C36, список заявок и developer-copy расходились. C16: поиск в шапке как в lab (есть на `/new`, нет на карточке заявки); порядок полей single = **фото → описание → страна → clarify** (C36); чипы списка = Все / Оплата / ТН ВЭД / В работе / Готово через `liveFeedMatch`; плитки и справочник без API-path. Не копировать proto-bar, НДС 20%, сбор 15k, free pay.
 
 ### C17 — справочник ТН ВЭД как lab
 

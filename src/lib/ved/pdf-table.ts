@@ -8,10 +8,24 @@ export type SheetTable = { headers: string[]; rows: string[][] };
 const HEADER_HINT =
   /наимен|naimenovan|name|товар|description|описание|qty|кол|cena|цена|price|бренд|brand|артикул|sku/i;
 
+/** Numbered invoice line: `1 Cotton T-shirt 800 3.10` → name / qty / price. */
+export function splitNumberedInvoiceLine(line: string): string[] | null {
+  const raw = String(line || "").trim();
+  const m = raw.match(
+    /^\d+[.)]?\s+(.+?)\s+(\d+(?:[.,]\d+)?)\s+(\d+(?:[.,]\d+)?)\s*$/
+  );
+  if (!m) return null;
+  const name = m[1]!.replace(/\s+/g, " ").trim();
+  if (name.length < 2) return null;
+  return [name, m[2]!.replace(",", "."), m[3]!.replace(",", ".")];
+}
+
 /** Split a line into cells by ; , or tab (prefer the delimiter that yields ≥2 cells). */
 export function splitTableLine(line: string): string[] {
   const raw = String(line || "").trim();
   if (!raw) return [];
+  const numbered = splitNumberedInvoiceLine(raw);
+  if (numbered) return numbered;
   const candidates = [
     raw.split(";").map((c) => c.trim()),
     raw.split("\t").map((c) => c.trim()),
@@ -45,7 +59,13 @@ export function sheetTableFromText(text: string): SheetTable {
   if (headerIdx < 0) {
     // No explicit header — invent name column from product-looking lines
     const productLines = lines.filter((l) => {
-      if (/^(invoice|packing|total|итого|сумма|дата|date|№|n[oо]\.?)/i.test(l)) return false;
+      if (
+        /^(invoice|commercial\s+invoice|packing|total|итого|сумма|дата|date|№|n[oо]\.?|seller|buyer|currency|incoterm)/i.test(
+          l
+        )
+      ) {
+        return false;
+      }
       if (/^\d+([.,]\d+)?\s*(usd|eur|rub|₽|\$)?$/i.test(l)) return false;
       return l.length >= 3;
     });
@@ -56,12 +76,23 @@ export function sheetTableFromText(text: string): SheetTable {
     });
     const maxCols = Math.max(1, ...rows.map((r) => r.length));
     const headers = ["name", ...Array.from({ length: maxCols - 1 }, (_, i) => `col${i + 2}`)];
-    // If second col looks numeric → unitPrice
-    if (maxCols >= 2 && rows.some((r) => /^\d+([.,]\d+)?$/.test(r[1] || ""))) {
-      headers[1] = "цена";
-    }
-    if (maxCols >= 3 && rows.some((r) => /^\d+([.,]\d+)?$/.test(r[2] || ""))) {
-      headers[2] = "количество";
+    const numberedQtyPrice = rows.some(
+      (r) =>
+        r.length >= 3 &&
+        /^\d+([.,]\d+)?$/.test(r[1] || "") &&
+        /^\d+([.,]\d+)?$/.test(r[2] || "")
+    );
+    if (numberedQtyPrice) {
+      headers[1] = "количество";
+      headers[2] = "цена";
+    } else {
+      // If second col looks numeric → unitPrice
+      if (maxCols >= 2 && rows.some((r) => /^\d+([.,]\d+)?$/.test(r[1] || ""))) {
+        headers[1] = "цена";
+      }
+      if (maxCols >= 3 && rows.some((r) => /^\d+([.,]\d+)?$/.test(r[2] || ""))) {
+        headers[2] = "количество";
+      }
     }
     return {
       headers,

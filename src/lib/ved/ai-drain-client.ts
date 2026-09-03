@@ -1,9 +1,12 @@
 /**
  * Client-safe AI_DRAIN wait helpers (no Prisma / Node fetch to providers).
  * Accurate HS: poll until llmEnrichPending clears (≤5 min; vision 90s + classify + retries).
+ * C39: payAfter path uses a short cap so wizard is not stuck on «Уточняем…» before pay.
  */
 
 export const AI_ENRICH_WAIT_MS = 300_000;
+/** Cap before pay on /cabinet/new stayOnNew — then poll continues on step 3. */
+export const AI_ENRICH_BEFORE_PAY_MS = 15_000;
 export const AI_ENRICH_POLL_MS = 2_500;
 
 export function isAiDrainPending(calc: {

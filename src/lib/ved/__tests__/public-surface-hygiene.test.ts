@@ -204,12 +204,13 @@ describe("public surface hygiene", () => {
     expect(tnved).toContain("Выберите группу или введите запрос");
     expect(tnved).toContain("НДС 22%");
     expect(tnved).not.toContain("НДС 20%");
-    expect(tnved).not.toContain("Первый раз бесплатно");
-    expect(tnved).not.toContain("Оплатить и открыть код");
+    expect(tnved).toContain("Первый раз бесплатно");
+    expect(tnved).toContain("Оплатить и открыть код");
+    expect(tnved).toContain("lbm.tnved.freePeekHs");
     expect(tnved).not.toContain("consumeFreeHs");
     expect(tnved).not.toContain("loadTnved");
     expect(tnved).not.toContain("tnved.json");
-    expect(tnved).toContain("heading=1");
+    expect(tnved).not.toContain("DesignerStub");    expect(tnved).toContain("heading=1");
     expect(tnved).toContain("catalogTotal");
     expect(tnved).toContain("вариаций");
     expect(helper).toContain("vatPct");

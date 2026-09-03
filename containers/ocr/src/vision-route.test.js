@@ -10,8 +10,8 @@ describe("vision-route", () => {
     assert.equal(resolveVisionProvider({}, { AI_CHAIN_ID: "3" }), "deepseek");
   });
 
-  it("defaults to qwen for chain 2 and unknown", () => {
-    assert.equal(resolveVisionProvider({}, {}), "qwen");
+  it("defaults to deepseek when chain unset; qwen only for explicit chain 2", () => {
+    assert.equal(resolveVisionProvider({}, {}), "deepseek");
     assert.equal(resolveVisionProvider({ chainId: 2 }, {}), "qwen");
     assert.equal(resolveVisionProvider({ chainId: 1 }, { AI_CHAIN_ID: "3" }), "qwen");
   });

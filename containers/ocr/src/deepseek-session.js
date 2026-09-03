@@ -14,7 +14,7 @@ export function deepseekVisionConfig(env = process.env) {
 }
 
 const DESCRIBE_PROMPT =
-  'Опиши товар на изображении для классификации ТН ВЭД. Ответь JSON: {"description":"<по-русски 1-4 предложения>","attrs":{"material":"","composition":"","purpose":"","extra":{"color":"","ageGroup":""}}}. Не выдумывай код ТН ВЭД.';
+  'Опиши товар на изображении для классификации ТН ВЭД. Ответь JSON: {"description":"<тип товара по-русски, 1 короткое предложение без назначения>","attrs":{"material":"","composition":"<из чего сделан>","purpose":"<для чего применяют>","extra":{"color":"","ageGroup":""}}}. Порядок: тип → состав → назначение. Не начинай description с назначения. Не выдумывай код ТН ВЭД.';
 
 export function buildDeepseekDescribeMessages({ imageB64, mime, hint }) {
   return [

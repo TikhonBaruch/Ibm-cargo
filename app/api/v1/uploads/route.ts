@@ -24,11 +24,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file" }, { status: 400 });
     }
 
+    const maxBytes = Number(process.env.UPLOAD_MAX_BYTES || 12 * 1024 * 1024);
+    // Check declared size before buffering — a 40MB camera file OOMs the isolate
+    // (empty runtime log + Vercel Request ID page) if we arrayBuffer first.
+    if (typeof file.size === "number" && file.size > maxBytes) {
+      return NextResponse.json(
+        { error: `File too large (max ${Math.round(maxBytes / (1024 * 1024))}MB)` },
+        { status: 413 }
+      );
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const extension = (file.name.split(".").pop() || "bin").replace(/[^a-zA-Z0-9]/g, "") || "bin";
     const contentType = file.type || "application/octet-stream";
-    const maxBytes = Number(process.env.UPLOAD_MAX_BYTES || 12 * 1024 * 1024);
     if (buffer.length > maxBytes) {
       return NextResponse.json(
         { error: `File too large (max ${Math.round(maxBytes / (1024 * 1024))}MB)` },
@@ -77,6 +86,7 @@ export async function POST(req: Request) {
       storage: "local",
     });
   } catch (e) {
+    console.error("[uploads]", e);
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Upload failed" },
       { status: 500 }

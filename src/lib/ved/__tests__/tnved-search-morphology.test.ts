@@ -10,8 +10,10 @@ import {
   hasTokenOrPrefix,
   householdStemVariants,
   isFalseFriendPair,
+  isWeakTnvedModifierStem,
   notesStemMatchKind,
   tnvedQueryStems,
+  tnvedStrongSearchStems,
 } from "../tnved-query-match";
 
 describe("H1 household stems (block A)", () => {
@@ -195,5 +197,102 @@ describe("P3 produce cascade + search false-friend clothing", () => {
     expect(produce).toBeGreaterThan(tee);
     expect(produce).toBeGreaterThan(tank);
     expect(tee).toBeLessThan(40);
+  });
+});
+
+describe("C38 long description ranking (color noise)", () => {
+  it("marks красная as weak modifier", () => {
+    expect(isWeakTnvedModifierStem("красная")).toBe(true);
+    expect(isWeakTnvedModifierStem("красн")).toBe(true);
+    expect(isWeakTnvedModifierStem("керамика")).toBe(false);
+    expect(isWeakTnvedModifierStem("кружка")).toBe(false);
+  });
+
+  it("strong stems drop color when product nouns present", () => {
+    const strong = tnvedStrongSearchStems("Красная кружка керамика для питья");
+    expect(strong.some((s) => isWeakTnvedModifierStem(s))).toBe(false);
+    expect(strong.join(" ")).toMatch(/круж|керамик/);
+  });
+
+  it("ceramic mug description ranks ceramic over salmon «красная»", () => {
+    const phrase = "Красная кружка керамика для питья";
+    const stems = tnvedSearchStems(phrase);
+    const ceramic = scoreTnvedSearchHit(
+      {
+        code: "6912002500",
+        titleRu: "Фаянс или тонкая керамика",
+        notes: "кружка, керамика, посуда",
+        isLeaf: true,
+        level: 10,
+      },
+      { stems, digits: "", phrase },
+    );
+    const salmon = scoreTnvedSearchHit(
+      {
+        code: "0303110000",
+        titleRu: "Красная, или нерка (Oncorhynchus nerka)",
+        notes: null,
+        isLeaf: true,
+        level: 10,
+      },
+      { stems, digits: "", phrase },
+    );
+    expect(ceramic).toBeGreaterThan(salmon);
+    expect(salmon).toBeLessThan(20);
+  });
+
+  it("incidental digits in product phrase do not boost short chapter codes", () => {
+    const phrase = "ноутбуки Lenovo ThinkPad 14";
+    const stems = tnvedSearchStems(phrase);
+    const laptop = scoreTnvedSearchHit(
+      {
+        code: "8471300000",
+        titleRu: "машины вычислительные портативные",
+        notes: "ноутбук",
+        isLeaf: true,
+        level: 10,
+      },
+      { stems, digits: "14", phrase },
+    );
+    const chapter14 = scoreTnvedSearchHit(
+      {
+        code: "14",
+        titleRu: "Растительные материалы для изготовления плетеных",
+        notes: null,
+        isLeaf: false,
+        level: 2,
+      },
+      { stems, digits: "14", phrase },
+    );
+    expect(laptop).toBeGreaterThan(chapter14);
+  });
+
+  it("C39 ThinkPad 14 ranks portable PC above bamboo stand hitchhike", () => {
+    const phrase = "ноутбуки Lenovo ThinkPad 14";
+    const stems = tnvedSearchStems(phrase);
+    const opts = { stems, digits: "14", phrase };
+    const laptop = scoreTnvedSearchHit(
+      {
+        code: "8471300000",
+        titleRu: "машины вычислительные портативные",
+        notes: "ноутбук, laptop, notebook, macbook, компьютеры портативные, пк",
+        isLeaf: true,
+        level: 10,
+      },
+      opts,
+    );
+    const bambooStand = scoreTnvedSearchHit(
+      {
+        code: "4421910000",
+        titleRu: "Из бамбука",
+        notes:
+          "ФТС предварительные решения: 1 запис. в текущем срезе (overlay, не titleRu).\nизделия, деревянные, прочие, бамбука, подставка, предназначенная, размещения, охлаждения, ноутбука, планшета, работе",
+        isLeaf: true,
+        level: 10,
+      },
+      opts,
+    );
+    expect(laptop).toBeGreaterThan(bambooStand);
+    expect(bambooStand).toBeLessThan(80);
   });
 });

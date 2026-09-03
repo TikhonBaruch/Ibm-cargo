@@ -15,6 +15,107 @@ export const TNVED_SEARCH_STOP = new Set([
   "from",
 ]);
 
+/**
+ * Color / appearance modifiers — weak in multi-token product descriptions.
+ * «красная кружка» must not rank salmon/currant above ceramics.
+ * Canon: plan-lbm-bro-tnved-directory-peek.md (C38).
+ */
+const COLOR_MODIFIER_ROOTS = [
+  "красн",
+  "алая",
+  "алый",
+  "синий",
+  "синяя",
+  "синее",
+  "синие",
+  "син",
+  "зелен",
+  "желт",
+  "бел",
+  "черн",
+  "роз",
+  "сер",
+  "голуб",
+  "оранж",
+  "фиолет",
+  "коричнев",
+  "бежев",
+  "серебр",
+  "золот",
+  "прозрачн",
+  "матово",
+  "глянцев",
+] as const;
+
+/** Exact weak forms that must not prefix-match longer goods (бел≠белье). */
+const COLOR_EXACT = new Set([
+  "красный",
+  "красная",
+  "красное",
+  "красные",
+  "красно",
+  "красн",
+  "алый",
+  "алая",
+  "алое",
+  "алые",
+  "синий",
+  "синяя",
+  "синее",
+  "синие",
+  "син",
+  "зеленый",
+  "зеленая",
+  "зеленое",
+  "зеленые",
+  "зелен",
+  "желтый",
+  "желтая",
+  "желтое",
+  "желтые",
+  "желт",
+  "белый",
+  "белая",
+  "белое",
+  "белые",
+  "бел",
+  "черный",
+  "черная",
+  "черное",
+  "черные",
+  "черн",
+  "розовый",
+  "розовая",
+  "розовое",
+  "розовые",
+  "роз",
+  "серый",
+  "серая",
+  "серое",
+  "серые",
+  "сер",
+  "голубой",
+  "голубая",
+  "голубое",
+  "голубые",
+  "голуб",
+  "оранжевый",
+  "оранжевая",
+  "оранжевое",
+  "оранжевые",
+  "оранж",
+]);
+
+export function isWeakTnvedModifierStem(stem: string): boolean {
+  const s = normalizeTnvedQueryText(stem);
+  if (!s || s.length < 3) return false;
+  if (COLOR_EXACT.has(s)) return true;
+  // Longer forms: «красноватый» — root prefix only when stem starts with color root ≥4.
+  for (const root of COLOR_MODIFIER_ROOTS) {
+    if (root.length >= 4 && (s === root || s.startsWith(root))) return true;
+  }
+  return false;
+}
 /** Fixture-driven denylist: short produce stem must not hitchhike dairy notes. */
 export const TNVED_FALSE_FRIEND_PAIRS: ReadonlyArray<{ query: string; block: string }> = [
   { query: "огур", block: "йогурт" },
@@ -93,6 +194,10 @@ const MOTOR_OIL_RE =
 const PC_PARTS_RE =
   /\bssd\b|ж[её]стк\w*\s+диск|видеокарт|процессор|материнск|оперативн\w*\s+памят|флешк|карта\s+памят|блок\s+питани|graphics\s*card|usb\s*flash|memory\s*card/i;
 
+/** Whole portable PC / laptop — not bamboo stand that mentions «ноутбука». C39. */
+const COMPUTER_PORTABLE_RE =
+  /ноутбук|laptop|notebook|thinkpad|macbook|нетбук|ультрабук|chromebook/i;
+
 /** Photo camera gear — not security CCTV. */
 const PHOTO_GEAR_RE =
   /фотоаппарат|фотокамер|объектив|штатив|вспышк|gopro|camera\s*lens|tripod|\bdslr\b/i;
@@ -168,6 +273,10 @@ export function isMotorOilQuery(query: string): boolean {
 
 export function isPcPartsQuery(query: string): boolean {
   return PC_PARTS_RE.test(normalizeTnvedQueryText(query));
+}
+
+export function isComputerPortableQuery(query: string): boolean {
+  return COMPUTER_PORTABLE_RE.test(normalizeTnvedQueryText(query));
 }
 
 export function isPhotoGearQuery(query: string): boolean {
@@ -269,6 +378,13 @@ export function tnvedQueryStems(query: string): string[] {
   return out;
 }
 
+/** Strong stems for directory SQL (drop colors when mixed with product nouns). C38. */
+export function tnvedStrongSearchStems(query: string): string[] {
+  const all = tnvedQueryStems(query);
+  const strong = all.filter((s) => !isWeakTnvedModifierStem(s));
+  return strong.length ? strong : all;
+}
+
 function escapeRe(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -342,6 +458,7 @@ export function packTriggerMatches(desc: string, raw: string): boolean {
 /**
  * Notes match quality for one stem.
  * Short stems (<5): substring-only hit does not count (false-friend class).
+ * Long FTS prose parts (C39): buried «ноутбука» in a sentence ≠ alias-list token.
  */
 export function notesStemMatchKind(
   notes: string,
@@ -351,12 +468,25 @@ export function notesStemMatchKind(
   const s = normalizeTnvedQueryText(stem);
   if (!n || !s) return null;
   const noteParts = n.split(/[,\n;]+/).map((p) => p.trim()).filter(Boolean);
-  if (
-    noteParts.some(
-      (p) => p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`) || hasTokenOrPrefix(p, s)
-    ) ||
-    hasTokenOrPrefix(n, s)
-  ) {
+  let longProseHit = false;
+  for (const p of noteParts) {
+    if (p === s || p.startsWith(`${s} `) || p.startsWith(`${s},`)) {
+      return "token";
+    }
+    if (hasTokenOrPrefix(p, s)) {
+      // Alias chips are short; FTS overlay sentences bury product nouns.
+      if (p.length <= 48) return "token";
+      longProseHit = true;
+    }
+  }
+  if (longProseHit) {
+    return s.length < 5 ? null : "substring";
+  }
+  if (hasTokenOrPrefix(n, s)) {
+    // Whole-notes path without part split — treat long blobs as substring.
+    if (n.length > 120 && !noteParts.some((p) => p.length <= 48 && hasTokenOrPrefix(p, s))) {
+      return s.length < 5 ? null : "substring";
+    }
     return "token";
   }
   if (n.includes(s)) {

@@ -637,7 +637,7 @@ export async function describeWithProviderQwen(
   }
 
   const prompt =
-    'Опиши товар на изображении для классификации ТН ВЭД. Ответь JSON: {"description":"<по-русски 1-4 предложения>","attrs":{"material":"","composition":"","purpose":""}}. Не выдумывай код ТН ВЭД.';
+    'Опиши товар на изображении для классификации ТН ВЭД. Ответь JSON: {"description":"<тип товара по-русски, 1 короткое предложение без назначения>","attrs":{"material":"","composition":"<из чего сделан>","purpose":"<для чего применяют>"}}. Порядок смысла: тип → состав → назначение. Не начинай description с назначения. Не выдумывай код ТН ВЭД.';
 
   logAiDrain({
     phase: "vision-qwen-request",
@@ -802,7 +802,7 @@ export async function describeWithProviderDeepseek(
   }
 
   const prompt =
-    'Опиши товар на изображении для классификации ТН ВЭД. Ответь JSON: {"description":"<по-русски 1-4 предложения>","attrs":{"material":"","composition":"","purpose":""}}. Не выдумывай код ТН ВЭД.';
+    'Опиши товар на изображении для классификации ТН ВЭД. Ответь JSON: {"description":"<тип товара по-русски, 1 короткое предложение без назначения>","attrs":{"material":"","composition":"<из чего сделан>","purpose":"<для чего применяют>"}}. Порядок смысла: тип → состав → назначение. Не начинай description с назначения. Не выдумывай код ТН ВЭД.';
 
   logAiDrain({
     phase: "vision-deepseek-request",

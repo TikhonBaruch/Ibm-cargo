@@ -25,9 +25,14 @@ export async function GET(req: NextRequest) {
   const limit = Number(req.nextUrl.searchParams.get("limit") || "20");
   const leafOnly = req.nextUrl.searchParams.get("leafOnly") === "1";
   const headingOnly = req.nextUrl.searchParams.get("heading") === "1";
-  const [items, stats] = await Promise.all([
-    searchTnvedCodes(prisma, { q, limit, leafOnly, headingOnly }),
-    countTnvedDirectoryStats(prisma),
-  ]);
-  return NextResponse.json({ items, ...stats });
+  try {
+    const [items, stats] = await Promise.all([
+      searchTnvedCodes(prisma, { q, limit, leafOnly, headingOnly }),
+      countTnvedDirectoryStats(prisma),
+    ]);
+    return NextResponse.json({ items, ...stats });
+  } catch (e) {
+    console.error("[tnved/search]", e);
+    return NextResponse.json({ items: [], error: "search failed" }, { status: 503 });
+  }
 }

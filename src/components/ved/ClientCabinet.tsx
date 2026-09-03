@@ -14,7 +14,7 @@ import {
   shippingUiEnabled,
 } from "@/lib/ved/cabinet-features";
 import { formatShipmentInvoice, parseShipmentInvoice } from "@/lib/ved/landed-cost";
-import { isAiDrainPending, waitForAiEnrich } from "@/lib/ved/ai-drain-client";
+import { AI_ENRICH_BEFORE_PAY_MS, isAiDrainPending, waitForAiEnrich } from "@/lib/ved/ai-drain-client";
 import { compressImageForUpload } from "@/lib/ved/compress-image-client";
 import { VedEmptyState, api } from "./VedShell";
 import { LbmCabinetsShell } from "./LbmCabinetsShell";
@@ -359,7 +359,10 @@ function ClientCabinetInner() {
       if (isAiDrainPending(calc)) {
         setCreatePhase("enriching");
         toast(`Создано ${calc.number}. Уточняем ТН ВЭД…`, { variant: "ok" });
-        calc = await waitForAiEnrich(calc, (id) => api<Calc>(`/api/v1/calculations/${id}`));
+        // C39: with payAfter do not block pay for full drain (was up to 5 min → hung wizard).
+        calc = await waitForAiEnrich(calc, (id) => api<Calc>(`/api/v1/calculations/${id}`), {
+          timeoutMs: opts?.payAfter ? AI_ENRICH_BEFORE_PAY_MS : undefined,
+        });
         setSelected(calc);
       }
       setPreferredBrokerUserId(calc.preferredBrokerUserId || f.preferredBrokerUserId || preferredBrokerUserId || "");
@@ -388,7 +391,12 @@ function ClientCabinetInner() {
               : m
           );
         }
-        toast("Тариф оплачен · код открыт", { variant: "ok" });
+        toast(
+          isAiDrainPending(calc)
+            ? "Тариф оплачен · код уточняется"
+            : "Тариф оплачен · код открыт",
+          { variant: "ok" }
+        );
       } else if (isAiDrainPending(calc)) {
         toast(
           `${calc.number}: предварительный код готов, уточнение продолжается в фоне`,
@@ -1134,6 +1142,7 @@ function ClientCabinetInner() {
                 };
                 return next;
               });
+              return url;
             } catch (err) {
               setError(err instanceof Error ? err.message : "Upload error");
             } finally {

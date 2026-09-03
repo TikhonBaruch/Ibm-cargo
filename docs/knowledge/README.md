@@ -121,6 +121,8 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-lbm-bro-max-match.md  # C16: максимальный visual match live↔lab без ломки domain
   plan-lbm-bro-tnved-dir.md  # C17: /cabinet/tnved chrome lab, данные GET /api/v1/tnved
   plan-lbm-bro-tnved-catalog.md # C18: lab tnved.json → Postgres + поиск как в lab
+  plan-lbm-bro-tnved-directory-peek.md # C38: freemium peek + ranking длинных описаний
+  plan-lbm-bro-prod-hardening-c39.md # C39: hang create/pay, describe JSON, ranking 14, peek UI + regression gates
   plan-tnved-invoice-enrich.md  # C19: инвойсные имена + ФТС/ЕЭК 2026 notes, не scrape
   plan-tnved-relations.md       # C20: связи not/variant/part/kit + дети parentCode
   plan-tnved-hint-trees.md      # C21: семейные развилки на /cabinet/new (молоко питьевое/сухое/сгущённое)
@@ -138,6 +140,8 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-hint-coverage-expansion.md     # Cov-P7+: расширенный охват ~450 queries, WRONG detection
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
+  plan-lbm-bro-newcalc-photo-first.md # C36: photo→desc как live lbm-bro
+  plan-lbm-bro-newcalc-invoice-photo.md # C37: фото инвойса → строки multi (OCR-A)
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
   containerization.md        # C1–C5, Compose vs Vercel, инвентарь as-is/будущее
   cabinets/                  # UI-инвентарь client/broker/admin + correctness + ux-saas + ui-guide

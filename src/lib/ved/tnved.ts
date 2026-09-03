@@ -13,9 +13,12 @@ import { layerGToHint, matchLayerG } from "./tnved-layer-g";
 import { relationsForCode, type TnvedRelation } from "./tnved-relations";
 import {
   hasTokenOrPrefix,
+  isComputerPortableQuery,
   isFalseFriendPair,
+  isWeakTnvedModifierStem,
   notesStemMatchKind,
   tnvedQueryStems,
+  tnvedStrongSearchStems,
 } from "./tnved-query-match";
 
 export const TNVED_LEVELS = [2, 4, 6, 8, 10] as const;
@@ -148,17 +151,21 @@ export function scoreTnvedSearchHit(
   const title = String(row.titleRu || "")
     .toLowerCase()
     .replace(/ё/g, "е");
+  const hay = `${notes}\n${title}`;
   const lead = notes.split(/\n+/)[0] || "";
   const phrase = String(opts.phrase || "")
     .trim()
     .toLowerCase()
     .replace(/ё/g, "е");
   const queryForFriends = phrase || opts.stems.join(" ");
+  const strongStems = opts.stems.filter((s) => s && !isWeakTnvedModifierStem(s));
+  const weakStems = opts.stems.filter((s) => s && isWeakTnvedModifierStem(s));
+  const contentStems = strongStems.length ? strongStems : opts.stems;
 
   // H2 denylist: produce query must not score dairy hitchhike rows.
-  if (isFalseFriendPair(queryForFriends, `${notes}\n${title}`)) {
+  if (isFalseFriendPair(queryForFriends, hay)) {
     let score = 0;
-    if (opts.digits.length >= 2 && row.code.startsWith(opts.digits)) {
+    if (opts.digits.length >= 4 && row.code.startsWith(opts.digits)) {
       score += 100;
       if (row.code === opts.digits) score += 50;
     }
@@ -168,7 +175,10 @@ export function scoreTnvedSearchHit(
   }
 
   let score = 0;
-  if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
+  // FTS overlay first line is not a product lead sentence (C39 bamboo stand hitchhike).
+  if (/[.!?]/.test(lead) && lead.length >= 24 && !/фтс\s+предварительн|overlay/i.test(lead)) {
+    score += 40;
+  }
   if (phrase.length >= 5 && notes.includes(phrase)) score += 90;
   // CJK invoice tokens (充电宝, T恤) are short but exact in notes — same boost.
   else if (
@@ -179,18 +189,67 @@ export function scoreTnvedSearchHit(
   ) {
     score += 90;
   }
-  for (const s of opts.stems) {
+
+  let strongHits = 0;
+  let weakOnlyHits = 0;
+  for (const s of contentStems) {
     if (!s) continue;
     const kind = notesStemMatchKind(notes, s);
-    if (kind === "token") score += 80;
-    else if (kind === "substring") score += 25;
+    let hit = false;
+    if (kind === "token") {
+      score += 80;
+      hit = true;
+    } else if (kind === "substring") {
+      score += 25;
+      hit = true;
+    }
     if (title.includes(s)) {
       score += hasTokenOrPrefix(title, s) ? 35 : 8;
+      hit = true;
+    }
+    if (hit) strongHits += 1;
+  }
+  // Color-only hitchhike: «красная» alone on salmon/currant while query has product nouns.
+  if (strongStems.length && strongHits === 0) {
+    for (const s of weakStems) {
+      const kind = notesStemMatchKind(notes, s);
+      if (kind || title.includes(s)) weakOnlyHits += 1;
+    }
+    if (weakOnlyHits > 0) {
+      return Math.min(12, Number(row.level || 0));
+    }
+  } else if (strongStems.length === 0) {
+    for (const s of weakStems) {
+      const kind = notesStemMatchKind(notes, s);
+      if (kind === "token") score += 40;
+      else if (kind === "substring") score += 12;
+      if (title.includes(s)) score += hasTokenOrPrefix(title, s) ? 20 : 4;
+    }
+  } else if (strongHits >= 2) {
+    score += 50 * (strongHits - 1);
+  }
+
+  // Portable computer query: prefer 8471 over wood accessory hitchhikes (C39 ThinkPad 14).
+  if (isComputerPortableQuery(queryForFriends)) {
+    if (row.code.startsWith("8471")) score += 55;
+    else if (
+      row.code.startsWith("44") &&
+      /бамбук|подставк/.test(hay) &&
+      /ноутбук|laptop|планшет/.test(hay)
+    ) {
+      score = Math.min(score, 28);
     }
   }
-  if (opts.digits.length >= 2 && row.code.startsWith(opts.digits)) {
+
+  // Incidental model sizes («ThinkPad 14») must not promote chapter «14».
+  if (opts.digits.length >= 4 && row.code.startsWith(opts.digits)) {
     score += 100;
     if (row.code === opts.digits) score += 50;
+  } else if (opts.digits.length >= 2 && opts.digits.length < 4 && /^[\d\s./-]+$/.test(phrase)) {
+    if (row.code.startsWith(opts.digits)) {
+      score += 100;
+      if (row.code === opts.digits) score += 50;
+    }
   }
   if (row.isLeaf) score += 15;
   score += Number(row.level || 0);
@@ -218,9 +277,12 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
     });
   }
 
-  const stems = codeOnly ? [digits] : tnvedSearchStems(q);
+  const stemsRaw = codeOnly ? [digits] : tnvedStrongSearchStems(q);
+  const stems = stemsRaw.slice(0, 8);
+  const scoreStems = codeOnly ? [digits] : tnvedSearchStems(q);
   const or: Array<Record<string, unknown>> = [];
-  if (digits.length >= 2) {
+  // Code prefix in OR only for real HS fragments (≥4) or pure numeric query.
+  if (digits.length >= 4 || (codeOnly && digits.length >= 2)) {
     or.push({ code: { startsWith: digits } });
   }
   for (const stem of stems.length ? stems : [q]) {
@@ -232,6 +294,7 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
     or.push({ notes: { contains: q, mode: "insensitive" } });
     or.push({ titleRu: { contains: q, mode: "insensitive" } });
   }
+  if (!or.length) return [];
   const pool = codeOnly ? Math.min(50, Math.max(limit * 4, 24)) : 500;
   const rows = await db.tnvedCode.findMany({
     where: {
@@ -244,8 +307,9 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
   });
   return [...rows]
     .sort((a, b) => {
-      const d = scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits, phrase: q })
-        - scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits, phrase: q });
+      const d =
+        scoreTnvedSearchHit(b, { stems: scoreStems.length ? scoreStems : [q], digits, phrase: q }) -
+        scoreTnvedSearchHit(a, { stems: scoreStems.length ? scoreStems : [q], digits, phrase: q });
       return d || a.code.localeCompare(b.code);
     })
     .slice(0, limit);

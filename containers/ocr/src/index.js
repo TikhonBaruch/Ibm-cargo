@@ -353,7 +353,7 @@ const server = http.createServer(async (req, res) => {
         visionProvider: vision,
         qwenVision: qwenVisionConfig().configured,
         deepseekVision: deepseekVisionConfig().configured,
-        chainId: String(process.env.AI_CHAIN_ID || process.env.LLM_CHAIN_ID || "2"),
+        chainId: String(process.env.AI_CHAIN_ID || process.env.LLM_CHAIN_ID || "3"),
       })
     );
     return;
