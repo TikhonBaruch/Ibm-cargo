@@ -64,6 +64,7 @@
     "tnved:normalize": "ts-node --project scripts/tsconfig.tnved.json --transpile-only scripts/tnved-normalize.ts",
     "tnved:compose": "ts-node --project scripts/tsconfig.tnved.json --transpile-only scripts/tnved-compose-layers.ts",
     "tnved:load": "ts-node --project scripts/tsconfig.tnved.json --transpile-only scripts/tnved-load.ts",
+    "tnved:fts-pr": "ts-node --project scripts/tsconfig.tnved.json --transpile-only scripts/tnved-fts-pr.ts",
     "docker:core": "docker compose --profile core up --build",
     "docker:web": "docker compose --profile web up --build",
     "docker:split": "docker compose --profile split up --build",

@@ -198,6 +198,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: собрать все легальные слои | [`plan-tnved-collect.md`](./plan-tnved-collect.md) · TWS fill local, не Alta |
 | ТН ВЭД: каталог lab → Postgres (C18) | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) · `tnved:load -- --lab` |
 | ТН ВЭД: инвойс + дополнения 2026 (C19) | [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md) · `tnved:load -- --search-extras` |
+| ТН ВЭД: ФТС предварительные решения | [`plan-tnved-fts-pr.md`](./plan-tnved-fts-pr.md) · `tnved:fts-pr --load/--actualize` |
 | ТН ВЭД: связи кодов (C20) | [`plan-tnved-relations.md`](./plan-tnved-relations.md) · related overlay + children parentCode |
 | ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
 | ТН ВЭД: морфология / false friends | [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) · огурец≠йогурт · H1–H5 done |
