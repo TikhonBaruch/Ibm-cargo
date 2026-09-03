@@ -747,6 +747,43 @@ model TnvedCode {
   @@map("tnved_codes")
 }
 
+/// FTS RF preliminary classification decisions (FTS-PR) — overlay, not nomenclature tree.
+model TnvedFtsSnapshot {
+  id          String   @id @default(cuid())
+  sourceFile  String
+  sourceSha   String   @unique
+  asOf        DateTime?
+  schemaKind  String   @default("canon4")
+  rowCount    Int      @default(0)
+  uniqueCodes Int      @default(0)
+  isCurrent   Boolean  @default(false)
+  loadedAt    DateTime @default(now())
+  decisions   TnvedFtsDecision[]
+
+  @@index([isCurrent])
+  @@index([asOf])
+  @@map("tnved_fts_snapshots")
+}
+
+/// One FTS preliminary decision row. code is 10-digit HS; no FK so orphans can be reported in reconcile.
+model TnvedFtsDecision {
+  id              String           @id @default(cuid())
+  snapshotId      String
+  snapshot        TnvedFtsSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  code            String
+  description     String           @db.Text
+  country         String?
+  justification   String?          @db.Text
+  descFingerprint String
+  rowIndex        Int?
+  createdAt       DateTime         @default(now())
+
+  @@index([snapshotId])
+  @@index([code])
+  @@index([descFingerprint])
+  @@map("tnved_fts_decisions")
+}
+
 /// Duty/VAT hints keyed by TN VED code (importable; not broker-edited TariffPlan).
 model TnvedDutyRate {
   id             String    @id @default(cuid())
