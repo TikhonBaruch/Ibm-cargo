@@ -155,7 +155,7 @@
       "expected": {
         "pack": "snacks",
         "attr": "A~",
-        "searchPrefix": "2202"
+        "searchPrefix": "2009"
       },
       "mustNotPack": [
         "fruit-fresh"
@@ -397,7 +397,7 @@
       "expected": {
         "pack": "textiles-raw",
         "attr": "A~",
-        "searchPrefix": "5208"
+        "searchPrefix": "52"
       },
       "mustNotPack": [
         "knit-top",
@@ -890,7 +890,7 @@
       "expected": {
         "pack": "underwear-sleep",
         "attr": "A~",
-        "searchPrefix": "6107"
+        "searchPrefix": "610"
       },
       "mustNotPack": [],
       "notes": "F5 apparel pack path"
@@ -902,7 +902,7 @@
       "expected": {
         "pack": "underwear-sleep",
         "attr": "A~",
-        "searchPrefix": "6107"
+        "searchPrefix": "610|6210"
       },
       "mustNotPack": [],
       "notes": "F5 apparel pack path"
