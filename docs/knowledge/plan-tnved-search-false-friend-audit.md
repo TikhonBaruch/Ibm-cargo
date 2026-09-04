@@ -1,6 +1,6 @@
 # План: search false-friend audit + fix loop
 
-**Статус:** in progress · 2026-09-04  
+**Статус:** **done** 2026-09-04 · live corpus `npm run probe:search-ff -- --live --fail-on any` → **OK 66/66** on `ibm-cargo-phi`  
 **Канон:** [`plan-tnved-search-alias-boost.md`](./plan-tnved-search-alias-boost.md) · [`plan-tnved-search-whole-word.md`](./plan-tnved-search-whole-word.md) · staging H5.
 
 ## 1. Идея
@@ -47,8 +47,8 @@ report: HITCH/EMPTY table → miss-driven aliases / blockHit / soft expected
 |---|----------|-----------|
 | 1 | `scripts/probe-search-false-friends.ts` + KB | **done** |
 | 2 | Live+offline baseline | **done** §3 |
-| 3 | Aliases / blockHit / soft expects + tests | in progress |
-| 4 | Re-probe + staging note + PR | 0 HITCH/EMPTY on corpus (gate) |
+| 3 | Aliases / blockHit / soft expects + tests | **done** #74–#76 |
+| 4 | Re-probe + staging note + PR | **done** OK 66/66 |
 
 ## 5. Критерий закрытия
 
