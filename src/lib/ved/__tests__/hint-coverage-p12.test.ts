@@ -38,6 +38,28 @@ const mockDb = {
   tnvedCode: { findUnique: async () => null, findMany: async () => [] },
 } as never;
 
+/** P12 prefixes may list alternatives (`610|6210`); do not strip `|` as a digit gap. */
+function hsPrefixMatches(hsCode: string, prefixSpec: string): boolean {
+  const digits = hsCode.replace(/\D/g, "");
+  return prefixSpec.split("|").some((part) => {
+    const want = part.replace(/\D/g, "");
+    return want.length > 0 && digits.startsWith(want);
+  });
+}
+
+describe("Cov-P12 — hsPrefixMatches", () => {
+  it("treats | as alternatives, not stripped digits", () => {
+    expect(hsPrefixMatches("6107 21 000 0", "610|6210")).toBe(true);
+    expect(hsPrefixMatches("6210 10 000 0", "610|6210")).toBe(true);
+    expect(hsPrefixMatches("6201 11 000 0", "610|6210")).toBe(false);
+  });
+
+  it("keeps juice on 2202, not 2009", () => {
+    expect(hsPrefixMatches("2202 90 000 0", "2202")).toBe(true);
+    expect(hsPrefixMatches("2202 90 000 0", "2009")).toBe(false);
+  });
+});
+
 function attrLayer(out: ReturnType<typeof heuristicAttrSuggest>): "A+" | "A~" | "A0" {
   if (attrSuggestIsClarifyOnly(out)) return "A~";
   if (out.attrs.hsHint) return "A+";
@@ -78,7 +100,7 @@ describe("Cov-P12 — master dictionary cascade S+", () => {
     const hit = await classifyTnvedCascade(mockDb, { description: row.query });
     expect(hit, row.query).not.toBeNull();
     expect(
-      hit!.hsCode.replace(/\D/g, "").startsWith(row.expected.searchPrefix!.replace(/\D/g, "")),
+      hsPrefixMatches(hit!.hsCode, row.expected.searchPrefix!),
       `${row.query} → ${hit!.hsCode}`,
     ).toBe(true);
   });

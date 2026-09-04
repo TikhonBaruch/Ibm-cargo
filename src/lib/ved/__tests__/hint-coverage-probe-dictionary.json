@@ -155,7 +155,7 @@
       "expected": {
         "pack": "snacks",
         "attr": "A~",
-        "searchPrefix": "2009"
+        "searchPrefix": "2202"
       },
       "mustNotPack": [
         "fruit-fresh"

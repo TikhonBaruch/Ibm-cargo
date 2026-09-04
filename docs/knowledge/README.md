@@ -149,6 +149,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-hint-chains-precision-audit.md # max precision: все C21 packs × cross-family; свежий/маринад
   plan-hint-coverage-p0.md            # coverage P0–P6: 53 packs; C11 gap probe
   plan-hint-coverage-expansion.md     # Cov-P7+: расширенный охват ~450 queries, WRONG detection
+  plan-ci-hygiene.md                  # test:ci: P12 juice/robe goldens + tsc/vitest exclude
   plan-hint-gap-probe-run.md          # прогон probe:hint-gap (golden + --full) · residual Cov-P13+
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new

@@ -371,7 +371,7 @@ export type TnvedCardRate = {
 };
 
 export type TnvedCardSource = {
-  layer: "A" | "B" | "C" | "D" | "E" | "F" | "G";
+  layer: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "ENRICH";
   title: string;
   url: string | null;
   asOf: string | null;
