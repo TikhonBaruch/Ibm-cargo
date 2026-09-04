@@ -102,6 +102,8 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-precedent-suggest-service.md  # Precedent typeahead container + query guard
   plan-client-tnved-search.md # Client: combobox ТН ВЭД по справочнику (этап 1)
   plan-tnved-demo-corpus.md  # Демо-корпус TnvedCode: точные полные ряды (~50 листьев), не Track B
+  plan-tnved-fts-pr.md       # ФТС предварительные решения → overlay + сверка
+  plan-tnved-card-enrich.md  # Условия импорта/экспорта → overlay cardEnrich (не scrape CO)
   plan-tnved-opendata-card.md # Открытые слои ТН ВЭД → одна карточка (ETL, не scrape)
   plan-tnved-layer-g-extra.md # Акциз / утиль / экосбор РОП → префиксы TnvedCode (триггеры)
   plan-tnved-collect.md      # Собрать все легальные слои (TWS fill, PDF ЕТТ, решения)
@@ -128,6 +130,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-tnved-hint-trees.md      # C21: семейные развилки на /cabinet/new (молоко питьевое/сухое/сгущённое)
   plan-c21-multistep-all-families.md # C21b: purpose→composition multi-step → any-help ≥95%
   plan-c21-noisy-branch-qa.md        # C21b QA: noisy corpus · branch quality · fix F1–F5
+  plan-tnved-search-alias-boost.md   # H5 residual: морс≠морская · HDD→8471 search boost
   plan-live-ai-result-ux.md     # C22: live ai-run + «Почему этот код» на карточке заявки
   plan-classify-cascade-c23.md  # C23–C27: domain cascade + OCR glue + audit
   plan-next-vector-c28.md       # после C27: ship pay-first, post-pay UX, слои B/D, quality
@@ -201,6 +204,7 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: каталог lab → Postgres (C18) | [`plan-lbm-bro-tnved-catalog.md`](./plan-lbm-bro-tnved-catalog.md) · `tnved:load -- --lab` |
 | ТН ВЭД: инвойс + дополнения 2026 (C19) | [`plan-tnved-invoice-enrich.md`](./plan-tnved-invoice-enrich.md) · `tnved:load -- --search-extras` |
 | ТН ВЭД: ФТС предварительные решения | [`plan-tnved-fts-pr.md`](./plan-tnved-fts-pr.md) · `tnved:fts-pr --load/--actualize` |
+| ТН ВЭД: card-enrich (условия импорта/экспорта) | [`plan-tnved-card-enrich.md`](./plan-tnved-card-enrich.md) · overlay DB + `cardEnrich` · не scrape CO |
 | ТН ВЭД: связи кодов (C20) | [`plan-tnved-relations.md`](./plan-tnved-relations.md) · related overlay + children parentCode |
 | ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
 | ТН ВЭД: multi-step packs → ≥95% any-help (C21b) | [`plan-c21-multistep-all-families.md`](./plan-c21-multistep-all-families.md) · purpose→composition · inventory |

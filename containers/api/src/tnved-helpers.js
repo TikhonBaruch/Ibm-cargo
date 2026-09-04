@@ -28,6 +28,29 @@ const TNVED_FALSE_FRIEND_PAIRS = [
   { query: "огур", block: "кефир" },
 ];
 
+/** Keep in sync with src/lib/ved/tnved-query-match.ts TNVED_SEARCH_ALIASES */
+const TNVED_SEARCH_ALIASES = [
+  {
+    id: "mors-drink",
+    test: /(?:^|[^\p{L}\p{N}])морс(?:ы|а|ом|у)?(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "2202",
+    expandStems: ["морс", "напитк"],
+    blockHit: /морск/i,
+  },
+  {
+    id: "hdd",
+    test: /(?:^|[^\p{L}\p{N}])hdd(?:$|[^\p{L}\p{N}])|ж[её]стк[а-яё]*\s+диск|винчестер|hard\s*disk|hard\s*drive/iu,
+    codePrefix: "8471",
+    expandStems: ["жестк", "накопител", "винчестер"],
+  },
+];
+
+function resolveTnvedSearchAlias(query) {
+  const q = String(query || "").trim();
+  if (!q) return null;
+  return TNVED_SEARCH_ALIASES.find((a) => a.test.test(q)) || null;
+}
+
 function normalizeTnvedQueryText(s) {
   return String(s || "")
     .trim()
@@ -143,19 +166,23 @@ export function scoreTnvedSearchHit(row, { stems, digits, phrase }) {
   const title = String(row.titleRu || "")
     .toLowerCase()
     .replace(/ё/g, "е");
+  const hitText = `${notes}\n${title}`;
   const lead = notes.split(/\n+/)[0] || "";
   const full = String(phrase || "")
     .trim()
     .toLowerCase()
     .replace(/ё/g, "е");
   const queryForFriends = full || (stems || []).join(" ");
+  const alias = resolveTnvedSearchAlias(phrase || queryForFriends);
+  const aliasBlocked = Boolean(alias?.blockHit?.test(hitText));
 
-  if (isFalseFriendPair(queryForFriends, `${notes}\n${title}`)) {
+  if (isFalseFriendPair(queryForFriends, hitText) || aliasBlocked) {
     let score = 0;
     if (digits && digits.length >= 2 && String(row.code || "").startsWith(digits)) {
       score += 100;
       if (row.code === digits) score += 50;
     }
+    if (alias && String(row.code || "").startsWith(alias.codePrefix)) score += 120;
     if (row.isLeaf) score += 15;
     score += Number(row.level || 0);
     return score;
@@ -180,6 +207,7 @@ export function scoreTnvedSearchHit(row, { stems, digits, phrase }) {
     score += 100;
     if (row.code === digits) score += 50;
   }
+  if (alias && String(row.code || "").startsWith(alias.codePrefix)) score += 120;
   if (row.isLeaf) score += 15;
   score += Number(row.level || 0);
   return score;
@@ -195,9 +223,17 @@ export function tnvedSearchWhere(q, { leafOnly = false, headingOnly = false } = 
       code: { startsWith: digits.slice(0, 2) },
     };
   }
-  const stems = codeOnly ? [digits] : tnvedSearchStems(q);
+  const stemsRaw = codeOnly ? [digits] : tnvedSearchStems(q);
+  const alias = codeOnly ? null : resolveTnvedSearchAlias(q);
+  const stems = [...stemsRaw];
+  if (alias?.expandStems) {
+    for (const s of alias.expandStems) {
+      if (s && !stems.includes(s)) stems.push(s);
+    }
+  }
   const or = [];
   if (digits.length >= 2) or.push({ code: { startsWith: digits } });
+  if (alias?.codePrefix) or.push({ code: { startsWith: alias.codePrefix } });
   for (const stem of stems.length ? stems : [q]) {
     or.push({ titleRu: { contains: stem, mode: "insensitive" } });
     or.push({ notes: { contains: stem, mode: "insensitive" } });
@@ -211,4 +247,19 @@ export function tnvedSearchWhere(q, { leafOnly = false, headingOnly = false } = 
     OR: or,
     ...(leafOnly ? { isLeaf: true } : {}),
   };
+}
+
+/** Stems used for ranking — same expand as tnvedSearchWhere. */
+export function tnvedSearchStemsForRank(q) {
+  const digits = String(q || "").replace(/\D/g, "");
+  const codeOnly = digits.length >= 2 && /^[\d\s./-]+$/.test(String(q || "").trim());
+  if (codeOnly) return [digits];
+  const stems = [...tnvedSearchStems(q)];
+  const alias = resolveTnvedSearchAlias(q);
+  if (alias?.expandStems) {
+    for (const s of alias.expandStems) {
+      if (s && !stems.includes(s)) stems.push(s);
+    }
+  }
+  return stems;
 }
