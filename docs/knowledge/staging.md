@@ -247,7 +247,7 @@ Probe: `node scripts/staging-c21-h567-probe.mjs` · `node scripts/staging-c21-h7
 
 **H5 search alias boost (post-fix):** unit `tnved-search-alias-boost.test.ts` · deploy → re-probe `морс`/`HDD`.
 
-**H5 search false-friend audit (2026-09-04):** plan [`plan-tnved-search-false-friend-audit.md`](./plan-tnved-search-false-friend-audit.md) · `npm run probe:search-ff -- --live` · baseline prod **OK 27 / HITCH 29 / EMPTY 10** → miss-driven `TNVED_SEARCH_ALIASES` batch (SSD, лимонад, порошок, коляска, …) · gate `--fail-on any` after deploy.
+**H5 search false-friend audit (2026-09-04):** plan [`plan-tnved-search-false-friend-audit.md`](./plan-tnved-search-false-friend-audit.md) · `npm run probe:search-ff -- --live` · baseline **OK 27 / HITCH 29 / EMPTY 10** → aliases [#74](https://github.com/TikhonBaruch/Ibm-cargo/pull/74) → residual [#75](https://github.com/TikhonBaruch/Ibm-cargo/pull/75)/[#76](https://github.com/TikhonBaruch/Ibm-cargo/pull/76) → **PASS OK 66/66** (`--fail-on any` on `ibm-cargo-phi`).
 
 ---
 
