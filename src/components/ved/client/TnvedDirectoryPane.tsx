@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { HS_EXAMPLES } from "@/lbm-bro/lib/hs-catalog";
 import { TNVED_GROUPS } from "@/lbm-bro/lib/tnved-groups";
 import { DesignerStub } from "@/lbm-bro/components/designer-stub";
+import { ClientMaskedHsCode } from "./ClientMaskedHsCode";
 import { formatHsCode } from "@/lib/ved/tnved";
 import {
   directoryReadFromCard,
@@ -36,10 +37,6 @@ function groupLabel(code: string) {
   const d = String(code || "").replace(/\D/g, "").slice(0, 2);
   const g = TNVED_GROUPS.find((row) => row[0] === d);
   return g ? `${g[0]} — ${g[1]}` : d ? `${d} — группа ТН ВЭД` : "";
-}
-
-function hitHs(h: Hit) {
-  return h.codeDisplay || formatHsCode(h.code) || h.code;
 }
 
 export function TnvedDirectoryPane({
@@ -290,7 +287,9 @@ export function TnvedDirectoryPane({
                   className={picked?.code === h.code ? "on" : ""}
                   onClick={() => setPicked(h)}
                 >
-                  <strong>{hitHs(h)}</strong>
+                  <strong>
+                    <ClientMaskedHsCode code={h.code} />
+                  </strong>
                   <span>
                     {isStubTnvedTitle(h.titleRu)
                       ? "Общее обозначение — откройте карточку"
@@ -317,7 +316,9 @@ export function TnvedDirectoryPane({
               <div className="meta" style={{ marginTop: 10 }}>
                 {groupLabel(picked.code)}
               </div>
-              <div className="tnved-code">{read.hs}</div>
+              <div className="tnved-code">
+                <ClientMaskedHsCode code={picked.code} />
+              </div>
               {read.titleIsGeneralDesignation ? (
                 <p className="meta" style={{ marginTop: 8 }}>
                   Общее обозначение

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { api } from "./VedShell";
+import { ClientMaskedHsCode } from "./client/ClientMaskedHsCode";
 
 type TnvedHit = {
   code: string;
@@ -49,6 +50,7 @@ export function HsCodeAutocomplete({
   const [hits, setHits] = useState<TnvedHit[]>([]);
   const [warn, setWarn] = useState("");
   const [open, setOpen] = useState(false);
+  const maskClient = leafOnly;
 
   useEffect(() => {
     const q = value.trim();
@@ -157,7 +159,9 @@ export function HsCodeAutocomplete({
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => void pick(h)}
               >
-                <span className="font-medium">{h.codeDisplay}</span>
+                <span className="font-medium">
+                  {maskClient ? <ClientMaskedHsCode code={h.code} /> : h.codeDisplay}
+                </span>
                 <span className="ml-1 text-[var(--kb-muted)] line-clamp-1">{h.titleRu}</span>
               </button>
             </li>
