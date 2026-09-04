@@ -1,6 +1,6 @@
 # План: search alias boost (морс≠морская, HDD→8471)
 
-**Статус:** implemented · unit · await deploy live H5  
+**Статус:** **done** 2026-09-04 · live H5 `морс`→2202 · `HDD`→8471 on `ibm-cargo-phi`  
 **Канон:** [`staging.md`](./staging.md) §C21b H5 · [`plan-c21-multistep-all-families.md`](./plan-c21-multistep-all-families.md) G5 residual · [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) (false friends).
 
 ## 1. Идея
@@ -25,7 +25,7 @@ C21 packs уже ведут `морс→snacks/2202` и `HDD→pc-parts/8471`. L
 | 1 | `TNVED_SEARCH_ALIASES` + `resolveTnvedSearchAlias` | **done** unit |
 | 2 | Wire expand stems + code OR + score boost/block | **done** dual-path |
 | 3 | Tests score order морс/HDD | **done** |
-| 4 | Staging H5 note + probe | unit done · **await deploy** live |
+| 4 | Staging H5 note + probe | **done** live PASS |
 
 ## 4. Критерий
 
