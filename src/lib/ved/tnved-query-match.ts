@@ -101,10 +101,10 @@ export const TNVED_SEARCH_ALIASES: readonly TnvedSearchAlias[] = [
   },
   {
     id: "laundry-powder",
-    test: /стиральн[a-zа-яё]*\s+порошок|порошок\s+стиральн|washing\s+powder|laundry\s+detergent/iu,
+    test: /стиральн\S*\s+порошок|порошок\S*\s+стиральн|washing\s+powder|laundry\s+detergent/iu,
     codePrefix: "3402",
     expandStems: ["стиральн", "моющ", "детергент"],
-    blockHit: /драгоцен|платин|серебр|золот|металлич|слонов|кость|ivory|отходы/i,
+    blockHit: /драгоцен|платин|серебр|золот|металлич|слонов|кость|ivory|отходы|мука|помол|какао|горчич|крахмал/i,
   },
   {
     id: "raw-rice",
@@ -155,7 +155,8 @@ export const TNVED_SEARCH_ALIASES: readonly TnvedSearchAlias[] = [
     test: /мороженое|ice[- ]?cream/iu,
     codePrefix: "2105",
     expandStems: ["мороженое", "десерт"],
-    blockHit: /рыб|треск|филе|лосос|gadus|заморож|мороженн[a-zа-яё]*\s+(?:рыб|мяс|филе)/i,
+    blockHit:
+      /рыб|треск|филе|лосос|gadus|заморож|панцир|кревет|ракообраз|моллюск|копчен|краб|лангуст|seafood|мороженн[a-zа-яё]*\s+(?:рыб|мяс|филе)/i,
   },
   {
     id: "glue",

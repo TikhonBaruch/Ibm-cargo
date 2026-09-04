@@ -79,10 +79,10 @@ const TNVED_SEARCH_ALIASES = [
   },
   {
     id: "laundry-powder",
-    test: /стиральн[a-zа-яё]*\s+порошок|порошок\s+стиральн|washing\s+powder|laundry\s+detergent/iu,
+    test: /стиральн\S*\s+порошок|порошок\S*\s+стиральн|washing\s+powder|laundry\s+detergent/iu,
     codePrefix: "3402",
     expandStems: ["стиральн", "моющ", "детергент"],
-    blockHit: /драгоцен|платин|серебр|золот|металлич|слонов|кость|ivory|отходы/i,
+    blockHit: /драгоцен|платин|серебр|золот|металлич|слонов|кость|ivory|отходы|мука|помол|какао|горчич|крахмал/i,
   },
   {
     id: "raw-rice",
@@ -133,7 +133,8 @@ const TNVED_SEARCH_ALIASES = [
     test: /мороженое|ice[- ]?cream/iu,
     codePrefix: "2105",
     expandStems: ["мороженое", "десерт"],
-    blockHit: /рыб|треск|филе|лосос|gadus|заморож|мороженн[a-zа-яё]*\s+(?:рыб|мяс|филе)/i,
+    blockHit:
+      /рыб|треск|филе|лосос|gadus|заморож|панцир|кревет|ракообраз|моллюск|копчен|краб|лангуст|seafood|мороженн[a-zа-яё]*\s+(?:рыб|мяс|филе)/i,
   },
   {
     id: "glue",
@@ -434,7 +435,7 @@ export function scoreTnvedSearchHit(row, { stems, digits, phrase }) {
       score += 100;
       if (row.code === digits) score += 50;
     }
-    if (alias && String(row.code || "").startsWith(alias.codePrefix)) score += 120;
+    if (alias && String(row.code || "").startsWith(alias.codePrefix)) score += 200;
     if (row.isLeaf) score += 15;
     score += Number(row.level || 0);
     return score;
@@ -458,7 +459,7 @@ export function scoreTnvedSearchHit(row, { stems, digits, phrase }) {
     score += 100;
     if (row.code === digits) score += 50;
   }
-  if (alias && String(row.code || "").startsWith(alias.codePrefix)) score += 120;
+  if (alias && String(row.code || "").startsWith(alias.codePrefix)) score += 200;
   if (row.isLeaf) score += 15;
   score += Number(row.level || 0);
   return score;

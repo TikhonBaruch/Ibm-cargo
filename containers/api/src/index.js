@@ -3133,13 +3133,29 @@ const server = http.createServer(async (req, res) => {
       const digits = q.replace(/\D/g, "");
       const codeOnly = digits.length >= 2 && /^[\d\s./-]+$/.test(q);
       const headingPool = headingOnly ? limit : codeOnly ? Math.min(50, Math.max(limit * 4, 24)) : 500;
-      const found = await prisma.tnvedCode.findMany({
-        where: tnvedSearchWhere(q, { leafOnly, headingOnly }),
-        take: headingPool,
-        orderBy: headingOnly ? { code: "asc" } : [{ level: "desc" }, { code: "asc" }],
-      });
       const stems = codeOnly ? [digits] : tnvedSearchStemsForRank(q);
       const alias = codeOnly ? null : resolveTnvedSearchAlias(q);
+      const [foundMain, foundAlias] = await Promise.all([
+        prisma.tnvedCode.findMany({
+          where: tnvedSearchWhere(q, { leafOnly, headingOnly }),
+          take: headingPool,
+          orderBy: headingOnly ? { code: "asc" } : [{ level: "desc" }, { code: "asc" }],
+        }),
+        !headingOnly && alias?.codePrefix
+          ? prisma.tnvedCode.findMany({
+              where: {
+                isActive: true,
+                code: { startsWith: alias.codePrefix },
+                ...(leafOnly ? { isLeaf: true } : {}),
+              },
+              take: 100,
+              orderBy: [{ level: "desc" }, { code: "asc" }],
+            })
+          : Promise.resolve([]),
+      ]);
+      const byCode = new Map();
+      for (const row of [...foundAlias, ...foundMain]) byCode.set(row.code, row);
+      const found = [...byCode.values()];
       const rankedPool = headingOnly
         ? found
         : codeOnly
