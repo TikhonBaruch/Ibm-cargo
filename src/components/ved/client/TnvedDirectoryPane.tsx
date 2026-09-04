@@ -343,7 +343,7 @@ export function TnvedDirectoryPane({
                         title={rel.why || ""}
                       >
                         {TNVED_RELATION_KIND_LABEL[rel.kind as TnvedRelationKind] || "Связь"}{" "}
-                        {formatHsCode(rel.code) || rel.code}
+                        <ClientMaskedHsCode code={rel.code} />
                       </button>
                     ))}
                   </div>

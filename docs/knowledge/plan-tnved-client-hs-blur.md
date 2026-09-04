@@ -12,7 +12,7 @@
 | # | Действие |
 |---|----------|
 | 1 | `maskHsCodeForClient` + `<ClientMaskedHsCode>` |
-| 2 | `/cabinet/tnved` hits + `.tnved-code` |
+| 2 | `/cabinet/tnved` hits + `.tnved-code` + **связанные коды** |
 | 3 | `HsCodeAutocomplete` dropdown при `leafOnly` |
 | 4 | CSS `.hs-client-mask-tail { filter: blur }` |
 
