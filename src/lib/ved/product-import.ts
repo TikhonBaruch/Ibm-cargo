@@ -94,6 +94,10 @@ export function isPdfFilename(name: string): boolean {
   return /\.pdf$/i.test(name);
 }
 
+export function isImageFilename(name: string): boolean {
+  return /\.(jpe?g|png|webp|heic|heif)$/i.test(name);
+}
+
 /** Text-layer PDF → SheetTable (invoice / packing list). Empty if no extractable text. */
 export async function parseProductPdf(
   buffer: ArrayBuffer | Buffer

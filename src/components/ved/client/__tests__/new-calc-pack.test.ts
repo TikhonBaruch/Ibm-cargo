@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   MIN_PACK,
+  isPackImageFile,
+  isPackSourceFile,
   liveCodeForPack,
   liveWizardStepLabels,
   namedItemCount,
@@ -38,6 +40,13 @@ describe("new-calc pack chrome (C11)", () => {
         { name: "B", qty: 1, unitPrice: 0 },
       ]),
     ).toBe(2);
+  });
+
+  it("accepts invoice photos as pack source", () => {
+    expect(isPackSourceFile({ name: "invoice.jpg", type: "image/jpeg" })).toBe(true);
+    expect(isPackImageFile({ name: "scan.PNG" })).toBe(true);
+    expect(isPackSourceFile({ name: "rows.csv" })).toBe(true);
+    expect(isPackSourceFile({ name: "notes.txt" })).toBe(false);
   });
 
   it("C29c: single pack chrome uses live EXPRESS price (no freemium 0 ₽)", () => {

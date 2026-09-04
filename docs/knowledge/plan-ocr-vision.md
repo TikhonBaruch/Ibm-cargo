@@ -93,10 +93,10 @@ curl -s localhost:4700/v1/extract-table \
 
 | ID | Сценарий | Путь | Ценность |
 |----|----------|------|----------|
-| **OCR-A** | Фото invoice → таблица позиций | Import preview + `extract-table` + vision | Сканы packing list |
-| **OCR-B** | Фото товара → attrs позиции | Create + `extract` + vision | Одна SKU на фото |
+| **OCR-A** | Фото invoice → таблица позиций | Import preview + table-extract | Сканы packing list |
+| **OCR-B** | Фото товара → описание/attrs | `POST …/describe` + `describeForChain` | Одна SKU — **live** (#85) |
 
-Рекомендация: **сначала OCR-A** (переиспользует `ProductCsvImport` и classify pipeline), затем OCR-B.
+**2026-09-04:** OCR-B на `main` (photo-first). OCR-A **не** через старый `import-vision.ts` и не только `OCR_SERVICE_URL` (на Vercel сервиса OCR нет). Канон: [`plan-ocr-a-invoice-preview.md`](./plan-ocr-a-invoice-preview.md). Не возвращать `ProductCsvImport` в `NewCalcPane`.
 
 ---
 
@@ -104,11 +104,15 @@ curl -s localhost:4700/v1/extract-table \
 
 ### Спринт 1 — wire vision import (после ключа)
 
+**Канон 2026-09-04:** [`plan-ocr-a-invoice-preview.md`](./plan-ocr-a-invoice-preview.md) — preview JSON `imageBase64`, mesh table-extract, UI = pack dropzone (`new-calc-pack.ts`). Не возвращать `ProductCsvImport` в `NewCalcPane`. Не полагаться только на `OCR_SERVICE_URL`.
+
+Исторический набросок (не исполнять as-is):
+
 1. Preview API: `imageBase64` + `mimeType` в JSON/multipart.
-2. UI: `ProductCsvImport` — `.jpg`, `.png`, `.webp`.
-3. Fallback: local parse skip → `POST ocr:4700/v1/extract-table` с `imageBase64`.
-4. Smoke: `smoke:ocr-vision` — skip если нет `OPENAI_API_KEY`; иначе fixture JPEG.
-5. KB + `testing-branches.md` + `ops:track-a` gate (опционально «vision configured»).
+2. ~~UI: `ProductCsvImport` — `.jpg`~~ → pack path в NewCalc.
+3. Fallback compose: `POST ocr:4700/v1/extract-table` с `imageBase64`, если задан `OCR_SERVICE_URL`.
+4. Smoke: `smoke:ocr-vision` — skip если нет ключа; иначе fixture JPEG.
+5. KB + `testing-branches.md`.
 
 ### Спринт 2 — create path для фото товара
 

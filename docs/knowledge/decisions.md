@@ -245,6 +245,8 @@ Admin Next extract (C2) фиксируется ADR **D20**.
 
 **Статус (2026-08-12):** hold зафиксирован; канон спринтов — [`plan-ocr-vision.md`](./plan-ocr-vision.md) · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md).
 
+**Уточнение (2026-09-04):** OCR-B (фото товара → описание) на prod через mesh `describeForChain` (#85), без `OCR_SERVICE_URL`. OCR-A (фото инвойса → строки preview) — отдельно, mesh + тот же preview; не слепой `extract-table` only. План: [`plan-ocr-a-invoice-preview.md`](./plan-ocr-a-invoice-preview.md). SKU-prompt describe не менять.
+
 ## D31. Кабинет производителя v1 (SKU + спрос)
 
 **Контекст:** D29 фиксирует persona завода как стратегию вне CTA D27. Нужен узкий partner-surface: эталонные SKU и спрос без ПДн, без публичного signup и без очереди брокера.

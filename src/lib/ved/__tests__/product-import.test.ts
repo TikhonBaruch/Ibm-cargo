@@ -11,6 +11,7 @@ import {
   classifyImportRows,
   isXlsxFilename,
   isPdfFilename,
+  isImageFilename,
   enrichImportCreateAttrs,
 } from "../product-import";
 import { sheetTableFromText, attrsFromOcrText } from "../pdf-table";
@@ -110,6 +111,11 @@ Currency USD Incoterm FOB Shenzhen
   it("isPdfFilename", () => {
     expect(isPdfFilename("invoice.PDF")).toBe(true);
     expect(isPdfFilename("a.csv")).toBe(false);
+  });
+
+  it("isImageFilename", () => {
+    expect(isImageFilename("scan.JPG")).toBe(true);
+    expect(isImageFilename("a.csv")).toBe(false);
   });
 
   it("sheetTableFromText parses semicolon invoice", () => {

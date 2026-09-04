@@ -64,9 +64,9 @@ Write-back: `approve` → `recordVerifiedFromApprove` (per item, fail-open). Е�
 
 ### CSV / XLSX product import (preview)
 
-`POST /api/v1/imports/products/preview` — parse CSV или XLSX (`xlsxBase64` / multipart) → per-row precedent → cascade → LLM (C35: cascade skip LLM only if conf ≥ `LLM_SKIP_CONF`).  
-Лимит D10 по тарифу. UI: `ProductCsvImport` в NewCalc → apply / create.  
-Код: `src/lib/ved/product-import.ts`.
+`POST /api/v1/imports/products/preview` — parse CSV/XLSX/PDF **или фото инвойса** (`imageBase64`) → per-row precedent → cascade → LLM (C35: cascade skip LLM only if conf ≥ `LLM_SKIP_CONF`).  
+Лимит D10 по тарифу. UI: pack dropzone в NewCalc (не `ProductCsvImport`). Пустая таблица с картинки → 200 fail-open.  
+Код: `src/lib/ved/product-import.ts` · `invoice-vision-table.ts`.
 
 ### Broker reclassify
 

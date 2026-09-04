@@ -915,3 +915,130 @@ export async function describeWithProviderDeepseek(
     return { ok: false, fetch: fetchDiag, error: msg.slice(0, 300), engine: "deepseek-vision-v1" };
   }
 }
+
+/** Invoice/packing-list table — not the SKU describe prompt. Do not reuse describeForChain. */
+export const INVOICE_TABLE_VISION_PROMPT =
+  'Extract product line items from this invoice or packing list as JSON: {"items":[{"name":"","description":"","qty":1,"unitPrice":0}]}. Use the document language. If this is a single product photo (not a table), return {"items":[]} or at most one item. Do not invent HS codes.';
+
+export type VisionInlineImage = { b64: string; mime: string };
+
+async function visionChatContent(opts: {
+  key: string;
+  base: string;
+  model: string;
+  prompt: string;
+  mime: string;
+  b64: string;
+  timeoutMs: number;
+  jsonObject?: boolean;
+}): Promise<{ ok: true; content: string; status: number } | { ok: false; error: string; status?: number }> {
+  try {
+    const body: Record<string, unknown> = {
+      model: opts.model,
+      temperature: 0,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: opts.prompt },
+            {
+              type: "image_url",
+              image_url: { url: `data:${opts.mime};base64,${opts.b64}` },
+            },
+          ],
+        },
+      ],
+    };
+    if (opts.jsonObject) body.response_format = { type: "json_object" };
+    const res = await fetch(`${opts.base}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${opts.key}`,
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(opts.timeoutMs),
+    });
+    if (!res.ok) {
+      const errBody = (await res.text().catch(() => "")).slice(0, 180);
+      return {
+        ok: false,
+        status: res.status,
+        error: `vision HTTP ${res.status}${errBody ? `: ${errBody}` : ""}`.slice(0, 300),
+      };
+    }
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const content = String(data.choices?.[0]?.message?.content || "").trim();
+    if (!content) {
+      return { ok: false, status: res.status, error: "vision empty" };
+    }
+    return { ok: true, content, status: res.status };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message.slice(0, 300) : "vision failed",
+    };
+  }
+}
+
+export async function extractTableWithProviderDeepseek(
+  image: VisionInlineImage,
+  opts: { hint?: string } = {},
+  env: EnvBag = process.env
+): Promise<{ ok: true; content: string; engine: string } | { ok: false; error: string; engine: string }> {
+  if (!deepseekVisionConfigured(env)) {
+    return { ok: false, error: "DEEPSEEK_API_KEY missing", engine: "deepseek-vision-v1" };
+  }
+  const key = String(env.DEEPSEEK_API_KEY || "").trim();
+  const base = String(env.DEEPSEEK_BASE_URL || "https://api.deepseek.com/v1").replace(/\/$/, "");
+  const model = String(env.DEEPSEEK_VISION_MODEL || "deepseek-v4-flash-vision-exp").trim();
+  const timeoutMs = visionDescribeTimeoutMs(env);
+  const prompt = `${INVOICE_TABLE_VISION_PROMPT} Hint: ${opts.hint || ""}`.trim();
+  const out = await visionChatContent({
+    key,
+    base,
+    model,
+    prompt,
+    mime: image.mime,
+    b64: image.b64,
+    timeoutMs,
+  });
+  if (!out.ok) {
+    return { ok: false, error: out.error, engine: "deepseek-vision-v1" };
+  }
+  return { ok: true, content: out.content, engine: "deepseek-vision-v1" };
+}
+
+export async function extractTableWithProviderQwen(
+  image: VisionInlineImage,
+  opts: { hint?: string } = {},
+  env: EnvBag = process.env
+): Promise<{ ok: true; content: string; engine: string } | { ok: false; error: string; engine: string }> {
+  if (!qwenVisionConfigured(env)) {
+    return { ok: false, error: "QWEN_API_KEY missing", engine: "qwen-vl-v1" };
+  }
+  const key = String(env.QWEN_API_KEY || "").trim();
+  const base = String(env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1").replace(
+    /\/$/,
+    ""
+  );
+  const model = String(env.QWEN_VISION_MODEL || "qwen-vl-plus").trim();
+  const timeoutMs = visionDescribeTimeoutMs(env);
+  const prompt = `${INVOICE_TABLE_VISION_PROMPT} Hint: ${opts.hint || ""}`.trim();
+  const out = await visionChatContent({
+    key,
+    base,
+    model,
+    prompt,
+    mime: image.mime,
+    b64: image.b64,
+    timeoutMs,
+    jsonObject: true,
+  });
+  if (!out.ok) {
+    return { ok: false, error: out.error, engine: "qwen-vl-v1" };
+  }
+  return { ok: true, content: out.content, engine: "qwen-vl-v1" };
+}

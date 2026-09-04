@@ -4,7 +4,7 @@
 |----------|--------|
 | Create (+ preferred, attrs, media, **optional published SKU**, **hsHint from directory combobox and/or heuristic top-N**, **attr chips** composition/purpose/color/age, **invoice currency USD/CNY/EUR**) | `AI_READY`; preferred на calc; `manufacturerSkuId` + снимок attrs; optional **LLM enrich**; `aiDraft.landedWithoutFreight`; UI: progressive tips / **HS search** / **attr-suggest chips** ([`plan-llm-fill-hints.md`](../../plan-llm-fill-hints.md)) |
 | Upload → `mediaUrl` | `POST /api/v1/uploads`; compose local `storage: local` + `GET /uploads/ved/...` |
-| CSV/XLSX/PDF table → preview → create | `POST /imports/products/preview` (`csv` / `xlsxBase64` / `pdfBase64` / file); apply / create из `NewCalcPane` (`ProductCsvImport`); лимит D10 |
+| CSV/XLSX/PDF/JPG table → preview → create | `POST /imports/products/preview` (`csv` / `xlsxBase64` / `pdfBase64` / `imageBase64` / file); apply из `NewCalcPane` pack dropzone; лимит D10; пустое фото = 200 |
 | Pay / topup-then-pay | Ledger → `QUEUED` или Express `DONE`+PDF; preferred → broker reserved |
 | **Result feedback (`AI_READY`+)** | `POST …/feedback` — 👍/👎 на черновик ТН ВЭД или финальный PDF; один раз; NOTE в EventsTimeline |
 | Chat CALCULATION | `waitingOn` BROKER; broker threads «ответ» |

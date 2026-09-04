@@ -31,7 +31,7 @@
 | Цепочка шагов + live проверка | [`chain-verification.md`](./chain-verification.md) |
 | Прецеденты + CSV import (Growth local) | [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) |
 | Ускорение ИИ-уточнения через БД (Clar-DB) | [`plan-ai-clarify-db-boost.md`](./plan-ai-clarify-db-boost.md) |
-| OCR / PDF / vision (`imageBase64`) | [`plan-ocr-vision.md`](./plan-ocr-vision.md) |
+| OCR / PDF / vision (`imageBase64`) | [`plan-ocr-vision.md`](./plan-ocr-vision.md) · OCR-A live wire: [`plan-ocr-a-invoice-preview.md`](./plan-ocr-a-invoice-preview.md) |
 | Конвейер расшифровки (схема логистов) | [`plan-ai-mesh.md`](./plan-ai-mesh.md) |
 | Гладкий create / smoke S3 / compress | [`plan-smooth-create-path.md`](./plan-smooth-create-path.md) |
 | Журнал AI-цепочки + online probes | [`plan-chain-run-log.md`](./plan-chain-run-log.md) |
@@ -76,6 +76,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-precedent-bulk.md     # БД-2 прецеденты + CSV/XLSX/PDF import (Growth local)
   plan-ai-clarify-db-boost.md # Clar-DB: demo 8427/8507 + pack + seed precedents
   plan-ocr-vision.md         # OCR P2: text PDF done; imageBase64 vision hold + спринты
+  plan-ocr-a-invoice-preview.md # OCR-A: фото инвойса → preview rows (после C36; не merge enrich)
   plan-ai-mesh.md            # конвейер mesh (срезы 1–5) + срез 0: OpenAI-compatible профили
   plan-parallel-ownership.md # D35: пакеты domain/orch/mesh + model≠container
   PACKAGES.md                # (в src/lib/ved/) logical ownership map
@@ -152,6 +153,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
   plan-lbm-bro-c36-c39-port.md # port photo-first / pay-hang на main без ломки directory/search (#67 superseded)
+  plan-ocr-a-invoice-preview.md # OCR-A invoice photo → pack preview (риски + фазы; код отдельно)
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
   containerization.md        # C1–C5, Compose vs Vercel, инвентарь as-is/будущее
   cabinets/                  # UI-инвентарь client/broker/admin + correctness + ux-saas + ui-guide
