@@ -247,6 +247,8 @@ Probe: `node scripts/staging-c21-h567-probe.mjs` · `node scripts/staging-c21-h7
 
 **H5 search alias boost (post-fix):** unit `tnved-search-alias-boost.test.ts` · deploy → re-probe `морс`/`HDD`.
 
+**H5 search false-friend audit (2026-09-04):** plan [`plan-tnved-search-false-friend-audit.md`](./plan-tnved-search-false-friend-audit.md) · `npm run probe:search-ff -- --live` · baseline prod **OK 27 / HITCH 29 / EMPTY 10** → miss-driven `TNVED_SEARCH_ALIASES` batch (SSD, лимонад, порошок, коляска, …) · gate `--fail-on any` after deploy.
+
 ---
 
 **H5–H7 probe 2026-09-03** (preview `ibm-cargo-n28hwx65d` gitDirty C21 WIP · prod pre-merge):

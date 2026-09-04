@@ -13,11 +13,24 @@ describe("resolveTnvedSearchAlias", () => {
     expect(resolveTnvedSearchAlias("морская вода")).toBeNull();
   });
 
-  it("HDD / жесткий диск / ноутбук → chapter boost", () => {
+  it("HDD / SSD / жесткий диск / ноутбук → chapter boost", () => {
     expect(resolveTnvedSearchAlias("HDD")?.codePrefix).toBe("8471");
     expect(resolveTnvedSearchAlias("hdd")?.codePrefix).toBe("8471");
+    expect(resolveTnvedSearchAlias("SSD")?.codePrefix).toBe("8471");
     expect(resolveTnvedSearchAlias("жесткий диск")?.codePrefix).toBe("8471");
     expect(resolveTnvedSearchAlias("ноутбук")?.codePrefix).toBe("847130");
+  });
+
+  it("false-friend batch: drink/powder/stroller vs hitch chapters", () => {
+    expect(resolveTnvedSearchAlias("лимонад")?.codePrefix).toBe("2202");
+    expect(resolveTnvedSearchAlias("стиральный порошок")?.codePrefix).toBe("3402");
+    expect(resolveTnvedSearchAlias("коляска")?.codePrefix).toBe("8715");
+    expect(resolveTnvedSearchAlias("инвалидная коляска")?.codePrefix).toBe("8713");
+    expect(resolveTnvedSearchAlias("сигареты")?.codePrefix).toBe("2402");
+    expect(resolveTnvedSearchAlias("электронная сигарета")).toBeNull();
+    expect(resolveTnvedSearchAlias("бампер")?.codePrefix).toBe("8708");
+    expect(resolveTnvedSearchAlias("сок апельсиновый")?.codePrefix).toBe("2009");
+    expect(resolveTnvedSearchAlias("рисовое молоко")).toBeNull();
   });
 });
 
@@ -93,29 +106,45 @@ describe("scoreTnvedSearchHit alias boost", () => {
     expect(drink).toBeGreaterThan(seawater);
   });
 
-  it("HDD ranks 8471 storage over unrelated leaf", () => {
-    const stems = ["hdd", "жестк", "накопител", "винчестер"];
-    const hdd = scoreTnvedSearchHit(
+  it("лимонад / порошок / коляска score alias chapter over hitch leaves", () => {
+    const cases: Array<{
+      q: string;
+      good: { code: string; titleRu: string; notes?: string | null };
+      bad: { code: string; titleRu: string; notes?: string | null };
+    }> = [
       {
-        code: "8471705000",
-        titleRu: "Накопители на жестких магнитных дисках",
-        notes: "HDD",
-        isLeaf: true,
-        level: 10,
+        q: "лимонад",
+        good: { code: "2202100000", titleRu: "Воды, включая минеральные", notes: "лимонад" },
+        bad: { code: "1704905500", titleRu: "Пастилки от боли в горле", notes: null },
       },
-      { stems, digits: "", phrase: "HDD" },
-    );
-    const other = scoreTnvedSearchHit(
       {
-        code: "8517620000",
-        titleRu: "Аппараты для передачи данных",
-        notes: null,
-        isLeaf: true,
-        level: 10,
+        q: "стиральный порошок",
+        good: { code: "3402200000", titleRu: "Моющие средства", notes: "стиральный порошок" },
+        bad: { code: "7106100000", titleRu: "Порошок", notes: "платина" },
       },
-      { stems, digits: "", phrase: "HDD" },
-    );
-    expect(hdd).toBeGreaterThan(other);
+      {
+        q: "коляска",
+        good: { code: "8715000000", titleRu: "Коляски детские", notes: null },
+        bad: { code: "8711000000", titleRu: "Мотоциклы (включая мопеды)", notes: null },
+      },
+      {
+        q: "SSD",
+        good: { code: "8471700000", titleRu: "Накопители", notes: "SSD" },
+        bad: { code: "8517620000", titleRu: "Аппараты для передачи данных", notes: null },
+      },
+    ];
+    for (const c of cases) {
+      const stems = tnvedSearchStems(c.q);
+      const g = scoreTnvedSearchHit(
+        { ...c.good, isLeaf: true, level: 10 },
+        { stems, digits: "", phrase: c.q },
+      );
+      const b = scoreTnvedSearchHit(
+        { ...c.bad, isLeaf: true, level: 10 },
+        { stems, digits: "", phrase: c.q },
+      );
+      expect(g, c.q).toBeGreaterThan(b);
+    }
   });
 });
 

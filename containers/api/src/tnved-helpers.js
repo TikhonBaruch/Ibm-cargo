@@ -29,6 +29,9 @@ const TNVED_FALSE_FRIEND_PAIRS = [
 ];
 
 /** Keep in sync with src/lib/ved/tnved-query-match.ts TNVED_SEARCH_ALIASES */
+const PLANT_DAIRY_RE =
+  /соев\w*|овсян\w*|миндальн\w*|кокосов\w*|рисов\w*|орехов\w*|растительн\w*|plant[- ]?based|soy\s*(?:milk|yogurt|yoghurt)|oat\s*(?:milk|yogurt)|almond\s*(?:milk|yogurt)|coconut\s*(?:milk|yogurt)|hazelnut\s*(?:milk|yogurt)|nut\s*milk|rice\s*milk/i;
+
 const TNVED_SEARCH_ALIASES = [
   {
     id: "mors-drink",
@@ -38,23 +41,264 @@ const TNVED_SEARCH_ALIASES = [
     blockHit: /морск/i,
   },
   {
-    id: "hdd",
-    test: /(?:^|[^\p{L}\p{N}])hdd(?:$|[^\p{L}\p{N}])|ж[её]стк[а-яё]*\s+диск|винчестер|hard\s*disk|hard\s*drive/iu,
+    id: "hdd-ssd",
+    test: /(?:^|[^\p{L}\p{N}])(?:hdd|ssd)(?:$|[^\p{L}\p{N}])|ж[её]стк[а-яё]*\s+диск|винчестер|hard\s*disk|hard\s*drive|твердотельн|solid\s*state/iu,
     codePrefix: "8471",
-    expandStems: ["жестк", "накопител", "винчестер"],
+    expandStems: ["жестк", "накопител", "винчестер", "ssd", "твердотельн"],
   },
   {
     id: "laptop",
-    test: /ноутбук|laptop|notebook|macbook|портативн\w*\s+вычисл/iu,
+    test: /ноутбук|laptop|notebook|macbook|портативн[a-zа-яё]*\s+вычисл/iu,
     codePrefix: "847130",
     expandStems: ["ноутбук", "laptop", "notebook", "портативн"],
+  },
+  {
+    id: "lemonade",
+    test: /лимонад|lemonade/iu,
+    codePrefix: "2202",
+    expandStems: ["лимонад", "напитк"],
+  },
+  {
+    id: "cola",
+    test: /(?:^|[^\p{L}\p{N}])кол[аыуе](?:$|[^\p{L}\p{N}])|coca[- ]?cola|\bcola\b/iu,
+    codePrefix: "2202",
+    expandStems: ["кола", "напитк"],
+  },
+  {
+    id: "orange-juice",
+    test: /сок\s+апельсин|апельсин[a-zа-яё]*\s+сок|orange\s+juice/iu,
+    codePrefix: "2009",
+    expandStems: ["апельсин", "сок"],
+  },
+  {
+    id: "mineral-water",
+    test: /минеральн[a-zа-яё]*\s+вод|mineral\s+water/iu,
+    codePrefix: "2201",
+    expandStems: ["минеральн", "вод"],
+    blockHit: /вата|шлаковат|силикатн/i,
+  },
+  {
+    id: "laundry-powder",
+    test: /стиральн[a-zа-яё]*\s+порошок|порошок\s+стиральн|washing\s+powder|laundry\s+detergent/iu,
+    codePrefix: "3402",
+    expandStems: ["стиральн", "порошок", "моющ"],
+    blockHit: /драгоцен|платин|серебр|золот|металлич/i,
+  },
+  {
+    id: "raw-rice",
+    test: /(?:^|[^\p{L}\p{N}])рис(?:а|у|ом|е)?(?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])rice(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "1006",
+    expandStems: ["рис"],
+    blockHit: /обработ|подготовл|хлопь|рисово/i,
+  },
+  {
+    id: "sausage",
+    test: /колбас|sausage/iu,
+    codePrefix: "1601",
+    expandStems: ["колбас"],
+  },
+  {
+    id: "chips",
+    test: /чипсы|chips|картофельн[a-zа-яё]*\s+чипс/iu,
+    codePrefix: "1905",
+    expandStems: ["чипс", "хрустящ"],
+  },
+  {
+    id: "waffles",
+    test: /(?:^|[^\p{L}\p{N}])вафл|waffles?/iu,
+    codePrefix: "1905",
+    expandStems: ["вафл"],
+    blockHit: /мыл|soap|хлопья|гранул|порошк/i,
+  },
+  {
+    id: "cake",
+    test: /(?:^|[^\p{L}\p{N}])торт(?:ы|а|ом|у)?(?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])cake(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "1905",
+    expandStems: ["торт", "кондитер"],
+  },
+  {
+    id: "pizza",
+    test: /пицц|pizza/iu,
+    codePrefix: "1905",
+    expandStems: ["пицц"],
+  },
+  {
+    id: "chicken-soup",
+    test: /суп\s+кури|кури[a-zа-яё]*\s+суп|chicken\s+soup/iu,
+    codePrefix: "2104",
+    expandStems: ["суп", "бульон"],
+  },
+  {
+    id: "ice-cream",
+    test: /мороженое|ice[- ]?cream/iu,
+    codePrefix: "2105",
+    expandStems: ["морожен"],
+  },
+  {
+    id: "glue",
+    test: /(?:^|[^\p{L}\p{N}])клей(?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])glue(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "3506",
+    expandStems: ["клей", "адгезив"],
+    blockHit: /рыбий|желатин/i,
+  },
+  {
+    id: "coffee-machine",
+    test: /кофемаш|кофеварк|coffee\s*machine|coffee\s*maker|espresso\s*machine/iu,
+    codePrefix: "8516",
+    expandStems: ["кофемаш", "кофеварк", "электротермическ"],
+  },
+  {
+    id: "kettle",
+    test: /(?:^|[^\p{L}\p{N}])чайник(?:$|[^\p{L}\p{N}])|electric\s+kettle|чайников/iu,
+    codePrefix: "8516",
+    expandStems: ["чайник", "электротермическ"],
+  },
+  {
+    id: "mattress",
+    test: /матрас|mattress/iu,
+    codePrefix: "9404",
+    expandStems: ["матрас", "матрац"],
+  },
+  {
+    id: "car-seat",
+    test: /автокрес|car\s*seat|детск[a-zа-яё]*\s+кресл[a-zа-яё]*\s+авто/iu,
+    codePrefix: "9401",
+    expandStems: ["кресл", "детск"],
+  },
+  {
+    id: "camera",
+    test: /фотоаппарат|фотокамер|\bdslr\b|photo\s*camera/iu,
+    codePrefix: "9006",
+    expandStems: ["фотоаппарат", "фотокамер", "камер"],
+  },
+  {
+    id: "wheelchair",
+    test: /инвалидн[а-яa-z]*\s+коляск|wheelchair/iu,
+    codePrefix: "8713",
+    expandStems: ["инвалидн", "коляск"],
+  },
+  {
+    id: "stroller",
+    test: /(?:^|[^\p{L}\p{N}])коляск|stroller|baby\s+carriage|pushchair/iu,
+    codePrefix: "8715",
+    expandStems: ["коляск", "детск"],
+    blockHit: /мотоцикл|мопед|двигател/i,
+  },
+  {
+    id: "pen",
+    test: /(?:^|[^\p{L}\p{N}])ручк[аиуеой]?(?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])pen(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "9608",
+    expandStems: ["ручк", "шариков"],
+  },
+  {
+    id: "ring-jewelry",
+    test: /(?:^|[^\p{L}\p{N}])кольц[оаеу](?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])ring(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "7113",
+    expandStems: ["кольц", "ювелир"],
+  },
+  {
+    id: "cigarettes",
+    test: /(?<!электронн[a-zа-яё]{0,12}\s)(?:^|[^\p{L}\p{N}])сигарет/iu,
+    codePrefix: "2402",
+    expandStems: ["сигарет", "табак"],
+    blockHit: /электронн|вейп|vapor|vape/i,
+  },
+  {
+    id: "agri-feed",
+    test: /комбикорм|animal\s*feed|корм\s+для\s+скот/iu,
+    codePrefix: "2309",
+    expandStems: ["комбикорм", "корм"],
+  },
+  {
+    id: "playstation",
+    test: /playstation|play\s*station|\bps[45]\b|игровая\s+приставк/iu,
+    codePrefix: "9504",
+    expandStems: ["приставк", "игровы", "playstation"],
+  },
+  {
+    id: "car-bumper",
+    test: /(?:^|[^\p{L}\p{N}])бампер(?:$|[^\p{L}\p{N}])|car\s+bumper|авто[a-zа-яё]*\s+бампер/iu,
+    codePrefix: "8708",
+    expandStems: ["бампер", "кузов"],
+    blockHit: /бамперн|аттракцион/i,
+  },
+  {
+    id: "hdmi-cable",
+    test: /hdmi|кабель\s+hdmi|hdmi\s+кабель/iu,
+    codePrefix: "8544",
+    expandStems: ["кабел", "провод", "hdmi"],
+    blockHit: /желоб|канальн|магистральн/i,
+  },
+  {
+    id: "chicken-meat",
+    test: /(?:^|[^\p{L}\p{N}])куриц|(?:^|[^\p{L}\p{N}])chicken(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "0207",
+    expandStems: ["куриц", "птиц"],
+  },
+  {
+    id: "belt",
+    test: /(?:^|[^\p{L}\p{N}])ремень(?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])ремни(?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])belt(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "4203",
+    expandStems: ["ремен", "пояс"],
+  },
+  {
+    id: "keds",
+    test: /(?:^|[^\p{L}\p{N}])кеды(?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])keds?(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "6404",
+    expandStems: ["кед", "обув", "текстильн"],
+  },
+  {
+    id: "milk",
+    test: /(?:^|[^\p{L}\p{N}])молоко(?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])milk(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "0401",
+    expandStems: ["молоко"],
+  },
+  {
+    id: "fabric",
+    test: /(?:^|[^\p{L}\p{N}])ткань(?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])fabric(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "5208",
+    expandStems: ["ткан", "хлопчат"],
+  },
+  {
+    id: "gloves",
+    test: /(?:^|[^\p{L}\p{N}])перчатк|gloves?/iu,
+    codePrefix: "6116",
+    expandStems: ["перчатк"],
+  },
+  {
+    id: "mittens",
+    test: /варежк|mittens?/iu,
+    codePrefix: "6116",
+    expandStems: ["варежк", "перчатк"],
+  },
+  {
+    id: "tie",
+    test: /галстук|necktie|\btie\b/iu,
+    codePrefix: "6215",
+    expandStems: ["галстук"],
+  },
+  {
+    id: "pajama",
+    test: /пижам|pajama|pyjama/iu,
+    codePrefix: "6107",
+    expandStems: ["пижам"],
+  },
+  {
+    id: "robe",
+    test: /(?:^|[^\p{L}\p{N}])халат|bathrobe|dressing\s+gown/iu,
+    codePrefix: "6107",
+    expandStems: ["халат"],
+    blockHit: /одноразов|медицин|пациент/i,
   },
 ];
 
 export function resolveTnvedSearchAlias(query) {
   const q = String(query || "").trim();
   if (!q) return null;
-  return TNVED_SEARCH_ALIASES.find((a) => a.test.test(q)) || null;
+  const hit = TNVED_SEARCH_ALIASES.find((a) => a.test.test(q)) || null;
+  if (hit?.id === "milk" && PLANT_DAIRY_RE.test(normalizeTnvedQueryText(q))) return null;
+  if (hit?.id === "cigarettes" && /электронн|вейп|\bvape\b|vapor/i.test(q)) return null;
+  return hit;
 }
 
 function normalizeTnvedQueryText(s) {
