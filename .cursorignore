@@ -1,0 +1,3 @@
+# Scratch dumps — do not index (parallel tracks, ETL extracts, foreign packs).
+.tmp-*/
+handoff/

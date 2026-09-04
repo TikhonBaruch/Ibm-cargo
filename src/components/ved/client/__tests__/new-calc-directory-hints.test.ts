@@ -6,6 +6,7 @@ import {
   directoryHintHsHint,
   directoryHintsQuery,
   isSameDirectoryHint,
+  preferExistingHsHint,
   shouldShowDirectoryHints,
 } from "../new-calc-directory-hints";
 
@@ -43,6 +44,15 @@ describe("directoryHintHsHint", () => {
   });
 });
 
+describe("preferExistingHsHint", () => {
+  it("keeps a directory draft when clarify also returns a heading", () => {
+    expect(preferExistingHsHint("8471 30 000 0", "8471")).toBe("8471 30 000 0");
+    expect(preferExistingHsHint(undefined, "8471")).toBe("8471");
+    expect(preferExistingHsHint("", "8471")).toBe("8471");
+    expect(preferExistingHsHint("8471 30 000 0", undefined)).toBe("8471 30 000 0");
+  });
+});
+
 describe("NewCalcDirectoryHints chrome", () => {
   const src = readFileSync(
     join(process.cwd(), "src/components/ved/client/NewCalcDirectoryHints.tsx"),
@@ -58,5 +68,19 @@ describe("NewCalcDirectoryHints chrome", () => {
     expect(src).not.toContain("Оформить заявку по этому коду");
     expect(src).not.toContain("HsCodeAutocomplete");
     expect(src).not.toContain("HsHintCandidates");
+    expect(src).toContain("Уточнения слева не заменят этот черновик");
+  });
+});
+
+describe("NewCalcPane keeps directory hsHint through create", () => {
+  const pane = readFileSync(
+    join(process.cwd(), "src/components/ved/client/NewCalcPane.tsx"),
+    "utf8",
+  );
+
+  it("spreads item attrs into create and does not let clarify overwrite a taken hint", () => {
+    expect(pane).toContain("preferExistingHsHint");
+    expect(pane).toContain("...base.attrs");
+    expect(pane).toContain("directoryHintHsHint");
   });
 });

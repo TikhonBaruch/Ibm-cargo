@@ -32,3 +32,14 @@ export function isSameDirectoryHint(applied: string | undefined, code: string): 
   const b = String(code || "").replace(/\D/g, "");
   return Boolean(a && b && a === b);
 }
+
+/** Clarify (and other writers) keep an already taken directory hsHint. */
+export function preferExistingHsHint(
+  existing: string | undefined,
+  incoming: string | undefined,
+): string | undefined {
+  const have = String(existing || "").trim();
+  if (have) return have;
+  const next = String(incoming || "").trim();
+  return next || undefined;
+}

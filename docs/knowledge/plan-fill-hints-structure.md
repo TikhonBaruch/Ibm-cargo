@@ -35,7 +35,7 @@
 | Precedent typeahead | `precedent-suggest` + `POST …/suggest/query` | через FieldSuggest | live API |
 | Attr chips | `attr-suggest` + `AttrSuggestChips` | **orphan** (компонент не импортирован) | API live, UI dead |
 | HS top-3 candidates | `HsHintCandidates` | **orphan** | dead UI |
-| Directory sidebar | `NewCalcDirectoryHints` | `/cabinet/new` single, `wiz-side` | **live** — search `leafOnly=1`, blur, `hsHint` |
+| Directory sidebar | `NewCalcDirectoryHints` | `/cabinet/new` single, `wiz-side` | **live** — search `leafOnly=1`, blur, `hsHint`; C21 не перетирает взятый код |
 | C12 clarify chips | `clarify-ai` + `ClarifyField` | `/cabinet/new` single | **primary** |
 | C21 family trees | `tnved-hint-trees` (~12 packs: milk, knit-top, footwear, computers, cosmetics, toys, …) | через clarify на NewCalc | **primary** fill help |
 | Pay-first HS reveal | post-pay alts | шаг 3 после `paidAt` | separate |

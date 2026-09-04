@@ -16,6 +16,22 @@
 | [`cabinets/ui-guide.md`](./cabinets/ui-guide.md) | **Сводка UI:** клиент vs брокер vs админ, канон админа, next steps |
 | [`../design/README.md`](../design/README.md) | Каталог HTML-рефов и assets |
 
+## Внешний макет → live (без второго кабинета)
+
+Канон, который уже сработал на lbm-bro: [`plan-lbm-bro-visual.md`](./plan-lbm-bro-visual.md) · честность слотов [`plan-lbm-bro-honest-skin.md`](./plan-lbm-bro-honest-skin.md) · сверка chrome [`plan-lbm-bro-max-match.md`](./plan-lbm-bro-max-match.md).
+
+Макет **не** копируют в `src/` как новое приложение. Последствия того пути: второй wizard/toast/shell, фейковые цифры (инвойс, НДС), SW держит старый chrome, lab и `/cabinet` расходятся.
+
+| Шаг | Что |
+|-----|-----|
+| 0 | Артефакт в scratch или [`docs/design/refs/`](../design/refs/), не в `ved/client` |
+| 1 | Таблица: кадр макета → live pane → паттерн D32 → **honesty gap** (чего domain не делает) |
+| 2 | PR токенов/chrome only (`globals.css`, shell). Domain-формы не трогать |
+| 3 | Один экран на PR: те же компоненты, другой CSS/copy. Не заменять `NewCalcPane` целиком на lab-wizard |
+| 4 | Gap: скрыть (C8) или честный stub (C9). Не обещать оплату 0 ₽, НДС 20%, полный HS до оплаты |
+
+Live лицо = `/cabinet`. Lab `/client` = музей макета. Данные и CTA — LBM, не demo-store.
+
 ## Быстрый старт
 
 | Задача | Куда |
