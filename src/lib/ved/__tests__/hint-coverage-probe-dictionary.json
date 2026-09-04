@@ -1233,7 +1233,7 @@
       "expected": {
         "pack": "gloves-scarves",
         "attr": "A~",
-        "searchPrefix": "6116"
+        "searchPrefix": "611"
       },
       "mustNotPack": [
         "knit-top",

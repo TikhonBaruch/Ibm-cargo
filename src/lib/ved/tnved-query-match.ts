@@ -103,8 +103,8 @@ export const TNVED_SEARCH_ALIASES: readonly TnvedSearchAlias[] = [
     id: "laundry-powder",
     test: /стиральн[a-zа-яё]*\s+порошок|порошок\s+стиральн|washing\s+powder|laundry\s+detergent/iu,
     codePrefix: "3402",
-    expandStems: ["стиральн", "порошок", "моющ"],
-    blockHit: /драгоцен|платин|серебр|золот|металлич/i,
+    expandStems: ["стиральн", "моющ", "детергент"],
+    blockHit: /драгоцен|платин|серебр|золот|металлич|слонов|кость|ivory|отходы/i,
   },
   {
     id: "raw-rice",
@@ -154,7 +154,8 @@ export const TNVED_SEARCH_ALIASES: readonly TnvedSearchAlias[] = [
     id: "ice-cream",
     test: /мороженое|ice[- ]?cream/iu,
     codePrefix: "2105",
-    expandStems: ["морожен"],
+    expandStems: ["мороженое", "десерт"],
+    blockHit: /рыб|треск|филе|лосос|gadus|заморож|мороженн[a-zа-яё]*\s+(?:рыб|мяс|филе)/i,
   },
   {
     id: "glue",
@@ -216,7 +217,8 @@ export const TNVED_SEARCH_ALIASES: readonly TnvedSearchAlias[] = [
     id: "ring-jewelry",
     test: /(?:^|[^\p{L}\p{N}])кольц[оаеу](?:$|[^\p{L}\p{N}])|(?:^|[^\p{L}\p{N}])ring(?:$|[^\p{L}\p{N}])/iu,
     codePrefix: "7113",
-    expandStems: ["кольц", "ювелир"],
+    expandStems: ["кольцо", "ювелир", "перстен"],
+    blockHit: /эфир|пероксид|фенол|спирт|химическ/i,
   },
   {
     id: "cigarettes",
