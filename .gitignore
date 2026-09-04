@@ -39,6 +39,10 @@ tmp/
 # Local / design dumps
 new_desing/
 Таурус/
+
+# Parallel-track scratch (ETL extracts, foreign packs). Never product.
+.tmp-*/
+handoff/
 .cursor/
 containers/web/.export/
 containers/admin/.export/

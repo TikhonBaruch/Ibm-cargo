@@ -74,6 +74,8 @@ npm run ops:track-a
 
 Preview: SSO Vercel часто включён — открывать через PR «Visit Preview». Prod custom domain без SSO.
 
+**Параллель тяжёлых треков:** shipping-worktree = текущий PR на `main`. Долгий трек (ETL, foreign pack) = отдельный git worktree `.worktrees/lbm-fork-2026-08-25/<ветка>`. Дампы — `/home/andrey/Projects/.scratch/lbm/<трек>/`. Не stash как парковка; игнорируемое (`.tmp-*/`, `handoff/`) не комментировать в PR. Правило: [`ved-scratch.mdc`](./ved-scratch.mdc).
+
 ---
 
 ## C. Пошаговая проверка «MVP жив» (D27)

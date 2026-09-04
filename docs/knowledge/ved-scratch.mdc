@@ -1,0 +1,14 @@
+---
+description: Scratch dumps and long tracks stay out of the shipping worktree and out of chat
+alwaysApply: true
+---
+
+# Scratch and parallel tracks
+
+Shipping worktree = only the PR going to `main` this session.
+
+Long track (catalog ETL, foreign pack, research) = its own git worktree under `/home/andrey/Projects/.worktrees/lbm-fork-2026-08-25/<branch>`. Do not stash one track to work on another.
+
+Binary / extract dumps live in `/home/andrey/Projects/.scratch/lbm/<track>/`, not in `src/`. Repo gitignore already covers `.tmp-*/` and `handoff/` if a dump lands in the tree. `.cursorignore` matches those globs so IDE search does not index them.
+
+Do not mention ignored scratch in commit, PR, or status summaries. `git add` never includes those paths.

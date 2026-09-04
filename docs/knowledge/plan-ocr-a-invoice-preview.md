@@ -1,7 +1,7 @@
 # План: OCR-A — фото инвойса → строки мультипозиции
 
 **D33.** Дата: 2026-09-04.  
-**Статус:** **A–D done**. E: PR в `main`, затем Preview; Production после merge (не feature-ветка в обход).  
+**Статус:** **done** 2026-09-04. Production `ibm-cargo-phi` — PR #86 + SW hotfix #87.  
 **База:** `origin/main` @ `6dbbb0e` (PR #85). **Не** `cursor/tnved-broker-handoff`. **Не** `cursor/tnved-invoice-enrich-e1f0`.
 
 **Канон:** [`plan-lbm-bro-c36-c39-port.md`](./plan-lbm-bro-c36-c39-port.md) (deny-list) · [`plan-ocr-vision.md`](./plan-ocr-vision.md) · [`plan-lbm-bro-newcalc-multipack.md`](./plan-lbm-bro-newcalc-multipack.md) · D30 / D36 · [`PACKAGES.md`](../../src/lib/ved/PACKAGES.md).

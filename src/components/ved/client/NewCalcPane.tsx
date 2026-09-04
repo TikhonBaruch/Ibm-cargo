@@ -50,7 +50,7 @@ import {
   type PackMode,
 } from "./new-calc-pack";
 import { NewCalcDirectoryHints } from "./NewCalcDirectoryHints";
-import { directoryHintHsHint } from "./new-calc-directory-hints";
+import { directoryHintHsHint, preferExistingHsHint } from "./new-calc-directory-hints";
 
 const COUNTRY_OPTIONS = originCountrySelectOptions();
 
@@ -302,7 +302,10 @@ export function NewCalcPane({
       clarifyAnswers,
       items[0]?.attrs?.composition || nextDesc,
     );
-    const hsHint = hsHintFromClarify(visibleClarifyQs, clarifyAnswers);
+    const hsHint = preferExistingHsHint(
+      items[0]?.attrs?.hsHint,
+      hsHintFromClarify(visibleClarifyQs, clarifyAnswers),
+    );
     onForm({ title, description: nextDesc });
     const next = [...items];
     if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
@@ -312,7 +315,7 @@ export function NewCalcPane({
       attrs: {
         ...next[0].attrs,
         composition,
-        ...(hsHint && !next[0].attrs?.hsHint ? { hsHint } : {}),
+        ...(hsHint ? { hsHint } : {}),
       },
     };
     onItems(next);

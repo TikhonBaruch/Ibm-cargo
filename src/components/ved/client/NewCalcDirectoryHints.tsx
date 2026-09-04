@@ -178,6 +178,9 @@ export function NewCalcDirectoryHints({
           >
             {applied ? "Код взят в заявку" : "Взять этот код в заявку"}
           </button>
+          <p className="meta" style={{ marginTop: 8 }}>
+            Уточнения слева не заменят этот черновик, если код уже взят.
+          </p>
         </div>
       ) : null}
     </div>

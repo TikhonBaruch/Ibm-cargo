@@ -9,7 +9,7 @@
 |------|-------|------------|--------------|-----|
 | Клиент | Дашборд | `c-dash` ✓ | `/cabinet` ✓ | — |
 | Клиент | Заявки | `c-orders` ✓ | `/cabinet/orders` ✓ | master-detail: `VedDetailDrawer` + `?id=` + mobile cards |
-| Клиент | Новый просчёт | dash / CTA ✓ | `/cabinet/new` ✓ | invoice flex OK; EXPRESS без брокера; typeahead: описание/`shipCountry`/`originCountry` (без truncate RU); manufacturer stub |
+| Клиент | Новый просчёт | dash / CTA ✓ | `/cabinet/new` ✓ | invoice flex OK; EXPRESS без брокера; сайдбар листьев (`NewCalcDirectoryHints`, blur → `hsHint`); C21 clarify слева; typeahead: описание/`shipCountry`/`originCountry` (без truncate RU); manufacturer stub |
 | Клиент | Брокеры | `c-brokers` ✓ | `/cabinet/brokers` ✓ | — |
 | Клиент | Перевозка | `c-ship` ✓ | `/cabinet/shipping` ✓ | **UI скрыт** flag off (`NEXT_PUBLIC_SHIPPING_UI`); код/API сохранены |
 | Клиент | Баланс | `c-balance` ✓ | `/cabinet/balance` ✓ | — |

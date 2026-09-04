@@ -7,7 +7,8 @@ alwaysApply: true
 
 Canon: `docs/knowledge/design-patterns.md` · skill `.cursor/skills/ved-ui`.
 
-Reuse first: `VedShell`, `VedToast`, `VedEmptyState`, `VedDetailDrawer`, `StatusPill`.  
-No second sidebar / toast / drawer / shell. Cmd+K hold unless `design-parity.md` asks.
+Reuse first: `LbmCabinetsShell` / `VedShell`, `VedToast`, `VedEmptyState`, `VedDetailDrawer`, `StatusPill`.  
+No second sidebar / toast / drawer / shell. Cmd+K hold unless `design-parity.md` asks.  
+External mock (HTML / Figma / another React tree) is a **reference**: skin existing `ved/client` \| `ved/broker` panes. Do not drop a parallel app next to `/cabinet`. Lab `/client` stays DemoProvider.
 
 Before a screen: name the pattern (combobox, slide-over, empty+one CTA). Cover default / loading / empty / error / success.
