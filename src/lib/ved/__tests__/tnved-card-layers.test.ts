@@ -14,20 +14,20 @@ describe("C30a honest duty labels", () => {
     expect(dutySourceNote(null)).toMatch(/нет в НСИ/i);
   });
 
-  it("marks tws-csv fill as not NSI", () => {
+  it("marks tws-csv as ориентир TWS, not NSI", () => {
     expect(
       formatCardDutyLabel({
         dutyKind: "AD_VALOREM",
         dutyPct: 5,
         source: "tws-csv",
       }),
-    ).toBe("5% · fill (не НСИ)");
+    ).toBe("5% · ориентир TWS (не НСИ)");
     expect(
       dutySourceNote({ dutyKind: "AD_VALOREM", dutyPct: 5, source: "tws-csv" }),
-    ).toMatch(/fill TWS/i);
+    ).toMatch(/ориентир TWS/i);
   });
 
-  it("prints NSI/ETT percent without fill tag", () => {
+  it("prints NSI/ETT percent without TWS tag", () => {
     expect(
       formatCardDutyLabel({
         dutyKind: "AD_VALOREM",
