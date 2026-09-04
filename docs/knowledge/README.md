@@ -151,6 +151,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-hint-gap-probe-run.md          # прогон probe:hint-gap (golden + --full) · residual Cov-P13+
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
+  plan-lbm-bro-c36-c39-port.md # port photo-first / pay-hang на main без ломки directory/search (#67 superseded)
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer
   containerization.md        # C1–C5, Compose vs Vercel, инвентарь as-is/будущее
   cabinets/                  # UI-инвентарь client/broker/admin + correctness + ux-saas + ui-guide
