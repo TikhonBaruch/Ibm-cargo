@@ -28,7 +28,7 @@ import { handleCatalogRoutes, hydrateItemsWithPublishedSkus } from "./catalog-sk
 import { handleFactoryOrderRoutes, handleManufacturerOrderRoutes } from "./sku-orders.js";
 import { handleManufacturerDirectoryRoutes } from "./manufacturer-directory.js";
 import { assembleTnvedCard, hsCodeAncestors } from "./tnved-card.js";
-import { tnvedSearchWhere, tnvedSearchStemsForRank, scoreTnvedSearchHit } from "./tnved-helpers.js";
+import { tnvedSearchWhere, tnvedSearchStemsForRank, scoreTnvedSearchHit, tnvedSearchRowHasWholeWordHit, resolveTnvedSearchAlias } from "./tnved-helpers.js";
 import { buildCascadeDraft, pickCascadeOrHeuristic } from "./tnved-classify.js";
 import { suggestProductAttrs } from "./attr-suggest.js";
 import { shouldEnqueueAiDrain, runAiDrainPipeline } from "./ai-pipeline.js";
@@ -3139,9 +3139,22 @@ const server = http.createServer(async (req, res) => {
         orderBy: headingOnly ? { code: "asc" } : [{ level: "desc" }, { code: "asc" }],
       });
       const stems = codeOnly ? [digits] : tnvedSearchStemsForRank(q);
-      const items = headingOnly
+      const alias = codeOnly ? null : resolveTnvedSearchAlias(q);
+      const rankedPool = headingOnly
         ? found
-        : [...found]
+        : codeOnly
+          ? found
+          : found.filter((row) =>
+              tnvedSearchRowHasWholeWordHit(row, {
+                stems: stems.length ? stems : [q],
+                digits,
+                phrase: q,
+                aliasPrefix: alias?.codePrefix || null,
+              }),
+            );
+      const items = headingOnly
+        ? rankedPool
+        : [...rankedPool]
             .sort((a, b) => {
               const d =
                 scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits, phrase: q }) -

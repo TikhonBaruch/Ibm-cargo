@@ -12,6 +12,7 @@ import {
 import { layerGToHint, matchLayerG } from "./tnved-layer-g";
 import { relationsForCode, type TnvedRelation } from "./tnved-relations";
 import {
+  hasTokenBoundary,
   hasTokenOrPrefix,
   isFalseFriendPair,
   notesStemMatchKind,
@@ -174,31 +175,32 @@ export function scoreTnvedSearchHit(
   }
 
   let score = 0;
-  if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
-  if (phrase.length >= 5 && notes.includes(phrase)) score += 90;
-  // CJK invoice tokens (充电宝, T恤) are short but exact in notes — same boost.
-  else if (
+  // Lead-sentence notes are clarification only — small boost, not a primary ranker.
+  if (/[.!?]/.test(lead) && lead.length >= 24) score += 8;
+  // Exact phrase in notes = clarification (secondary to title word hits).
+  if (phrase.length >= 5 && notes.includes(phrase) && hasTokenOrPrefix(notes, phrase)) {
+    score += 35;
+  } else if (
     phrase.length >= 2 &&
     phrase.length < 5 &&
     /[\u4e00-\u9fff]/.test(phrase) &&
     notes.includes(phrase)
   ) {
-    score += 90;
+    score += 35;
   }
   for (const s of opts.stems) {
     if (!s) continue;
-    const kind = notesStemMatchKind(notes, s);
-    if (kind === "token") score += 80;
-    else if (kind === "substring") score += 25;
-    if (title.includes(s)) {
-      score += hasTokenOrPrefix(title, s) ? 35 : 8;
+    // Whole word only: short stems need exact token (поло≠половины); longer may be word-prefix (огурц→Огурцы).
+    if (s.length <= 4 ? hasTokenBoundary(title, s) : hasTokenOrPrefix(title, s)) score += 55;
+    if (s.length <= 4 ? hasTokenBoundary(notes, s) : notesStemMatchKind(notes, s) === "token") {
+      score += 18;
     }
   }
   if (opts.digits.length >= 2 && row.code.startsWith(opts.digits)) {
     score += 100;
     if (row.code === opts.digits) score += 50;
   }
-  // Colloquial alias → official chapter (морс→2202, HDD→8471).
+  // Colloquial alias → official chapter (морс→2202, HDD→8471, ноутбук→847130).
   if (alias && row.code.startsWith(alias.codePrefix)) score += 120;
   if (row.isLeaf) score += 15;
   score += Number(row.level || 0);
@@ -260,13 +262,55 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
     take: pool,
     orderBy: [{ level: "desc" }, { code: "asc" }],
   });
-  return [...rows]
+  const stemList = stems.length ? stems : [q];
+  const filtered = codeOnly
+    ? rows
+    : rows.filter((row) =>
+        tnvedSearchRowHasWholeWordHit(row, {
+          stems: stemList,
+          digits,
+          phrase: q,
+          aliasPrefix: alias?.codePrefix ?? null,
+        }),
+      );
+  return [...filtered]
     .sort((a, b) => {
-      const d = scoreTnvedSearchHit(b, { stems: stems.length ? stems : [q], digits, phrase: q })
-        - scoreTnvedSearchHit(a, { stems: stems.length ? stems : [q], digits, phrase: q });
+      const d = scoreTnvedSearchHit(b, { stems: stemList, digits, phrase: q })
+        - scoreTnvedSearchHit(a, { stems: stemList, digits, phrase: q });
       return d || a.code.localeCompare(b.code);
     })
     .slice(0, limit);
+}
+
+/** Keep rows that match a whole word / alias / code — drop SQL-only mid-word contains. */
+export function tnvedSearchRowHasWholeWordHit(
+  row: { code: string; titleRu?: string | null; notes?: string | null },
+  opts: {
+    stems: string[];
+    digits: string;
+    phrase: string;
+    aliasPrefix?: string | null;
+  },
+): boolean {
+  if (opts.digits.length >= 2 && row.code.startsWith(opts.digits)) return true;
+  if (opts.aliasPrefix && row.code.startsWith(opts.aliasPrefix)) return true;
+  const title = String(row.titleRu || "");
+  const notes = String(row.notes || "");
+  const phrase = String(opts.phrase || "").trim();
+  if (phrase.length >= 2 && /[\u4e00-\u9fff]/.test(phrase) && notes.toLowerCase().includes(phrase.toLowerCase())) {
+    return true;
+  }
+  if (phrase.length >= 4) {
+    if (hasTokenOrPrefix(title, phrase) || hasTokenOrPrefix(notes, phrase)) return true;
+  }
+  for (const s of opts.stems) {
+    if (!s) continue;
+    if (s.length <= 4 ? hasTokenBoundary(title, s) : hasTokenOrPrefix(title, s)) return true;
+    if (s.length <= 4 ? hasTokenBoundary(notes, s) : notesStemMatchKind(notes, s) === "token") {
+      return true;
+    }
+  }
+  return false;
 }
 
 export const TNVED_CARD_DISCLAIMER =

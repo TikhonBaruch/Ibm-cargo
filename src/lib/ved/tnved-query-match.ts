@@ -67,6 +67,12 @@ export const TNVED_SEARCH_ALIASES: readonly TnvedSearchAlias[] = [
     codePrefix: "8471",
     expandStems: ["жестк", "накопител", "винчестер"],
   },
+  {
+    id: "laptop",
+    test: /ноутбук|laptop|notebook|macbook|портативн\w*\s+вычисл/iu,
+    codePrefix: "847130",
+    expandStems: ["ноутбук", "laptop", "notebook", "портативн"],
+  },
 ];
 
 export function resolveTnvedSearchAlias(query: string): TnvedSearchAlias | null {
