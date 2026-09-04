@@ -1140,6 +1140,7 @@ function ClientCabinetInner() {
                 };
                 return next;
               });
+              return url;
             } catch (err) {
               setError(err instanceof Error ? err.message : "Upload error");
             } finally {

@@ -1,7 +1,7 @@
 # План: port C36–C39 на текущий main (минимальное влияние)
 
 **D33.** Дата: 2026-09-04.  
-**Статус:** P0 ✓ · дальше P1→P4 по гейтам.  
+**Статус:** P0–P2+P4 ✓ · дальше P3 (preview truncate) · P5 opt.  
 **Не:** merge/rebase [#67](https://github.com/TikhonBaruch/Ibm-cargo/pull/67) as-is · directory freemium peek из C38 · scoring/bamboo из #67 · смена default `AI_CHAIN` без отдельного решения.
 
 **Контекст:** после сессии C36–C39 (#67 OPEN, CONFLICTING) на `main` собраны leaf-only, HS blur, related mask, card-enrich, C21 clarify, search FF/alias (#69–#84). Blind merge #67 ломает этот концепт. Port — только wizard/vision/pay-hang.
@@ -63,7 +63,7 @@
 |-------|------|-----------|
 | 2026-09-04 | План | KB + старт P0 |
 | 2026-09-04 | P0 | `AI_ENRICH_BEFORE_PAY_MS=15s` · `createCalc` payAfter short wait · toast «код уточняется» · unit |
-| | P1 | |
-| | P2 | |
+| 2026-09-04 | P1 | `product-vision-describe` + coerce · `POST …/describe` · access/proxy |
+| 2026-09-04 | P2+P4 | photo-first single UI поверх C21 · draft «Уточняется» · structure tests |
 | | P3 | |
-| | P4 | |
+| | P5 | |
