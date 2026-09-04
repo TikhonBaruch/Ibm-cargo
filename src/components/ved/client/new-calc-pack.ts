@@ -1,5 +1,6 @@
 import type { FormItem, TariffOption } from "./types";
 import { maxPositionsForTariffCode } from "./types";
+import { compressImageForUpload } from "@/lib/ved/compress-image-client";
 
 export type PackId = "one" | "m20" | "m100";
 export type PackMode = "single" | "multi";
@@ -102,6 +103,8 @@ type PreviewRow = {
   rowIndex: number;
   name: string;
   description?: string;
+  qty?: number;
+  unitPrice?: number;
   rowStatus: string;
   attrs?: FormItem["attrs"];
   hsCode?: string;
@@ -111,21 +114,43 @@ type PreviewResponse = {
   rowCount: number;
   rows: PreviewRow[];
   error?: string;
+  notes?: string;
+  vision?: { attempted?: boolean; engine?: string };
 };
 
-function isSheetFile(name: string): boolean {
-  return /\.(csv|xlsx|xls|pdf)$/i.test(name);
+export function isPackImageFile(file: { name: string; type?: string }): boolean {
+  const type = String(file.type || "").toLowerCase();
+  if (type.startsWith("image/")) return true;
+  return /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name);
+}
+
+export function isPackSourceFile(file: { name: string; type?: string }): boolean {
+  return /\.(csv|xlsx|xls|pdf)$/i.test(file.name) || isPackImageFile(file);
 }
 
 export async function previewPackFile(
   file: File,
   opts: { tariffCode: string; country?: string },
-): Promise<{ items: FormItem[]; rowCount: number }> {
-  if (!isSheetFile(file.name)) {
+): Promise<{
+  items: FormItem[];
+  rowCount: number;
+  notes?: string;
+  visionAttempted?: boolean;
+}> {
+  if (!isPackSourceFile(file)) {
     throw new Error("NEED_TABLE");
   }
   let body: Record<string, unknown>;
-  if (/\.pdf$/i.test(file.name)) {
+  if (isPackImageFile(file)) {
+    const compressed = await compressImageForUpload(file);
+    body = {
+      imageBase64: await fileToBase64(compressed),
+      mimeType: compressed.type || "image/jpeg",
+      filename: compressed.name || file.name,
+      tariffCode: opts.tariffCode,
+      country: opts.country,
+    };
+  } else if (/\.pdf$/i.test(file.name)) {
     body = {
       pdfBase64: await fileToBase64(file),
       filename: file.name,
@@ -152,15 +177,20 @@ export async function previewPackFile(
   const usable = (data.rows || []).filter((r) => r.rowStatus !== "PARSE_ERROR" && r.name.trim());
   const items: FormItem[] = usable.map((r) => ({
     name: r.name,
-    qty: 1,
-    unitPrice: 0,
+    qty: r.qty && r.qty > 0 ? r.qty : 1,
+    unitPrice: r.unitPrice != null && r.unitPrice >= 0 ? r.unitPrice : 0,
     attrs: {
       ...r.attrs,
       composition: r.attrs?.composition || r.description || r.name,
       hsHint: r.hsCode || r.attrs?.hsHint,
     },
   }));
-  return { items, rowCount: data.rowCount || items.length };
+  return {
+    items,
+    rowCount: data.rowCount || items.length,
+    notes: data.notes,
+    visionAttempted: data.vision?.attempted,
+  };
 }
 
 async function fileToBase64(file: File): Promise<string> {

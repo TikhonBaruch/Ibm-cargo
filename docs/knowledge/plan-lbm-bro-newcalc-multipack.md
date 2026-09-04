@@ -6,7 +6,7 @@
 
 Клик **«Мультипозиция»** на live `/cabinet/new` собирает тот же экран, что lab `/client/new`: чип on, «Прикрепить файл», комментарий к партии, страна, dropzone invoice/CSV, карточки Старт/Стандарт/Профи, сайдбар с «Позиций» и ценой пакета. Модалка «Файл с позициями» при входе в режим.
 
-**Domain D10 не менять.** Карточки макета (1 / 20 / 100 · 990 / 3990 / 6990) — hold. Live: EXPRESS 1 · STANDARD 3 · PRO 10 и `priceRub` из `/api/v1/tariffs`. Create по-прежнему `POST /api/v1/calculations`. Файл → `POST /api/v1/imports/products/preview` (CSV/XLSX/PDF). JPG без текстового слоя — fail-copy макета, без фейкового OCR.
+**Domain D10 не менять.** Карточки макета (1 / 20 / 100 · 990 / 3990 / 6990) — hold. Live: EXPRESS 1 · STANDARD 3 · PRO 10 и `priceRub` из `/api/v1/tariffs`. Create по-прежнему `POST /api/v1/calculations`. Файл → `POST /api/v1/imports/products/preview` (CSV/XLSX/PDF). JPG → OCR-A: [`plan-ocr-a-invoice-preview.md`](./plan-ocr-a-invoice-preview.md) (не фейковый OCR; до wire — честный fail-open).
 
 ## 2. Клик (лок)
 

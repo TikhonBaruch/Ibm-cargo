@@ -34,10 +34,10 @@
 
 ## API (поверхность)
 
-`me` · `calculations` (+pay/pdf/events/**attr-suggest**/feedback) · `brokers` · `tariffs` · **`catalog/skus`** (PUBLISHED) · **`factory/requests`** (D34) · `chat` (+support) · `uploads` (local compose / S3 Vercel) · **`imports/products/preview`** (CSV/XLSX/PDF) · **`tnved/search`** (CLIENT, combobox NewCalc) · `company` PATCH/topup · `shipping` (+quotes) при flag on
+`me` · `calculations` (+pay/pdf/events/**attr-suggest**/feedback) · `brokers` · `tariffs` · **`catalog/skus`** (PUBLISHED) · **`factory/requests`** (D34) · `chat` (+support) · `uploads` (local compose / S3 Vercel) · **`imports/products/preview`** (CSV/XLSX/PDF/JPG) · **`imports/products/describe`** (фото товара) · **`tnved/search`** (CLIENT, combobox NewCalc) · `company` PATCH/topup · `shipping` (+quotes) при flag on
 
 **Upload:** `POST /api/v1/uploads` → `{ url, storage: "local"|"s3" }`. Compose: volume `ved_uploads`; `GET /uploads/ved/[uuid]` — [`runbook.md`](../../runbook.md).  
-**CSV/XLSX/PDF:** `POST /api/v1/imports/products/preview` → grid; create через обычный `POST /calculations` (UI: «Создать заявку из таблицы»).  
+**CSV/XLSX/PDF/JPG:** `POST /api/v1/imports/products/preview` → pack rows; create через обычный `POST /calculations` (UI: мультипозиция NewCalc). Фото товара (одна позиция) — `POST …/describe`.  
 **ТН ВЭД:** `GET /api/v1/tnved/search` на `/cabinet/tnved` (C17 chrome + C18 каталог). Live `/cabinet/new` — C12 clarify + **C21 семейные чипы** → `attrs.hsHint`. Карточка заявки — **C22 ai-run** + «Почему этот код» из `aiDraft.disclaimer`, не `hsCodeFinal` (D15). `HsCodeAutocomplete` — брокер / карточка, не chrome C10 NewCalc. Карточка `GET :code` отдаёт `related` (C20) и `children`. Local fill ставок = `tws-csv` (не НСИ). Не LLM-CTA (D27).
 
 ## Panes (файлы)

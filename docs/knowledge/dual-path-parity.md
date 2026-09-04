@@ -14,7 +14,7 @@ Gate: same behaviour when `USE_DOMAIN_API=0` (Prisma in Next) and `=1` (proxy �
 | Claim | `claimCalculation` | `POST …/claim` | preferred window; **acceptingJobs** |
 | Map items | PATCH items | same | soft tnved; item.description; extraFee; empty attrs fill |
 | Reclassify | `POST …/reclassify` | same | WorkMapping feedback → LLM (skip precedent); stays `IN_REVIEW` |
-| Import preview | `POST /api/v1/imports/products/preview` | Next-only (`mustStayOnNext`) | CSV/XLSX/PDF → rows + precedent/LLM classify; D10 limit |
+| Import preview | `POST /api/v1/imports/products/preview` | Next-only (`mustStayOnNext`) | CSV/XLSX/PDF/**image** → rows + precedent/LLM classify; D10 limit; image empty → 200. OCR-A: [`plan-ocr-a-invoice-preview.md`](./plan-ocr-a-invoice-preview.md) |
 | Approve | approve + PDF + outbox-in-tx | same | D26; write-back `verified_determinations`; **C35d** fingerprint attrs list + CN tokenize identical Next↔api · **C21b G:** `hsHint` digits + `powerSource`/`vehicleKind`/`foodKind`/`deviceType`/`footwearType` |
 | Chat SUPPORT | create / reply / status | same | admin inbox + archive; `box=` filter |
 | Chat unread ADMIN | `GET chat?scope=unread` | same | `countAdminUnread` — OPEN + waitingOn BROKER |

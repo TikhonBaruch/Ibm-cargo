@@ -39,6 +39,7 @@ import {
   MIN_PACK,
   allPackChrome,
   fmtRub,
+  isPackImageFile,
   liveCodeForPack,
   liveWizardStepLabels,
   namedItemCount,
@@ -129,6 +130,7 @@ export function NewCalcPane({
   const [photoVisionNote, setPhotoVisionNote] = useState("");
   const [packFail, setPackFail] = useState(false);
   const [packDocName, setPackDocName] = useState("");
+  const [packThumbUrl, setPackThumbUrl] = useState("");
   const [clarifyQs, setClarifyQs] = useState<ClarificationQuestion[]>([]);
   const [clarifyAnswers, setClarifyAnswers] = useState<Record<string, string>>({});
   const [clarifyLoading, setClarifyLoading] = useState(false);
@@ -152,6 +154,9 @@ export function NewCalcPane({
   const validSingle = desc.length >= 5;
   const validPack = packN >= MIN_PACK;
   const valid = isPack ? validPack : validSingle;
+  const packReadFailCopy = packDocName
+    ? "Не удалось вычитать таблицу. Файл прикреплён — нужен CSV/Excel или более чёткое фото инвойса с несколькими позициями."
+    : "Не удалось вычитать позиции. Нужен CSV/Excel или более чёткое фото таблицы инвойса.";
   const uploading = createPhase === "uploading" || packReading || photoVisionBusy;
   const goodsText = form.description || form.title;
   const clarifyEnabled = !isPack;
@@ -264,6 +269,12 @@ export function NewCalcPane({
       window.clearTimeout(t);
     };
   }, [clarifyEnabled, goodsText, countryLabel]);
+
+  useEffect(() => {
+    return () => {
+      if (packThumbUrl) URL.revokeObjectURL(packThumbUrl);
+    };
+  }, [packThumbUrl]);
 
   const setGoodsText = (raw: string) => {
     const title = raw.trim().split("\n")[0]?.slice(0, 120) || raw.trim().slice(0, 80);
@@ -414,18 +425,31 @@ export function NewCalcPane({
     setPackReading(true);
     setPackFail(false);
     setPackDocName(file.name);
+    if (isPackImageFile(file)) {
+      setPackThumbUrl(URL.createObjectURL(file));
+    } else {
+      setPackThumbUrl("");
+    }
     try {
-      const { items: parsed } = await previewPackFile(file, {
+      const { items: parsed, notes } = await previewPackFile(file, {
         tariffCode: picked.liveCode,
         country: countryLabel,
       });
-      if (parsed.length < MIN_PACK) {
-        setPackFail(true);
-        onItems([{ name: "", qty: 1, unitPrice: 0 }]);
+      if (parsed.length >= MIN_PACK) {
+        applyPackItems(parsed, file.name);
+        setPackFail(false);
         return;
       }
-      applyPackItems(parsed, file.name);
-      setPackFail(false);
+      setPackFail(true);
+      onItems(
+        parsed.length ? parsed.slice(0, picked.max) : [{ name: "", qty: 1, unitPrice: 0 }],
+      );
+      const extra = [parsed.map((p) => p.name).filter(Boolean).join("; "), notes]
+        .filter(Boolean)
+        .join("\n");
+      if (extra && !form.description.trim()) {
+        onForm({ description: extra });
+      }
     } catch {
       setPackFail(true);
       onItems([{ name: "", qty: 1, unitPrice: 0 }]);
@@ -437,6 +461,7 @@ export function NewCalcPane({
   const resetMulti = () => {
     setPackFail(false);
     setPackDocName("");
+    setPackThumbUrl("");
     onItems([{ name: "", qty: 1, unitPrice: 0 }]);
     onForm({ title: "", description: "" });
     setPackModal(false);
@@ -808,8 +833,7 @@ export function NewCalcPane({
             ) : isPack ? (
               packDocName || packFail ? (
                 <span className="meta pack-read-fail">
-                  Не удалось вычитать позиции. Нужен CSV/Excel или более чёткое фото таблицы
-                  инвойса.
+                  {packReadFailCopy}
                 </span>
               ) : (
                 <span className="meta">
@@ -846,6 +870,12 @@ export function NewCalcPane({
                 {packDocName ? (
                   <div className="doc-list">
                     <div className="doc-chip">
+                      {packThumbUrl ? (
+                        <a href={packThumbUrl} target="_blank" rel="noreferrer" className="doc-thumb">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={packThumbUrl} alt="" />
+                        </a>
+                      ) : null}
                       <div className="doc-info">
                         <b>{packDocName}</b>
                         <span className="meta">{packN >= MIN_PACK ? `${packN} позиций` : "прикреплён"}</span>
@@ -1172,7 +1202,7 @@ export function NewCalcPane({
               </div>
             ) : packDocName || packFail ? (
               <p className="meta pack-read-fail">
-                Не удалось вычитать позиции. Попробуйте CSV/Excel или более чёткое фото таблицы.
+                {packReadFailCopy}
               </p>
             ) : null}
             <div className="pack-modal-actions">
