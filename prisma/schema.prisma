@@ -784,6 +784,46 @@ model TnvedFtsDecision {
   @@map("tnved_fts_decisions")
 }
 
+/// Card-enrich overlay snapshot (conditions / measures pack) — not nomenclature tree.
+/// Canon: docs/knowledge/plan-tnved-card-enrich.md — does not write TnvedCode.notes.
+model TnvedEnrichSnapshot {
+  id          String            @id @default(cuid())
+  sourceKey   String            @unique
+  sourceSha   String
+  asOf        DateTime?
+  schemaKind  String            @default("card-enrich/v1")
+  rowCount    Int               @default(0)
+  uniqueCodes Int               @default(0)
+  isCurrent   Boolean           @default(false)
+  loadedAt    DateTime          @default(now())
+  facts       TnvedEnrichFact[]
+
+  @@index([isCurrent])
+  @@index([asOf])
+  @@map("tnved_enrich_snapshots")
+}
+
+/// One enrich fact for an HS code. No FK to tnved_codes (reconcile reports orphans).
+model TnvedEnrichFact {
+  id          String              @id @default(cuid())
+  snapshotId  String
+  snapshot    TnvedEnrichSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  code        String
+  fieldKind   String
+  valueShort  String?
+  valueText   String?             @db.Text
+  npaRef      String?
+  sourceLayer String?
+  asOf        DateTime?
+  createdAt   DateTime            @default(now())
+
+  @@index([snapshotId])
+  @@index([code])
+  @@index([fieldKind])
+  @@index([snapshotId, code])
+  @@map("tnved_enrich_facts")
+}
+
 /// Duty/VAT hints keyed by TN VED code (importable; not broker-edited TariffPlan).
 model TnvedDutyRate {
   id             String    @id @default(cuid())

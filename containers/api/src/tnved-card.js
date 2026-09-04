@@ -58,7 +58,83 @@ function loadJsonOverlay(names, fallback) {
 
 const psnPack = loadJsonOverlay(["tnved-psn-excerpts.json"], { groups: {} });
 const decisionsPack = loadJsonOverlay(["tnved-classification-decisions.json"], { items: [] });
+const enrichPack = loadJsonOverlay(["tnved-card-enrich-pack.json"], {
+  items: [],
+  schema: "card-enrich/v1",
+});
 const PSN_NOTES_RE = /^ЕЭК\s*PSN:\s*(.+?)\.\s+([\s\S]+)$/i;
+const DONOR_HOST_RE =
+  /customsonline\.ru|alta\.ru|tks\.ru|tnved\.info|tamognia\.ru|брокер-консультант/gi;
+const ENRICH_KINDS = new Set([
+  "import_duty",
+  "preferential_good",
+  "temporary_import_duty",
+  "vat",
+  "excise",
+  "security_rate",
+  "preferential_regime",
+  "import_licensing",
+  "dual_use_import",
+  "certification",
+  "classification_confirm",
+  "clearance_places",
+  "export_licensing",
+  "dual_use_export",
+  "export_quota",
+  "other_import",
+  "other_export",
+  "preliminary_classification",
+]);
+
+function sanitizeEnrichText(raw) {
+  let s = String(raw ?? "");
+  if (!s) return "";
+  s = s.replace(/<script[\s\S]*?<\/script>/gi, " ");
+  s = s.replace(/<style[\s\S]*?<\/style>/gi, " ");
+  s = s.replace(/on\w+\s*=\s*(['"]).*?\1/gi, " ");
+  s = s.replace(/javascript\s*:/gi, "");
+  s = s.replace(/https?:\/\/[^\s"'<>]+/gi, (url) => {
+    if (DONOR_HOST_RE.test(url)) {
+      DONOR_HOST_RE.lastIndex = 0;
+      return "";
+    }
+    DONOR_HOST_RE.lastIndex = 0;
+    return url;
+  });
+  s = s.replace(DONOR_HOST_RE, "");
+  s = s.replace(/<[^>]+>/g, " ");
+  s = s.replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">");
+  return s.replace(/\s+/g, " ").trim().slice(0, 4000);
+}
+
+function lookupPackEnrichFields(codeInput) {
+  const code = String(codeInput || "").replace(/\D/g, "");
+  const fields = [];
+  for (const item of enrichPack.items || []) {
+    const itemCode = String(item.code || "").replace(/\D/g, "");
+    if (itemCode !== code) continue;
+    for (const f of item.facts || []) {
+      const fieldKind = String(f.fieldKind || "").trim();
+      if (!ENRICH_KINDS.has(fieldKind)) continue;
+      const valueShort = sanitizeEnrichText(f.valueShort).slice(0, 120) || null;
+      const valueText = sanitizeEnrichText(f.valueText) || null;
+      if (!valueShort && !valueText) continue;
+      fields.push({
+        fieldKind,
+        valueShort,
+        valueText,
+        npaRef: sanitizeEnrichText(f.npaRef).slice(0, 500) || null,
+        sourceLayer: sanitizeEnrichText(f.sourceLayer).slice(0, 80) || null,
+        asOf: f.asOf || enrichPack.asOf || null,
+      });
+    }
+  }
+  return {
+    schema: enrichPack.schema || "card-enrich/v1",
+    asOf: enrichPack.asOf || null,
+    fields,
+  };
+}
 
 function parsePsnFromNotes(notes) {
   const lead = String(notes || "")
@@ -221,6 +297,12 @@ export const TNVED_CARD_SOURCES = [
     url: null,
     asOf: "2026-08-29",
   },
+  {
+    layer: "ENRICH",
+    title: "Условия импорта/экспорта (card-enrich overlay)",
+    url: null,
+    asOf: "2026-09-04",
+  },
 ];
 
 const ETT_SOURCE_RE = /ett|stnvedst|egov|nsi|тариф/i;
@@ -274,6 +356,7 @@ export function assembleTnvedCard(row, ancestors, extra) {
     classificationDecisions: lookupClassificationDecisions(row.code),
     paymentsHint: { vatPct: DEFAULT_IMPORT_VAT_PERCENT, feeRule: TNVED_FEE_RULE },
     measuresHint: layerGToHint(matchLayerG(row.code)),
+    cardEnrich: more.cardEnrich || lookupPackEnrichFields(row.code),
     sources: TNVED_CARD_SOURCES,
     disclaimer: TNVED_CARD_DISCLAIMER,
     rates,

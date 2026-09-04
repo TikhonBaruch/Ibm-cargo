@@ -17,6 +17,7 @@ As-is инвентарь: [`current-app.md`](./current-app.md).
 | Сборный заказ (D34) | `sku_order_requests` · `sku_order_pools` · `companies.clientSegment` | `/api/v1/factory/requests*` · `/api/v1/manufacturer/order-requests*` · `/pools*` · dual-path `sku-order.ts` + `sku-orders.js`. **Не** D8 на Calculation |
 | ТН ВЭД | `tnved_codes`, `tnved_duty_rates`; soft `calculation_items.tnvedCode` | search/lookup/import API · HsCodeAutocomplete · seed |
 | **ФТС PR** | `tnved_fts_snapshots`, `tnved_fts_decisions` (overlay) | `tnved:fts-pr` load/reconcile/actualize notes · [`plan-tnved-fts-pr.md`](./plan-tnved-fts-pr.md) |
+| **Card-Enrich** | `tnved_enrich_snapshots`, `tnved_enrich_facts` (overlay) | `tnved:card-enrich` load/reconcile · `cardEnrich` на GET :code · **не** пишет `notes` · [`plan-tnved-card-enrich.md`](./plan-tnved-card-enrich.md) |
 | **Прецеденты (БД-2)** | `verified_determinations` | write-back на `approve` · read на create / CSV preview · [`plan-precedent-bulk.md`](./plan-precedent-bulk.md) |
 | История запросов | `calculation_events` (+ FK `actorUserId` → `users`) | append в tx create/pay/claim/map/approve · `GET …/events` · EventsTimeline |
 | Support tickets | `chat_threads` (`kind=SUPPORT`, `companyId`, `createdByUserId`) + `chat_messages` | `createSupportTicket` / `scope=support` |

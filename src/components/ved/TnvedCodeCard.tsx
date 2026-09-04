@@ -1,6 +1,11 @@
 import type { TnvedCard } from "@/lib/ved/tnved";
 import { formatHsCode } from "@/lib/ved/tnved";
 import { formatCardDutyLabel } from "@/lib/ved/tnved-card-layers";
+import {
+  TNVED_ENRICH_FIELD_LABELS,
+  visibleCardEnrichFields,
+} from "@/lib/ved/tnved-card-enrich";
+import { directoryHumanLead } from "@/lib/ved/tnved-directory-read";
 import { TNVED_RELATION_KIND_LABEL, type TnvedRelationKind } from "@/lib/ved/tnved-relations";
 
 function formatDuty(card: TnvedCard): string {
@@ -9,6 +14,12 @@ function formatDuty(card: TnvedCard): string {
 
 /** Slide-over body: official HS name, tree, ETT rate, RF payments. D32 — not a new page. */
 export function TnvedCodeCard({ card }: { card: TnvedCard }) {
+  const enrichFields = visibleCardEnrichFields(card.cardEnrich, {
+    paymentsVatPct: card.paymentsHint?.vatPct,
+    measures: card.measuresHint,
+  });
+  const notesLead = directoryHumanLead(card.notes);
+
   return (
     <div className="space-y-4 text-sm">
       <div>
@@ -97,6 +108,29 @@ export function TnvedCodeCard({ card }: { card: TnvedCard }) {
         </p>
       </div>
 
+      {enrichFields.length > 0 ? (
+        <div className="rounded-2xl bg-white p-3 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
+            Условия
+          </p>
+          <dl className="mt-2 space-y-2">
+            {enrichFields.map((f) => (
+              <div key={`${f.fieldKind}-${f.valueShort}`}>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-[var(--kb-muted)]">
+                    {TNVED_ENRICH_FIELD_LABELS[f.fieldKind] || f.fieldKind}
+                  </dt>
+                  <dd className="text-right font-medium">{f.valueShort}</dd>
+                </div>
+                {f.npaRef ? (
+                  <p className="mt-0.5 text-[11px] text-[var(--kb-muted)]">{f.npaRef}</p>
+                ) : null}
+              </div>
+            ))}
+          </dl>
+        </div>
+      ) : null}
+
       {card.explanation ? (
         <div className="rounded-2xl bg-white p-3 shadow-sm">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--kb-muted)]">
@@ -150,7 +184,9 @@ export function TnvedCodeCard({ card }: { card: TnvedCard }) {
             Меры (триггер)
           </p>
           <ul className="mt-2 space-y-1 text-xs text-[#0f172a]">
-            {card.measuresHint.excisePossible ? <li>Акциз: возможно (НК РФ ст. 181 — сверить вид товара)</li> : null}
+            {card.measuresHint.excisePossible ? (
+              <li>Акциз: возможно (НК РФ ст. 181 — сверить вид товара)</li>
+            ) : null}
             {card.measuresHint.utilSborPossible ? (
               <li>Утильсбор: возможно (ПП 1291 / 81 — нужны категория, возраст, мощность)</li>
             ) : null}
@@ -166,10 +202,10 @@ export function TnvedCodeCard({ card }: { card: TnvedCard }) {
         </div>
       ) : null}
 
-      {card.notes ? (
+      {notesLead ? (
         <p className="text-xs text-[var(--kb-muted)]">
           <span className="font-semibold text-[#0f172a]">Заметки: </span>
-          {card.notes}
+          {notesLead}
         </p>
       ) : null}
 

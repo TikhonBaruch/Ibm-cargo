@@ -3,7 +3,7 @@
   "$id": "https://lbm.local/contracts/d-tnved.core.json",
   "title": "D-TNVED core reference directory",
   "description": "TN VED (HS) nomenclature tree + duty hints (D24). GET :code returns the opendata card envelope (layers A–G). Lookup/import; broker still edits item HS text until directory is authoritative.",
-  "x-contractVersion": 4,
+  "x-contractVersion": 5,
   "x-owner": "containers/api",
   "x-transport": [
     "GET /v1/tnved/search",
@@ -111,6 +111,29 @@
             "feeRule": { "type": "string" }
           }
         },
+        "cardEnrich": {
+          "type": "object",
+          "description": "Overlay import/export condition fields (plan-tnved-card-enrich). Fail-open empty fields[]. Not search ranking.",
+          "properties": {
+            "schema": { "type": "string" },
+            "asOf": { "type": ["string", "null"] },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["fieldKind"],
+                "properties": {
+                  "fieldKind": { "type": "string" },
+                  "valueShort": { "type": ["string", "null"] },
+                  "valueText": { "type": ["string", "null"] },
+                  "npaRef": { "type": ["string", "null"] },
+                  "sourceLayer": { "type": ["string", "null"] },
+                  "asOf": { "type": ["string", "null"] }
+                }
+              }
+            }
+          }
+        },
         "sources": { "type": "array" },
         "disclaimer": { "type": "string" }
       }
@@ -157,6 +180,20 @@
       ],
       "rate": null,
       "paymentsHint": { "vatPct": 22, "feeRule": "ПП 1637" },
+      "cardEnrich": {
+        "schema": "card-enrich/v1",
+        "asOf": "2026-09-04",
+        "fields": [
+          {
+            "fieldKind": "preferential_good",
+            "valueShort": "нет",
+            "valueText": "Признак преференциального товара в кураторском pack: нет.",
+            "npaRef": null,
+            "sourceLayer": "pack",
+            "asOf": "2026-09-04"
+          }
+        ]
+      },
       "sources": [
         {
           "layer": "A",
