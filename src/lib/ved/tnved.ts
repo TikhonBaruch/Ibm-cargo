@@ -9,6 +9,12 @@ import {
   lookupClassificationDecisions,
   lookupPsnExplanation,
 } from "./tnved-card-layers";
+import {
+  assembleCardEnrich,
+  lookupPackEnrichFacts,
+  type TnvedCardEnrich,
+  type TnvedEnrichFactInput,
+} from "./tnved-card-enrich";
 import { layerGToHint, matchLayerG } from "./tnved-layer-g";
 import { relationsForCode, type TnvedRelation } from "./tnved-relations";
 import {
@@ -120,7 +126,10 @@ export type TnvedSearchOpts = {
   headingOnly?: boolean;
 };
 
-export type TnvedDb = Pick<Prisma.TransactionClient, "tnvedCode" | "tnvedDutyRate">;
+export type TnvedDb = Pick<
+  Prisma.TransactionClient,
+  "tnvedCode" | "tnvedDutyRate" | "tnvedEnrichSnapshot" | "tnvedEnrichFact"
+>;
 
 export async function countActiveTnvedCodes(db: Pick<Prisma.TransactionClient, "tnvedCode">) {
   return db.tnvedCode.count({ where: { isActive: true } });
@@ -408,6 +417,8 @@ export type TnvedCard = {
     ntmPossible: boolean;
     hits: Array<{ flag: string; source: string; prefix: string; group?: string }>;
   };
+  /** Overlay conditions (plan-tnved-card-enrich). Fail-open empty fields. Not used by search. */
+  cardEnrich: TnvedCardEnrich;
   sources: TnvedCardSource[];
   disclaimer: string;
   /** Kept for combobox onHint (legacy). */
@@ -450,6 +461,12 @@ export const TNVED_CARD_SOURCES: TnvedCardSource[] = [
     title: "Акциз / утиль / экосбор РОП / НТМ — триггеры НПА (не ставка)",
     url: null,
     asOf: "2026-08-29",
+  },
+  {
+    layer: "ENRICH",
+    title: "Условия импорта/экспорта (card-enrich overlay)",
+    url: null,
+    asOf: "2026-09-04",
   },
 ];
 
@@ -495,8 +512,11 @@ export function assembleTnvedCard(input: {
   ancestors: TnvedCardAncestor[];
   children?: TnvedCardChild[];
   related?: TnvedRelation[];
+  enrichFacts?: TnvedEnrichFactInput[] | null;
+  enrichAsOf?: string | null;
 }): TnvedCard {
   const rates = Array.isArray(input.row.rates) ? input.row.rates : [];
+  const enrichFacts = input.enrichFacts ?? lookupPackEnrichFacts(input.row.code);
   return {
     code: input.row.code,
     codeDisplay: input.row.codeDisplay,
@@ -517,6 +537,11 @@ export function assembleTnvedCard(input: {
     classificationDecisions: lookupClassificationDecisions(input.row.code),
     paymentsHint: { vatPct: DEFAULT_IMPORT_VAT_PERCENT, feeRule: TNVED_FEE_RULE },
     measuresHint: layerGToHint(matchLayerG(input.row.code)),
+    cardEnrich: assembleCardEnrich({
+      code: input.row.code,
+      facts: enrichFacts,
+      asOf: input.enrichAsOf,
+    }),
     sources: TNVED_CARD_SOURCES,
     disclaimer: TNVED_CARD_DISCLAIMER,
     rates,
@@ -535,12 +560,51 @@ export async function getTnvedByCode(db: TnvedDb, codeInput: string) {
   });
 }
 
-/** Card envelope for GET /v1/tnved/:code (opendata slices 2–3). */
+async function loadEnrichFactsForCard(
+  db: TnvedDb,
+  code: string,
+): Promise<{ facts: TnvedEnrichFactInput[]; asOf: string | null }> {
+  try {
+    const snap = await db.tnvedEnrichSnapshot.findFirst({
+      where: { isCurrent: true },
+      orderBy: { loadedAt: "desc" },
+    });
+    if (!snap) {
+      return { facts: lookupPackEnrichFacts(code), asOf: null };
+    }
+    const rows = await db.tnvedEnrichFact.findMany({
+      where: { snapshotId: snap.id, code },
+      orderBy: { fieldKind: "asc" },
+    });
+    if (!rows.length) {
+      return {
+        facts: lookupPackEnrichFacts(code),
+        asOf: snap.asOf ? snap.asOf.toISOString().slice(0, 10) : null,
+      };
+    }
+    return {
+      asOf: snap.asOf ? snap.asOf.toISOString().slice(0, 10) : null,
+      facts: rows.map((r) => ({
+        code: r.code,
+        fieldKind: r.fieldKind,
+        valueShort: r.valueShort,
+        valueText: r.valueText,
+        npaRef: r.npaRef,
+        sourceLayer: r.sourceLayer,
+        asOf: r.asOf ? r.asOf.toISOString().slice(0, 10) : null,
+      })),
+    };
+  } catch {
+    return { facts: lookupPackEnrichFacts(code), asOf: null };
+  }
+}
+
+/** Card envelope for GET /v1/tnved/:code (opendata slices 2–3). Does not affect search. */
 export async function getTnvedCard(db: TnvedDb, codeInput: string): Promise<TnvedCard | null> {
   const row = await getTnvedByCode(db, codeInput);
   if (!row) return null;
   const ancestorCodes = hsCodeAncestors(row.code).filter((c) => c !== row.code);
-  const [found, childRows] = await Promise.all([
+  const [found, childRows, enrich] = await Promise.all([
     ancestorCodes.length
       ? db.tnvedCode.findMany({ where: { code: { in: ancestorCodes } } })
       : Promise.resolve([]),
@@ -549,6 +613,7 @@ export async function getTnvedCard(db: TnvedDb, codeInput: string): Promise<Tnve
       orderBy: { code: "asc" },
       take: 16,
     }),
+    loadEnrichFactsForCard(db, row.code),
   ]);
   const byCode = new Map(found.map((a) => [a.code, a]));
   const ancestors: TnvedCardAncestor[] = ancestorCodes
@@ -568,7 +633,13 @@ export async function getTnvedCard(db: TnvedDb, codeInput: string): Promise<Tnve
     level: c.level,
     isLeaf: Boolean(c.isLeaf),
   }));
-  return assembleTnvedCard({ row, ancestors, children });
+  return assembleTnvedCard({
+    row,
+    ancestors,
+    children,
+    enrichFacts: enrich.facts,
+    enrichAsOf: enrich.asOf,
+  });
 }
 
 function toOptionalDate(value: string | Date | null | undefined): Date | null | undefined {

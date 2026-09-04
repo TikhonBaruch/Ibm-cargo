@@ -1,0 +1,161 @@
+{
+  "schema": "card-enrich/v1",
+  "sourceKey": "pack:card-enrich-must-cover",
+  "asOf": "2026-09-04",
+  "note": "Curated from LBM canon layers (duty/VAT/layer-G/FTS pointer). Not scraped from CustomsOnline. Canon: plan-tnved-card-enrich.md",
+  "items": [
+    {
+      "code": "8471300000",
+      "facts": [
+        {
+          "fieldKind": "import_duty",
+          "valueShort": "0%",
+          "valueText": "Ввозная пошлина 0% (адвалор). Источник корпуса: tws-csv fill до НСИ СТНВЭДСТ.",
+          "npaRef": "ЕТТ ЕАЭС",
+          "sourceLayer": "B"
+        },
+        {
+          "fieldKind": "preferential_good",
+          "valueShort": "нет",
+          "valueText": "Признак преференциального товара в кураторском pack: нет.",
+          "sourceLayer": "pack"
+        },
+        {
+          "fieldKind": "temporary_import_duty",
+          "valueShort": "нет",
+          "valueText": "Временная ставка в pack не задана.",
+          "sourceLayer": "pack"
+        },
+        {
+          "fieldKind": "vat",
+          "valueShort": "22%",
+          "valueText": "НДС импорт default 22% с 01.01.2026 (НК РФ). Ставка 20 процентов больше не применяется как основная.",
+          "npaRef": "НК РФ ст. 164",
+          "sourceLayer": "C"
+        },
+        {
+          "fieldKind": "excise",
+          "valueShort": "нет",
+          "valueText": "Акциз по префиксу 8471 не триггерится (layer G).",
+          "sourceLayer": "G"
+        },
+        {
+          "fieldKind": "security_rate",
+          "valueShort": "нет данных",
+          "valueText": "Ставка обеспечения — слой hold.",
+          "sourceLayer": "hold"
+        },
+        {
+          "fieldKind": "preferential_regime",
+          "valueShort": "нет",
+          "valueText": "Преференциальный режим в pack: нет.",
+          "sourceLayer": "pack"
+        },
+        {
+          "fieldKind": "import_licensing",
+          "valueShort": "возможно",
+          "valueText": "НТМ/ограничения: ориентир layer G ntmPossible по главе (не финальное решение).",
+          "sourceLayer": "G"
+        },
+        {
+          "fieldKind": "dual_use_import",
+          "valueShort": "нет данных",
+          "valueText": "Двойное применение (импорт) — слой hold.",
+          "sourceLayer": "hold"
+        },
+        {
+          "fieldKind": "certification",
+          "valueShort": "нет данных",
+          "valueText": "Сертификация ТР ЕАЭС — слой hold (не scrape).",
+          "sourceLayer": "hold"
+        },
+        {
+          "fieldKind": "classification_confirm",
+          "valueShort": "см. решения ЕЭК",
+          "valueText": "Подтверждение классификации: слой E (решения ЕЭК) на карточке classificationDecisions.",
+          "sourceLayer": "E"
+        },
+        {
+          "fieldKind": "clearance_places",
+          "valueShort": "нет данных",
+          "valueText": "Места оформления — слой hold.",
+          "sourceLayer": "hold"
+        },
+        {
+          "fieldKind": "export_licensing",
+          "valueShort": "нет данных",
+          "valueText": "Лицензирование экспорта — слой hold.",
+          "sourceLayer": "hold"
+        },
+        {
+          "fieldKind": "dual_use_export",
+          "valueShort": "нет данных",
+          "valueText": "Двойное применение (экспорт) — слой hold.",
+          "sourceLayer": "hold"
+        },
+        {
+          "fieldKind": "export_quota",
+          "valueShort": "нет данных",
+          "valueText": "Квотирование экспорта — слой hold.",
+          "sourceLayer": "hold"
+        },
+        {
+          "fieldKind": "other_import",
+          "valueShort": "экосбор возможно",
+          "valueText": "РОП/экосбор: ecoFeePossible для 8471 (ПП 2414), ставка hold.",
+          "npaRef": "ПП РФ № 2414",
+          "sourceLayer": "G"
+        },
+        {
+          "fieldKind": "other_export",
+          "valueShort": "нет данных",
+          "valueText": "Прочее (экспорт) — слой hold.",
+          "sourceLayer": "hold"
+        },
+        {
+          "fieldKind": "preliminary_classification",
+          "valueShort": "см. FTS-PR",
+          "valueText": "Предварительные решения ФТС хранятся в tnved_fts_decisions (отдельный блок), не дублируются здесь.",
+          "sourceLayer": "FTS-PR"
+        }
+      ]
+    },
+    {
+      "code": "0406909901",
+      "facts": [
+        {
+          "fieldKind": "import_duty",
+          "valueShort": "комб.",
+          "valueText": "Ориентир комбинированной ставки ЕТТ (адвалор + специфика). Точное значение — из TnvedDutyRate / НСИ.",
+          "npaRef": "ЕТТ ЕАЭС",
+          "sourceLayer": "B"
+        },
+        {
+          "fieldKind": "preferential_good",
+          "valueShort": "да",
+          "valueText": "Кураторский признак: преференциальный товар возможен (уточнять по стране происхождения).",
+          "sourceLayer": "pack"
+        },
+        {
+          "fieldKind": "vat",
+          "valueShort": "10%",
+          "valueText": "Ориентир льготной ставки 10% для ряда продовольственных позиций (ПП 908 и смежные). Финал — брокер / перечень.",
+          "npaRef": "ПП РФ № 908",
+          "sourceLayer": "F-hold"
+        },
+        {
+          "fieldKind": "excise",
+          "valueShort": "нет",
+          "valueText": "Акциз для 0406 не триггерится.",
+          "sourceLayer": "G"
+        },
+        {
+          "fieldKind": "preliminary_classification",
+          "valueShort": "см. FTS-PR",
+          "valueText": "Сверка описаний сыров — блок tnved_fts_decisions при наличии.",
+          "sourceLayer": "FTS-PR"
+        }
+      ]
+    }
+  ]
+}
