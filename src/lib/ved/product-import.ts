@@ -158,8 +158,13 @@ export function mapCsvToRows(
     }
   });
 
-  const nameCol = idx.name ?? headers.findIndex((h) => /наимен|naimenovan|name|товар/i.test(h));
+  // Spreadsheets often use Description as the only product column (no Name).
+  const nameCol =
+    idx.name ??
+    idx.description ??
+    headers.findIndex((h) => /наимен|naimenovan|name|товар|description|описан/i.test(h));
   if (nameCol < 0) return [];
+  const descriptionIsName = idx.name == null && idx.description === nameCol;
 
   return rows
     .map((cells, rowIndex) => {
@@ -191,10 +196,15 @@ export function mapCsvToRows(
       const qty = qtyRaw ? Number(String(qtyRaw).replace(",", ".")) : undefined;
       const unitPrice = priceRaw ? Number(String(priceRaw).replace(",", ".")) : undefined;
 
+      const description =
+        !descriptionIsName && idx.description != null
+          ? cells[idx.description]?.trim()
+          : undefined;
+
       return {
         rowIndex: rowIndex + 1,
         name,
-        description: idx.description != null ? cells[idx.description]?.trim() : undefined,
+        description,
         qty: qty && qty > 0 ? qty : undefined,
         unitPrice: unitPrice != null && unitPrice >= 0 ? unitPrice : undefined,
         currency: idx.currency != null ? cells[idx.currency]?.trim() : undefined,

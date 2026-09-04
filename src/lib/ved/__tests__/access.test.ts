@@ -137,11 +137,13 @@ describe("VED access — protected mutations inventory", () => {
     expect(matchesProtectedMutation("PATCH", "/api/v1/brokers")).toBe(true);
     expect(matchesProtectedMutation("POST", "/api/v1/company/co_1/adjust")).toBe(true);
     expect(matchesProtectedMutation("POST", "/api/v1/imports/products/preview")).toBe(true);
+    expect(matchesProtectedMutation("POST", "/api/v1/imports/products/describe")).toBe(true);
   });
 
   it("does not mark unrelated GETs as protected mutations", () => {
     expect(matchesProtectedMutation("GET", "/api/v1/calculations")).toBe(false);
     expect(matchesProtectedMutation("GET", "/api/v1/tariffs")).toBe(false);
     expect(matchesProtectedMutation("GET", "/api/v1/imports/products/preview")).toBe(false);
+    expect(matchesProtectedMutation("GET", "/api/v1/imports/products/describe")).toBe(false);
   });
 });

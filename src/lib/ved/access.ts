@@ -120,6 +120,7 @@ export const PROTECTED_V1_MUTATIONS = [
   { method: "POST", path: "/api/v1/company/topup" },
   { method: "POST", pathPrefix: "/api/v1/company/", suffix: "/adjust" },
   { method: "POST", path: "/api/v1/imports/products/preview" },
+  { method: "POST", path: "/api/v1/imports/products/describe" },
   { method: "POST", path: "/api/v1/uploads" },
   { method: "POST", path: "/api/v1/shipping" },
   { method: "POST", path: "/api/v1/chat" },

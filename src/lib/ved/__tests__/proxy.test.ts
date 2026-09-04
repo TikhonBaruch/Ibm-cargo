@@ -21,6 +21,7 @@ describe("mustStayOnNext", () => {
     expect(mustStayOnNext("/api/v1/auth/register")).toBe(true);
     expect(mustStayOnNext("/api/v1/uploads")).toBe(true);
     expect(mustStayOnNext("/api/v1/imports/products/preview")).toBe(true);
+    expect(mustStayOnNext("/api/v1/imports/products/describe")).toBe(true);
     expect(mustStayOnNext("/api/v1/internal/jobs-tick")).toBe(true);
     expect(mustStayOnNext("/api/v1/me")).toBe(false);
   });

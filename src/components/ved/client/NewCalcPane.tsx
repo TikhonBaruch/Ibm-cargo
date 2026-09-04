@@ -51,7 +51,8 @@ import {
 
 const COUNTRY_OPTIONS = originCountrySelectOptions();
 
-function createBusyLabel(phase: CreatePhase, busy: boolean): string {
+function createBusyLabel(phase: CreatePhase, busy: boolean, photoVisionBusy = false): string {
+  if (photoVisionBusy) return "ИИ описывает товар…";
   if (phase === "uploading") return "Загружаем фото…";
   if (phase === "enriching") return "Уточняем ТН ВЭД…";
   if (phase === "paying") return "Оплата тарифа…";
@@ -112,7 +113,7 @@ export function NewCalcPane({
     opts?: { payAfter?: boolean; stayOnNew?: boolean }
   ) => void | Promise<Calc | void>;
   onPreferred: (id: string) => void;
-  onUpload: (file: File, index: number) => Promise<void>;
+  onUpload: (file: File, index: number) => Promise<string | void>;
 }) {
   void catalogSkus;
   const fileRef = useRef<HTMLInputElement>(null);
@@ -124,6 +125,8 @@ export function NewCalcPane({
   const [packMode, setPackMode] = useState<PackMode>("single");
   const [packModal, setPackModal] = useState(false);
   const [packReading, setPackReading] = useState(false);
+  const [photoVisionBusy, setPhotoVisionBusy] = useState(false);
+  const [photoVisionNote, setPhotoVisionNote] = useState("");
   const [packFail, setPackFail] = useState(false);
   const [packDocName, setPackDocName] = useState("");
   const [clarifyQs, setClarifyQs] = useState<ClarificationQuestion[]>([]);
@@ -149,7 +152,7 @@ export function NewCalcPane({
   const validSingle = desc.length >= 5;
   const validPack = packN >= MIN_PACK;
   const valid = isPack ? validPack : validSingle;
-  const uploading = createPhase === "uploading" || packReading;
+  const uploading = createPhase === "uploading" || packReading || photoVisionBusy;
   const goodsText = form.description || form.title;
   const clarifyEnabled = !isPack;
   const packStepIds = clarifyEnabled ? hintTreeQuestions(desc).map((q) => q.id) : [];
@@ -348,10 +351,61 @@ export function NewCalcPane({
     }
   };
 
-  const addPhoto = (list: FileList | null) => {
+  const addPhoto = async (list: FileList | null) => {
     const file = list?.[0];
-    if (!file) return;
-    void onUpload(file, 0);
+    if (!file || photoVisionBusy) return;
+    setPhotoVisionBusy(true);
+    setPhotoVisionNote("");
+    try {
+      const url = await onUpload(file, 0);
+      if (!url) return;
+      // Fail-open: do not use api() — 4xx must not wipe the upload.
+      const res = await fetch("/api/v1/imports/products/describe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mediaUrl: url, hint: goodsText.trim().slice(0, 120) }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        description?: string;
+        name?: string;
+        attrs?: FormItem["attrs"];
+        skipped?: boolean;
+        error?: string;
+      };
+      const text = typeof data.description === "string" ? data.description.trim() : "";
+      if (res.ok && text) {
+        const title =
+          data.name?.trim() || text.split(/[.!?\n]/)[0]?.trim().slice(0, 120) || text.slice(0, 80);
+        onForm({ title, description: text });
+        const base = items[0] || { name: "", qty: 1, unitPrice: 0 };
+        const next = [...items];
+        next[0] = {
+          ...base,
+          mediaUrl: url,
+          name: title || base.name,
+          attrs: {
+            ...base.attrs,
+            ...(data.attrs?.composition ? { composition: data.attrs.composition } : {}),
+            ...(data.attrs?.material ? { material: data.attrs.material } : {}),
+            ...(data.attrs?.purpose ? { purpose: data.attrs.purpose } : {}),
+            ...(data.attrs?.brand ? { brand: data.attrs.brand } : {}),
+          },
+        };
+        onItems(next);
+        setPhotoVisionNote("Описание заполнено по фото");
+      } else {
+        setPhotoVisionNote(
+          "Фото прикреплено. Описание ИИ недоступно — заполните наименование вручную."
+        );
+      }
+    } catch {
+      setPhotoVisionNote(
+        "Фото прикреплено. Не удалось описать товар — заполните наименование вручную."
+      );
+    } finally {
+      setPhotoVisionBusy(false);
+    }
   };
 
   const addPackFile = async (list: FileList | null) => {
@@ -631,7 +685,7 @@ export function NewCalcPane({
                     onClick={payAndCreate}
                   >
                     {busy
-                      ? createBusyLabel(createPhase, busy)
+                      ? createBusyLabel(createPhase, busy, photoVisionBusy)
                       : `Оплатить ${fmtRub(payAmount)} ₽ и получить код`}
                   </button>
                 ) : (
@@ -644,12 +698,19 @@ export function NewCalcPane({
           ) : wizardStep === 3 && selected?.paidAt ? (
             <>
               <p className="wiz-lead">
-                {previewHasHs
-                  ? "Черновик кода готов. Финал подтверждает брокер (D15)."
-                  : "AI уточняет код — обновится через минуту."}
+                {previewHasHs && aiEnriching
+                  ? "Черновик кода — AI ещё уточняет. Финал подтверждает брокер (D15)."
+                  : previewHasHs
+                    ? "Черновик кода готов. Финал подтверждает брокер (D15)."
+                    : "AI уточняет код — обновится через минуту."}
               </p>
               {previewHasHs && selected ? (
                 <>
+                  {aiEnriching ? (
+                    <span className="pill warn" style={{ marginBottom: 10 }}>
+                      Уточняется
+                    </span>
+                  ) : null}
                   <div className="metric-row">
                     <div className="metric">
                       <div className="k">ТН ВЭД</div>
@@ -664,6 +725,11 @@ export function NewCalcPane({
                       </div>
                     ) : null}
                   </div>
+                  {aiEnriching ? (
+                    <p className="meta" style={{ marginTop: 10 }}>
+                      Предварительный черновик. Точный код обновится через 1–2 минуты.
+                    </p>
+                  ) : null}
                   {previewConf != null ? (
                     <div className="conf">
                       <i style={{ width: `${previewConf}%` }} />
@@ -843,11 +909,41 @@ export function NewCalcPane({
           ) : (
             <>
               <div className="field">
+                <label>Фото товара</label>
+                <p className="meta" style={{ margin: "0 0 10px" }}>
+                  Загрузите фото — ИИ распознает товар, заполнит описание и спросит, чего не хватает
+                  для кода.
+                </p>
+                {dropzone("photo", fileRef, camRef)}
+                {photoUrl ? (
+                  <div className="doc-list">
+                    <div className="doc-chip">
+                      <a href={photoUrl} target="_blank" rel="noreferrer" className="doc-thumb">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={photoUrl} alt="" />
+                      </a>
+                      <div className="doc-info">
+                        <b>Фото товара</b>
+                        <span className="meta">
+                          {photoVisionBusy ? "ИИ описывает…" : "прикреплено"}
+                        </span>
+                      </div>
+                      <span className="pill ok">Фото</span>
+                    </div>
+                  </div>
+                ) : null}
+                {photoVisionNote ? (
+                  <p className="meta" style={{ margin: "8px 0 0" }}>
+                    {photoVisionNote}
+                  </p>
+                ) : null}
+              </div>
+              <div className="field">
                 <label>Наименование и описание</label>
                 <textarea
                   rows={5}
                   style={{ minHeight: 132, resize: "vertical" }}
-                  placeholder="Ноутбуки Lenovo ThinkPad, 14'', для офиса — или загрузите фото ниже"
+                  placeholder="Или опишите сами: ноутбуки Lenovo ThinkPad, 14'' — либо загрузите фото выше"
                   value={form.description || form.title}
                   onChange={(e) => setGoodsText(e.target.value)}
                 />
@@ -930,28 +1026,6 @@ export function NewCalcPane({
                   </div>
                 </div>
               ) : null}
-              <div className="field">
-                <label>Документы и фото</label>
-                <p className="meta" style={{ margin: "0 0 10px" }}>
-                  Перетащите фото товара или сделайте снимок — ИИ поможет уточнить код.
-                </p>
-                {dropzone("photo", fileRef, camRef)}
-                {photoUrl ? (
-                  <div className="doc-list">
-                    <div className="doc-chip">
-                      <a href={photoUrl} target="_blank" rel="noreferrer" className="doc-thumb">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={photoUrl} alt="" />
-                      </a>
-                      <div className="doc-info">
-                        <b>Фото товара</b>
-                        <span className="meta">прикреплено</span>
-                      </div>
-                      <span className="pill ok">Фото</span>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
             </>
           )}
 
@@ -962,7 +1036,7 @@ export function NewCalcPane({
               disabled={busy || !valid}
               onClick={tryCreate}
             >
-              {createBusyLabel(createPhase, busy)}
+              {createBusyLabel(createPhase, busy, photoVisionBusy)}
             </button>
             {isPack ? (
               <button
@@ -992,7 +1066,7 @@ export function NewCalcPane({
               <div className="order-hs-copy">
                 <span className="gt-kicker">
                   {wizardStep >= 3 && previewHasHs && selected
-                    ? classificationHeroKicker(selected, false)
+                    ? classificationHeroKicker(selected, aiEnriching)
                     : wizardStep < 3
                       ? isPack
                         ? packN
@@ -1016,8 +1090,10 @@ export function NewCalcPane({
                 ) : null}
                 <p>
                   {wizardStep >= 3 && previewHasHs && selected
-                    ? classificationWhyBody(selected).slice(0, 160) +
-                      (classificationWhyBody(selected).length > 160 ? "…" : "")
+                    ? aiEnriching
+                      ? "Предварительный черновик. Точный код обновится через 1–2 минуты."
+                      : classificationWhyBody(selected).slice(0, 160) +
+                        (classificationWhyBody(selected).length > 160 ? "…" : "")
                     : wizardStep === 2
                       ? picked.summary
                       : isPack

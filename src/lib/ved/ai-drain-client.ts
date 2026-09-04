@@ -1,9 +1,13 @@
 /**
  * Client-safe AI_DRAIN wait helpers (no Prisma / Node fetch to providers).
  * Accurate HS: poll until llmEnrichPending clears (≤5 min; vision 90s + classify + retries).
+ * Pay-after-create (wizard): use AI_ENRICH_BEFORE_PAY_MS so pay is not blocked for minutes.
+ * Canon: docs/knowledge/plan-lbm-bro-c36-c39-port.md (P0).
  */
 
 export const AI_ENRICH_WAIT_MS = 300_000;
+/** Short enrich wait when create → pay on /cabinet/new (C39-A / P0). */
+export const AI_ENRICH_BEFORE_PAY_MS = 15_000;
 export const AI_ENRICH_POLL_MS = 2_500;
 
 export function isAiDrainPending(calc: {

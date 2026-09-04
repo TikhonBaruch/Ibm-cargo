@@ -29,6 +29,7 @@ describe("Security — authorization boundaries", () => {
     expect(matchesProtectedMutation("POST", "/api/v1/company/co_1/adjust")).toBe(true);
     expect(matchesProtectedMutation("POST", "/api/v1/company/../adjust")).toBe(false);
     expect(matchesProtectedMutation("POST", "/api/v1/imports/products/preview")).toBe(true);
+    expect(matchesProtectedMutation("POST", "/api/v1/imports/products/describe")).toBe(true);
   });
 });
 
