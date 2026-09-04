@@ -168,7 +168,7 @@ export function scoreTnvedSearchHit(
       score += 100;
       if (row.code === opts.digits) score += 50;
     }
-    if (alias && row.code.startsWith(alias.codePrefix)) score += 120;
+    if (alias && row.code.startsWith(alias.codePrefix)) score += 200;
     if (row.isLeaf) score += 15;
     score += Number(row.level || 0);
     return score;
@@ -200,8 +200,8 @@ export function scoreTnvedSearchHit(
     score += 100;
     if (row.code === opts.digits) score += 50;
   }
-  // Colloquial alias → official chapter (морс→2202, HDD→8471, ноутбук→847130).
-  if (alias && row.code.startsWith(alias.codePrefix)) score += 120;
+  // Colloquial alias → official chapter (морс→2202, HDD→8471, …).
+  if (alias && row.code.startsWith(alias.codePrefix)) score += 200;
   if (row.isLeaf) score += 15;
   score += Number(row.level || 0);
   return score;
@@ -253,19 +253,38 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
     or.push({ titleRu: { contains: q, mode: "insensitive" } });
   }
   const pool = codeOnly ? Math.min(50, Math.max(limit * 4, 24)) : 500;
-  const rows = await db.tnvedCode.findMany({
-    where: {
-      isActive: true,
-      OR: or,
-      ...(opts.leafOnly ? { isLeaf: true } : {}),
-    },
-    take: pool,
-    orderBy: [{ level: "desc" }, { code: "asc" }],
-  });
+  const leafWhere = opts.leafOnly ? { isLeaf: true as const } : {};
+  const [rows, aliasRows] = await Promise.all([
+    db.tnvedCode.findMany({
+      where: {
+        isActive: true,
+        OR: or,
+        ...leafWhere,
+      },
+      take: pool,
+      orderBy: [{ level: "desc" }, { code: "asc" }],
+    }),
+    // Lexical hitchhikes can fill the 500-row OR pool and drop the target chapter
+    // (мороженое→frozen fish). Always merge an explicit codePrefix slice.
+    alias?.codePrefix
+      ? db.tnvedCode.findMany({
+          where: {
+            isActive: true,
+            code: { startsWith: alias.codePrefix },
+            ...leafWhere,
+          },
+          take: 100,
+          orderBy: [{ level: "desc" }, { code: "asc" }],
+        })
+      : Promise.resolve([]),
+  ]);
+  const byCode = new Map<string, (typeof rows)[number]>();
+  for (const row of [...aliasRows, ...rows]) byCode.set(row.code, row);
+  const merged = [...byCode.values()];
   const stemList = stems.length ? stems : [q];
   const filtered = codeOnly
-    ? rows
-    : rows.filter((row) =>
+    ? merged
+    : merged.filter((row) =>
         tnvedSearchRowHasWholeWordHit(row, {
           stems: stemList,
           digits,
