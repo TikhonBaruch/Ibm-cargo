@@ -55,7 +55,7 @@ function digits(code: string | null | undefined): string {
   return String(code || "").replace(/\D/g, "");
 }
 
-/** C30a: never invent a rate; label TWS fill vs missing NSI honestly. */
+/** C30a: never invent a rate; label TWS ориентир vs missing NSI honestly (RU, no eng jargon). */
 export function formatCardDutyLabel(rate: CardDutyRate): string {
   if (!rate || (rate.dutyPct == null && rate.dutyRubPerUnit == null)) {
     return "нет в НСИ";
@@ -72,7 +72,7 @@ export function formatCardDutyLabel(rate: CardDutyRate): string {
   }
   const src = String(rate.source || "");
   if (TWS_SOURCE_RE.test(src) && !NSI_SOURCE_RE.test(src)) {
-    return `${value} · fill (не НСИ)`;
+    return `${value} · ориентир TWS (не НСИ)`;
   }
   return value;
 }
@@ -83,7 +83,7 @@ export function dutySourceNote(rate: CardDutyRate): string {
   }
   const src = String(rate.source || "");
   if (TWS_SOURCE_RE.test(src) && !NSI_SOURCE_RE.test(src)) {
-    return "Пошлина — fill TWS, не официальный НСИ ЕТТ";
+    return "Пошлина — ориентир TWS, не официальный НСИ ЕТТ";
   }
   if (NSI_SOURCE_RE.test(src)) {
     return `Пошлина ЕТТ · источник ${src}`;

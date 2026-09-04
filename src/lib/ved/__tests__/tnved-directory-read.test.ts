@@ -27,7 +27,7 @@ describe("directory duty label", () => {
   it("C30a: labels tws fill honestly", () => {
     expect(
       formatDirectoryDuty({ dutyKind: "AD_VALOREM", dutyPct: 5, source: "tws-csv" }),
-    ).toBe("5% · fill (не НСИ)");
+    ).toBe("5% · ориентир TWS (не НСИ)");
   });
 });
 

@@ -84,7 +84,7 @@ C35  offline-first HS + DeepSeek on miss (brief → plan → code)
 
 | Шаг | Слой | Источник | Status |
 |-----|------|----------|--------|
-| C30a | B fill: честный UI `нет в НСИ` / `fill (не НСИ)` для tws-csv | `formatCardDutyLabel` | **done** |
+| C30a | B: честный UI `нет в НСИ` / `ориентир TWS (не НСИ)` для tws-csv | `formatCardDutyLabel` | **done** (RU copy 2026-09-04) |
 | C30b | Повторный probe НСИ СТНВЭДСТ / KZ v4 | [`plan-tnved-collect.md`](./plan-tnved-collect.md) | **ops hold** |
 | C30c | PSN → `explanation` на карточке (notes + must-cover overlay) | json → `GET :code` | **done** |
 | C30d | ЕЭК решения: join по 10-digit, fail-open empty index | overlay | **done** (index empty until ETL) |
