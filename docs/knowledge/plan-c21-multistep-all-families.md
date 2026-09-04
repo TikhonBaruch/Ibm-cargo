@@ -1,7 +1,7 @@
 # План: C21 multi-step (purpose → composition) → any-help ≥95%
 
 **Дата:** 2026-09-03. **D33.**  
-**Статус:** **done (offline)** — Phase A–G · plan-s7 pack-hit **100%** · orphan UI **Won't wire** · fingerprint hsHint dual-path · G5 live **DEFER**.  
+**Статус:** **done** — Phase A–G · plan-s7 pack-hit **100%** · orphan UI **Won't wire** · fingerprint hsHint dual-path · G5 live **H6/H7 PASS** prod 2026-09-04 (H5 search 4/6 — FTS rank residual).  
 **Зона:** 1 Client + 3 Ядро (`tnved-hint-trees`, `clarify-ai`, NewCalc).  
 **Канон:** [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md) · [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) · [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) · [`staging.md`](./staging.md) · D15 / D27 / D32 / D33.
 
@@ -158,7 +158,7 @@
 | G-fp | `buildCanonicalText` + hsHint digits / foodKind / deviceType / footwearType; api parity | **done** |
 | G-probe | pack-hit ≥95% | **100%** plan-s7 + full |
 | G-staging | [`staging.md`](./staging.md) C21b closeout + H5–H7 checklist | **done** offline |
-| G5 live | H5–H7 SSO post-deploy | **DEFER** (human) |
+| G5 live | H5–H7 post-deploy prod | **DONE** 2026-09-04 · H6 4/4 · H7 browser 4/4 · H5 search 4/6 (морс/HDD FTS) |
 
 **B12 / F5 / C–E / auto / F / G команды:**
 
@@ -205,4 +205,4 @@ npm run probe:hint-gap -- --full --format summary
 
 ## 7. Закрытие программы
 
-any-help ≥95% ✅ · pack-hit ≥90% ✅ (100%) · shallow P0 / P1 закрыты ✅ · optics эталон + progressive F4 ✅ · KB/staging offline ✅ · **G5 live DEFER** · дальше только miss-driven / post-deploy H5–H7.
+any-help ≥95% ✅ · pack-hit ≥90% ✅ (100%) · shallow P0 / P1 закрыты ✅ · optics эталон + progressive F4 ✅ · KB/staging ✅ · **G5 live H6/H7 PASS** · H5 FTS residual (морс/HDD) miss-driven.
