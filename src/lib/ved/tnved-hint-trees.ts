@@ -1,5 +1,5 @@
 /**
- * Family hint trees for fill-time clarify (C21).
+ * Family hint trees for fill-time clarify (C21 / C21b multi-step).
  * JSON filename must not match this module (CJS would load the .json).
  */
 import overlayJson from "./tnved-hint-tree-packs.json";
@@ -34,9 +34,11 @@ export type HintTreeOption = {
   id: string;
   label: string;
   value: string;
+  /** Digits-only heading; empty string = attrs-only step (no HS update). */
   hsHeading: string;
   why?: string;
   triggers?: string[];
+  attrs?: Record<string, string>;
 };
 
 export type HintTreeQuestion = {
@@ -50,12 +52,17 @@ type OverlayPack = {
   id: string;
   triggers: string[];
   skipQuestionIds?: string[];
-  question: HintTreeQuestion;
+  /** Legacy single question (= steps[0] when steps omitted). */
+  question?: HintTreeQuestion;
+  /** C21b: purpose → composition (max 3). */
+  steps?: HintTreeQuestion[];
 };
 
 type OverlayFile = { asOf?: string; packs: OverlayPack[] };
 
 const overlay = overlayJson as OverlayFile;
+
+const HS_DIGITS = /^\d{2,10}$/;
 
 function scoreKeys(desc: string, keys: string[]) {
   let score = 0;
@@ -65,6 +72,46 @@ function scoreKeys(desc: string, keys: string[]) {
     }
   }
   return score;
+}
+
+function normalizeOption(o: HintTreeOption): HintTreeOption {
+  const hs = String(o.hsHeading ?? "").replace(/\D/g, "");
+  return {
+    id: o.id,
+    label: o.label,
+    value: o.value,
+    hsHeading: hs,
+    why: o.why,
+    triggers: o.triggers,
+    attrs: o.attrs,
+  };
+}
+
+function normalizeQuestion(q: HintTreeQuestion): HintTreeQuestion {
+  return {
+    id: q.id,
+    text: q.text,
+    hint: q.hint,
+    options: (q.options || []).map(normalizeOption),
+  };
+}
+
+/** Resolve pack steps; legacy `question` becomes a single-step chain. */
+export function packSteps(pack: OverlayPack | null | undefined): HintTreeQuestion[] {
+  if (!pack) return [];
+  if (pack.steps?.length) {
+    return pack.steps.slice(0, 3).map(normalizeQuestion);
+  }
+  if (pack.question?.options?.length) {
+    return [normalizeQuestion(pack.question)];
+  }
+  return [];
+}
+
+/** Primary question for search-extras / legacy callers. */
+export function packPrimaryQuestion(pack: OverlayPack | null | undefined): HintTreeQuestion | null {
+  const steps = packSteps(pack);
+  return steps[0] || null;
 }
 
 export function matchHintPack(desc: string): OverlayPack | null {
@@ -141,26 +188,9 @@ export function matchHintPack(desc: string): OverlayPack | null {
   return bestScore > 0 ? best : null;
 }
 
-/** Clarify chips for a description when a family pack matches. */
+/** Clarify chips for a description when a family pack matches (all steps). */
 export function hintTreeQuestions(desc: string): HintTreeQuestion[] {
-  const pack = matchHintPack(desc);
-  if (!pack) return [];
-  const q = pack.question;
-  if (!q?.options?.length) return [];
-  return [
-    {
-      id: q.id,
-      text: q.text,
-      hint: q.hint,
-      options: q.options.map((o) => ({
-        id: o.id,
-        label: o.label,
-        value: o.value,
-        hsHeading: o.hsHeading,
-        why: o.why,
-      })),
-    },
-  ];
+  return packSteps(matchHintPack(desc));
 }
 
 export function hintTreeSkipQuestionIds(desc: string): string[] {
@@ -170,24 +200,48 @@ export function hintTreeSkipQuestionIds(desc: string): string[] {
 
 export function hintTreeHeadingForAnswer(desc: string, questionId: string, answer: string): string | null {
   const pack = matchHintPack(desc);
-  if (!pack || pack.question.id !== questionId) return null;
+  const step = packSteps(pack).find((q) => q.id === questionId);
+  if (!step) return null;
   const ans = String(answer || "").trim();
-  const hit = pack.question.options.find((o) => o.value === ans || o.label === ans || o.id === ans);
-  return hit?.hsHeading || null;
+  const hit = step.options.find((o) => o.value === ans || o.label === ans || o.id === ans);
+  const hs = hit?.hsHeading || "";
+  return HS_DIGITS.test(hs) ? hs : null;
+}
+
+/**
+ * Best hsHint from answered pack steps: longest digit heading wins
+ * (e.g. 900410 over 9004). Same length → later step wins (composition can fork).
+ */
+export function hintTreeBestHeading(
+  desc: string,
+  answers: Record<string, string>,
+): string | null {
+  let best: string | null = null;
+  for (const q of packSteps(matchHintPack(desc))) {
+    const ans = String(answers[q.id] || "").trim();
+    if (!ans) continue;
+    const hit = q.options.find((o) => o.value === ans || o.label === ans || o.id === ans);
+    const hs = hit?.hsHeading || "";
+    if (!HS_DIGITS.test(hs)) continue;
+    if (!best || hs.length > best.length || hs.length === best.length) best = hs;
+  }
+  return best;
 }
 
 export function hintTreesAsSearchExtras(): Map<string, { why: string[]; tokens: string[] }> {
   const out = new Map<string, { why: string[]; tokens: string[] }>();
   const add = (code: string, tokens: string[]) => {
     const digits = String(code || "").replace(/\D/g, "");
-    if (![2, 4, 6, 8, 10].includes(digits.length)) return;
+    if (!HS_DIGITS.test(digits)) return;
     const row = out.get(digits) || { why: [], tokens: [] };
     row.tokens.push(...tokens);
     out.set(digits, row);
   };
   for (const pack of overlay.packs || []) {
-    for (const o of pack.question.options || []) {
-      add(o.hsHeading, [o.label, o.value, ...(o.triggers || []), ...(pack.triggers || [])]);
+    for (const step of packSteps(pack)) {
+      for (const o of step.options) {
+        add(o.hsHeading, [o.label, o.value, ...(o.triggers || []), ...(pack.triggers || [])]);
+      }
     }
   }
   return out;
@@ -196,9 +250,11 @@ export function hintTreesAsSearchExtras(): Map<string, { why: string[]; tokens: 
 export function hintTreeFocusCodes(): string[] {
   const codes = new Set<string>();
   for (const pack of overlay.packs || []) {
-    for (const o of pack.question.options || []) {
-      const digits = String(o.hsHeading || "").replace(/\D/g, "");
-      if ([2, 4, 6, 8, 10].includes(digits.length)) codes.add(digits);
+    for (const step of packSteps(pack)) {
+      for (const o of step.options) {
+        const digits = String(o.hsHeading || "").replace(/\D/g, "");
+        if (HS_DIGITS.test(digits)) codes.add(digits);
+      }
     }
   }
   return [...codes];

@@ -1,0 +1,1335 @@
+{
+  "asOf": "2026-09-03",
+  "packCount": 86,
+  "byPriority": {
+    "ok": 48,
+    "multistep": 38,
+    "P0": 0,
+    "P1": 0
+  },
+  "note": "Phase G offline done: orphan Wont wire · fingerprint hsHint dual-path · plan-s7 100% · G5 DEFER",
+  "rows": [
+    {
+      "id": "adhesives-chemicals",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "клей",
+        "герметик",
+        "смазк",
+        "wd-40",
+        "wd40",
+        "растворител",
+        "ацетон",
+        "adhesive"
+      ]
+    },
+    {
+      "id": "agri-feed",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "комбикорм",
+        "сено",
+        "силос",
+        "корм скот",
+        "корм для скот",
+        "animal feed",
+        "hay",
+        "silage"
+      ]
+    },
+    {
+      "id": "agri-inputs",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "семена",
+        "семя",
+        "удобрен",
+        "fertilizer",
+        "seeds for sowing",
+        "посевн",
+        "гербицид",
+        "пестицид"
+      ]
+    },
+    {
+      "id": "appliances",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "утюг",
+        "фен",
+        "пылесос",
+        "холодильник",
+        "стиральн",
+        "посудомо",
+        "стиральная машина",
+        "microwave"
+      ]
+    },
+    {
+      "id": "art",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "картин",
+        "живопис",
+        "репродукц",
+        "скульптур",
+        "painting",
+        "sculpture",
+        "canvas art"
+      ]
+    },
+    {
+      "id": "auto-body",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "бампер",
+        "фара",
+        "дворник",
+        "зеркало боков",
+        "зеркала боков",
+        "боковые зеркал",
+        "кузовн",
+        "bumper"
+      ]
+    },
+    {
+      "id": "auto-fluids",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "моторное масло",
+        "масло моторн",
+        "антифриз",
+        "тормозн колодк",
+        "тормозная жидкост",
+        "тормозные колодк",
+        "engine oil",
+        "antifreeze"
+      ]
+    },
+    {
+      "id": "auto-parts",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "фильтр маслян",
+        "масляный фильтр",
+        "свеча зажиган",
+        "свечи зажиган",
+        "подшипник",
+        "bearing",
+        "oil filter",
+        "spark plug"
+      ]
+    },
+    {
+      "id": "baby",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "подгузник",
+        "памперс",
+        "diaper",
+        "nappy",
+        "детск подгуз",
+        "автокрес",
+        "car seat"
+      ]
+    },
+    {
+      "id": "baby-gear",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "коляск",
+        "манеж",
+        "пустышк",
+        "соска",
+        "бутылочк",
+        "кроватк",
+        "stroller",
+        "pacifier"
+      ]
+    },
+    {
+      "id": "bags",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "сумк",
+        "рюкзак",
+        "чемодан",
+        "портфел",
+        "handbag",
+        "backpack",
+        "suitcase",
+        "luggage"
+      ]
+    },
+    {
+      "id": "batteries",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "батарейк",
+        "батарея",
+        "аккумулятор",
+        "battery",
+        "аккумуляторн батар"
+      ]
+    },
+    {
+      "id": "bedroom-furniture",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "матрас",
+        "кровать",
+        "шкаф",
+        "комод",
+        "тумб",
+        "полк",
+        "зеркало",
+        "шторы"
+      ]
+    },
+    {
+      "id": "beverages",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "пиво",
+        "beer",
+        "вино",
+        "wine",
+        "сидр",
+        "cider",
+        "вода минеральн",
+        "минеральн"
+      ]
+    },
+    {
+      "id": "books",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "книга",
+        "книги",
+        "тетрад",
+        "учебник",
+        "журнал печат",
+        "textbook",
+        "printed book",
+        "журнал"
+      ]
+    },
+    {
+      "id": "camping",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "палатк",
+        "спальный мешок",
+        "спальник",
+        "tent",
+        "sleeping bag",
+        "турист палат"
+      ]
+    },
+    {
+      "id": "chocolate",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "шоколад",
+        "chocolate",
+        "конфет",
+        "可可",
+        "巧克力"
+      ]
+    },
+    {
+      "id": "cleaning",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "стиральн порошок",
+        "порошок стиральн",
+        "стиральный порошок",
+        "губка",
+        "швабр",
+        "средство для мытья",
+        "моющее средств",
+        "бумага туалетн"
+      ]
+    },
+    {
+      "id": "computers",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "ноут",
+        "laptop",
+        "notebook",
+        "смартфон",
+        "телефон",
+        "iphone",
+        "планшет",
+        "ipad"
+      ]
+    },
+    {
+      "id": "cookware",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "кастрюл",
+        "сковород",
+        "сотейник",
+        "посуда кухон",
+        "teapot metal",
+        "frying pan",
+        "saucepan"
+      ]
+    },
+    {
+      "id": "cosmetics",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "косметик",
+        "крем",
+        "духи",
+        "парфюм",
+        "skincare",
+        "perfume",
+        "化妆品",
+        "помад"
+      ]
+    },
+    {
+      "id": "cutlery",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "нож",
+        "вилка",
+        "ложка",
+        "термос",
+        "контейнер",
+        "контейнер пищев",
+        "столовые прибор",
+        "cutlery"
+      ]
+    },
+    {
+      "id": "cycles",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "велосипед",
+        "самокат",
+        "bicycle",
+        "scooter",
+        "электросамокат"
+      ]
+    },
+    {
+      "id": "displays",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "телевизор",
+        "монитор",
+        "дисплей",
+        "television",
+        "tv ",
+        " monitor",
+        "monitor ",
+        "lcd монитор"
+      ]
+    },
+    {
+      "id": "dresses",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "плать",
+        "сарафан",
+        "dress",
+        "sundress"
+      ]
+    },
+    {
+      "id": "electrical-install",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "розетка",
+        "выключатель",
+        "кабель силов",
+        "провод электрическ",
+        "кабель электрическ",
+        "электропровод",
+        "socket outlet",
+        "light switch"
+      ]
+    },
+    {
+      "id": "fasteners",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "гвозд",
+        "шуруп",
+        "саморез",
+        "болт",
+        "гайк",
+        "винт крепеж",
+        "screw",
+        "nail"
+      ]
+    },
+    {
+      "id": "fish-seafood",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "рыба",
+        "рыбн",
+        "лосос",
+        "форел",
+        "тунец",
+        "икра",
+        "кревет",
+        "кальмар"
+      ]
+    },
+    {
+      "id": "footwear",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "кроссов",
+        "кросовк",
+        "кеды",
+        "обув",
+        "туфл",
+        "ботин",
+        "сапог",
+        "босонож"
+      ]
+    },
+    {
+      "id": "forklift-trucks",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "погрузчик",
+        "электропогрузчик",
+        "вилочный погрузчик",
+        "штабелер",
+        "штабелёр",
+        "ричтрак",
+        "forklift",
+        "reach truck"
+      ]
+    },
+    {
+      "id": "fruit-fresh",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "фрукт",
+        "яблок",
+        "груш",
+        "банан",
+        "апельсин",
+        "мандар",
+        "лимон",
+        "виноград"
+      ]
+    },
+    {
+      "id": "furniture",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "мебел",
+        "стул",
+        "стулья",
+        "диван",
+        "кресл",
+        "столы",
+        "стол",
+        "обеденный стол"
+      ]
+    },
+    {
+      "id": "gaming",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "xbox",
+        "геймпад",
+        "джойстик",
+        "игровая приставк",
+        "gamepad",
+        "joystick",
+        "game console",
+        "playstation"
+      ]
+    },
+    {
+      "id": "gloves-scarves",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "перчатк",
+        "варежк",
+        "шарф",
+        "gloves",
+        "mittens",
+        "scarf",
+        "митенк"
+      ]
+    },
+    {
+      "id": "grains-pasta",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "рис",
+        "мука",
+        "макарон",
+        "гречк",
+        "овсянк",
+        "перловк",
+        "круп",
+        "лапш"
+      ]
+    },
+    {
+      "id": "headgear",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "кепк",
+        "бейсболк",
+        "фуражк",
+        "шапк",
+        "берет",
+        "панам",
+        "головн убор",
+        "baseball cap"
+      ]
+    },
+    {
+      "id": "headphones",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "наушник",
+        "headphones",
+        "earbuds",
+        "airpods",
+        "гарнитур",
+        "耳机"
+      ]
+    },
+    {
+      "id": "home-textiles",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "одеяло",
+        "подушка",
+        "полотенц",
+        "постельн",
+        "простын",
+        "пододеяльник",
+        "вешалк",
+        "корзина для белья"
+      ]
+    },
+    {
+      "id": "hosiery",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "носк",
+        "колгот",
+        "чулк",
+        "гольф",
+        "подслед",
+        "socks",
+        "tights",
+        "hosiery"
+      ]
+    },
+    {
+      "id": "jewelry",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "кольцо",
+        "серьг",
+        "браслет",
+        "цепочк",
+        "ожерель",
+        "подвеск",
+        "кулон",
+        "бусы"
+      ]
+    },
+    {
+      "id": "knit-top",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "футболк",
+        "майк",
+        "поло",
+        "polo",
+        "худи",
+        "толстов",
+        "свитер",
+        "свитшот"
+      ]
+    },
+    {
+      "id": "lamps",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "лампа",
+        "лампа настольн",
+        "настольн лампа",
+        "светильник",
+        "торшер",
+        "люстра",
+        "desk lamp",
+        "floor lamp"
+      ]
+    },
+    {
+      "id": "led",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "led",
+        "светодиод",
+        "лампочк",
+        "лента свет",
+        "灯带"
+      ]
+    },
+    {
+      "id": "meat",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "колбас",
+        "сосиск",
+        "ветчин",
+        "бекон",
+        "мясо",
+        "мясн",
+        "говяд",
+        "говяж"
+      ]
+    },
+    {
+      "id": "med-devices",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "термометр",
+        "тонометр",
+        "ингалятор",
+        "костыл",
+        "инвалидн",
+        "thermometer",
+        "blood pressure",
+        "inhaler"
+      ]
+    },
+    {
+      "id": "med-disposables",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "шприц",
+        "бинт",
+        "пластыр",
+        "медицинск маск",
+        "маска медицинск",
+        "медицинская маск",
+        "medical mask",
+        "face mask medical"
+      ]
+    },
+    {
+      "id": "milk",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "молок",
+        "сливки",
+        "сгущен",
+        "сгущён",
+        "milk",
+        "uht",
+        "кефир",
+        "йогурт"
+      ]
+    },
+    {
+      "id": "musical",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "гитар",
+        "скрипка",
+        "пианино",
+        "синтезатор",
+        "барабан",
+        "флейт",
+        "укулеле",
+        "гармонь"
+      ]
+    },
+    {
+      "id": "networking",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "роутер",
+        "маршрутизатор",
+        "router",
+        "wi-fi роутер",
+        "wifi роутер",
+        "коммутатор сетев",
+        "switch сетев",
+        "модем"
+      ]
+    },
+    {
+      "id": "optics",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "очки",
+        "очков",
+        "солнцезащитн очк",
+        "линза очков",
+        "оправа очков",
+        "spectacles",
+        "sunglasses",
+        "eyeglasses"
+      ]
+    },
+    {
+      "id": "outerwear",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "куртк",
+        "пальто",
+        "пуховик",
+        "жилет",
+        "плащ",
+        "jacket",
+        "coat",
+        "down jacket"
+      ]
+    },
+    {
+      "id": "paint",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "краска",
+        "краски",
+        "эмаль лакокрас",
+        "обои",
+        "wallpaper",
+        "paint",
+        "лак строительн"
+      ]
+    },
+    {
+      "id": "pantry-sweet",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "мёд",
+        "мед",
+        "орех",
+        "миндал",
+        "фундук",
+        "сахар",
+        "соль",
+        "масло подсол"
+      ]
+    },
+    {
+      "id": "pc-parts",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "ssd",
+        "жёсткий диск",
+        "жесткий диск",
+        "видеокарт",
+        "процессор",
+        "материнск",
+        "оперативн памят",
+        "оперативная памят"
+      ]
+    },
+    {
+      "id": "peripherals",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "клавиатур",
+        "keyboard",
+        "webcam",
+        "веб-камер",
+        "вебкамер",
+        "микрофон",
+        "microphone",
+        "мышь компьютер"
+      ]
+    },
+    {
+      "id": "personal-care",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "мыло",
+        "зубн паст",
+        "зубная паста",
+        "toothpaste",
+        "soap",
+        "гель для душа",
+        "дезодорант"
+      ]
+    },
+    {
+      "id": "pet-accessories",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "ошейник",
+        "поводок",
+        "наполнитель для лотка",
+        "лоток для кош",
+        "миска для животн",
+        "миска для соб",
+        "миска для кош",
+        "pet bowl"
+      ]
+    },
+    {
+      "id": "pet-food",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "корм для",
+        "корм кош",
+        "корм соб",
+        "pet food",
+        "cat food",
+        "dog food",
+        "для кошек",
+        "для собак"
+      ]
+    },
+    {
+      "id": "pharma",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "лекарств",
+        "витамин",
+        "таблетк",
+        "бад ",
+        "бады",
+        "medicine",
+        "pharma",
+        "dietary supplement"
+      ]
+    },
+    {
+      "id": "photo-gear",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "фотоаппарат",
+        "фотокамер",
+        "объектив",
+        "штатив",
+        "вспышк",
+        "gopro",
+        "camera lens",
+        "tripod"
+      ]
+    },
+    {
+      "id": "power",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "зарядк",
+        "зарядн",
+        "charger",
+        "powerbank",
+        "power bank",
+        "power-bank",
+        "повербанк",
+        "пауэрбанк"
+      ]
+    },
+    {
+      "id": "prepared-food",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "суп",
+        "борщ",
+        "бульон",
+        "похлебк",
+        "soup",
+        "stew",
+        "готовое блюдо",
+        "морожен"
+      ]
+    },
+    {
+      "id": "printers",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "принтер",
+        "сканер",
+        "мфу",
+        "printer",
+        "scanner",
+        "многофункциональн устройств"
+      ]
+    },
+    {
+      "id": "produce-fresh",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "огурц",
+        "огурец",
+        "помидор",
+        "томат",
+        "картофел",
+        "картошк",
+        "морков",
+        "лук"
+      ]
+    },
+    {
+      "id": "rugs",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "ковёр",
+        "ковер",
+        "коврик",
+        "carpet",
+        "rug",
+        "палас"
+      ]
+    },
+    {
+      "id": "security-cam",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "камера видеонаблюд",
+        "видеонаблюден",
+        "cctv",
+        "ip камер",
+        "security camera"
+      ]
+    },
+    {
+      "id": "small-appliances",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "чайник",
+        "блендер",
+        "миксер",
+        "мультиварк",
+        "тостер",
+        "кондиционер",
+        "обогреватель",
+        "вентилятор"
+      ]
+    },
+    {
+      "id": "snacks",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "чипс",
+        "сухарик",
+        "попкорн",
+        "батончик",
+        "жвачк",
+        "мармелад",
+        "энергетик",
+        "сок"
+      ]
+    },
+    {
+      "id": "speakers",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "колонк",
+        "bluetooth колонк",
+        "speaker",
+        "soundbar",
+        "саундбар",
+        "акустик систем"
+      ]
+    },
+    {
+      "id": "spirits",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "водк",
+        "коньяк",
+        "виски",
+        "ром",
+        "текил",
+        "ликёр",
+        "ликер",
+        "настойк"
+      ]
+    },
+    {
+      "id": "sports",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "мяч",
+        "гантел",
+        "гантель",
+        "тренажёр",
+        "тренажер",
+        "спорт инвентар",
+        "коврик йог",
+        "йога коврик"
+      ]
+    },
+    {
+      "id": "stationery",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "ручка",
+        "карандаш",
+        "маркер",
+        "фломастер",
+        "ластик",
+        "линейк",
+        "скотч",
+        "степлер"
+      ]
+    },
+    {
+      "id": "suits",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "костюм",
+        "смокинг",
+        "мужской костюм"
+      ]
+    },
+    {
+      "id": "tableware",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "тарелка",
+        "тарелки",
+        "чашка",
+        "кружка",
+        "посуда",
+        "столовая посуда",
+        "посуда столов",
+        "plate"
+      ]
+    },
+    {
+      "id": "tea-coffee",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "чай",
+        "кофе",
+        "tea",
+        "coffee",
+        "绿茶",
+        "咖啡"
+      ]
+    },
+    {
+      "id": "textiles-raw",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "ткань",
+        "пряжа",
+        "нитки",
+        "полотно ткацк",
+        "хлопок",
+        "хлопчатник",
+        "cotton",
+        "fabric"
+      ]
+    },
+    {
+      "id": "tie-belt",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "галстук",
+        "ремень",
+        "ремни",
+        "necktie",
+        "belt"
+      ]
+    },
+    {
+      "id": "tires",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "шина",
+        "шины",
+        "покрышк",
+        "tire",
+        "tyre",
+        "автошин",
+        "колесо",
+        "колёс"
+      ]
+    },
+    {
+      "id": "tobacco",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "сигарет",
+        "табак",
+        "сигар",
+        "кальян",
+        "cigarette",
+        "tobacco",
+        "cigar",
+        "hookah"
+      ]
+    },
+    {
+      "id": "tools",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "дрель",
+        "молоток",
+        "отвёртк",
+        "отвертк",
+        "шуруповёрт",
+        "шуруповерт",
+        "инструмент ручн",
+        "hammer"
+      ]
+    },
+    {
+      "id": "toys",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "игрушк",
+        "toy",
+        "конструктор",
+        "кукл",
+        "консоль",
+        "playstation",
+        "nintendo",
+        "steam deck"
+      ]
+    },
+    {
+      "id": "umbrellas",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "зонт",
+        "зонтик",
+        "umbrella",
+        "parasol"
+      ]
+    },
+    {
+      "id": "underwear-sleep",
+      "depth": "deep_fork",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "бельё",
+        "белье",
+        "трусы",
+        "лифчик",
+        "бюстгалтер",
+        "пижам",
+        "халат",
+        "underwear"
+      ]
+    },
+    {
+      "id": "vape",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "вейп",
+        "электронная сигарет",
+        "vape",
+        "pod",
+        "испарител"
+      ]
+    },
+    {
+      "id": "watches",
+      "depth": "multi_same_hs",
+      "stepCount": 2,
+      "priority": "multistep",
+      "triggers": [
+        "часы",
+        "watch",
+        "wristwatch",
+        "наручные часы",
+        "smartwatch",
+        "apple watch"
+      ]
+    },
+    {
+      "id": "woven-apparel",
+      "depth": "deep_fork",
+      "stepCount": 1,
+      "priority": "ok",
+      "triggers": [
+        "рубашк",
+        "блузк",
+        "сорочк",
+        "брюк",
+        "штаны",
+        "джинс",
+        "шорт",
+        "юбка"
+      ]
+    }
+  ]
+}

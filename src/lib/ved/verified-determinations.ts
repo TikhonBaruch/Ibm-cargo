@@ -52,6 +52,7 @@ export function tokenize(text: string): string[] {
 
 /** Canonical text for fingerprint + lexical scoring. */
 export function buildCanonicalText(input: PrecedentMatchInput): string {
+  const hsDigits = String(input.attrs?.hsHint || "").replace(/\D/g, "");
   const parts = [
     input.name,
     input.title,
@@ -61,12 +62,17 @@ export function buildCanonicalText(input: PrecedentMatchInput): string {
     input.attrs?.material,
     input.attrs?.composition,
     input.attrs?.purpose,
+    // C21b Phase G: pack apply writes hsHint heading — keep branches distinct in fp.
+    hsDigits.length >= 4 ? hsDigits : undefined,
     input.attrs?.extra?.sku,
     input.attrs?.extra?.color,
     input.attrs?.extra?.ageGroup,
     input.attrs?.extra?.garmentType,
     input.attrs?.extra?.powerSource,
     input.attrs?.extra?.vehicleKind,
+    input.attrs?.extra?.foodKind,
+    input.attrs?.extra?.deviceType,
+    input.attrs?.extra?.footwearType,
   ].filter(Boolean);
   return parts
     .join(" ")

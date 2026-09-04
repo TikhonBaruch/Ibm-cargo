@@ -7,7 +7,10 @@
 
 Зафиксировать **какие слои подсказок реально помогают** на live `/cabinet/new` vs Dashboard quick vs orphaned UI, и закрепить расширенным тестом fill-сценариев.
 
-## 2. Анализ (as-is после lbm-bro / pay-first)
+## 2. Анализ (as-is after C21b optics)
+
+Слои подсказок на `/cabinet/new`: C12 ClarifyField + C21 packs; orphan AttrSuggestChips / HsHintCandidates — см. [`plan-fill-hints-structure.md`](./plan-fill-hints-structure.md).  
+**C21b:** multi-step packs — [`plan-c21-multistep-all-families.md`](./plan-c21-multistep-all-families.md); progressive UI F4 — composition после `tnved-form`.
 
 ```text
 Клиент заполняет заявку
@@ -86,7 +89,7 @@ Wizard API · LLM CTA на clarify · автозалив attrs без клика
 | Карта слоёв + gaps | **done** (этот файл) |
 | Extended vitest fill suite | **done** |
 | Live API probe | **done** (prod) |
-| Wire orphan UI back to NewCalc | **hold** — отдельный цикл после продукта |
+| Wire orphan UI back to NewCalc | **Won't / hold** — C21b Phase G: clarify packs = primary; unit gate forbids mount on NewCalc/lab wizard |
 | Critical HS: кепка/молоко/кеды | **fixed** на ветке `cursor/tnved-cap-milk-footwear-e1f0` |
 
 ## 7. Critical probe — кепка / молоко / кеды / кроссовки (2026-08-29)

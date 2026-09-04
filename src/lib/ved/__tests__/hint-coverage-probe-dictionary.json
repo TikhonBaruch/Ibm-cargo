@@ -476,47 +476,49 @@
       "query": "носки",
       "phase": "Cov-P10",
       "expected": {
-        "pack": null,
-        "attr": "A+",
+        "pack": "hosiery",
+        "attr": "A~",
         "searchPrefix": "6115"
       },
       "mustNotPack": [],
       "live": true,
-      "notes": "attr-path, not pack"
+      "notes": "F5 apparel pack path"
     },
     {
       "id": "attr.jacket",
       "query": "куртка",
       "phase": "Cov-P10",
       "expected": {
-        "pack": null,
-        "attr": "A+",
+        "pack": "outerwear",
+        "attr": "A~",
         "searchPrefix": "6201"
       },
       "mustNotPack": [],
-      "notes": "POLICY attr-path"
+      "notes": "F5 apparel pack path"
     },
     {
       "id": "attr.tights",
       "query": "колготки",
       "phase": "Cov-P10",
       "expected": {
-        "pack": null,
-        "attr": "A+",
+        "pack": "hosiery",
+        "attr": "A~",
         "searchPrefix": "6115"
       },
-      "mustNotPack": []
+      "mustNotPack": [],
+      "notes": "F5 apparel pack path"
     },
     {
       "id": "attr.gloves",
       "query": "перчатки",
       "phase": "Cov-P10",
       "expected": {
-        "pack": null,
-        "attr": "A+",
+        "pack": "gloves-scarves",
+        "attr": "A~",
         "searchPrefix": "6116"
       },
-      "mustNotPack": []
+      "mustNotPack": [],
+      "notes": "F5 apparel pack path"
     },
     {
       "id": "reg.cucumber",
@@ -861,56 +863,64 @@
       "query": "галстук",
       "phase": "Cov-P15",
       "expected": {
-        "pack": null,
-        "attr": "A+",
+        "pack": "tie-belt",
+        "attr": "A~",
         "searchPrefix": "6215"
       },
       "mustNotPack": [],
-      "live": true
+      "live": true,
+      "notes": "F5 apparel pack path"
     },
     {
       "id": "attr.belt",
       "query": "ремень",
       "phase": "Cov-P15",
       "expected": {
-        "pack": null,
-        "attr": "A+",
+        "pack": "tie-belt",
+        "attr": "A~",
         "searchPrefix": "4203"
       },
-      "mustNotPack": []
+      "mustNotPack": [],
+      "notes": "F5 apparel pack path"
     },
     {
       "id": "attr.pajama",
       "query": "пижама",
       "phase": "Cov-P15",
       "expected": {
-        "pack": null,
-        "attr": "A+",
+        "pack": "underwear-sleep",
+        "attr": "A~",
         "searchPrefix": "6107"
       },
-      "mustNotPack": []
+      "mustNotPack": [],
+      "notes": "F5 apparel pack path"
     },
     {
       "id": "attr.robe",
       "query": "халат",
       "phase": "Cov-P15",
       "expected": {
-        "pack": null,
-        "attr": "A+",
+        "pack": "underwear-sleep",
+        "attr": "A~",
         "searchPrefix": "6107"
       },
-      "mustNotPack": []
+      "mustNotPack": [],
+      "notes": "F5 apparel pack path"
     },
     {
       "id": "attr.raincoat",
       "query": "плащ",
-      "phase": "Cov-P15",
+      "phase": "F5",
       "expected": {
-        "pack": null,
-        "attr": "A+",
+        "pack": "outerwear",
+        "attr": "A~",
         "searchPrefix": "6201"
       },
-      "mustNotPack": []
+      "mustNotPack": [
+        "woven-apparel",
+        "knit-top"
+      ],
+      "notes": "F5 outerwear (was ATTR A+)"
     },
     {
       "id": "home.cotton",
@@ -1203,17 +1213,17 @@
     {
       "id": "cascade.mors",
       "query": "морс",
-      "phase": "Cov-P17",
+      "phase": "C21-CE",
       "expected": {
-        "pack": null,
-        "attr": "A0",
+        "pack": "snacks",
+        "attr": "A~",
         "searchPrefix": "2202"
       },
       "mustNotPack": [
-        "snacks",
-        "fruit-fresh"
+        "fruit-fresh",
+        "beverages"
       ],
-      "notes": "S+ cascade; juice guard blocks pack",
+      "notes": "Phase C: snacks drinks fork (was CASCADE)",
       "live": true
     },
     {
@@ -1221,71 +1231,75 @@
       "query": "варежки",
       "phase": "Cov-P17",
       "expected": {
-        "pack": null,
-        "attr": "A0",
+        "pack": "gloves-scarves",
+        "attr": "A~",
         "searchPrefix": "6116"
       },
       "mustNotPack": [
-        "knit-top"
+        "knit-top",
+        "hosiery"
       ],
-      "notes": "S+ cascade; ATTR path for gloves family"
+      "notes": "F5 gloves-scarves (was CASCADE)"
     },
     {
       "id": "cascade.hdd",
       "query": "HDD",
-      "phase": "Cov-P17",
+      "phase": "C21-CE",
       "expected": {
-        "pack": null,
-        "attr": "A0",
+        "pack": "pc-parts",
+        "attr": "A~",
         "searchPrefix": "8471"
       },
       "mustNotPack": [
         "computers",
-        "pc-parts"
+        "power"
       ],
-      "notes": "S+ cascade; bare HDD acronym"
+      "notes": "Phase E: bare HDD → pc-parts (was CASCADE)"
     },
     {
       "id": "cascade.hdmi",
       "query": "hdmi кабель",
-      "phase": "Cov-P17",
+      "phase": "C21-CE",
       "expected": {
-        "pack": null,
-        "attr": "A0",
+        "pack": "power",
+        "attr": "A~",
         "searchPrefix": "8544"
       },
       "mustNotPack": [
-        "power"
+        "networking",
+        "pc-parts"
       ],
-      "notes": "S+ cascade; not bare POLICY кабель"
+      "notes": "Phase E: hdmi кабель → power (was CASCADE)"
     },
     {
       "id": "cascade.airfilter",
       "query": "воздушный фильтр",
-      "phase": "Cov-P17",
+      "phase": "C21-auto",
       "expected": {
-        "pack": null,
-        "attr": "A0",
+        "pack": "auto-parts",
+        "attr": "A~",
         "searchPrefix": "8421"
       },
       "mustNotPack": [
-        "auto-parts"
+        "appliances",
+        "tires"
       ],
-      "notes": "S+ cascade; alias 842131"
+      "notes": "Auto residual: воздушный фильтр → auto-parts (was CASCADE)"
     },
     {
       "id": "cascade.oilfilter",
       "query": "маслофильтр",
-      "phase": "Cov-P17",
+      "phase": "C21-auto",
       "expected": {
-        "pack": null,
-        "attr": "A0",
+        "pack": "auto-parts",
+        "attr": "A~",
         "searchPrefix": "8421"
       },
       "mustNotPack": [
-        "auto-parts"
+        "auto-fluids",
+        "tires"
       ],
-      "notes": "S+ cascade; alias 842123"
+      "notes": "Auto residual: маслофильтр → auto-parts (was CASCADE)"
     },
     {
       "id": "home.hanger",

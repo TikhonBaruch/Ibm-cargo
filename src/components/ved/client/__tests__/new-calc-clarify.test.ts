@@ -4,9 +4,11 @@ import {
   appendClarifyBlock,
   compositionFromClarify,
   hsHintFromClarify,
+  progressiveClarifyQuestions,
   unansweredClarifyParts,
   wizardDraftForClarify,
 } from "../new-calc-clarify";
+import { hintTreeQuestions } from "@/lib/ved/tnved-hint-trees";
 
 describe("new-calc clarify helper (C12)", () => {
   it("builds a single-item WizardDraft with empty docs", () => {
@@ -17,17 +19,39 @@ describe("new-calc clarify helper (C12)", () => {
     expect(w.packMode).toBe("single");
   });
 
-  it("asks apparel chips for «носки» (composition / knit / color)", async () => {
+  it("F4 progressive: composition hidden until tnved-form answered", async () => {
+    const qs = await getClarificationQuestions({
+      wizard: wizardDraftForClarify("очки", "Китай"),
+      step: 1,
+    });
+    const packIds = hintTreeQuestions("очки").map((q) => q.id);
+    expect(packIds).toEqual(["tnved-form", "composition"]);
+    const before = progressiveClarifyQuestions(qs, {}, packIds);
+    expect(before.map((q) => q.id)).toContain("tnved-form");
+    expect(before.map((q) => q.id)).not.toContain("composition");
+    const afterForm = progressiveClarifyQuestions(
+      qs,
+      { "tnved-form": "солнцезащитные очки" },
+      packIds,
+    );
+    expect(afterForm.map((q) => q.id)).toEqual(
+      expect.arrayContaining(["tnved-form", "composition"]),
+    );
+    // no pack → no filtering
+    expect(progressiveClarifyQuestions(qs, {}, []).map((q) => q.id)).toEqual(qs.map((q) => q.id));
+  });
+
+  it("asks hosiery pack chips for «носки» (F5)", async () => {
     const qs = await getClarificationQuestions({
       wizard: wizardDraftForClarify("носки", "Китай"),
       step: 1,
     });
-    expect(qs.map((q) => q.id)).toEqual(["composition", "knit-woven", "color"]);
-    expect(qs[0].text).toMatch(/состав ткани/);
-    expect(qs[1].text).toMatch(/трикотаж/i);
-    expect(qs[2].text).toMatch(/цвет/i);
-    expect(qs[0].options?.some((o) => o.label === "100% хлопок")).toBe(true);
-    expect(qs[0].options?.some((o) => o.label === "Другое")).toBe(true);
+    expect(qs.map((q) => q.id)).toEqual(expect.arrayContaining(["tnved-form", "composition"]));
+    expect(qs.find((q) => q.id === "tnved-form")?.text).toMatch(/чулочно-носочн/i);
+    expect(qs.find((q) => q.id === "tnved-form")?.options?.some((o) => o.id === "socks")).toBe(true);
+    // category knit/color skipped via skipQuestionIds
+    expect(qs.map((q) => q.id)).not.toContain("knit-woven");
+    expect(qs.map((q) => q.id)).not.toContain("color");
   });
 
   it("does not ask when description is empty", async () => {

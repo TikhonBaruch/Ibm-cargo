@@ -30,14 +30,74 @@
 | + precision | 516 | 506 | 85.8% | 90.1% | 50 | 2 |
 | Golden dictionary | 50 | — | — | — | **50/50 OK** | 0 STEAL |
 
-**Цели следующего цикла (не этот план = код):**
+### 2.1 C21b B12 re-baseline (2026-09-03)
 
-| Метрика | Сейчас | Target после residual |
-|---------|--------|----------------------|
-| pack-hit (plan-s7) | ~81% | **≥88%** |
-| any-help (plan-s7) | ~87% | **≥93%** |
-| STEAL/MISROUTE (golden) | 0 | **0** (не regress) |
-| POLICY-HIT | 1 (`ореховое молоко`) | **0** |
+После multi-step P0 (`plan-c21-multistep-all-families.md`):
+
+| Срез | n | denom | pack-hit | any-help | miss | diverge |
+|------|---|-------|----------|----------|------|---------|
+| plan-s7 | 386 | 371 | **92.7%** | **100%** | 0 | 0 |
+| + precision | 516 | 501 | **94.6%** | **100%** | 0 | 0 |
+| Golden | 100 | — | — | — | **100/100 OK** | 0 STEAL |
+
+Residual B12: apparel pack-hit **52.2%**.
+
+### 2.2 C21b F5 apparel (2026-09-03)
+
+7 packs: hosiery, outerwear, dresses, gloves-scarves, tie-belt, underwear-sleep, suits.
+
+| Срез | n | denom | pack-hit | any-help | miss | diverge |
+|------|---|-------|----------|----------|------|---------|
+| plan-s7 | 386 | 371 | **98.7%** | **100%** | 0 | 0 |
+| apparel domain | 46 | — | **100%** | **100%** | 0 | 0 |
+| Golden | — | — | — | — | **OK** | 0 STEAL |
+
+### 2.3 C21b Phase C food + E elec (2026-09-03)
+
+Promote CASCADE→pack: морс→snacks, HDD→pc-parts, hdmi кабель→power.  
+Deepen: milk, snacks, beverages, spirits, tea-coffee, pc-parts, power, displays, watches, gaming.
+
+| Срез | n | denom | pack-hit | any-help | miss | diverge |
+|------|---|-------|----------|----------|------|---------|
+| plan-s7 | 386 | 371 | **99.5%** | **100%** | 0 | 0 |
+| food / elec | — | — | **100% / 100%** | **100%** | 0 | 0 |
+
+Observe CASCADE left (auto): воздушный фильтр, маслофильтр.
+
+### 2.4 C21b auto residual (2026-09-03)
+
+`auto-parts`: oil-filter **842123** · air-filter **842131** · multistep composition. Bare `фильтр` остаётся POLICY null.
+
+| Срез | n | denom | pack-hit | any-help | observe |
+|------|---|-------|----------|----------|---------|
+| plan-s7 | 386 | 371 | **100%** | **100%** | **0** |
+| auto domain | 31 | — | **100%** | **100%** | 0 |
+
+### 2.5 C21b Phase F long-tail (2026-09-03)
+
+Miss на plan-s7 уже 0 → deepen inventory P1 + long packs (не новые листья).
+
+- P1→0: sports, jewelry, auto-body, forklift-trucks  
+- Long deepen: bags, camping, cosmetics, batteries  
+- jewelry composition: драгметалл **7113** / бижутерия **7117**  
+- `hintTreeBestHeading` / `hsHintFromClarify`: same length → later step  
+
+| Срез | pack-hit | P1 left | multistep |
+|------|----------|---------|-----------|
+| plan-s7 | **100%** | **0** | **38** |
+
+### 2.6 C21b Phase G offline closeout (2026-09-03)
+
+| Срез | Результат |
+|------|-----------|
+| `test:hint-coverage` | **620** PASS |
+| `test:hint-precision` | **271** PASS |
+| golden `--fail-on steal,misroute` | **0** STEAL |
+| plan-s7 / full probe | pack-hit **100%** · any-help **100%** · observe **0** |
+| `probe:c21-noisy` | hard/soft/leaks **0** (N01–N50) |
+| orphan UI | **Won't wire** (gate in fill-hints-structure) |
+| fingerprint | hsHint + Clar-DB extras · Next↔api dual-path |
+| G5 live H5–H7 | **DEFER** — [`staging.md`](./staging.md) §C21b |
 
 ---
 

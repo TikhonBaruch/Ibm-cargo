@@ -189,33 +189,69 @@ npm run probe:hint-gap:full
 | H6 | Live attr-suggest (post-deploy) | см. таблицу ниже | **DEFER** |
 | H7 | Manual NewCalc chips (post-deploy) | см. таблицу ниже | **DEFER** |
 
-**H5 live search (post-deploy checklist):**
+### C21b Phase G offline closeout · 2026-09-03
+
+Канон: [`plan-c21-multistep-all-families.md`](./plan-c21-multistep-all-families.md) · [`plan-c21-noisy-branch-qa.md`](./plan-c21-noisy-branch-qa.md). **Deploy не требуется** для offline G; G5 live = human post-merge.
+
+| # | Проверка | Ожидание | Результат |
+|---|----------|----------|-----------|
+| H1 | `test:hint-coverage` + `test:hint-precision` | 0 STEAL | **PASS** 620 + 271 |
+| H2 | Cascade/promoted rows | морс→snacks · HDD→pc-parts · hdmi→power · фильтры→auto-parts · варежки→gloves | **PASS** unit |
+| H3 | Golden `--fail-on steal,misroute` | 0 STEAL / 0 MISROUTE | **PASS** |
+| H3b | Full observe plan-s7 + precision | pack **100%** · any **100%** · observe **0** | **PASS** 2026-09-03 |
+| H3c | `probe:c21-noisy` | hard/soft/leaks 0 | **PASS** N01–N50 |
+| H4 | POLICY bare | провод · камера · фильтр · свеча · перец | **PASS** |
+| H4b | Orphan UI | AttrSuggestChips / HsHintCandidates **not** mounted on NewCalc | **PASS** Won't + unit |
+| H4c | Fingerprint | hsHint forks 7113≠7117; dual-path api | **PASS** unit |
+| H5–H7 | Live SSO | см. ниже | **PARTIAL** 2026-09-03 — preview SSO (agent); prod pre-C21; WIP offline H6/H7 green |
+
+**H5 live search (post-deploy checklist, C21b):**
 
 | Query | Ожидание top prefix |
 |-------|---------------------|
-| `пицца` | 19xx prepared |
-| `морс` | 2202 (не snacks) |
-| `микрофон` | 8518 |
-| `лыжи` | 9506 |
-| `ореховое молоко` | ≠ 0401 milk |
+| `очки` | 9004 |
+| `носки` | 6115 |
+| `морс` | 2202 |
+| `HDD` | 8471 |
+| `воздушный фильтр` | 8421 |
+| `бижутерия` | 7117 / 7113 |
 
-**H6 live attr-suggest (post-deploy):**
+**H6 live attr-suggest (post-deploy, C21b):**
 
 | Query | Ожидание |
 |-------|----------|
-| `галстук` | A+ ~6215 |
-| `полка` | clarifyPack=bedroom-furniture |
-| `свечи зажигания` | clarifyPack=auto-parts |
-| `steam deck` | clarifyPack=gaming |
+| `очки` | clarifyPack=optics / A~ |
+| `носки` | clarifyPack=hosiery |
+| `hdmi кабель` | clarifyPack=power |
+| `плащ` | clarifyPack=outerwear |
 
-**H7 NewCalc chips (post-deploy):**
+**H7 NewCalc chips (post-deploy, C21b):**
 
-| Query | Chip pack | mustNot |
-|-------|-----------|---------|
-| `лампа` | lamps | led (лампочка) |
-| `майка хлопок` | knit-top | textiles-raw |
-| `hdmi кабель` | cascade / power | bare POLICY «кабель» |
-| `лимонад` | beverages | fruit-fresh |
+| Query | Chip pack | mustNot / note |
+|-------|-----------|----------------|
+| `очки` | optics 2 steps progressive | composition after form |
+| `лампочка` | led | lamps |
+| `hdmi кабель` | power | bare «кабель» POLICY |
+| `бижутерия` | jewelry | composition → 7117 |
+
+**H5–H7 probe 2026-09-03** (preview `ibm-cargo-n28hwx65d` gitDirty C21 WIP · prod `ibm-cargo-phi` fd4a0a49):
+
+| # | Surface | Result | Notes |
+|---|---------|--------|-------|
+| H5 | **prod live** `/api/v1/tnved/search` | **4/6** | PASS очки/носки/фильтр/бижутерия · FAIL морс→2501 · HDD empty |
+| H5 | **preview live** | **BLOCK** | Deployment Protection SSO; agent без bypass/OIDC |
+| H5 | **WIP offline** cascade | **5/6** | очки needs live DB search (prod live PASS 9004) |
+| H6 | **prod live** attr-suggest | **1/4** | PASS очки/optics · FAIL носки/hdmi/плащ (pre-C21) |
+| H6 | **WIP offline** domain | **4/4** | optics/hosiery/power/outerwear clarifyPack |
+| H7 | **WIP offline** hint-tree | **4/4** | optics 2-step · led · power · jewelry 2-step |
+| H7 | **preview manual** `/cabinet/new` | **PENDING** | Visit Preview → chips progressive (human) |
+
+Probe: `node scripts/staging-c21-h567-probe.mjs` · `npx tsx scripts/staging-c21-h56-offline.ts` · `npx tsx scripts/staging-c21-h7-offline.ts`
+
+---
+
+**H5–H7 live:** после merge → deploy использовать таблицы C21b выше (не P18 92.7%).
+
 ### Track A ops keys (prod) — статус 2026-08-07
 
 | Шаг | Env / host | Статус |

@@ -30,9 +30,11 @@ import {
   appendClarifyBlock,
   compositionFromClarify,
   hsHintFromClarify,
+  progressiveClarifyQuestions,
   unansweredClarifyParts,
   wizardDraftForClarify,
 } from "./new-calc-clarify";
+import { hintTreeQuestions } from "@/lib/ved/tnved-hint-trees";
 import {
   MIN_PACK,
   allPackChrome,
@@ -150,7 +152,10 @@ export function NewCalcPane({
   const uploading = createPhase === "uploading" || packReading;
   const goodsText = form.description || form.title;
   const clarifyEnabled = !isPack;
-  const visibleClarifyQs = clarifyEnabled ? clarifyQs : [];
+  const packStepIds = clarifyEnabled ? hintTreeQuestions(desc).map((q) => q.id) : [];
+  const visibleClarifyQs = clarifyEnabled
+    ? progressiveClarifyQuestions(clarifyQs, clarifyAnswers, packStepIds)
+    : [];
   const aiEnriching =
     createPhase === "enriching" ||
     createPhase === "creating" ||
@@ -889,7 +894,9 @@ export function NewCalcPane({
                       <div className="meta" style={{ marginTop: 4 }}>
                         {clarifyLoading
                           ? "ИИ формирует вопросы…"
-                          : "Ответьте, если хотите точнее подобрать ТН ВЭД"}
+                          : packStepIds.length > 1
+                            ? "Сначала назначение / форма, затем состав"
+                            : "Ответьте, если хотите точнее подобрать ТН ВЭД"}
                       </div>
                     </div>
                   </div>

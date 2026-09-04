@@ -32,17 +32,18 @@ describe("attr-suggest", () => {
     expect(out.attrs.composition).toBeTruthy();
   });
 
-  it("suggests socks attrs for носки", () => {
+  it("F5: носки → hosiery clarify-only (pack bridge)", () => {
     const out = heuristicAttrSuggest({ name: "носки" });
-    expect(out.attrs.purpose).toMatch(/носочн/i);
-    expect(out.attrs.material).toBe("трикотаж");
+    expect(attrSuggestIsClarifyOnly(out)).toBe(true);
+    expect(out.attrs.extra?.clarifyPack).toBe("hosiery");
     expect(out.attrs.hsHint).toMatch(/6115/);
   });
 
-  it("P10: колготки share hosiery attrs with носки", () => {
+  it("F5: колготки → hosiery clarify-only", () => {
     const out = heuristicAttrSuggest({ name: "колготки" });
+    expect(attrSuggestIsClarifyOnly(out)).toBe(true);
+    expect(out.attrs.extra?.clarifyPack).toBe("hosiery");
     expect(out.attrs.hsHint).toMatch(/6115/);
-    expect(out.attrs.purpose).toMatch(/носочн|чулочн/i);
   });
 
   it("does not map кеды текстиль to apparel 62xx", () => {

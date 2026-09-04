@@ -30,23 +30,12 @@ type CatalogRule = {
   notes: string[];
 };
 
+/**
+ * Catalog RULES fill rich chips when no C21 pack should own the fork.
+ * F5 apparel residuals (hosiery / outerwear / dresses / gloves-scarves / tie-belt /
+ * underwear-sleep / suits) intentionally have no RULE — pack bridge → clarify-only.
+ */
 const RULES: CatalogRule[] = [
-  {
-    id: "socks",
-    test: /носк|гольф|чулк|колгот|подслед|socks?|hosiery/i,
-    attrs: {
-      material: "трикотаж",
-      composition: "хлопок (уточните %)",
-      purpose: "чулочно-носочные изделия",
-      extra: {
-        garmentType: "носки",
-        ageGroup: "уточните: взрослый / детский",
-        color: "уточните цвет",
-      },
-      hsHint: "6115 95 000 0",
-    },
-    notes: ["Для носков важны состав волокон, трикотаж и возраст."],
-  },
   {
     id: "footwear",
     test: /кроссов|кед[аы]?|sneakers?|обув|ботин|туфл|running shoes/i,
@@ -141,30 +130,6 @@ const RULES: CatalogRule[] = [
     notes: ["Брюки/джинсы тканые — типично 6203; трикотаж — глава 61."],
   },
   {
-    id: "jacket",
-    test: /куртк|пальто|пиджак|пуховик|жилет|плащ/i,
-    attrs: {
-      material: "текстиль / уточните наполнитель",
-      composition: "уточните волокна и %",
-      purpose: "предмет одежды, верхняя",
-      extra: { garmentType: "куртка / пальто" },
-      hsHint: "6201 40 000 0",
-    },
-    notes: ["Верхняя одежда — гл. 61/62 по материалу; не путать с брюками 6203."],
-  },
-  {
-    id: "dress",
-    test: /плать|сарафан/i,
-    attrs: {
-      material: "текстиль",
-      composition: "уточните волокна и %",
-      purpose: "предмет одежды",
-      extra: { garmentType: "платье / сарафан" },
-      hsHint: "6104 43 000 0",
-    },
-    notes: ["Платья — 6104 (трикотаж) / 6204 (ткань); не джинсы 6203."],
-  },
-  {
     // Generic apparel without a fake jeans hsHint (coverage P0).
     id: "apparel",
     test: /одежд|cotton|apparel/i,
@@ -201,89 +166,6 @@ const RULES: CatalogRule[] = [
       hsHint: "8517 13 000 0",
     },
     notes: ["Укажите бренд и модель, если есть."],
-  },
-  {
-    id: "gloves",
-    test: /перчатк|gloves/i,
-    attrs: {
-      material: "трикотаж / кожа (уточните)",
-      composition: "уточните волокна и %",
-      purpose: "перчатки",
-      extra: { garmentType: "перчатки" },
-      hsHint: "6116 10 000 0",
-    },
-    notes: ["Перчатки трикотажные — 6116; кожаные — соседние позиции."],
-  },
-  {
-    id: "scarf",
-    test: /шарф|scarf/i,
-    attrs: {
-      material: "текстиль",
-      composition: "уточните волокна и %",
-      purpose: "шарф / платок",
-      extra: { garmentType: "шарф" },
-      hsHint: "6117 10 000 0",
-    },
-    notes: ["Шарфы и платки — гл. 6117."],
-  },
-  {
-    id: "suit",
-    test: /костюм|suit/i,
-    attrs: {
-      material: "текстиль",
-      composition: "уточните волокна и %",
-      purpose: "костюм",
-      extra: { garmentType: "костюм" },
-      hsHint: "6203 11 000 0",
-    },
-    notes: ["Мужские/женские костюмы — 6203/6204 по полу и ткани."],
-  },
-  {
-    id: "underwear",
-    test: /бельё|белье|трусы|лифчик|бюстгалтер|underwear/i,
-    attrs: {
-      material: "трикотаж / текстиль",
-      composition: "уточните волокна и %",
-      purpose: "нижнее бельё",
-      extra: { garmentType: "бельё" },
-      hsHint: "6108 21 000 0",
-    },
-    notes: ["Нижнее бельё — гл. 6108/6109 (трикотаж) или 6208 (ткань)."],
-  },
-  {
-    id: "tie",
-    test: /галстук|necktie|(?:^|[^a-zа-я0-9])tie(?:$|[^a-zа-я0-9])/i,
-    attrs: {
-      material: "текстиль",
-      composition: "уточните волокна и %",
-      purpose: "галстук",
-      extra: { garmentType: "галстук" },
-      hsHint: "6215 20 000 0",
-    },
-    notes: ["Галстуки — 6215."],
-  },
-  {
-    id: "belt",
-    test: /ремень|ремни|(?:^|[^a-zа-я0-9])belt(?:$|[^a-zа-я0-9])/i,
-    attrs: {
-      material: "кожа / текстиль (уточните)",
-      purpose: "ремень",
-      extra: { garmentType: "ремень" },
-      hsHint: "4203 30 000 0",
-    },
-    notes: ["Ремни из кожи — 4203; текстильные — соседние позиции."],
-  },
-  {
-    id: "sleepwear",
-    test: /пижам|халат|pajamas?|bathrobe|dressing gown/i,
-    attrs: {
-      material: "трикотаж / текстиль",
-      composition: "уточните волокна и %",
-      purpose: "домашняя / ночная одежда",
-      extra: { garmentType: "пижама / халат" },
-      hsHint: "6107 21 000 0",
-    },
-    notes: ["Пижамы и халаты — гл. 6107/6207 по материалу."],
   },
   {
     id: "forklift",
@@ -330,7 +212,22 @@ function clarifyOnlyFromHintPack(text: string): AttrSuggestResult | null {
   const pack = matchHintPack(text);
   if (!pack) return null;
   const questions = hintTreeQuestions(text);
-  const heading = questions[0]?.options?.[0]?.hsHeading;
+  const opts = questions[0]?.options || [];
+  const lower = text.toLowerCase();
+  let best = opts[0];
+  let bestScore = -1;
+  for (const o of opts) {
+    let score = 0;
+    for (const t of o.triggers || []) {
+      if (t && lower.includes(t.toLowerCase())) score += Math.min(t.length, 12);
+    }
+    if (o.value && lower.includes(String(o.value).toLowerCase())) score += 3;
+    if (score > bestScore) {
+      bestScore = score;
+      best = o;
+    }
+  }
+  const heading = best?.hsHeading;
   return {
     engine: "heuristic-v1",
     attrs: {
@@ -377,6 +274,7 @@ export function heuristicAttrSuggest(input: AttrSuggestInput): AttrSuggestResult
     return true;
   });
   if (rule) return applyRule(rule, input);
+  // F5 / P4: when no rich RULE, C21 pack → clarify-only chips (NewCalc tree is SoT).
   const fromPack = clarifyOnlyFromHintPack(text);
   if (fromPack) return fromPack;
   return {

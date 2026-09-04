@@ -55,7 +55,7 @@ const POINTER_DEVICE_RE =
 
 /** Juice/soft drink — fruit pack must not win on «яблочный сок» / «лимонад». */
 const JUICE_BEVERAGE_RE =
-  /(?:^|[^a-zа-я0-9])сок(?:$|[^a-zа-я0-9])|нектар|(?:^|[^a-zа-я0-9])juice(?:$|[^a-zа-я0-9])|smoothie|морс\b|лимонад|lemonade|компот/i;
+  /(?:^|[^a-zа-я0-9])сок(?:$|[^a-zа-я0-9])|нектар|(?:^|[^a-zа-я0-9])juice(?:$|[^a-zа-я0-9])|smoothie|(?:^|[^a-zа-я0-9])морс(?:$|[^a-zа-я0-9])|лимонад|lemonade|компот/i;
 
 /** Coffee appliance — not tea/coffee chapter 09. */
 const COFFEE_MACHINE_RE = /кофемаш|кофеварк|coffee\s*machine|coffee\s*maker|espresso\s*machine/i;
@@ -92,7 +92,7 @@ const MOTOR_OIL_RE =
 
 /** PC component / storage — not whole computer pack. */
 const PC_PARTS_RE =
-  /\bssd\b|ж[её]стк\w*\s+диск|видеокарт|процессор|материнск|оперативн\w*\s+памят|флешк|карта\s+памят|блок\s+питани|graphics\s*card|usb\s*flash|memory\s*card/i;
+  /\bssd\b|\bhdd\b|ж[её]стк\w*\s+диск|винчестер|видеокарт|процессор|материнск|оперативн\w*\s+памят|флешк|карта\s+памят|блок\s+питани|graphics\s*card|usb\s*flash|memory\s*card|hard\s*disk|hard\s*drive/i;
 
 /** Photo camera gear — not security CCTV. */
 const PHOTO_GEAR_RE =

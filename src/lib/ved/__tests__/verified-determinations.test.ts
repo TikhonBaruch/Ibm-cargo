@@ -120,4 +120,23 @@ describe("verified-determinations", () => {
     expect(fp).toContain("case");
     expect(fp).toContain("手机壳");
   });
+
+  it("C21b Phase G: hsHint forks fingerprints for same name", () => {
+    const base = { name: "кольцо", attrs: { composition: "бижутерия" } };
+    const a = buildFingerprint({ ...base, attrs: { ...base.attrs, hsHint: "7113" } });
+    const b = buildFingerprint({ ...base, attrs: { ...base.attrs, hsHint: "7117" } });
+    expect(a).not.toBe(b);
+    expect(a).toContain("7113");
+    expect(b).toContain("7117");
+  });
+
+  it("C21b Phase G: foodKind / deviceType enter fingerprint", () => {
+    const t = buildCanonicalText({
+      name: "огурец",
+      attrs: { hsHint: "0707", extra: { foodKind: "овощи", deviceType: "x" } },
+    });
+    expect(t).toContain("0707");
+    expect(t).toContain("овощи");
+    expect(t).toContain("x");
+  });
 });
