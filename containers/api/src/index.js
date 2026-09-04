@@ -28,7 +28,7 @@ import { handleCatalogRoutes, hydrateItemsWithPublishedSkus } from "./catalog-sk
 import { handleFactoryOrderRoutes, handleManufacturerOrderRoutes } from "./sku-orders.js";
 import { handleManufacturerDirectoryRoutes } from "./manufacturer-directory.js";
 import { assembleTnvedCard, hsCodeAncestors } from "./tnved-card.js";
-import { tnvedSearchWhere, tnvedSearchStems, scoreTnvedSearchHit } from "./tnved-helpers.js";
+import { tnvedSearchWhere, tnvedSearchStemsForRank, scoreTnvedSearchHit } from "./tnved-helpers.js";
 import { buildCascadeDraft, pickCascadeOrHeuristic } from "./tnved-classify.js";
 import { suggestProductAttrs } from "./attr-suggest.js";
 import { shouldEnqueueAiDrain, runAiDrainPipeline } from "./ai-pipeline.js";
@@ -3138,7 +3138,7 @@ const server = http.createServer(async (req, res) => {
         take: headingPool,
         orderBy: headingOnly ? { code: "asc" } : [{ level: "desc" }, { code: "asc" }],
       });
-      const stems = codeOnly ? [digits] : tnvedSearchStems(q);
+      const stems = codeOnly ? [digits] : tnvedSearchStemsForRank(q);
       const items = headingOnly
         ? found
         : [...found]

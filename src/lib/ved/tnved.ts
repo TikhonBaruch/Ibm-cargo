@@ -15,6 +15,7 @@ import {
   hasTokenOrPrefix,
   isFalseFriendPair,
   notesStemMatchKind,
+  resolveTnvedSearchAlias,
   tnvedQueryStems,
 } from "./tnved-query-match";
 
@@ -148,20 +149,25 @@ export function scoreTnvedSearchHit(
   const title = String(row.titleRu || "")
     .toLowerCase()
     .replace(/ё/g, "е");
+  const hitText = `${notes}\n${title}`;
   const lead = notes.split(/\n+/)[0] || "";
   const phrase = String(opts.phrase || "")
     .trim()
     .toLowerCase()
     .replace(/ё/g, "е");
   const queryForFriends = phrase || opts.stems.join(" ");
+  const alias = resolveTnvedSearchAlias(opts.phrase || queryForFriends);
 
   // H2 denylist: produce query must not score dairy hitchhike rows.
-  if (isFalseFriendPair(queryForFriends, `${notes}\n${title}`)) {
+  // Search alias blockHit: «морс» must not lexical-score «морская».
+  const aliasBlocked = Boolean(alias?.blockHit?.test(hitText));
+  if (isFalseFriendPair(queryForFriends, hitText) || aliasBlocked) {
     let score = 0;
     if (opts.digits.length >= 2 && row.code.startsWith(opts.digits)) {
       score += 100;
       if (row.code === opts.digits) score += 50;
     }
+    if (alias && row.code.startsWith(alias.codePrefix)) score += 120;
     if (row.isLeaf) score += 15;
     score += Number(row.level || 0);
     return score;
@@ -192,6 +198,8 @@ export function scoreTnvedSearchHit(
     score += 100;
     if (row.code === opts.digits) score += 50;
   }
+  // Colloquial alias → official chapter (морс→2202, HDD→8471).
+  if (alias && row.code.startsWith(alias.codePrefix)) score += 120;
   if (row.isLeaf) score += 15;
   score += Number(row.level || 0);
   return score;
@@ -218,10 +226,20 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
     });
   }
 
-  const stems = codeOnly ? [digits] : tnvedSearchStems(q);
+  const stemsRaw = codeOnly ? [digits] : tnvedSearchStems(q);
+  const alias = codeOnly ? null : resolveTnvedSearchAlias(q);
+  const stems = [...stemsRaw];
+  if (alias?.expandStems) {
+    for (const s of alias.expandStems) {
+      if (s && !stems.includes(s)) stems.push(s);
+    }
+  }
   const or: Array<Record<string, unknown>> = [];
   if (digits.length >= 2) {
     or.push({ code: { startsWith: digits } });
+  }
+  if (alias?.codePrefix) {
+    or.push({ code: { startsWith: alias.codePrefix } });
   }
   for (const stem of stems.length ? stems : [q]) {
     or.push({ titleRu: { contains: stem, mode: "insensitive" } });

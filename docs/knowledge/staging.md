@@ -238,12 +238,14 @@ npm run probe:hint-gap:full
 
 | # | Surface | Result | Notes |
 |---|---------|--------|-------|
-| H5 | **prod live** `/api/v1/tnved/search` | **4/6** | PASS очки/носки/фильтр/бижутерия · FAIL морс→2501 · HDD empty (DB FTS rank; cascade offline OK) |
+| H5 | **prod live** `/api/v1/tnved/search` | **4/6** → fix in progress | FAIL морс→2501 · HDD empty → [`plan-tnved-search-alias-boost.md`](./plan-tnved-search-alias-boost.md) |
 | H6 | **prod live** attr-suggest | **4/4** | optics/hosiery/power/outerwear clarifyPack |
 | H7 | **prod browser** `/cabinet/new` | **4/4** | очки progressive 2-step · лампочка · hdmi · бижутерия |
 | H7 | offline hint-tree | **4/4** | mirror |
 
 Probe: `node scripts/staging-c21-h567-probe.mjs` · `node scripts/staging-c21-h7-browser.mjs`
+
+**H5 search alias boost (post-fix):** unit `tnved-search-alias-boost.test.ts` · deploy → re-probe `морс`/`HDD`.
 
 ---
 

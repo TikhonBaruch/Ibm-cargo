@@ -39,6 +39,42 @@ export const SHORT_TRIGGER_FALSE_FRIENDS: ReadonlyArray<{ stem: string; block: s
   { stem: "стол", block: "столов" },
 ];
 
+/**
+ * Directory search colloquial aliases (H5 residual after C21 packs).
+ * Canon: docs/knowledge/plan-tnved-search-alias-boost.md
+ * — expand pool (codePrefix OR + stems) + score boost; blockHit = lexical denylist.
+ */
+export type TnvedSearchAlias = {
+  id: string;
+  test: RegExp;
+  codePrefix: string;
+  expandStems?: readonly string[];
+  blockHit?: RegExp;
+};
+
+export const TNVED_SEARCH_ALIASES: readonly TnvedSearchAlias[] = [
+  {
+    id: "mors-drink",
+    // bare «морс/морсы», not «морская»
+    test: /(?:^|[^\p{L}\p{N}])морс(?:ы|а|ом|у)?(?:$|[^\p{L}\p{N}])/iu,
+    codePrefix: "2202",
+    expandStems: ["морс", "напитк"],
+    blockHit: /морск/i,
+  },
+  {
+    id: "hdd",
+    test: /(?:^|[^\p{L}\p{N}])hdd(?:$|[^\p{L}\p{N}])|ж[её]стк[а-яё]*\s+диск|винчестер|hard\s*disk|hard\s*drive/iu,
+    codePrefix: "8471",
+    expandStems: ["жестк", "накопител", "винчестер"],
+  },
+];
+
+export function resolveTnvedSearchAlias(query: string): TnvedSearchAlias | null {
+  const q = String(query || "").trim();
+  if (!q) return null;
+  return TNVED_SEARCH_ALIASES.find((a) => a.test.test(q)) ?? null;
+}
+
 /** Bare «перец» is spice/veg ambiguous (0904 vs 0709) — require sweet/bell qualifiers. */
 export const PRODUCE_PEPPER_REQUIRE_QUALIFIER = true;
 
