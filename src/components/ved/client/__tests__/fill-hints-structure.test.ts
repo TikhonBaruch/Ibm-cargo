@@ -404,6 +404,11 @@ describe("fill-hints structure — Phase G orphan UI Won't", () => {
       expect(src, file).not.toMatch(/AttrSuggestChips/);
       expect(src, file).not.toMatch(/HsHintCandidates/);
     }
+    const liveNew = readFileSync(
+      join(process.cwd(), "src/components/ved/client/NewCalcPane.tsx"),
+      "utf8",
+    );
+    expect(liveNew).toContain("NewCalcDirectoryHints");
     // Components remain as API-adjacent dead UI (plan-fill-hints H1 hold / C21b G Won't wire).
     expect(readFileSync(join(process.cwd(), "src/components/ved/client/AttrSuggestChips.tsx"), "utf8")).toMatch(
       /export function AttrSuggestChips/,

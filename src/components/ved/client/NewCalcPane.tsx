@@ -49,6 +49,8 @@ import {
   type PackId,
   type PackMode,
 } from "./new-calc-pack";
+import { NewCalcDirectoryHints } from "./NewCalcDirectoryHints";
+import { directoryHintHsHint } from "./new-calc-directory-hints";
 
 const COUNTRY_OPTIONS = originCountrySelectOptions();
 
@@ -136,6 +138,7 @@ export function NewCalcPane({
   const [clarifyLoading, setClarifyLoading] = useState(false);
   const [clarifyAppliedIds, setClarifyAppliedIds] = useState<string[]>([]);
   const [postPayAlts, setPostPayAlts] = useState<HeuristicHsCandidate[]>([]);
+  const [directoryHintTaken, setDirectoryHintTaken] = useState(false);
   const isPack = packMode === "multi";
   const packId = packIdForLiveCode(
     isPack ? form.tariffCode || "STANDARD" : "EXPRESS"
@@ -333,6 +336,7 @@ export function NewCalcPane({
       return;
     }
     setPackMode("multi");
+    setDirectoryHintTaken(false);
     onForm({ tariffCode: liveCodeForPack(id) });
     if (namedItemCount(items) >= MIN_PACK) {
       setPackModal(false);
@@ -465,6 +469,7 @@ export function NewCalcPane({
     onItems([{ name: "", qty: 1, unitPrice: 0 }]);
     onForm({ title: "", description: "" });
     setPackModal(false);
+    setDirectoryHintTaken(false);
   };
 
   const buildCreatePayload = () => {
@@ -1149,6 +1154,12 @@ export function NewCalcPane({
                 <strong>{packN}</strong>
               </div>
             ) : null}
+            {!isPack && directoryHintTaken ? (
+              <div className="pay-row">
+                <span>Черновик ТН ВЭД</span>
+                <strong>из справочника</strong>
+              </div>
+            ) : null}
             <div className="pay-row">
               <span>Тариф</span>
               <strong>
@@ -1162,6 +1173,29 @@ export function NewCalcPane({
               {picked.summary}
             </p>
           </div>
+          {wizardStep === 1 && !isPack ? (
+            <NewCalcDirectoryHints
+              query={goodsText}
+              enabled
+              appliedHsHint={items[0]?.attrs?.hsHint}
+              onApply={({ code, titleRu }) => {
+                const next = [...items];
+                if (!next[0]) next[0] = { name: "", qty: 1, unitPrice: 0 };
+                const name =
+                  next[0].name.trim() || titleRu.trim().slice(0, 120) || next[0].name;
+                next[0] = {
+                  ...next[0],
+                  name,
+                  attrs: {
+                    ...next[0].attrs,
+                    hsHint: directoryHintHsHint(code),
+                  },
+                };
+                onItems(next);
+                setDirectoryHintTaken(true);
+              }}
+            />
+          ) : null}
         </aside>
       </div>
       )}
