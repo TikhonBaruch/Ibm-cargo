@@ -153,6 +153,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-hint-gap-probe-run.md          # прогон probe:hint-gap (golden + --full) · residual Cov-P13+
   plan-lbm-bro-newcalc-multipack.md # C11: клик «Мультипозиция»
   plan-lbm-bro-newcalc-clarify.md # C12: панель уточнений на single /cabinet/new
+  plan-newcalc-directory-hints.md # сайдбар: листья справочника + blur → hsHint
   plan-lbm-bro-c36-c39-port.md # port photo-first / pay-hang на main без ломки directory/search (#67 superseded)
   plan-ocr-a-invoice-preview.md # OCR-A invoice photo → pack preview (риски + фазы; код отдельно)
   plan-lbm-bro-order-page.md      # C15: /cabinet/orders/[id] = lab 47892 page, не drawer

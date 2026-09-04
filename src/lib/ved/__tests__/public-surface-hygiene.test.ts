@@ -88,6 +88,19 @@ describe("public surface hygiene", () => {
     expect(src).not.toContain("HsCodeAutocomplete");
     expect(src).toContain("Файл прикреплён");
     expect(src).not.toContain("Попробуйте CSV/Excel");
+    expect(src).toContain("NewCalcDirectoryHints");
+  });
+
+  it("directory hints on NewCalc stay masked and do not open a new заявка", () => {
+    const hints = fs.readFileSync(
+      path.join(repoRoot, "src/components/ved/client/NewCalcDirectoryHints.tsx"),
+      "utf8",
+    );
+    expect(hints).toContain("Взять этот код в заявку");
+    expect(hints).toContain("ClientMaskedHsCode");
+    expect(hints).toContain("leafOnly=1");
+    expect(hints).not.toContain("Оформить заявку по этому коду");
+    expect(hints).not.toContain("HsCodeAutocomplete");
   });
 
   it("keeps mobile client shell after desktop cl-side rules (C-mobile)", () => {
