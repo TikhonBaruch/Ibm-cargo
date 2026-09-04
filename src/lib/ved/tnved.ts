@@ -284,14 +284,21 @@ export async function searchTnvedCodes(db: TnvedDb, opts: TnvedSearchOpts) {
   const stemList = stems.length ? stems : [q];
   const filtered = codeOnly
     ? merged
-    : merged.filter((row) =>
-        tnvedSearchRowHasWholeWordHit(row, {
+    : merged.filter((row) => {
+        if (
+          alias?.blockHit &&
+          alias.blockHit.test(`${row.notes || ""}\n${row.titleRu || ""}`) &&
+          !row.code.startsWith(alias.codePrefix)
+        ) {
+          return false;
+        }
+        return tnvedSearchRowHasWholeWordHit(row, {
           stems: stemList,
           digits,
           phrase: q,
           aliasPrefix: alias?.codePrefix ?? null,
-        }),
-      );
+        });
+      });
   return [...filtered]
     .sort((a, b) => {
       const d = scoreTnvedSearchHit(b, { stems: stemList, digits, phrase: q })

@@ -50,7 +50,8 @@ const TNVED_SEARCH_ALIASES = [
     id: "laptop",
     test: /ноутбук|laptop|notebook|macbook|портативн[a-zа-яё]*\s+вычисл/iu,
     codePrefix: "847130",
-    expandStems: ["ноутбук", "laptop", "notebook", "портативн"],
+    expandStems: ["ноутбук", "laptop", "notebook"],
+    blockHit: /бамбук|bamboo/i,
   },
   {
     id: "lemonade",

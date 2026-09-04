@@ -3160,14 +3160,21 @@ const server = http.createServer(async (req, res) => {
         ? found
         : codeOnly
           ? found
-          : found.filter((row) =>
-              tnvedSearchRowHasWholeWordHit(row, {
+          : found.filter((row) => {
+              if (
+                alias?.blockHit &&
+                alias.blockHit.test(`${row.notes || ""}\n${row.titleRu || ""}`) &&
+                !String(row.code || "").startsWith(alias.codePrefix)
+              ) {
+                return false;
+              }
+              return tnvedSearchRowHasWholeWordHit(row, {
                 stems: stems.length ? stems : [q],
                 digits,
                 phrase: q,
                 aliasPrefix: alias?.codePrefix || null,
-              }),
-            );
+              });
+            });
       const items = headingOnly
         ? rankedPool
         : [...rankedPool]
