@@ -135,6 +135,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-tnved-search-alias-boost.md   # H5 residual: морс≠морская · HDD→8471 search boost
   plan-tnved-search-whole-word.md    # whole-word search · notes as clarification · ноутбук≠бамбук
   plan-tnved-search-false-friend-audit.md  # corpus probe · miss-driven aliases (морс/HDD class)
+  plan-tnved-search-alias-notes.md         # search-alias synonyms → TnvedCode.notes (--search-extras)
   plan-live-ai-result-ux.md     # C22: live ai-run + «Почему этот код» на карточке заявки
   plan-classify-cascade-c23.md  # C23–C27: domain cascade + OCR glue + audit
   plan-next-vector-c28.md       # после C27: ship pay-first, post-pay UX, слои B/D, quality
