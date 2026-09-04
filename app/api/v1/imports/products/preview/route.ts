@@ -24,6 +24,9 @@ import { maxPositionsForTariff } from "@/lib/ved/domain";
 import { resolveOriginCountryCode } from "@/lib/ved/field-suggest";
 import type { TariffCode } from "@prisma/client";
 
+/** Vision + PDF parse can exceed the default Hobby kill; crash page shows Request ID. */
+export const maxDuration = 120;
+
 const jsonSchema = z.object({
   csv: z.string().min(1).max(500_000).optional(),
   xlsxBase64: z.string().min(1).max(2_000_000).optional(),
@@ -155,20 +158,19 @@ export async function POST(req: NextRequest) {
     const tariffCode = tc || "STANDARD";
     const maxRows = maxPositionsForTariff(tariffCode as TariffCode);
 
-    const parsed = mapCsvToRows(table.headers, table.rows);
-    if (!parsed.length) {
+    const parsedAll = mapCsvToRows(table.headers, table.rows);
+    if (!parsedAll.length) {
       return NextResponse.json(
         { error: "No product rows found; need a header row with name/наименование" },
         { status: 400 }
       );
     }
-    if (parsed.length > maxRows) {
-      return NextResponse.json(
-        {
-          error: `Too many rows (${parsed.length}); max ${maxRows} for tariff ${tariffCode}`,
-        },
-        { status: 400 }
-      );
+    // D10: keep first N for tariff. Over-max used to 400 and broke sample invoices under STANDARD.
+    let truncated = false;
+    let parsed = parsedAll;
+    if (parsedAll.length > maxRows) {
+      parsed = parsedAll.slice(0, maxRows);
+      truncated = true;
     }
 
     const settings = await getPlatformSettings();
@@ -240,6 +242,8 @@ export async function POST(req: NextRequest) {
       tariffCode,
       maxRows,
       rowCount: rows.length,
+      truncated: truncated || undefined,
+      sourceCount: truncated ? parsedAll.length : undefined,
       summary: {
         matchedPrecedent: rows.filter((r) => r.rowStatus === "MATCHED_PRECEDENT").length,
         classifiedNew: rows.filter((r) => r.rowStatus === "CLASSIFIED_NEW").length,
