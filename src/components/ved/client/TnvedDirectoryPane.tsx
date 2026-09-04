@@ -9,6 +9,7 @@ import { formatHsCode } from "@/lib/ved/tnved";
 import {
   directoryReadFromCard,
   directoryWizardHref,
+  isStubTnvedTitle,
   type DirectoryCardLike,
 } from "@/lib/ved/tnved-directory-read";
 import { TNVED_RELATION_KIND_LABEL, type TnvedRelationKind } from "@/lib/ved/tnved-relations";
@@ -98,13 +99,16 @@ export function TnvedDirectoryPane({
     const t = window.setTimeout(() => {
       void (async () => {
         try {
-          const heading = !query.trim() && group ? "&heading=1" : "";
-          const limit = heading ? 100 : 40;
+          // Directory UX: only 10-digit leaves (not 4/6/8 headings).
+          const limit = 40;
           const res = await api<{ items: Hit[]; total?: number; leaves?: number; variations?: number }>(
-            `/api/v1/tnved/search?q=${encodeURIComponent(q)}&limit=${limit}${heading}`,
+            `/api/v1/tnved/search?q=${encodeURIComponent(q)}&limit=${limit}&leafOnly=1`,
           );
           if (cancelled) return;
-          setHits(res.items || []);
+          const items = (res.items || []).filter(
+            (h) => String(h.code || "").replace(/\D/g, "").length === 10,
+          );
+          setHits(items);
           applyStats(res);
           setLoadError("");
         } catch (e) {
@@ -209,6 +213,10 @@ export function TnvedDirectoryPane({
       <div className="two tnved-page">
         <div className="card" style={{ margin: 0 }}>
           <h3>Поиск по коду или названию</h3>
+          <p className="meta" style={{ marginTop: 6, marginBottom: 10, lineHeight: 1.45 }}>
+            Уточнения в запросе (материал, назначение, бренд, модель) помогают найти самый точный
+            10-значный код.
+          </p>
           <div className="field">
             <label>Что ищете</label>
             <input
@@ -283,7 +291,11 @@ export function TnvedDirectoryPane({
                   onClick={() => setPicked(h)}
                 >
                   <strong>{hitHs(h)}</strong>
-                  <span>{h.titleRu || ""}</span>
+                  <span>
+                    {isStubTnvedTitle(h.titleRu)
+                      ? "Общее обозначение — откройте карточку"
+                      : h.titleRu || ""}
+                  </span>
                 </button>
               ))}
             </div>
@@ -306,7 +318,13 @@ export function TnvedDirectoryPane({
                 {groupLabel(picked.code)}
               </div>
               <div className="tnved-code">{read.hs}</div>
-              <h3 style={{ marginTop: 8 }}>{read.title}</h3>
+              {read.titleIsGeneralDesignation ? (
+                <p className="meta" style={{ marginTop: 8 }}>
+                  Общее обозначение
+                  {read.generalDesignationCode ? ` · ${read.generalDesignationCode}` : ""}
+                </p>
+              ) : null}
+              <h3 style={{ marginTop: read.titleIsGeneralDesignation ? 4 : 8 }}>{read.title}</h3>
               <p className="meta" style={{ marginTop: 8, lineHeight: 1.45 }}>
                 {read.why}
               </p>

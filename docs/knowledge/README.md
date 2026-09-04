@@ -124,6 +124,7 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-lbm-bro-newcalc-mock.md # C10: точная копия шага «Что ввозите?»
   plan-lbm-bro-max-match.md  # C16: максимальный visual match live↔lab без ломки domain
   plan-lbm-bro-tnved-dir.md  # C17: /cabinet/tnved chrome lab, данные GET /api/v1/tnved
+  plan-tnved-directory-leaf-only.md  # directory: только 10-значные · общее обозначение · hint уточнений
   plan-lbm-bro-tnved-catalog.md # C18: lab tnved.json → Postgres + поиск как в lab
   plan-tnved-invoice-enrich.md  # C19: инвойсные имена + ФТС/ЕЭК 2026 notes, не scrape
   plan-tnved-relations.md       # C20: связи not/variant/part/kit + дети parentCode

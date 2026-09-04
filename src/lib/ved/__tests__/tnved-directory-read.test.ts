@@ -125,6 +125,27 @@ describe("directoryReadFromCard", () => {
     expect(read.explanation?.excerpt).toMatch(/8471|вычислительн/i);
     expect(read.classificationDecisions).toEqual([]);
   });
+
+  it("stub leaf title uses nearest ancestor as общее обозначение", () => {
+    const read = directoryReadFromCard({
+      code: "8471300000",
+      codeDisplay: "8471 30 000 0",
+      titleRu: "Прочие",
+      paymentsHint: { vatPct: 22, feeRule: "ПП 1637" },
+      ancestors: [
+        { code: "84", codeDisplay: "84", titleRu: "РЕАКТОРЫ ЯДЕРНЫЕ, КОТЛЫ" },
+        {
+          code: "847130",
+          codeDisplay: "8471 30",
+          titleRu: "машины вычислительные портативные массой не более 10 кг",
+        },
+      ],
+    });
+    expect(read.titleIsGeneralDesignation).toBe(true);
+    expect(read.title).toMatch(/портативн/i);
+    expect(read.generalDesignationCode).toMatch(/8471/);
+    expect(read.notes[0]).toMatch(/общее обозначение/i);
+  });
 });
 
 describe("directory wizard prefill", () => {
