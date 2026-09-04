@@ -48,6 +48,10 @@
 9. **D36 (always):** LBM **отделён** от taurus/llm — nested `./llm` нет в git; свой `DATABASE_URL`; matrix = HTTP only; `containers/{llm,ocr}` LBM-owned.
 10. **D37 (always):** **taurus-liart** = backup ядра — **не deploy/smoke/migrate** из ibm-cargo.
 
+## Local / Cloud Agent (Mode A)
+
+Без Docker: системный Postgres 16, роль/БД `lbm`/`lbm`/`lbm` на `127.0.0.1:5432` (**без** `sslmode=require`). Если systemd не поднимает сервис: `sudo pg_ctlcluster 16 main start`. Затем `npm ci` · `npx prisma db push` · `npx prisma db seed` · `npm run dev -- --hostname 0.0.0.0 --port 3000`. LLM/OCR/S3 не нужны для MVP (`npm run smoke:mvp`). Канон: [`docs/knowledge/environments.md`](docs/knowledge/environments.md).
+
 ## Перед сдачей
 
 1. D33 plan + KB · 2. unit если трогали `src/lib/ved/` · 3. `npm run test:ci` · 4. планы фич — только `docs/knowledge/plan-*.md` (не `.cursor/plans/`).
