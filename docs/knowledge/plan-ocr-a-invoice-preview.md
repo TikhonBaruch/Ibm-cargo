@@ -154,3 +154,4 @@ OCR-B (`addPhoto` → `POST …/describe`) **не** расширять под т
 | 2026-09-04 | **C** pack JPG + compress + blob thumb; 0–1 строк fail-open, файл прикреплён; MIN_PACK=2 |
 | 2026-09-04 | **D** unit OCR-A + NewCalc hygiene C10–C12 ✓. `test:ci` целиком: на main уже красные C17 `heading=1` и Cov-P12 (не этот diff) |
 | 2026-09-04 | **E** commit + PR в `main`; Preview после checks; Production после merge |
+| 2026-09-04 | **hotfix** SW cache-first отдавал старый pack-reader; lab `filesToDocs` выкидывал строки с фото (`kind !== "photo"`) |

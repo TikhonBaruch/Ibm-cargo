@@ -1145,7 +1145,10 @@ export function ClientWizard() {
                 </span>
               </div>
             ) : wizard.docs.length ? (
-              <p className="meta pack-read-fail">Не удалось вычитать позиции. Попробуйте CSV/Excel или более чёткое фото таблицы.</p>
+              <p className="meta pack-read-fail">
+                Файл прикреплён, таблицу не разобрали. Нужен CSV/Excel или более чёткое фото инвойса
+                с несколькими позициями.
+              </p>
             ) : null}
             <div className="pack-modal-actions">
               <button type="button" className="btn btn-ghost" onClick={resetMulti}>Очистить</button>
