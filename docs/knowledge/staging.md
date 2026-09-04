@@ -203,7 +203,7 @@ npm run probe:hint-gap:full
 | H4 | POLICY bare | провод · камера · фильтр · свеча · перец | **PASS** |
 | H4b | Orphan UI | AttrSuggestChips / HsHintCandidates **not** mounted on NewCalc | **PASS** Won't + unit |
 | H4c | Fingerprint | hsHint forks 7113≠7117; dual-path api | **PASS** unit |
-| H5–H7 | Live SSO | см. ниже | **PARTIAL** 2026-09-03 — preview SSO (agent); prod pre-C21; WIP offline H6/H7 green |
+| H5–H7 | Live SSO | см. ниже | **DONE** 2026-09-04 — prod `ibm-cargo-phi` dpl_BZaho5Z3 · PR #69 |
 
 **H5 live search (post-deploy checklist, C21b):**
 
@@ -234,7 +234,20 @@ npm run probe:hint-gap:full
 | `hdmi кабель` | power | bare «кабель» POLICY |
 | `бижутерия` | jewelry | composition → 7117 |
 
-**H5–H7 probe 2026-09-03** (preview `ibm-cargo-n28hwx65d` gitDirty C21 WIP · prod `ibm-cargo-phi` fd4a0a49):
+**H5–H7 probe 2026-09-04** (prod `ibm-cargo-phi` · C21 merge [#69](https://github.com/TikhonBaruch/Ibm-cargo/pull/69) · deploy `dpl_BZaho5Z3sT8yjDnQ8RA3i3RZp2VJ`):
+
+| # | Surface | Result | Notes |
+|---|---------|--------|-------|
+| H5 | **prod live** `/api/v1/tnved/search` | **4/6** | PASS очки/носки/фильтр/бижутерия · FAIL морс→2501 · HDD empty (DB FTS rank; cascade offline OK) |
+| H6 | **prod live** attr-suggest | **4/4** | optics/hosiery/power/outerwear clarifyPack |
+| H7 | **prod browser** `/cabinet/new` | **4/4** | очки progressive 2-step · лампочка · hdmi · бижутерия |
+| H7 | offline hint-tree | **4/4** | mirror |
+
+Probe: `node scripts/staging-c21-h567-probe.mjs` · `node scripts/staging-c21-h7-browser.mjs`
+
+---
+
+**H5–H7 probe 2026-09-03** (preview `ibm-cargo-n28hwx65d` gitDirty C21 WIP · prod pre-merge):
 
 | # | Surface | Result | Notes |
 |---|---------|--------|-------|
@@ -244,7 +257,7 @@ npm run probe:hint-gap:full
 | H6 | **prod live** attr-suggest | **1/4** | PASS очки/optics · FAIL носки/hdmi/плащ (pre-C21) |
 | H6 | **WIP offline** domain | **4/4** | optics/hosiery/power/outerwear clarifyPack |
 | H7 | **WIP offline** hint-tree | **4/4** | optics 2-step · led · power · jewelry 2-step |
-| H7 | **preview manual** `/cabinet/new` | **PENDING** | Visit Preview → chips progressive (human) |
+| H7 | **preview manual** `/cabinet/new` | superseded | → 2026-09-04 browser 4/4 |
 
 Probe: `node scripts/staging-c21-h567-probe.mjs` · `npx tsx scripts/staging-c21-h56-offline.ts` · `npx tsx scripts/staging-c21-h7-offline.ts`
 
