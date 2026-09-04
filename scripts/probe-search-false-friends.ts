@@ -112,7 +112,8 @@ function buildCorpus(): CorpusRow[] {
     push({
       id: r.id,
       query: r.query,
-      expectedPrefix: pref.replace(/\D/g, ""),
+      // keep `|` alts (e.g. 610|6210); strip other non-digits
+      expectedPrefix: pref.replace(/[^\d|]/g, ""),
       source: r.live ? "dict-live" : "dict",
     });
   }
