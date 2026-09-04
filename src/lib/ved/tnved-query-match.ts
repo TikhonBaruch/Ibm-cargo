@@ -694,3 +694,156 @@ export function notesStemMatchKind(
   }
   return null;
 }
+
+/**
+ * Concrete 10-digit leaves that receive search-alias synonyms in `TnvedCode.notes`
+ * (`tnved:load -- --search-extras`). Not blockHit / ranking policy — only recall tokens.
+ * Prefer one primary leaf under the alias codePrefix (lab classifier).
+ */
+export const TNVED_SEARCH_ALIAS_DB_LEAVES: Readonly<
+  Record<string, readonly string[]>
+> = {
+  "mors-drink": ["2202100000", "2202991100"],
+  "hdd-ssd": ["8471705000", "8471702000", "8471707000"],
+  laptop: ["8471300000"],
+  lemonade: ["2202100000"],
+  cola: ["2202100000", "2202991100"],
+  "orange-juice": ["2009111900", "2009119900"],
+  "mineral-water": ["2201101100", "2201101900"],
+  "laundry-powder": ["3402909000", "3402901000"],
+  "raw-rice": ["1006306700", "1006309800"],
+  sausage: ["1601009100", "1601009900"],
+  chips: ["1905905500", "1905906000"],
+  waffles: ["1905321100", "1905329900"],
+  cake: ["1905903000", "1905906000"],
+  pizza: ["1905903000", "1905905500"],
+  "chicken-soup": ["2104100000"],
+  "ice-cream": ["2105001000", "2105009100"],
+  glue: ["3506100000", "3506910000"],
+  "coffee-machine": ["8516710000"],
+  kettle: ["8516797000"],
+  mattress: ["9404100000", "9404291000"],
+  "car-seat": ["9401200000", "9401800000"],
+  camera: ["9006538000", "9006400000"],
+  wheelchair: ["8713100000", "8713900000"],
+  stroller: ["8715001000"],
+  pen: ["9608101000", "9608109900"],
+  "ring-jewelry": ["7113190000", "7113110000"],
+  cigarettes: ["2402209000", "2402201000"],
+  "agri-feed": ["2309903100", "2309902000"],
+  playstation: ["9504500000", "9504301000"],
+  "car-bumper": ["8708299000", "8708109000"],
+  "hdmi-cable": ["8544429000", "8544499100"],
+  "chicken-meat": ["0207119000", "0207129000"],
+  belt: ["4203300000", "4203400000"],
+  keds: ["6404110000", "6404199000"],
+  milk: ["0401101000", "0401201100"],
+  fabric: ["5208119000", "5208121900"],
+  gloves: ["6116108000", "6116910000"],
+  mittens: ["6116910000", "6116108000"],
+  tie: ["6215100000", "6215200000"],
+  pajama: ["6107210000", "6107910000"],
+  robe: ["6107910000", "6107210000"],
+};
+
+/** Extra full-word keys beyond expandStems (abbr / EN / бытовые формы). */
+const SEARCH_ALIAS_EXTRA_NOTE_KEYS: Readonly<Record<string, readonly string[]>> = {
+  "mors-drink": ["морс", "морсы", "ягодный морс"],
+  "hdd-ssd": ["hdd", "ssd", "жесткий диск", "винчестер", "твердотельный накопитель", "hard disk"],
+  laptop: ["ноутбук", "laptop", "notebook", "macbook"],
+  lemonade: ["лимонад", "lemonade", "газировка"],
+  cola: ["кола", "coca-cola", "coca cola"],
+  "orange-juice": ["сок апельсиновый", "апельсиновый сок", "orange juice"],
+  "mineral-water": ["минеральная вода", "вода минеральная", "mineral water"],
+  "laundry-powder": ["стиральный порошок", "порошок стиральный", "laundry detergent"],
+  "raw-rice": ["рис", "рис белый", "rice"],
+  sausage: ["колбаса", "колбасы", "сосиски", "sausage"],
+  chips: ["чипсы", "чипсы картофельные", "potato chips"],
+  waffles: ["вафли", "waffle", "waffles"],
+  cake: ["торт", "торты", "cake"],
+  pizza: ["пицца", "пиццы", "pizza"],
+  "chicken-soup": ["суп куриный", "куриный суп", "chicken soup", "бульон"],
+  "ice-cream": ["мороженое", "ice cream"],
+  glue: ["клей", "клей канцелярский", "glue"],
+  "coffee-machine": ["кофемашина", "кофеварка", "coffee machine", "coffee maker"],
+  kettle: ["чайник", "чайник электрический", "electric kettle"],
+  mattress: ["матрас", "матрац", "mattress"],
+  "car-seat": ["автокресло", "детское автокресло", "car seat"],
+  camera: ["фотоаппарат", "фотокамера", "digital camera"],
+  wheelchair: ["инвалидная коляска", "wheelchair"],
+  stroller: ["коляска детская", "детская коляска", "stroller"],
+  pen: ["ручка", "ручка шариковая", "ballpoint pen"],
+  "ring-jewelry": ["кольцо", "кольцо золотое", "gold ring"],
+  cigarettes: ["сигареты", "сигарета", "cigarettes"],
+  "agri-feed": ["комбикорм", "корм для скота", "animal feed"],
+  playstation: ["playstation", "игровая приставка", "play station"],
+  "car-bumper": ["бампер", "бампер авто", "car bumper"],
+  "hdmi-cable": ["hdmi", "кабель hdmi", "hdmi кабель"],
+  "chicken-meat": ["курица", "мясо курицы", "chicken"],
+  belt: ["ремень", "ремни", "leather belt"],
+  keds: ["кеды", "кед", "sneakers"],
+  milk: ["молоко", "питьевое молоко", "milk"],
+  fabric: ["ткань", "ткань хлопковая", "fabric"],
+  gloves: ["перчатки", "gloves"],
+  mittens: ["варежки", "mittens"],
+  tie: ["галстук", "necktie", "tie"],
+  pajama: ["пижама", "pajamas", "pyjama"],
+  robe: ["халат", "bathrobe"],
+};
+
+function uniqTokens(parts: Iterable<string>): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of parts) {
+    const t = String(raw || "")
+      .trim()
+      .replace(/\s+/g, " ");
+    if (!t) continue;
+    const key = t.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(t);
+  }
+  return out;
+}
+
+/** Synonyms for `tnved:load -- --search-extras` (no blockHit). */
+export function searchAliasesAsSearchExtras(): Map<
+  string,
+  { why: string[]; tokens: string[] }
+> {
+  const out = new Map<string, { why: string[]; tokens: string[] }>();
+  for (const alias of TNVED_SEARCH_ALIASES) {
+    const leaves = TNVED_SEARCH_ALIAS_DB_LEAVES[alias.id];
+    if (!leaves?.length) continue;
+    const tokens = uniqTokens([
+      ...(alias.expandStems || []),
+      ...(SEARCH_ALIAS_EXTRA_NOTE_KEYS[alias.id] || []),
+    ]);
+    if (!tokens.length) continue;
+    const why = `Бытовой синоним поиска (${alias.id}) → префикс ${alias.codePrefix}`;
+    for (const code of leaves) {
+      const digits = String(code || "").replace(/\D/g, "");
+      if (![4, 6, 8, 10].includes(digits.length)) continue;
+      const row = out.get(digits) || { why: [], tokens: [] };
+      if (!row.why.includes(why)) row.why.push(why);
+      row.tokens.push(...tokens);
+      out.set(digits, row);
+    }
+  }
+  for (const [code, row] of out) {
+    out.set(code, { why: row.why, tokens: uniqTokens(row.tokens) });
+  }
+  return out;
+}
+
+export function searchAliasFocusCodes(): string[] {
+  const codes = new Set<string>();
+  for (const leaves of Object.values(TNVED_SEARCH_ALIAS_DB_LEAVES)) {
+    for (const c of leaves) {
+      const digits = String(c || "").replace(/\D/g, "");
+      if ([4, 6, 8, 10].includes(digits.length)) codes.add(digits);
+    }
+  }
+  return [...codes];
+}
