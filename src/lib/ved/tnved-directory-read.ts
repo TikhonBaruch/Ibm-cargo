@@ -48,6 +48,9 @@ export type DirectoryCardLike = {
 export type DirectoryRead = {
   hs: string;
   title: string;
+  /** True when leaf title was stub and title comes from ancestor. */
+  titleIsGeneralDesignation: boolean;
+  generalDesignationCode: string | null;
   why: string;
   vatPct: number;
   feeRule: string;
@@ -69,6 +72,38 @@ export type DirectoryPrefill = {
 /** @deprecated use formatCardDutyLabel — kept for call-site imports. */
 export function formatDirectoryDuty(rate: DirectoryDutyRate): string {
   return formatCardDutyLabel(rate);
+}
+
+/** Leaf titles that are not a useful product designation (show parent instead). */
+export function isStubTnvedTitle(title: string | null | undefined): boolean {
+  const t = String(title || "")
+    .trim()
+    .replace(/^[-–—.\s]+|[-–—.\s]+$/g, "")
+    .toLowerCase()
+    .replace(/ё/g, "е");
+  if (!t) return true;
+  if (/^проч(ие|ее|ий|ая)?$/i.test(t)) return true;
+  if (/^-+$/.test(t)) return true;
+  return false;
+}
+
+/** Nearest ancestor with a real title = общее обозначение for a stub leaf. */
+export function directoryGeneralDesignation(
+  card: DirectoryCardLike,
+): { code: string; codeDisplay: string; titleRu: string } | null {
+  const ancestors = [...(card.ancestors || [])].reverse();
+  for (const a of ancestors) {
+    const title = (a.titleRu || "").trim();
+    if (isStubTnvedTitle(title)) continue;
+    const code = String(a.code || "").replace(/\D/g, "");
+    if (!code) continue;
+    return {
+      code,
+      codeDisplay: a.codeDisplay || formatHsCode(code) || code,
+      titleRu: title,
+    };
+  }
+  return null;
 }
 
 export function directoryHumanLead(notes: string | null | undefined): string {
@@ -97,7 +132,10 @@ export function directoryReadFromCard(
     fallback?.codeDisplay ||
     formatHsCode(fallback?.code) ||
     code;
-  const title = (card.titleRu || fallback?.titleRu || "").trim();
+  const leafTitle = (card.titleRu || fallback?.titleRu || "").trim();
+  const general = isStubTnvedTitle(leafTitle) ? directoryGeneralDesignation(card) : null;
+  const title = general?.titleRu || leafTitle;
+  const titleIsGeneralDesignation = Boolean(general);
   const vatPct = card.paymentsHint?.vatPct != null ? Number(card.paymentsHint.vatPct) : 22;
   const feeRule = card.paymentsHint?.feeRule?.trim() || "ПП 1637";
   const dutyLabel = formatCardDutyLabel(card.rate ?? null);
@@ -107,16 +145,22 @@ export function directoryReadFromCard(
     : [];
   const ancestorWhy = (card.ancestors || [])
     .map((a) => (a.titleRu || "").trim())
-    .filter(Boolean)
+    .filter((t) => t && !isStubTnvedTitle(t))
     .at(-1);
   const why =
     directoryHumanLead(card.notes) ||
     explanation?.excerpt.slice(0, 220) ||
-    title ||
+    (titleIsGeneralDesignation ? null : title) ||
     ancestorWhy ||
+    title ||
     "Рекомендация справочника, не решение таможенного органа.";
 
   const notes: string[] = [];
+  if (titleIsGeneralDesignation && general) {
+    notes.push(
+      `У позиции нет своего описания — показано общее обозначение ${general.codeDisplay}`,
+    );
+  }
   notes.push(dutySourceNote(card.rate ?? null));
   notes.push(`НДС ${vatPct}% считают в заявке`);
   notes.push(`Таможенный сбор — ${feeRule}`);
@@ -135,6 +179,8 @@ export function directoryReadFromCard(
   return {
     hs,
     title,
+    titleIsGeneralDesignation,
+    generalDesignationCode: general?.codeDisplay ?? null,
     why,
     vatPct,
     feeRule,
