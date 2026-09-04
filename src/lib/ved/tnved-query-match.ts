@@ -71,7 +71,9 @@ export const TNVED_SEARCH_ALIASES: readonly TnvedSearchAlias[] = [
     id: "laptop",
     test: /ноутбук|laptop|notebook|macbook|портативн[a-zа-яё]*\s+вычисл/iu,
     codePrefix: "847130",
-    expandStems: ["ноутбук", "laptop", "notebook", "портативн"],
+    // no «портативн» expand — pulls antennas/фонари; chapter OR is enough
+    expandStems: ["ноутбук", "laptop", "notebook"],
+    blockHit: /бамбук|bamboo/i,
   },
   // --- false-friend audit batch (plan-tnved-search-false-friend-audit.md) ---
   {

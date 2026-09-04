@@ -61,6 +61,32 @@ describe("scoreTnvedSearchHit whole-word / notes clarification", () => {
     expect(laptop).toBeGreaterThan(bamboo);
   });
 
+  it("ноутбук alias drops bamboo from search pool (blockHit)", async () => {
+    expect(resolveTnvedSearchAlias("ноутбук")?.blockHit?.test("Из бамбука")).toBe(true);
+    const findMany = vi.fn().mockResolvedValue([
+      {
+        code: "8471300000",
+        titleRu: "машины вычислительные портативные",
+        notes: "ноутбук",
+        isLeaf: true,
+        level: 10,
+      },
+      {
+        code: "4421910000",
+        titleRu: "Из бамбука",
+        notes: "подставка для ноутбука",
+        isLeaf: true,
+        level: 10,
+      },
+    ]);
+    const items = await searchTnvedCodes({ tnvedCode: { findMany } } as never, {
+      q: "ноутбук",
+      limit: 10,
+    });
+    expect(items.map((r) => r.code)).toEqual(["8471300000"]);
+    expect(items.some((r) => r.code.startsWith("4421"))).toBe(false);
+  });
+
   it("short stem поло does not score title Половины", () => {
     const meat = scoreTnvedSearchHit(
       { code: "0207132000", titleRu: "Половины или четвертины", notes: null, isLeaf: true, level: 10 },
