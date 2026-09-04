@@ -238,7 +238,7 @@ npm run probe:hint-gap:full
 
 | # | Surface | Result | Notes |
 |---|---------|--------|-------|
-| H5 | **prod live** `/api/v1/tnved/search` | **4/6** → fix in progress | FAIL морс→2501 · HDD empty → [`plan-tnved-search-alias-boost.md`](./plan-tnved-search-alias-boost.md) |
+| H5 | **prod live** `/api/v1/tnved/search` | **6/6** | alias boost [#71](https://github.com/TikhonBaruch/Ibm-cargo/pull/71) · `морс`→2202 · `HDD`→8471 |
 | H6 | **prod live** attr-suggest | **4/4** | optics/hosiery/power/outerwear clarifyPack |
 | H7 | **prod browser** `/cabinet/new` | **4/4** | очки progressive 2-step · лампочка · hdmi · бижутерия |
 | H7 | offline hint-tree | **4/4** | mirror |
