@@ -1368,6 +1368,21 @@
       font-size: clamp(1.55rem, 3vw, 2.05rem);
       letter-spacing: -.03em; margin-top: 6px;
     }
+    .view-client .hs-client-mask-tail {
+      filter: blur(5px);
+      user-select: none;
+      pointer-events: none;
+      letter-spacing: 0.02em;
+    }
+    .view-client .tnved-hits button strong .hs-client-mask-tail {
+      filter: blur(4px);
+    }
+    /* Combobox / drawer outside .view-client still need the blur. */
+    .hs-client-mask-tail {
+      filter: blur(5px);
+      user-select: none;
+      pointer-events: none;
+    }
     .view-client .tnved-notes { margin: 12px 0 0; display: grid; gap: 6px; }
     .view-client .tnved-notes li {
       font-size: 13.5px; padding-left: 16px; position: relative; line-height: 1.4;
