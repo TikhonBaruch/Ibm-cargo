@@ -1192,6 +1192,22 @@ export function NewCalcPane({
               просчёта.
             </p>
             {dropzone("pack", packFileRef, packCamRef)}
+            {packDocName ? (
+              <div className="doc-list" style={{ marginTop: 12 }}>
+                <div className="doc-chip">
+                  {packThumbUrl ? (
+                    <a href={packThumbUrl} target="_blank" rel="noreferrer" className="doc-thumb">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={packThumbUrl} alt="" />
+                    </a>
+                  ) : null}
+                  <div className="doc-info">
+                    <b>{packDocName}</b>
+                    <span className="meta">{packN >= MIN_PACK ? `${packN} позиций` : "прикреплён"}</span>
+                  </div>
+                </div>
+              </div>
+            ) : null}
             {packN >= MIN_PACK ? (
               <div className="pack-quote" style={{ marginTop: 14 }}>
                 <strong>В файле {packN} позиций</strong>

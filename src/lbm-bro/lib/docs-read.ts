@@ -1,3 +1,4 @@
+import { previewPackFile, isPackImageFile } from "@/components/ved/client/new-calc-pack";
 import { MAX_PACK } from "./batch-hs";
 import { guessDocKind } from "./docs";
 import type { OrderDoc } from "./types";
@@ -23,14 +24,33 @@ export async function filesToDocs(
     let packSource: OrderDoc["packSource"];
     let ocrText: string | undefined;
     try {
-      const extracted = await extractPackFromFile(file, (msg, pct) => onStatus?.(`${prefix}${msg}`, pct));
-      if (extracted.rows.length && kind !== "photo") {
-        packLines = extracted.rows.slice(0, MAX_PACK);
-        packSource = extracted.source;
+      if (isPackImageFile(file) || kind === "photo") {
+        try {
+          const { items } = await previewPackFile(file, { tariffCode: "PRO" });
+          if (items.length) {
+            packLines = items.slice(0, MAX_PACK).map((it) => ({
+              name: it.name,
+              qty: it.qty != null ? String(it.qty) : "",
+              price: it.unitPrice != null ? String(it.unitPrice) : "",
+            }));
+            packSource = "ocr";
+          }
+        } catch {
+          /* fall through to local reader */
+        }
       }
-      ocrText = extracted.ocrText;
+      if (!packLines?.length) {
+        const extracted = await extractPackFromFile(file, (msg, pct) =>
+          onStatus?.(`${prefix}${msg}`, pct),
+        );
+        if (extracted.rows.length) {
+          packLines = extracted.rows.slice(0, MAX_PACK);
+          packSource = extracted.source;
+        }
+        ocrText = extracted.ocrText;
+      }
     } catch {
-      packLines = undefined;
+      packLines = packLines || undefined;
     }
     out.push({
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,

@@ -1,5 +1,5 @@
-const CACHE_NAME = "first-v1";
-const PRECACHE = ["/", "/admin/chat", "/manifest.json"];
+const CACHE_NAME = "lbm-v2";
+const PRECACHE = ["/manifest.json"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -19,18 +19,24 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
-
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const fetched = fetch(event.request).then((response) => {
-        if (response && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => cached);
-
-      return cached || fetched;
-    })
-  );
+  let url;
+  try {
+    url = new URL(event.request.url);
+  } catch {
+    return;
+  }
+  if (url.origin !== self.location.origin) return;
+  // Cache-first on HTML/_next/api pinned the old pack reader after deploys (OCR-A).
+  if (
+    event.request.mode === "navigate" ||
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/_next/") ||
+    url.pathname.startsWith("/cabinet") ||
+    url.pathname.startsWith("/client") ||
+    url.pathname.startsWith("/broker") ||
+    url.pathname.startsWith("/admin") ||
+    url.pathname.startsWith("/login")
+  ) {
+    return;
+  }
 });

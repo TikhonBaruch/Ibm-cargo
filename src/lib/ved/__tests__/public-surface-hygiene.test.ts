@@ -86,6 +86,8 @@ describe("public surface hygiene", () => {
     expect(src).not.toContain("tariff-mini");
     expect(src).not.toContain("ProductCsvImport");
     expect(src).not.toContain("HsCodeAutocomplete");
+    expect(src).toContain("Файл прикреплён");
+    expect(src).not.toContain("Попробуйте CSV/Excel");
   });
 
   it("keeps mobile client shell after desktop cl-side rules (C-mobile)", () => {
@@ -209,7 +211,7 @@ describe("public surface hygiene", () => {
     expect(tnved).not.toContain("consumeFreeHs");
     expect(tnved).not.toContain("loadTnved");
     expect(tnved).not.toContain("tnved.json");
-    expect(tnved).toContain("heading=1");
+    expect(tnved).toContain("leafOnly=1");
     expect(tnved).toContain("catalogTotal");
     expect(tnved).toContain("вариаций");
     expect(helper).toContain("vatPct");
@@ -218,6 +220,14 @@ describe("public surface hygiene", () => {
     expect(cabinet).toContain("directoryPrefillFromQuery");
     expect(cabinet).toContain('search.get("hs")');
     expect(cabinet).toContain("onApplyCode");
+  });
+
+  it("service worker does not cache-first Next/cabinet after deploys", () => {
+    const sw = fs.readFileSync(path.join(repoRoot, "public/sw.js"), "utf8");
+    expect(sw).toContain("lbm-v2");
+    expect(sw).toContain("/_next/");
+    expect(sw).not.toContain("return cached || fetched");
+    expect(sw).not.toContain("first-v1");
   });
 
   it("obscure login page has no role/CMS label", () => {
