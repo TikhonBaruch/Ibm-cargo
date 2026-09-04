@@ -9,7 +9,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { getClarificationQuestions } from "@/lbm-bro/lib/clarify-ai";
-import { heuristicAttrSuggest, attrSuggestHasChips } from "@/lib/ved/attr-suggest";
+import { heuristicAttrSuggest, attrSuggestHasChips, attrSuggestIsClarifyOnly } from "@/lib/ved/attr-suggest";
 import {
   filterFieldSuggestions,
   resolveOriginCountryCode,
@@ -39,8 +39,9 @@ type FillCase = {
 };
 
 const FILL_CASES: FillCase[] = [
-  // Носки: нет C21 pack → классический apparel clarify.
-  { id: "socks", desc: "носки", firstQ: "composition", pack: null, attrChips: true, attrHs: /6115/ },
+  // Носки / куртка: F5 packs → clarify-only attr (hsHint from pack option).
+  { id: "socks", desc: "носки", firstQ: "tnved-form", pack: "hosiery", attrChips: true, attrHs: /6115/ },
+  { id: "jacket", desc: "куртка", firstQ: "tnved-form", pack: "outerwear", attrChips: true, attrHs: /6201/ },
   // Майка: C21 knit-top (tnved-form) + composition; attr-suggest всё ещё даёт 6109.
   { id: "tee", desc: "майка", firstQ: "tnved-form", pack: "knit-top", attrChips: true, attrHs: /6109/ },
   { id: "tee-cotton", desc: "майка хлопок", firstQ: "tnved-form", pack: "knit-top", attrChips: true, attrHs: /6109/ },
@@ -51,13 +52,19 @@ const FILL_CASES: FillCase[] = [
   { id: "laptop", desc: "ноутбуки Lenovo ThinkPad 14", firstQ: "tnved-form", pack: "computers", attrChips: true, attrHs: /8471/ },
   // Смартфон сейчас матчит pack computers (общий electronics tree) — зафиксировано тестом.
   { id: "phone", desc: "смартфон", firstQ: "tnved-form", pack: "computers", attrChips: true, attrHs: /8517/ },
-  { id: "milk", desc: "молоко", firstQ: "tnved-form", pack: "milk", attrChips: true, attrHs: /0401/ },
-  { id: "dry-milk", desc: "сухое молоко порошок", firstQ: "tnved-form", pack: "milk", attrChips: true, attrHs: /0401/ },
-  { id: "yogurt", desc: "йогурт", firstQ: "tnved-form", pack: "milk", attrChips: true, attrHs: /0401/ },
+  { id: "milk", desc: "молоко", firstQ: "tnved-form", pack: "milk", attrChips: true, attrHs: /040/ },
+  { id: "dry-milk", desc: "сухое молоко порошок", firstQ: "tnved-form", pack: "milk", attrChips: true, attrHs: /040/ },
+  { id: "yogurt", desc: "йогурт", firstQ: "tnved-form", pack: "milk", attrChips: true, attrHs: /040/ },
   { id: "tea", desc: "зелёный чай", firstQ: "tnved-form", pack: "tea-coffee", attrChips: false },
   { id: "coffee", desc: "кофе в зёрнах", firstQ: "tnved-form", pack: "tea-coffee", attrChips: false },
   { id: "cream", desc: "крем для лица", firstQ: "tnved-form", pack: "cosmetics", attrChips: false },
   { id: "toy", desc: "мягкая игрушка", firstQ: "tnved-form", pack: "toys", attrChips: false },
+  // C21b optics: purpose then composition (two pack steps).
+  { id: "glasses", desc: "очки", firstQ: "tnved-form", pack: "optics", attrChips: false },
+  { id: "headphones", desc: "наушники", firstQ: "tnved-form", pack: "headphones", attrChips: false },
+  { id: "umbrella", desc: "зонт", firstQ: "tnved-form", pack: "umbrellas", attrChips: false },
+  { id: "lamp", desc: "торшер", firstQ: "tnved-form", pack: "lamps", attrChips: false },
+  { id: "cctv", desc: "камера видеонаблюдения", firstQ: "tnved-form", pack: "security-cam", attrChips: false },
   { id: "empty", desc: "   ", firstQ: undefined, pack: null, attrChips: false },
 ];
 
@@ -181,21 +188,22 @@ describe("fill-hints structure — C21 packs + C12 clarify apply", () => {
     expect(nextDesc).toContain(dry!.value);
   });
 
-  it("socks apply → composition from chip, no C21 hsHeading", async () => {
+  it("socks apply → hosiery form + composition hsHint", async () => {
     const qs = await getClarificationQuestions({
       wizard: wizardDraftForClarify("носки", "Китай"),
       step: 1,
     });
-    expect(hintTreeQuestions("носки")).toEqual([]);
+    expect(matchHintPack("носки")?.id).toBe("hosiery");
+    const socks = qs.find((q) => q.id === "tnved-form")?.options?.find((o) => o.id === "socks");
+    expect(socks?.hsHeading).toMatch(/6115/);
     const answers = {
-      composition: "100% хлопок",
-      "knit-woven": qs.find((q) => q.id === "knit-woven")?.options?.[0]?.value || "трикотаж",
-      color: "чёрный",
+      "tnved-form": socks!.value,
+      composition: "хлопок",
     };
-    expect(compositionFromClarify(answers, "носки")).toBe("100% хлопок");
-    expect(hsHintFromClarify(qs, answers)).toBeUndefined();
+    expect(compositionFromClarify(answers, "носки")).toBe("хлопок");
+    expect(hsHintFromClarify(qs, answers)).toMatch(/6115/);
     const parts = unansweredClarifyParts(qs, answers, []);
-    expect(appendClarifyBlock("носки", parts)).toMatch(/100% хлопок/);
+    expect(appendClarifyBlock("носки", parts)).toMatch(/хлопок/);
   });
 
   it("multi mode has no clarify on live NewCalc (helper still works; UI gates)", async () => {
@@ -233,16 +241,16 @@ describe("fill-hints structure — StageTip progressive copy (Dashboard / legacy
 });
 
 describe("fill-hints structure — end-to-end fill scripts (no HTTP)", () => {
-  it("script: носки → clarify → attrs ready for create", async () => {
+  it("script: носки → hosiery pack → attrs ready for create", async () => {
     const desc0 = "носки";
     const qs = await getClarificationQuestions({
       wizard: wizardDraftForClarify(desc0, "Китай"),
       step: 1,
     });
+    const socks = qs.find((q) => q.id === "tnved-form")?.options?.find((o) => o.id === "socks");
     const answers: Record<string, string> = {
-      composition: "100% хлопок",
-      "knit-woven": "трикотаж",
-      color: "чёрный",
+      "tnved-form": socks!.value,
+      composition: "хлопок",
     };
     const parts = unansweredClarifyParts(qs, answers, []);
     const description = appendClarifyBlock(desc0, parts);
@@ -252,11 +260,11 @@ describe("fill-hints structure — end-to-end fill scripts (no HTTP)", () => {
       description,
       existing: { composition, originCountry: "CN" },
     });
-    expect(composition).toBe("100% хлопок");
+    expect(composition).toBe("хлопок");
     expect(description).toContain("Уточнения (ИИ):");
-    // existing composition not overwritten
+    expect(hsHintFromClarify(qs, answers)).toMatch(/6115/);
     expect(attr.attrs.composition).toBeUndefined();
-    expect(attr.attrs.material || attr.attrs.purpose || attr.attrs.hsHint).toBeTruthy();
+    expect(attrSuggestIsClarifyOnly(attr) || attr.attrs.hsHint || attr.attrs.purpose).toBeTruthy();
     expect(resolveOriginCountryCode("Китай")).toBe("CN");
   });
 
@@ -271,6 +279,55 @@ describe("fill-hints structure — end-to-end fill scripts (no HTTP)", () => {
     const description = appendClarifyBlock("молоко", unansweredClarifyParts(qs, answers, []));
     expect(hsHint).toBe("040210");
     expect(description).toMatch(/сухое|порошок/i);
+  });
+
+  it("script: очки → purpose + composition → hsHint 900410", async () => {
+    const qs = await getClarificationQuestions({
+      wizard: wizardDraftForClarify("очки", "Китай"),
+      step: 1,
+    });
+    expect(matchHintPack("очки")?.id).toBe("optics");
+    expect(qs.filter((q) => q.id === "tnved-form" || q.id === "composition")).toHaveLength(2);
+    const sun = qs.find((q) => q.id === "tnved-form")?.options?.find((o) => o.id === "sun");
+    expect(sun?.hsHeading).toBe("900410");
+    const answers = {
+      "tnved-form": sun!.value,
+      composition: "пластик",
+    };
+    expect(hsHintFromClarify(qs, answers)).toBe("900410");
+    expect(compositionFromClarify(answers, "очки")).toBe("пластик");
+    const description = appendClarifyBlock("очки", unansweredClarifyParts(qs, answers, []));
+    expect(description).toMatch(/солнцезащитн/i);
+    expect(description).toMatch(/пластик/i);
+  });
+
+  it("script: наушники → вкладыши + силикон → hsHint 8518309500", async () => {
+    const qs = await getClarificationQuestions({
+      wizard: wizardDraftForClarify("наушники", "Китай"),
+      step: 1,
+    });
+    const form = qs.find((q) => q.id === "tnved-form");
+    const earbuds = form?.options?.find((o) => o.id === "earbuds");
+    expect(earbuds?.hsHeading).toBe("8518309500");
+    const answers = {
+      "tnved-form": earbuds!.value,
+      composition: "силикон",
+    };
+    expect(hsHintFromClarify(qs, answers)).toBe("8518309500");
+    expect(compositionFromClarify(answers, "наушники")).toBe("силикон");
+  });
+
+  it("script: зонт → складной → hsHint 660191", async () => {
+    const qs = await getClarificationQuestions({
+      wizard: wizardDraftForClarify("зонт", "Китай"),
+      step: 1,
+    });
+    const form = qs.find((q) => q.id === "tnved-form");
+    const telescopic = form?.options?.find((o) => o.id === "telescopic");
+    expect(telescopic?.hsHeading).toBe("660191");
+    expect(hsHintFromClarify(qs, { "tnved-form": telescopic!.value, composition: "полиэстер" })).toBe(
+      "660191",
+    );
   });
 
   it("script: ноутбук → C21 computers + attr hsHint 8471", async () => {
@@ -331,5 +388,35 @@ describe("fill-hints structure — end-to-end fill scripts (no HTTP)", () => {
     expect(matchHintPack("джинсы")?.id).toBe("woven-apparel");
     expect(matchHintPack("яблоко")?.id).toBe("fruit-fresh");
     expect(matchHintPack("суп")?.id).toBe("prepared-food");
+  });
+});
+
+describe("fill-hints structure — Phase G orphan UI Won't", () => {
+  it("NewCalc / lab wizard do not mount AttrSuggestChips or HsHintCandidates", async () => {
+    const { readFileSync } = await import("fs");
+    const { join } = await import("path");
+    const roots = [
+      join(process.cwd(), "src/components/ved/client/NewCalcPane.tsx"),
+      join(process.cwd(), "src/lbm-bro/components/client-wizard.tsx"),
+    ];
+    for (const file of roots) {
+      const src = readFileSync(file, "utf8");
+      expect(src, file).not.toMatch(/AttrSuggestChips/);
+      expect(src, file).not.toMatch(/HsHintCandidates/);
+    }
+    // Components remain as API-adjacent dead UI (plan-fill-hints H1 hold / C21b G Won't wire).
+    expect(readFileSync(join(process.cwd(), "src/components/ved/client/AttrSuggestChips.tsx"), "utf8")).toMatch(
+      /export function AttrSuggestChips/,
+    );
+    expect(readFileSync(join(process.cwd(), "src/components/ved/client/HsHintCandidates.tsx"), "utf8")).toMatch(
+      /export function HsHintCandidates/,
+    );
+  });
+
+  it("primary fill path stays C21 pack clarify (optics / hosiery)", () => {
+    expect(matchHintPack("очки")?.id).toBe("optics");
+    expect(hintTreeQuestions("очки").length).toBeGreaterThanOrEqual(2);
+    expect(matchHintPack("носки")?.id).toBe("hosiery");
+    expect(attrSuggestIsClarifyOnly(heuristicAttrSuggest({ name: "носки" }))).toBe(true);
   });
 });

@@ -21,25 +21,26 @@ function isAttrGap(query: string, policyGeneric = false): boolean {
   return !pack && !helped ? true : generic && !pack && !attr.attrs.hsHint;
 }
 
-describe("Cov-P10 — apparel attr RULE (pack null)", () => {
+describe("Cov-P10 — apparel packs (F5, was ATTR-only)", () => {
   it.each([
-    ["носки", /6115/],
-    ["колготки", /6115/],
-    ["куртка", /6201/],
-    ["пальто", /6201/],
-    ["пуховик", /6201/],
-    ["жилет", /6201/],
-    ["платье", /6104/],
-    ["перчатки", /6116/],
-    ["шарф", /6117/],
-    ["костюм", /6203/],
-    ["бельё", /6108/],
-    ["трусы", /6108/],
-  ] as const)("%s → hsHint %s", (q, hsRe) => {
-    expect(matchHintPack(q)).toBeNull();
+    ["носки", "hosiery", /6115/],
+    ["колготки", "hosiery", /6115/],
+    ["куртка", "outerwear", /6201/],
+    ["пальто", "outerwear", /6201/],
+    ["пуховик", "outerwear", /6201/],
+    ["жилет", "outerwear", /6201/],
+    ["платье", "dresses", /6104/],
+    ["перчатки", "gloves-scarves", /6116/],
+    ["шарф", "gloves-scarves", /6117/],
+    ["костюм", "suits", /6203/],
+    ["бельё", "underwear-sleep", /6108/],
+    ["трусы", "underwear-sleep", /6108/],
+  ] as const)("%s → pack %s + clarify hs %s", (q, packId, hsRe) => {
+    expect(matchHintPack(q)?.id).toBe(packId);
     const out = heuristicAttrSuggest({ description: q });
+    expect(attrSuggestIsClarifyOnly(out)).toBe(true);
+    expect(out.attrs.extra?.clarifyPack).toBe(packId);
     expect(out.attrs.hsHint || "").toMatch(hsRe);
-    expect(attrSuggestHasChips(out)).toBe(true);
   });
 });
 

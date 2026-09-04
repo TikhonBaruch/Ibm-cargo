@@ -29,6 +29,8 @@ import type { TariffName } from "@/lbm-bro/lib/types";
 import { useDemo } from "@/lbm-bro/lib/store";
 import { getClarificationQuestions, type ClarificationQuestion } from "@/lbm-bro/lib/clarify-ai";
 import { revokeDoc } from "@/lbm-bro/lib/docs";
+import { progressiveClarifyQuestions } from "@/components/ved/client/new-calc-clarify";
+import { hintTreeQuestions } from "@/lib/ved/tnved-hint-trees";
 
 const AI_MSGS = [
   "Читаем документы OCR…",
@@ -201,7 +203,10 @@ export function ClientWizard() {
   }
 
   const clarifyEnabled = step === 1 && wizard.packMode !== "multi";
-  const visibleClarifyQs = clarifyEnabled ? clarifyQs : [];
+  const packStepIds = clarifyEnabled ? hintTreeQuestions(wizard.desc).map((q) => q.id) : [];
+  const visibleClarifyQs = clarifyEnabled
+    ? progressiveClarifyQuestions(clarifyQs, clarifyAnswers, packStepIds)
+    : [];
 
   useEffect(() => {
     if (!clarifyEnabled) return;
@@ -277,7 +282,11 @@ export function ClientWizard() {
             Уточняем для точности кода
           </div>
           <div className="meta" style={{ marginTop: 4 }}>
-            {clarifyLoading ? "ИИ формирует вопросы…" : "Ответьте, если хотите точнее подобрать ТН ВЭД"}
+            {clarifyLoading
+              ? "ИИ формирует вопросы…"
+              : packStepIds.length > 1
+                ? "Сначала назначение / форма, затем состав"
+                : "Ответьте, если хотите точнее подобрать ТН ВЭД"}
           </div>
         </div>
         {missingRequired ? <span style={{ color: "var(--danger)", fontSize: 12.5, fontWeight: 800 }}>Есть обязательные</span> : null}

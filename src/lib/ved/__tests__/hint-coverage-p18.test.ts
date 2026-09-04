@@ -59,10 +59,10 @@ describe("Cov-P18 — live subset pack smoke (offline)", () => {
     expect(matchHintPack(q)?.id).toBe(pack);
   });
 
-  it("POLICY / ATTR / CASCADE live rows stay correct", () => {
+  it("POLICY live rows stay pack-null; F5/C/E promotions are packs", () => {
     expect(matchHintPack("ореховое молоко")).toBeNull();
-    expect(matchHintPack("галстук")).toBeNull();
-    expect(matchHintPack("морс")).toBeNull();
+    expect(matchHintPack("галстук")?.id).toBe("tie-belt");
+    expect(matchHintPack("морс")?.id).toBe("snacks");
   });
 });
 
@@ -71,7 +71,7 @@ describe("Cov-P18 — live subset cascade smoke", () => {
     resetClassifyIndexCache();
   });
 
-  it("морс live row cascades to 2202", async () => {
+  it("морс live row cascades to 2202 (alias still works with pack)", async () => {
     const hit = await classifyTnvedCascade(mockDb, { description: "морс" });
     expect(hit?.hsCode.replace(/\D/g, "").startsWith("2202")).toBe(true);
   });

@@ -126,6 +126,8 @@ docs/knowledge/              # единая KB (этот каталог)
   plan-tnved-invoice-enrich.md  # C19: инвойсные имена + ФТС/ЕЭК 2026 notes, не scrape
   plan-tnved-relations.md       # C20: связи not/variant/part/kit + дети parentCode
   plan-tnved-hint-trees.md      # C21: семейные развилки на /cabinet/new (молоко питьевое/сухое/сгущённое)
+  plan-c21-multistep-all-families.md # C21b: purpose→composition multi-step → any-help ≥95%
+  plan-c21-noisy-branch-qa.md        # C21b QA: noisy corpus · branch quality · fix F1–F5
   plan-live-ai-result-ux.md     # C22: live ai-run + «Почему этот код» на карточке заявки
   plan-classify-cascade-c23.md  # C23–C27: domain cascade + OCR glue + audit
   plan-next-vector-c28.md       # после C27: ship pay-first, post-pay UX, слои B/D, quality
@@ -201,6 +203,8 @@ docs/contracts/              # JSON Schema envelopes (машинные; + d-ocr.
 | ТН ВЭД: ФТС предварительные решения | [`plan-tnved-fts-pr.md`](./plan-tnved-fts-pr.md) · `tnved:fts-pr --load/--actualize` |
 | ТН ВЭД: связи кодов (C20) | [`plan-tnved-relations.md`](./plan-tnved-relations.md) · related overlay + children parentCode |
 | ТН ВЭД: деревья подсказок (C21) | [`plan-tnved-hint-trees.md`](./plan-tnved-hint-trees.md) · clarify packs → hsHint |
+| ТН ВЭД: multi-step packs → ≥95% any-help (C21b) | [`plan-c21-multistep-all-families.md`](./plan-c21-multistep-all-families.md) · purpose→composition · inventory |
+| ТН ВЭД: C21b noisy-branch QA | [`plan-c21-noisy-branch-qa.md`](./plan-c21-noisy-branch-qa.md) · 35 шумных · F1 skip leak · F2 оправа |
 | ТН ВЭД: морфология / false friends | [`plan-tnved-hint-chains-audit.md`](./plan-tnved-hint-chains-audit.md) · огурец≠йогурт · H1–H5 done |
 | ТН ВЭД: точность всех hint-packs | [`plan-hint-chains-precision-audit.md`](./plan-hint-chains-precision-audit.md) · [`plan-hint-coverage-p0.md`](./plan-hint-coverage-p0.md) (P0–P6) · [`plan-hint-coverage-expansion.md`](./plan-hint-coverage-expansion.md) (Cov-P7+) · [`plan-hint-gap-probe-run.md`](./plan-hint-gap-probe-run.md) (прогон / P13+) · Clar-DB [`plan-ai-clarify-db-boost.md`](./plan-ai-clarify-db-boost.md) |
 | Live UX результата AI (C22) | [`plan-live-ai-result-ux.md`](./plan-live-ai-result-ux.md) · ai-run · disclaimer · conf |

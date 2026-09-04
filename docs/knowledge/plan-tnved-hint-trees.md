@@ -30,3 +30,8 @@
 ## Не делать
 
 Новые листья. Junction-таблица. `--full` на sweb. Скрейп Альта. Возврат HS-combobox на NewCalc.
+
+## Продолжение (C21b)
+
+Multi-step purpose→composition по всем ветвящимся семьям, цель any-help ≥95%:  
+[`plan-c21-multistep-all-families.md`](./plan-c21-multistep-all-families.md).

@@ -9,17 +9,17 @@ import {
 } from "../attr-suggest";
 import { matchHintPack } from "../tnved-hint-trees";
 
-describe("Cov-P15 — apparel ATTR RULES", () => {
+describe("Cov-P15 — apparel packs (F5)", () => {
   it.each([
-    ["галстук", "6215"],
-    ["ремень", "4203"],
-    ["пижама", "6107"],
-    ["халат", "6107"],
-    ["плащ", "6201"],
-  ] as const)("%s → A+ %s", (q, prefix) => {
-    expect(matchHintPack(q)).toBeNull();
+    ["галстук", "tie-belt", "6215"],
+    ["ремень", "tie-belt", "4203"],
+    ["пижама", "underwear-sleep", "6107"],
+    ["халат", "underwear-sleep", "6107"],
+    ["плащ", "outerwear", "6201"],
+  ] as const)("%s → pack %s hs %s", (q, packId, prefix) => {
+    expect(matchHintPack(q)?.id).toBe(packId);
     const out = heuristicAttrSuggest({ description: q });
-    expect(attrSuggestIsClarifyOnly(out)).toBe(false);
+    expect(attrSuggestIsClarifyOnly(out)).toBe(true);
     expect(out.attrs.hsHint || "").toContain(prefix);
   });
 });
