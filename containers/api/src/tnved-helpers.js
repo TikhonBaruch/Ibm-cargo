@@ -43,9 +43,15 @@ const TNVED_SEARCH_ALIASES = [
     codePrefix: "8471",
     expandStems: ["жестк", "накопител", "винчестер"],
   },
+  {
+    id: "laptop",
+    test: /ноутбук|laptop|notebook|macbook|портативн\w*\s+вычисл/iu,
+    codePrefix: "847130",
+    expandStems: ["ноутбук", "laptop", "notebook", "портативн"],
+  },
 ];
 
-function resolveTnvedSearchAlias(query) {
+export function resolveTnvedSearchAlias(query) {
   const q = String(query || "").trim();
   if (!q) return null;
   return TNVED_SEARCH_ALIASES.find((a) => a.test.test(q)) || null;
@@ -189,18 +195,17 @@ export function scoreTnvedSearchHit(row, { stems, digits, phrase }) {
   }
 
   let score = 0;
-  if (/[.!?]/.test(lead) && lead.length >= 24) score += 40;
-  if (full.length >= 5 && notes.includes(full)) score += 90;
-  else if (full.length >= 2 && full.length < 5 && /[\u4e00-\u9fff]/.test(full) && notes.includes(full)) {
-    score += 90;
+  if (/[.!?]/.test(lead) && lead.length >= 24) score += 8;
+  if (full.length >= 5 && notes.includes(full) && hasTokenOrPrefix(notes, full)) {
+    score += 35;
+  } else if (full.length >= 2 && full.length < 5 && /[\u4e00-\u9fff]/.test(full) && notes.includes(full)) {
+    score += 35;
   }
   for (const s of stems || []) {
     if (!s) continue;
-    const kind = notesStemMatchKind(notes, s);
-    if (kind === "token") score += 80;
-    else if (kind === "substring") score += 25;
-    if (title.includes(s)) {
-      score += hasTokenOrPrefix(title, s) ? 35 : 8;
+    if (s.length <= 4 ? hasTokenBoundary(title, s) : hasTokenOrPrefix(title, s)) score += 55;
+    if (s.length <= 4 ? hasTokenBoundary(notes, s) : notesStemMatchKind(notes, s) === "token") {
+      score += 18;
     }
   }
   if (digits && digits.length >= 2 && String(row.code || "").startsWith(digits)) {
@@ -211,6 +216,28 @@ export function scoreTnvedSearchHit(row, { stems, digits, phrase }) {
   if (row.isLeaf) score += 15;
   score += Number(row.level || 0);
   return score;
+}
+
+export function tnvedSearchRowHasWholeWordHit(row, { stems, digits, phrase, aliasPrefix }) {
+  if (digits && digits.length >= 2 && String(row.code || "").startsWith(digits)) return true;
+  if (aliasPrefix && String(row.code || "").startsWith(aliasPrefix)) return true;
+  const title = String(row.titleRu || "");
+  const notes = String(row.notes || "");
+  const full = String(phrase || "").trim();
+  if (full.length >= 2 && /[\u4e00-\u9fff]/.test(full) && notes.toLowerCase().includes(full.toLowerCase())) {
+    return true;
+  }
+  if (full.length >= 4) {
+    if (hasTokenOrPrefix(title, full) || hasTokenOrPrefix(notes, full)) return true;
+  }
+  for (const s of stems || []) {
+    if (!s) continue;
+    if (s.length <= 4 ? hasTokenBoundary(title, s) : hasTokenOrPrefix(title, s)) return true;
+    if (s.length <= 4 ? hasTokenBoundary(notes, s) : notesStemMatchKind(notes, s) === "token") {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function tnvedSearchWhere(q, { leafOnly = false, headingOnly = false } = {}) {

@@ -13,10 +13,57 @@ describe("resolveTnvedSearchAlias", () => {
     expect(resolveTnvedSearchAlias("морская вода")).toBeNull();
   });
 
-  it("HDD / жесткий диск → 8471", () => {
+  it("HDD / жесткий диск / ноутбук → chapter boost", () => {
     expect(resolveTnvedSearchAlias("HDD")?.codePrefix).toBe("8471");
     expect(resolveTnvedSearchAlias("hdd")?.codePrefix).toBe("8471");
     expect(resolveTnvedSearchAlias("жесткий диск")?.codePrefix).toBe("8471");
+    expect(resolveTnvedSearchAlias("ноутбук")?.codePrefix).toBe("847130");
+  });
+});
+
+describe("scoreTnvedSearchHit whole-word / notes clarification", () => {
+  it("ноутбук ranks 847130 over bamboo notes hitchhike", () => {
+    const stems = tnvedSearchStems("ноутбук");
+    const laptop = scoreTnvedSearchHit(
+      {
+        code: "8471300000",
+        titleRu: "машины вычислительные портативные массой не более 10 кг",
+        notes: null,
+        isLeaf: true,
+        level: 10,
+      },
+      { stems, digits: "", phrase: "ноутбук" },
+    );
+    const bamboo = scoreTnvedSearchHit(
+      {
+        code: "4421910000",
+        titleRu: "Из бамбука",
+        notes:
+          "подставка, предназначенная для удобного размещения и охлаждения ноутбука, планшета",
+        isLeaf: true,
+        level: 10,
+      },
+      { stems, digits: "", phrase: "ноутбук" },
+    );
+    expect(laptop).toBeGreaterThan(bamboo);
+  });
+
+  it("short stem поло does not score title Половины", () => {
+    const meat = scoreTnvedSearchHit(
+      { code: "0207132000", titleRu: "Половины или четвертины", notes: null, isLeaf: true, level: 10 },
+      { stems: ["поло"], digits: "", phrase: "поло" },
+    );
+    const polo = scoreTnvedSearchHit(
+      {
+        code: "6105100000",
+        titleRu: "Из хлопчатобумажной пряжи",
+        notes: "polo, поло",
+        isLeaf: true,
+        level: 10,
+      },
+      { stems: ["поло"], digits: "", phrase: "поло" },
+    );
+    expect(polo).toBeGreaterThan(meat);
   });
 });
 
