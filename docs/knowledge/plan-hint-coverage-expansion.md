@@ -465,6 +465,7 @@ Unit: `hint-coverage-p11.test.ts` (68 asserts). Cascade golden **35** families �
 | Master dictionary | `hint-coverage-probe-dictionary.json` — **50** rows (P+/A+/A~/S+/POLICY) |
 | Gap probe | `scripts/hint-gap-probe.ts` · `npm run probe:hint-gap` · `npm run probe:hint-gap:full` |
 | Unit | `hint-coverage-p12.test.ts` — pack/attr/cascade dictionary + closed STEAL matrix |
+| CI 2026-09-04 | juice S+ = **2202** (как P11); prefix matcher splits `610\|6210` · [`plan-ci-hygiene.md`](./plan-ci-hygiene.md) |
 | Full corpus | `hint-coverage-full-corpus.json` — **516** unique (386 plan-s7 + 130 precision positives) |
 | Builder | `scripts/build-full-corpus.py` (regenerate JSON) |
 | Staging | [`staging.md`](./staging.md) §Cov H1–H7 live checklist |

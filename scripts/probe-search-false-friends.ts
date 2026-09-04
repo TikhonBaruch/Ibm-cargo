@@ -296,7 +296,11 @@ function printTable(results: ProbeResult[]) {
 
 async function main() {
   // side-effect bypass for live
-  if (live) await import("./lib/install-vercel-bypass.mjs");
+  if (live) {
+    // Live SSO bypass helper is untyped ESM.
+    // @ts-expect-error -- no declaration for .mjs side-effect import
+    await import("./lib/install-vercel-bypass.mjs");
+  }
 
   const corpus = buildCorpus();
   console.log(`# probe-search-false-friends  mode=${live ? "live" : "offline"}  n=${corpus.length}`);
